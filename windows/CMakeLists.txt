@@ -57,6 +57,13 @@ add_subdirectory("runner")
 # them to the application.
 include(flutter/generated_plugins.cmake)
 
+# This backend uses legacy WinRT coroutine headers. Keep the VS 2026
+# compatibility definition scoped to the dependency, not application code.
+if(TARGET just_audio_windows_plugin AND MSVC)
+  target_compile_definitions(just_audio_windows_plugin PRIVATE
+    _SILENCE_EXPERIMENTAL_COROUTINE_DEPRECATION_WARNINGS)
+endif()
+
 
 # === Installation ===
 # Support files are copied into place next to the executable, so that it can

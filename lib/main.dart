@@ -1,12 +1,50 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:rp_music/app/app.dart';
+import 'dart:io';
 
-void main() {
+import 'package:audio_service/audio_service.dart';
+import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
+
+import 'app/library_controller.dart';
+import 'app/music_app.dart';
+import 'data/local_store.dart';
+import 'data/music_files.dart';
+import 'playback/music_handler.dart';
+
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(
-    const ProviderScope(
-      child: MusicPlayerApp(),
-    ),
-  );
+  try {
+    final directory = await getApplicationSupportDirectory();
+    final controller = LibraryController(
+      LocalStore(Directory('${directory.path}/v2')),
+      MusicFiles(),
+    );
+    final handler = Platform.isAndroid
+        ? await AudioService.init(
+            builder: MusicHandler.new,
+            config: const AudioServiceConfig(
+              androidNotificationChannelId: 'rp_music.playback',
+              androidNotificationChannelName: 'Reproducción',
+              androidNotificationOngoing: true,
+            ),
+          )
+        : MusicHandler();
+    await handler.configureSession();
+    runApp(MusicApp(library: controller, audio: handler));
+    await controller.initialize();
+  } catch (_) {
+    runApp(
+      const MaterialApp(
+        home: Scaffold(
+          body: Center(
+            child: Padding(
+              padding: EdgeInsets.all(24),
+              child: Text(
+                'No se pudo iniciar RP Music. Cierra la aplicación y vuelve a intentarlo.',
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
