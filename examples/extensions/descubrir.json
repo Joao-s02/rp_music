@@ -1,0 +1,9 @@
+{
+  "apiVersion": 1,
+  "id": "rp.descubrir",
+  "name": "Descubrir mi música",
+  "description": "Biblioteca en tarjetas, acento lavanda y una acción para elegir una canción al azar.",
+  "permissions": [],
+  "screen": { "layout": "cards", "accent": "#C6B5ED" },
+  "actions": ["playRandom"]
+}

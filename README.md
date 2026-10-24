@@ -1,99 +1,69 @@
 # RP Music
 
-Reproductor musical local-first, multiplataforma y de alto rendimiento para **Android**, **Windows** y **Web**, construido con **Flutter**, arquitectura de **Puertos y Adaptadores (Arquitectura Hexagonal)**, persistencia reactiva en **Drift (SQLite)** y gestión de audio mediante **Riverpod**.
+Primera base reconstruida en Flutter para Android y Windows. Aplicación local, sin cuenta. La versión 0.2.0 es un incremento de desarrollo, no la implementación completa de la visión del proyecto.
 
----
+## Descargar y usar
 
-## 🚀 Características Principales
+Los binarios se distribuyen en [Releases de GitHub](https://github.com/Joao-s02/rp_music/releases). Consulta la [guía de uso](docs/USO.md) para instalar el APK, abrir el paquete portable Windows e importar el ejemplo de personalización.
 
-- **Arquitectura Limpia**: Monolito modular con separación estricta entre Dominio, Aplicación, Infraestructura y Presentación. Cero dependencias de framework/UI en el núcleo de dominio.
-- **Reproducción Robusta**:
-  - Un único coordinador de audio (`PlaybackCoordinator`) que gestiona el ciclo de vida del motor.
-  - Separación entre intención de reproducción (`playIntent`) y estado de procesamiento (`ProcessingState`).
-  - Serialización de cambios de pista mediante generaciones (`sourceGeneration`) para descartar eventos obsoletos de carga asíncrona.
-  - Agrupamiento (coalescing / debouncing) de comandos consecutivos de búsqueda de posición (`seek`).
-  - Tolerancia a fallos: detención automática tras 3 errores consecutivos para evitar bucles de salto ante archivos corruptos.
-  - Restauración de sesión (restaura la última pista y posición exacta sin reproducir automáticamente al iniciar).
-- **Gestión de Recursos y Ciclo de Vida (`SourceResolver` & `SourceLease`)**:
-  - Revocación automática de `Blob URLs` en Web mediante `URL.revokeObjectURL`.
-  - Liberación inmediata de descriptores de archivo temporales en entornos nativos.
-- **Persistencia Reactiva (Drift / SQLite)**:
-  - Base de datos relacional compartida con integridad referencial (`PRAGMA foreign_keys = ON;`) y eliminación en cascada.
-  - Conexión nativa en background isolate para Android y Windows; base de datos Wasm / IndexedDB en Web.
-  - Índices optimizados para ordenación y búsqueda instantánea con normalización de caracteres (`title_sort`).
-- **Integración con Controles del Sistema**:
-  - **Android**: Foreground Service con notificación multimedia, pantalla de bloqueo y control desde auriculares/Bluetooth (`audio_service` + `audio_session`).
-  - **Web**: Integración con la API nativa de controles multimedia del navegador (`navigator.mediaSession`).
-  - **Windows**: Soporte de rutas largas / Unicode y persistencia minimizada.
-- **UI Adaptable Material 3**:
-  - Barra lateral `NavigationRail` en pantallas medianas/grandes (Escritorio / Tablet).
-  - Barra inferior `NavigationBar` en móviles.
-  - Miniplayer y barra de reproducción accesible desde cualquier vista.
-  - Búsqueda reactiva con debounce de 200ms.
-  - Ajustes de tema (claro, oscuro, sistema), densidad y paletas de color con exportación de logs de diagnóstico con redacción de datos privados.
+## Disponible en esta base
 
----
+- Una carpeta raíz con subcarpetas; escaneo manual fuera de la interfaz.
+- Canciones, álbumes, artistas, carpetas y búsqueda.
+- Reproducción, pausa, posición, anterior/siguiente, aleatorio y repetición de una canción.
+- Cola de la selección actual, favoritos y listas persistentes.
+- Metadatos para organizar la biblioteca y carátula de la canción activa.
+- Tema claro/oscuro y navegación adaptable en español.
+- Integración de servicio multimedia Android preparada mediante audio_service.
+- Importación de extensiones declarativas JSON, selección de presentación y retorno a la base.
 
-## 📁 Estructura del Proyecto
+El reconocimiento de archivos MP3, FLAC, M4A, MP4, WAV y OPUS no garantiza que todo códec sea reproducible en todos los dispositivos. MP4 se trata como fuente de audio.
 
-```text
-lib/
-├── app/                  # Composición de providers Riverpod y shell principal de la UI
-├── bootstrap/            # Inicialización de dependencias, base de datos y sesión
-├── core/                 # Extension types (IDs fuertemente tipados), tokens y diagnósticos
-├── features/
-│   ├── library/          # Dominio, repositorio Drift e indexador incremental de archivos
-│   ├── playback/         # Contratos AudioEngine, JustAudioEngine y PlaybackCoordinator
-│   ├── queue/            # Modelo de cola, ordenamiento, shuffle determinista y repetición
-│   └── settings/         # Preferencias de usuario (tema, densidad, color)
-└── infrastructure/       # Adaptadores de plataforma, base de datos Drift y puentes del sistema
-```
+## Ejecutar
 
----
+Herramientas verificadas: Flutter 3.47.6 y Dart 3.13.5.
 
-## 🛠️ Requisitos Previos
-
-- **Flutter SDK**: 3.29+ / 3.47+ (Dart 3.7+ / 3.13+)
-- **Android**: Android SDK con NDK 28+ o 30+, Java 17+
-- **Windows**: Windows 10/11 con Modo Desarrollador habilitado y Visual Studio C++ build tools
-
----
-
-## 💻 Ejecución y Compilación
-
-### 1. Ejecutar en Modo Desarrollo
-
-```bash
-# Web (Chrome)
-flutter run -d chrome
-
-# Android
-flutter run -d <id_dispositivo_o_emulador>
-
-# Windows
+```sh
+flutter pub get
 flutter run -d windows
+# O con un dispositivo Android conectado:
+flutter devices
+flutter run -d ID_DEL_DISPOSITIVO
 ```
 
-### 2. Compilar Paquetes de Distribución
+En la aplicación, elegir una carpeta de música. En Android se usa el selector del sistema y se conserva el permiso de lectura. En Windows se usa una ruta local. Los cambios de archivos se incorporan con Actualizar. Al volver a abrir se muestra el catálogo guardado sin escanear automáticamente.
 
-```bash
-# Generar APK de Android (Debug)
-flutter build apk --debug
+Los datos nuevos se guardan en el directorio de soporte de la aplicación, dentro de `v2`, con un respaldo del guardado anterior. No se migran los datos del alfa. El escaneo nunca modifica los archivos musicales.
 
-# Generar Bundle Web optimizado
-flutter build web --release
-```
+## Probar la extensión de ejemplo
 
----
+1. En Extensiones, pulsar Importar extensión.
+2. Elegir `examples/extensions/descubrir.json` (copiarlo al dispositivo si se prueba Android).
+3. Pulsar Descubrir mi música para activarla.
+4. Volver a Biblioteca: aparecerán tarjetas, un acento lavanda y la acción Sorpréndeme.
+5. Seleccionar Interfaz base o desinstalar para volver al aspecto inicial.
 
-## 🧪 Pruebas y Calidad de Código
+No hace falta recompilar ni reiniciar para esta prueba. Reimportar un archivo con el mismo identificador reemplaza explícitamente la versión anterior. No hay actualización automática ni catálogo remoto.
 
-El proyecto cuenta con un 100% de cobertura en pruebas de contratos de audio, base de datos y renderizado:
+Esta prueba ejecuta acciones predefinidas por la aplicación. **No ejecuta programas de terceros ni constituye todavía el SDK completo de extensiones.** Consultar `examples/extensions/README.md`.
 
-```bash
-# Análisis estático (0 advertencias, 0 errores)
-dart analyze
+## Comprobar
 
-# Ejecutar la suite completa de pruebas
+```sh
+flutter analyze
 flutter test
+flutter build apk --debug
+flutter build windows --debug
 ```
+
+Windows requiere Visual Studio con herramientas C++ y soporte para enlaces de complementos. Lo habitual es habilitar el modo de desarrollador. En esta máquina se pudo compilar con junctions locales dentro de `windows/flutter/ephemeral/.plugin_symlinks`; estos archivos temporales no se versionan. Hay una definición de compatibilidad de Visual Studio 2026 limitada a `just_audio_windows` en CMake; el backend debe reevaluarse antes de una versión estable.
+
+Las pruebas verifican biblioteca, guardados, cancelación/fallo de cambio de raíz, listas, extensiones, carreras al cambiar pistas y navegación a 360 y 1280 píxeles. Compilar no verifica reproducción física, pantalla de bloqueo ni compatibilidad real de todos los formatos.
+
+## Pendiente
+
+Letras, edición de etiquetas, restauración de cola/posición, cola editable, fundidos, gapless, bandeja y controles del sistema Windows, carátulas en la biblioteca, mediciones de rendimiento y recursos por extensión, runtime programable, permisos de dos niveles, catálogo e integraciones con servicios. Web no está soportada por este incremento.
+
+## Contexto para colaborar
+
+Leer `AGENTS.md` y abrir `boveda` en Obsidian. La bóveda registra requisitos, decisiones técnicas provisionales, verificaciones y pendientes. El documento `arquitectura-reproductor-flutter.md` es histórico. La distribución se documenta en la nota de release de la bóveda.

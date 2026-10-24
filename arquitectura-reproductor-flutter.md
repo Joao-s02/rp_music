@@ -1,5 +1,7 @@
 # Arquitectura técnica y plan de implementación
 
+> Documento histórico: sus propuestas no son la especificación vigente. La entrevista posterior se consolida en [la bóveda de contexto](boveda/00%20Inicio.md). Consultarla antes de usar esta arquitectura; paquetes, alcance web y planificación de extensiones deben reevaluarse.
+
 ## Reproductor musical Flutter local-first para Windows, Android y web
 
 La arquitectura recomendada es una aplicación Flutter modular, con un único coordinador de reproducción, biblioteca incremental y persistencia compartida mediante Drift. Windows y Android reproducen archivos mediante capacidades nativas; web usa archivos autorizados por el usuario y declara explícitamente sus límites.
