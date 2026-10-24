@@ -1,6 +1,6 @@
 ---
 tipo: distribucion
-estado: preparando
+estado: publicada-y-verificada
 actualizado: 2026-10-24
 ---
 # Release 0.2.0-alpha.1
@@ -23,6 +23,16 @@ Repositorio comprobado: `Joao-s02/rp_music`, remoto `origin`, rama predeterminad
 
 ## Publicación
 
-Pendiente de completar y verificar. Registrar URL, commit etiquetado, compilaciones y adjuntos cuando GitHub confirme la publicación. No confundir este estado de preparación con una release ya disponible.
+Publicada el 2026-10-24: [RP Music 0.2.0-alpha.1](https://github.com/Joao-s02/rp_music/releases/tag/v0.2.0-alpha.1).
+
+- GitHub confirma `isDraft=false`, `isPrerelease=true`.
+- Etiqueta `v0.2.0-alpha.1` en commit `bdd01f012e3f6e8e61ac13ad6565ce32911beae8`. Las fuentes de la reconstrucción y las instrucciones se publicaron en `main`; las actualizaciones de esta nota son posteriores a la etiqueta.
+- Compilaciones release Android y Windows completadas. Android: APK de 54 203 100 bytes; Windows: ZIP de 12 740 958 bytes.
+- Adjuntos confirmados en estado `uploaded`: APK, ZIP, `USO.md`, `descubrir.json` y `SHA256SUMS.txt`.
+- Se comprobó que el ZIP contiene EXE, DLL del motor Flutter y audio, `data/icudtl.dat`, guía y ejemplo. Se comprobó la estructura del APK.
+- Los digest SHA-256 y tamaños informados por GitHub coinciden con los archivos locales. No se descargaron nuevamente los binarios ni se probaron en un equipo limpio.
+- SHA-256 APK: `e69f72cd5aa2f19cceb6dead44c97edc9da9cd2c603b33c330aac4de90c548b6`.
+- SHA-256 ZIP: `37c12adec28863fe0ab4d2a8e99333175559f123cc49a9476dde3a538186f2fd`.
+- No se reemplazó la release anterior. Se excluyeron del versionado los archivos temporales de sesión de Kotlin.
 
 Relaciones: [[10 Estado del repositorio]], [[11 Reconstruccion - primera base]], [[09 Registro de cambios]].

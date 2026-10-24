@@ -30,4 +30,4 @@ Letras, edición de etiquetas, restauración de sesión, cola editable, bandeja 
 
 Al crear la bóveda existían fuentes alfa y un documento `arquitectura-reproductor-flutter.md`. Ese documento es histórico: sus paquetes y prioridades no son decisiones actuales por defecto. No hay migración de la biblioteca alfa; los nuevos datos se guardan en `v2` dentro del soporte de aplicación.
 
-La publicación de la primera base fue solicitada por el usuario. Se comprobó el remoto `Joao-s02/rp_music` y se prepara una release preliminar con fuentes, binarios e instrucciones. Ver el estado verificable en [[12 Release 0.2.0-alpha.1]]. Siguientes prioridades: [[06 Primera version]] y [[07 Preguntas e investigacion]].
+La publicación fue solicitada por el usuario y completada en `Joao-s02/rp_music`: release preliminar `v0.2.0-alpha.1`, fuentes en `main`, APK y paquete Windows compilados en modo release, instrucciones, ejemplo y sumas SHA-256. La etiqueta apunta a `bdd01f012e3f6e8e61ac13ad6565ce32911beae8`. GitHub confirmó publicación y cinco adjuntos completos. Ver [[12 Release 0.2.0-alpha.1]]. Siguientes prioridades: [[06 Primera version]] y [[07 Preguntas e investigacion]].
