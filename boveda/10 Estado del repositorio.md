@@ -7,7 +7,7 @@ actualizado: 2026-10-25
 
 ## Estado actual
 
-Trabajo local vigente: **0.2.4+6** (ver [[18 Pruebas 0.2.3 y correcciones 0.2.4]]); antecedente **0.2.3+5**, interfaz Stitch y correcciones posteriores al informe 0.2.2. Consultar [[16 Pruebas 0.2.2 y rediseno 0.2.3]] y la actualización al final de esta nota para evidencia y paquetes. La última publicación es v0.2.3-alpha.1; consultar su confirmación al final de esta nota.
+Trabajo local vigente: **0.2.4+6** (ver [[18 Pruebas 0.2.3 y correcciones 0.2.4]]); antecedente **0.2.3+5**, interfaz Stitch y correcciones posteriores al informe 0.2.2. Consultar [[16 Pruebas 0.2.2 y rediseno 0.2.3]] y la actualización al final de esta nota para evidencia y paquetes. La última publicación es v0.2.4-alpha.1; consultar su confirmación al final de esta nota.
 
 Identidad confirmada el 2026-10-25: el usuario eligió `assets/branding/rp-music-variant-a.png`. Integrado en lanzador Android adaptativo, ICO Windows para ventana/bandeja e iconos web. Windows debug compilado y APK Android release completo compilado tras instalar/seleccionar Temurin JDK 17.0.20.1+1 en usuario y Flutter; firma APK v2 verificada. APK 0.2.2+4 local con icono A en `build/app/outputs/flutter-apk/app-release.apk`, sin publicar ni reemplazar adjuntos de dist. Pautas de diseño documentadas; tema Flutter sin rediseñar. Ver [[15 Identidad visual e icono]] y docs/COMPILACION.md para validación y límites.
 
@@ -67,3 +67,11 @@ Resultado final 0.2.4: paquetes locales en dist/0.2.4 (universal 57 047 748 byte
 ## Publicación solicitada de 0.2.4 — 2026-10-25
 
 El usuario autorizó subir la nueva release a GitHub. Se prepara v0.2.4-alpha.1 como preliminar, con fuentes y siete adjuntos: APK universal/ARM64, Windows, dos guías, ejemplo y SHA-256. Se mantienen los binarios verificados y se actualizan las guías de distribución. Confirmar publicación, commit y digest de adjuntos al terminar.
+
+## Publicación confirmada — 2026-10-25
+
+- [Release v0.2.4-alpha.1](https://github.com/Joao-s02/rp_music/releases/tag/v0.2.4-alpha.1) publicada como preliminar; GitHub confirmó isDraft=false e isPrerelease=true.
+- Etiqueta sobre `08f783c1f4c69b475f04d95783004eb6df4ad87b`; fuentes enviadas a main. Esta confirmación es posterior al commit etiquetado.
+- Siete adjuntos en estado uploaded, verificados contra los archivos locales por tamaño y digest SHA-256 de GitHub: APK universal/ARM64, ZIP Windows, USO.md, PRUEBAS-0.2.4.md, descubrir.json y SHA256SUMS.txt.
+- Se actualizaron las guías y reempaquetó Windows para distribución: ZIP final de 14 506 717 bytes. Binarios compilados y ambos APK se conservaron sin cambios.
+- 0.2.4 debe instalarse manualmente sobre la anterior para habilitar detección de versiones futuras. Publicar no sustituye el retesteo prolongado Galaxy A34 Android 16/Poco X6 ni completa por sí solo una actualización entre releases desde el instalador. No se alteraron releases anteriores.
