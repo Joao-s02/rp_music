@@ -1,6 +1,6 @@
 ---
 tipo: pruebas-y-rediseno
-estado: compilado-y-validado-localmente
+estado: publicado-con-validacion-local
 actualizado: 2026-10-25
 ---
 # Pruebas 0.2.2 y rediseño 0.2.3
@@ -51,10 +51,18 @@ Tras una compilación de integración debug, usar el flujo completo release sin 
 
 Consultadas el 2026-10-25: [audio_service](https://pub.dev/packages/audio_service), [controles Android](https://developer.android.com/media/implement/surfaces/mobile), fuentes locales de audio_service 0.18.19 y recursos del APK anterior. Android deriva sus controles del estado de la sesión; el permiso por sí solo no valida la integración.
 
-Pendiente retesteo físico en Galaxy A34 y Poco X6, controles con pantalla apagada y ajustes propios de One UI/HyperOS. Se prepara 0.2.3+5 local; sin autorización nueva para publicar ni enviar a GitHub.
+Pendiente retesteo físico en Galaxy A34 y Poco X6, controles con pantalla apagada y ajustes propios de One UI/HyperOS. La preparación local precedió a la autorización de publicación; consultar la confirmación al final de esta nota.
 
 Relaciones: [[14 Pruebas 0.2.1 y correcciones 0.2.2]], [[15 Identidad visual e icono]], [[03 Biblioteca y reproduccion]], [[07 Preguntas e investigacion]], [[10 Estado del repositorio]], [[09 Registro de cambios]].
 
 ## Publicación solicitada de 0.2.3 — 2026-10-25
 
 El usuario autorizó publicar la release en GitHub. Se prepara `v0.2.3-alpha.1` como preliminar con fuentes, APK universal/ARM64, Windows x64, guías, ejemplo y SHA-256. Se mantienen los binarios comprobados; confirmar URL y adjuntos tras publicar.
+
+## Publicación confirmada — 2026-10-25
+
+- [Release v0.2.3-alpha.1](https://github.com/Joao-s02/rp_music/releases/tag/v0.2.3-alpha.1) publicada como preliminar; GitHub confirmó `isDraft=false` e `isPrerelease=true`.
+- Etiqueta sobre `498ceee98d08ca10e12132e62bfc59170786db9a`; fuentes enviadas a main. Esta confirmación es posterior al commit etiquetado.
+- Siete adjuntos en estado uploaded: APK universal, APK ARM64, Windows x64, USO.md, PRUEBAS-0.2.3.md, descubrir.json y SHA256SUMS.txt. Todos verificados contra archivos locales por tamaño y digest SHA-256 de GitHub.
+- Se actualizaron las guías para distribución y se reempaquetó Windows: ZIP final de 14 438 947 bytes; binarios compilados sin cambios. Ambos APK mantienen los tamaños y hashes comprobados. Las referencias originales y licencias se conservaron intactas, incluidos sus espacios finales; comprobación de formato del código propio correcta.
+- La publicación no sustituye el retesteo físico Galaxy/Poco ni resuelve los pendientes anteriores de Tecno y sonido de cierre Windows. No se modificaron releases anteriores.
