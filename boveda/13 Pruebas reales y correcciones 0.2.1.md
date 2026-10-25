@@ -1,6 +1,6 @@
 ---
 tipo: pruebas-y-correcciones
-estado: compilado-y-probado-localmente
+estado: publicado-con-validacion-local
 actualizado: 2026-10-24
 ---
 # Pruebas reales y correcciones 0.2.1
@@ -22,7 +22,7 @@ Resultados positivos declarados: fluidez general y cambios de pista Android, ext
 
 ## Cambios de implementación
 
-- Versión local `0.2.1+3`; la release pública anterior no se sustituye ni se publica una nueva sin autorización.
+- Versión de aplicación `0.2.1+3`; distribución preliminar `v0.2.1-alpha.1` publicada tras autorización expresa. No se sustituyó la release anterior.
 - Escaneo progresivo: descubrir rutas antes de leer etiquetas y publicar lotes de información mientras se completa el catálogo.
 - Windows utiliza un worker con mensajes de progreso. Android mantiene SAF y usa dos workers de metadatos; intenta reutilizar información ya indexada por MediaStore cuando el documento autorizado se puede convertir, con fallback al lector nativo. No solicita permisos generales de medios.
 - Huellas de tamaño/fecha y marca de metadatos completos permiten reutilizar archivos sin cambios. Registros del alfa sin huellas se vuelven a leer. Archivos con errores de metadatos se reintentan.
@@ -40,9 +40,9 @@ Resultados positivos declarados: fluidez general y cambios de pista Android, ext
 - Prueba nativa final con backend nuevo: aprobada, sin errores y duración correcta en WAV silenciosos generados. Incluye 36 selecciones/cambios secuenciales entre selección directa, siguiente y anterior, además de 15 solicitudes rápidas coalescidas por el coordinador. No incluye MP3 reales del usuario.
 - No se ha medido aún el tiempo corregido de indexación en los tres celulares; no prometer una reducción concreta.
 - El primer build Android en paralelo con integración Windows falló por registro generado de `integration_test` incluido durante compilación normal. Se separan las compilaciones para evitar el conflicto de archivos generados.
-- Compilaciones release finales Android y Windows completadas. Paquetes en `dist/0.2.1`: `RP-Music-0.2.1-android.apk` (54 203 412 bytes) y `RP-Music-0.2.1-windows-x64.zip` (12 788 737 bytes), guía, plan de retesteo y SHA-256.
+- Compilaciones release finales Android y Windows completadas. Paquetes en `dist/0.2.1`: `RP-Music-0.2.1-android.apk` (54 203 412 bytes) y `RP-Music-0.2.1-windows-x64.zip` (12 788 759 bytes tras actualizar las guías para distribución), guía, plan de retesteo y SHA-256.
 - ZIP verificado con EXE, motor Flutter, DLL del backend nuevo, datos y guías; sin DLL del backend anterior ni plugin de integración. Los datos de usuario siguen en `v2` para conservar los de 0.2.0.
-- No se publicaron estos cambios en GitHub ni se modificó la release anterior. No se hicieron nuevas pruebas en celulares físicos.
+- Al terminar la corrección se mantuvieron los cambios locales; la publicación posterior solicitada se registra debajo. No se modificó la release anterior ni se hicieron nuevas pruebas en celulares físicos.
 
 ## Fuentes técnicas
 
@@ -56,3 +56,12 @@ Relaciones: [[03 Biblioteca y reproduccion]], [[04 Extensiones]], [[05 Rendimien
 ## Publicación solicitada
 
 Después de completar las correcciones, el usuario autorizó publicar la nueva release en GitHub. Se prepara `v0.2.1-alpha.1` como preliminar, sin reemplazar la anterior, con fuentes y seis adjuntos: APK, ZIP completo, guía, plan de pruebas, ejemplo y SHA-256. El contenido binario es el ya compilado/probado; se actualizan las guías empaquetadas con los enlaces de distribución. Registrar la confirmación al finalizar.
+
+## Confirmación de publicación — 2026-10-24
+
+- [Release v0.2.1-alpha.1](https://github.com/Joao-s02/rp_music/releases/tag/v0.2.1-alpha.1) confirmada con `isDraft=false`, `isPrerelease=true`.
+- Etiqueta remota sobre `4b094e164123a5615285e5637043a4bcf24811c5`, commit de correcciones y documentación publicado en `main`.
+- Seis adjuntos confirmados en estado `uploaded`: APK, ZIP, `USO.md`, `PRUEBAS-0.2.1.md`, `descubrir.json`, `SHA256SUMS.txt`. Todos los tamaños y digest informados por GitHub coinciden con los archivos locales.
+- APK SHA-256: `da63dbc37b7700d81c10840247630ad54eb4def4f84069c4fc46cacdb716e175`.
+- ZIP SHA-256: `0a79beff5d82da65c72a60310084689aa3477b362635707ef8c014abbbaf8e29`.
+- La verificación no descarga nuevamente los binarios ni sustituye las pruebas pendientes en dispositivos. La actualización de esta nota es posterior al commit etiquetado.

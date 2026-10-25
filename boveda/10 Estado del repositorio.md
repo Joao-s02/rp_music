@@ -7,7 +7,7 @@ actualizado: 2026-10-24
 
 ## Estado actual
 
-Actualización local posterior: `0.2.1+3`, con correcciones a partir de pruebas reales. Ver [[13 Pruebas reales y correcciones 0.2.1]] para implementación, evidencia y pendientes. La release pública continúa siendo `v0.2.0-alpha.1`; las afirmaciones de la primera base que siguen describen ese antecedente.
+Actualización posterior: aplicación `0.2.1+3`, publicada como release preliminar `v0.2.1-alpha.1` en GitHub tras autorización. Etiqueta sobre `4b094e164123a5615285e5637043a4bcf24811c5`; seis adjuntos y sus hashes verificados. Ver [[13 Pruebas reales y correcciones 0.2.1]] para implementación, evidencia y pendientes. Las afirmaciones de la primera base que siguen describen el antecedente 0.2.0.
 
 Raíz: `C:\joao\flutter\music_reprod\rp_music`. El usuario autorizó la reconstrucción. Se reemplazaron las fuentes de aplicación y pruebas del alfa, y se conservan Git, bóveda y plataformas. Manifiesto `rp_music`, versión `0.2.0+2`.
 

@@ -62,4 +62,13 @@ actualizado: 2026-10-24
 
 ## Convención para próximos cambios
 
+## 2026-10-24 — Release 0.2.1 publicada
+
+- Publicadas las fuentes de correcciones en `main` y la release preliminar `v0.2.1-alpha.1`, etiqueta en `4b094e164123a5615285e5637043a4bcf24811c5`.
+- APK, ZIP Windows completo, guía, plan de pruebas, ejemplo y SHA-256: seis adjuntos en estado `uploaded`, tamaños/digest verificados automáticamente contra los archivos locales.
+- Se actualizaron y reempaquetaron las guías con enlaces de distribución; los binarios coinciden con las compilaciones previamente comprobadas. No se sustituyó la release anterior.
+- Confirmación y límites en [[13 Pruebas reales y correcciones 0.2.1]].
+
+## Formato de siguientes registros
+
 Registrar fecha, petición o motivo, decisiones y su estado, notas afectadas, comprobaciones y límites, y siguientes pendientes. No rellenar resultados antes de verificarlos.
