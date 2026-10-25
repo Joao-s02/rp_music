@@ -33,6 +33,51 @@ void main() {
       )..addFont(rootBundle.load('assets/fonts/${entry.value}.ttf'))).load();
     }
   });
+  testWidgets('biblioteca vacía con búsqueda contraída se adapta a móvil', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(390, 900);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final library = LibraryController(MemoryStore(), ArtworkFiles())
+      ..loading = false;
+    final audio = MusicHandler(player: FakePlayer());
+    final key = GlobalKey();
+    await tester.pumpWidget(
+      RepaintBoundary(
+        key: key,
+        child: MusicApp(library: library, audio: audio),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.byType(TextField), findsNothing);
+    expect(find.byTooltip('Buscar'), findsOneWidget);
+    expect(find.text('Tu biblioteca está en silencio'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+    if (Platform.environment['RP_UI_SNAPSHOTS'] == '1') {
+      final boundary =
+          key.currentContext!.findRenderObject()! as RenderRepaintBoundary;
+      await tester.runAsync(() async {
+        final image = await boundary.toImage();
+        final data = await image.toByteData(format: ui.ImageByteFormat.png);
+        await Directory('design/verification').create(recursive: true);
+        await File('design/verification/empty-0.2.4-mobile.png')
+            .writeAsBytes(data!.buffer.asUint8List());
+        image.dispose();
+      });
+    }
+    await tester.tap(find.byTooltip('Buscar'));
+    await tester.pumpAndSettle();
+    expect(find.byType(TextField), findsOneWidget);
+    expect(
+      tester.widget<TextField>(find.byType(TextField)).focusNode!.hasFocus,
+      true,
+    );
+    await tester.pumpWidget(const SizedBox.shrink());
+    await tester.runAsync(audio.close);
+    library.dispose();
+  });
   for (final width in [360.0, 1280.0]) {
     testWidgets('álbumes y reproductor completo con texto ampliado a $width', (
       tester,

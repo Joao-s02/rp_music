@@ -151,3 +151,22 @@ El usuario autorizó publicar la release en GitHub. Se prepara `v0.2.3-alpha.1` 
 - Siete adjuntos en estado uploaded: APK universal, APK ARM64, Windows x64, USO.md, PRUEBAS-0.2.3.md, descubrir.json y SHA256SUMS.txt. Todos verificados contra archivos locales por tamaño y digest SHA-256 de GitHub.
 - Se actualizaron las guías para distribución y se reempaquetó Windows: ZIP final de 14 438 947 bytes; binarios compilados sin cambios. Ambos APK mantienen los tamaños y hashes comprobados. Las referencias originales y licencias se conservaron intactas, incluidos sus espacios finales; comprobación de formato del código propio correcta.
 - La publicación no sustituye el retesteo físico Galaxy/Poco ni resuelve los pendientes anteriores de Tecno y sonido de cierre Windows. No se modificaron releases anteriores.
+
+## 2026-10-25 — Evaluación de actualizaciones opcionales
+
+El usuario plantea comprobar versiones con internet y actualizar desde la app, tomando como referencia el comportamiento que describe de Spoty Flac/Mornye. Se consultaron fuentes oficiales de GitHub y Android, sin verificar esa app concreta. Se documentó viabilidad y flujo propuesto, distinguiendo reproducción sin dependencia de red de consulta opcional. Se identificaron exclusión de prereleases en latest, firma compatible, intervención del instalador Android y flujo distinto para Windows portable. Sin cambios de código, compilaciones ni publicación; valores predeterminados y pruebas entre versiones pendientes. Ver [[17 Actualizaciones opcionales desde la app]] y [[02 Vision y decisiones]].
+
+## 2026-10-25 — Informe 0.2.3 e implementación local 0.2.4
+
+- Usuario autorizó actualizador opcional y pidió corregir teclado, cortes/foreground Android 16, copiar/importar logs y biblioteca con lupa desplegable según imagen.
+- Se estabilizó el campo de búsqueda ante viewInsets y se adaptó el estado vacío sin datos simulados. Se añadió diagnóstico seleccionable/copiar/exportar/importar y cien eventos de sesión.
+- Se conserva foreground durante pausa/cambio, evitando idle transitorio. Pruebas revelaron que audio_service no liberaba foreground al detener si seguía enlazado: se incorpora copia local MIT con stop explícito de foreground/wake lock y liberación de wake lock de CPU durante pausa. No se cambió caché global.
+- Actualizador: GitHub público, SemVer/canales, consulta diaria configurable, sin bloqueo offline, selección ABI, descarga con cancelación y SHA-256, validación nativa de paquete/versión/certificado e instalación confirmada por Android. Windows abre descarga.
+- 42 pruebas aprobadas y análisis limpio; prueba debug de cambio automático en segundo plano/pausa/reanudación/detención y sonda release sin errores. Validación nativa con APK real de código superior y rechazo de hash/versión incorrectos aprobada; no se confirmó reemplazo del paquete desde el instalador. Teclado de APK final aceptó texto y conservó foco/IME visibles.
+- Retesteo prolongado físico y actualización entre releases públicas futuras pendientes. Detalle y paquetes finales en [[18 Pruebas 0.2.3 y correcciones 0.2.4]]. Sin publicación ni envío a GitHub; conservar la versión 0.2.3 publicada como antecedente.
+
+Resultado final 0.2.4: paquetes locales en dist/0.2.4 (universal 57 047 748 bytes; ARM64 21 337 361; Windows ZIP 14 506 646), guías y SHA-256. Firmas v2/certificado compatibles, código 6, arquitecturas, recursos multimedia, alineación y ZIP Windows comprobados. 42 pruebas aprobadas, análisis limpio y regresiones nativas documentadas en [[18 Pruebas 0.2.3 y correcciones 0.2.4]]. Sin publicación; retesteo prolongado Galaxy/Poco y actualización completa entre releases públicas pendientes.
+
+## Publicación solicitada de 0.2.4 — 2026-10-25
+
+El usuario autorizó subir la nueva release a GitHub. Se prepara v0.2.4-alpha.1 como preliminar, con fuentes y siete adjuntos: APK universal/ARM64, Windows, dos guías, ejemplo y SHA-256. Se mantienen los binarios verificados y se actualizan las guías de distribución. Confirmar publicación, commit y digest de adjuntos al terminar.

@@ -21,6 +21,8 @@ class MainActivity : AudioServiceActivity() {
 
     override fun configureFlutterEngine(engine: FlutterEngine) {
         super.configureFlutterEngine(engine)
+        val updates = AppUpdates(this, worker)
+        MethodChannel(engine.dartExecutor.binaryMessenger, "rp_music/updates").setMethodCallHandler(updates::handle)
         MethodChannel(engine.dartExecutor.binaryMessenger, "rp_music/system").setMethodCallHandler { call, result ->
             when (call.method) {
                 "notificationsEnabled" -> result.success(notificationsEnabled())
@@ -30,11 +32,25 @@ class MainActivity : AudioServiceActivity() {
                     val channel = if (Build.VERSION.SDK_INT >= 26) manager.getNotificationChannel("rp_music.playback") else null
                     result.success(mapOf(
                         "notificationsEnabled" to notificationsEnabled(),
+                        "android" to Build.VERSION.RELEASE,
+                        "api" to Build.VERSION.SDK_INT,
+                        "manufacturer" to Build.MANUFACTURER,
+                        "model" to Build.MODEL,
+                        "batteryUnrestricted" to getSystemService(android.os.PowerManager::class.java).isIgnoringBatteryOptimizations(packageName),
                         "mediaNotifications" to notifications.size,
                         "channelImportance" to channel?.importance,
                         "hasMediaSession" to notifications.any { it.notification.extras.containsKey("android.mediaSession") },
+                        "foreground" to notifications.any { (it.notification.flags and android.app.Notification.FLAG_FOREGROUND_SERVICE) != 0 },
                         "ongoing" to notifications.any { (it.notification.flags and android.app.Notification.FLAG_ONGOING_EVENT) != 0 }
                     ))
+                }
+                "testMoveToBackground" -> {
+                    if ((applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0) {
+                        moveTaskToBack(true); result.success(null)
+                    } else result.notImplemented()
+                }
+                "batterySettings" -> {
+                    startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)); result.success(null)
                 }
                 "notificationSettings" -> {
                     val intent = if (Build.VERSION.SDK_INT >= 26) {

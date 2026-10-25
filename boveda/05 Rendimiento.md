@@ -27,3 +27,7 @@ El usuario ya probó tres celulares y una PC: informó buena fluidez general, pe
 Elegir Android y Windows de referencia, una biblioteca reproducible y modo de compilación adecuado. Registrar hardware, cantidad y formatos de archivos, condiciones de caché, extensiones activas y resultados. Acordar presupuestos después de medir una primera prueba, sin inventar garantías.
 
 El panel de consumo por extensión es un requisito de [[04 Extensiones]]; su precisión depende del mecanismo elegido. Ver [[07 Preguntas e investigacion]] y [[06 Primera version]].
+
+## Ajustes 0.2.4
+
+La consulta de actualizaciones no bloquea el arranque, se limita automáticamente a una vez al día y la descarga escribe por fragmentos con espera de E/S. El registro multimedia está limitado a cien eventos. La prioridad foreground se conserva al pausar para evitar reinicios prohibidos, pero se libera el wake lock de CPU durante la pausa y todo el servicio al detener. Son ajustes implementados y probados en escenarios de [[18 Pruebas 0.2.3 y correcciones 0.2.4]], no mediciones de batería ni garantía de duración en teléfonos físicos.

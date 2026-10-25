@@ -50,3 +50,7 @@ Relaciones: [[02 Vision y decisiones]], [[04 Extensiones]], [[05 Rendimiento]], 
 ## Actualización confirmada e implementación local — 2026-10-25
 
 El usuario pidió eliminar listas completas. Implementado con confirmación y persistencia, conservando archivos, favoritos, catálogo y otras listas; pruebas aprobadas. Rediseño e investigación de notificaciones posteriores a 0.2.2 en [[16 Pruebas 0.2.2 y rediseno 0.2.3]]. La comprobación en emulador no sustituye al retesteo físico.
+
+## Correcciones locales 0.2.4
+
+Búsqueda móvil expandible desde lupa con foco estable al aparecer teclado; biblioteca vacía adaptada a nueva referencia. Servicio Android conserva foreground en pausa/transiciones, libera wake lock de CPU en pausa y foreground al detener. Diagnóstico copiable/exportable/importable y registro acotado. La reproducción prolongada en Galaxy A34 Android 16/Poco sigue pendiente de retesteo físico; pruebas y parche de dependencia en [[18 Pruebas 0.2.3 y correcciones 0.2.4]].

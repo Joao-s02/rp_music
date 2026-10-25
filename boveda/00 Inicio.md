@@ -40,3 +40,7 @@ En Obsidian, elegir «Abrir carpeta como bóveda» y seleccionar la carpeta `bov
 La fecha de una nota es la de su actualización, no necesariamente la fecha de la entrevista. La documentación describe intenciones salvo que indique explícitamente una implementación comprobada.
 
 Último trabajo: [[16 Pruebas 0.2.2 y rediseno 0.2.3]] — informe Galaxy/Poco, notificaciones, eliminación de listas y adaptación del diseño Stitch.
+
+Nueva investigación: [[17 Actualizaciones opcionales desde la app]] — investigación inicial y mecanismo posteriormente implementado en 0.2.4.
+
+Trabajo vigente: [[18 Pruebas 0.2.3 y correcciones 0.2.4]] — teclado/búsqueda, servicio de audio, logs y actualizador opcional implementados localmente.

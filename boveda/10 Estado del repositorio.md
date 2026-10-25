@@ -7,7 +7,7 @@ actualizado: 2026-10-25
 
 ## Estado actual
 
-Trabajo local vigente: **0.2.3+5**, interfaz Stitch y correcciones posteriores al informe 0.2.2. Consultar [[16 Pruebas 0.2.2 y rediseno 0.2.3]] y la actualización al final de esta nota para evidencia y paquetes. La última publicación es v0.2.3-alpha.1; consultar su confirmación al final de esta nota.
+Trabajo local vigente: **0.2.4+6** (ver [[18 Pruebas 0.2.3 y correcciones 0.2.4]]); antecedente **0.2.3+5**, interfaz Stitch y correcciones posteriores al informe 0.2.2. Consultar [[16 Pruebas 0.2.2 y rediseno 0.2.3]] y la actualización al final de esta nota para evidencia y paquetes. La última publicación es v0.2.3-alpha.1; consultar su confirmación al final de esta nota.
 
 Identidad confirmada el 2026-10-25: el usuario eligió `assets/branding/rp-music-variant-a.png`. Integrado en lanzador Android adaptativo, ICO Windows para ventana/bandeja e iconos web. Windows debug compilado y APK Android release completo compilado tras instalar/seleccionar Temurin JDK 17.0.20.1+1 en usuario y Flutter; firma APK v2 verificada. APK 0.2.2+4 local con icono A en `build/app/outputs/flutter-apk/app-release.apk`, sin publicar ni reemplazar adjuntos de dist. Pautas de diseño documentadas; tema Flutter sin rediseñar. Ver [[15 Identidad visual e icono]] y docs/COMPILACION.md para validación y límites.
 
@@ -57,3 +57,13 @@ El usuario autorizó publicar la release en GitHub. Se prepara `v0.2.3-alpha.1` 
 - Siete adjuntos en estado uploaded: APK universal, APK ARM64, Windows x64, USO.md, PRUEBAS-0.2.3.md, descubrir.json y SHA256SUMS.txt. Todos verificados contra archivos locales por tamaño y digest SHA-256 de GitHub.
 - Se actualizaron las guías para distribución y se reempaquetó Windows: ZIP final de 14 438 947 bytes; binarios compilados sin cambios. Ambos APK mantienen los tamaños y hashes comprobados. Las referencias originales y licencias se conservaron intactas, incluidos sus espacios finales; comprobación de formato del código propio correcta.
 - La publicación no sustituye el retesteo físico Galaxy/Poco ni resuelve los pendientes anteriores de Tecno y sonido de cierre Windows. No se modificaron releases anteriores.
+
+## Trabajo vigente local: 0.2.4+6
+
+Actualizador opcional, buscador móvil con foco estable, biblioteca vacía según referencia, logs copiados/exportados/importados y servicio foreground mantenido entre pausas/cambios con liberación al detener. Dependencia audio_service 0.18.19 seleccionada mediante copia local con dos ajustes nativos documentados, sin modificar Pub global. 42 pruebas aprobadas, análisis limpio y pruebas nativas Android de segundo plano y validación del APK aprobadas. Evidencia, empaquetado y límites en [[18 Pruebas 0.2.3 y correcciones 0.2.4]]. No se publicó esta versión.
+
+Resultado final 0.2.4: paquetes locales en dist/0.2.4 (universal 57 047 748 bytes; ARM64 21 337 361; Windows ZIP 14 506 646), guías y SHA-256. Firmas v2/certificado compatibles, código 6, arquitecturas, recursos multimedia, alineación y ZIP Windows comprobados. 42 pruebas aprobadas, análisis limpio y regresiones nativas documentadas en [[18 Pruebas 0.2.3 y correcciones 0.2.4]]. Sin publicación; retesteo prolongado Galaxy/Poco y actualización completa entre releases públicas pendientes.
+
+## Publicación solicitada de 0.2.4 — 2026-10-25
+
+El usuario autorizó subir la nueva release a GitHub. Se prepara v0.2.4-alpha.1 como preliminar, con fuentes y siete adjuntos: APK universal/ARM64, Windows, dos guías, ejemplo y SHA-256. Se mantienen los binarios verificados y se actualizan las guías de distribución. Confirmar publicación, commit y digest de adjuntos al terminar.

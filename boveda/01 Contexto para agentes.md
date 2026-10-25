@@ -42,3 +42,5 @@ La primera base de [[11 Reconstruccion - primera base]] se publicó en [[12 Rele
 Último informe y versión publicada: [[14 Pruebas 0.2.1 y correcciones 0.2.2]]. Leerlo primero para no tratar instalación Tecno o notificaciones físicas como problemas ya verificados en los teléfonos.
 
 Trabajo posterior vigente: leer [[16 Pruebas 0.2.2 y rediseno 0.2.3]] antes de continuar. El usuario confirmó que 0.2.2 sigue sin controles en Galaxy/Poco aun con permiso; la interfaz Stitch se adapta en Flutter y 0.2.3+5 se publicó posteriormente como v0.2.3-alpha.1 por autorización explícita. Consultar la confirmación al final de esa nota; el retesteo físico sigue pendiente.
+
+Trabajo local posterior vigente: [[18 Pruebas 0.2.3 y correcciones 0.2.4]]. El usuario aprobó el actualizador opcional y reportó teclado que pierde foco, corte de reproducción y error foreground en Galaxy Android 16. Leer la copia local documentada de audio_service y sus dos ajustes antes de cambiar dependencias. 0.2.4+6 se prepara localmente; la última release publicada sigue siendo 0.2.3. No publicar sin autorización.

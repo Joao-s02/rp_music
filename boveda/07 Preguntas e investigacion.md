@@ -49,3 +49,7 @@ Relaciones: [[02 Vision y decisiones]], [[03 Biblioteca y reproduccion]], [[04 E
 ## Notificaciones y rediseño posteriores a 0.2.2
 
 El informe físico sigue negativo en Galaxy A34 y Poco X6, incluido ARM64 y permiso concedido. Se detectaron iconos dinámicos ausentes del APK reducido y se corrigió su conservación. Sonda release con sesión/notificación real aprobada en emulador API 37; comparación causal posterior reprodujo el fallo CustomAction sin icono al recortar los recursos; detalle y validación final en [[16 Pruebas 0.2.2 y rediseno 0.2.3]]. La aplicación inicial del tema ya está implementada; no mantenerla como completamente pendiente ni inferir soporte de DSP/DAC/ecualizador desde el ZIP.
+
+## Actualizador opcional
+
+Viabilidad documental evaluada en [[17 Actualizaciones opcionales desde la app]]. GitHub releases puede servir como fuente pública; latest excluye nuestras prereleases. Android permite solicitar instalación, con firma compatible y gestión de consentimiento del sistema. La propuesta fue aprobada e implementada posteriormente en 0.2.4: consulta diaria configurable, canales, descarga/verificación Android y enlace Windows. Firma de distribución estable y recorrido entre releases públicas siguen pendientes; ver [[18 Pruebas 0.2.3 y correcciones 0.2.4]].

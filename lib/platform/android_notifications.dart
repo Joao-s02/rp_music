@@ -36,6 +36,9 @@ class AndroidNotifications extends ChangeNotifier {
         {},
   );
 
+  Future<void> openBatterySettings() =>
+      _channel.invokeMethod<void>('batterySettings');
+
   Future<void> openSettings() =>
       _channel.invokeMethod<void>('notificationSettings');
 }
