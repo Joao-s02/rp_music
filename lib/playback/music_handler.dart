@@ -14,6 +14,8 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
   Timer? _checkpointTimer;
   Timer? _seekCheckpoint;
   bool _closed = false;
+  bool _shuttingDown = false;
+  Future<void>? _closing;
   final errors = StreamController<String>.broadcast();
   final _subscriptions = <StreamSubscription<dynamic>>[];
   Future<void> _operations = Future.value();
@@ -31,6 +33,7 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
         if (this.player.playing && !_loading) unawaited(saveSession());
       });
     }
+    _subscriptions.add(this.player.playerStateStream.listen((_) => _publish()));
     _subscriptions.add(
       this.player.playbackEventStream.listen(
         (_) => _publish(),
@@ -80,6 +83,7 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
     bool autoplay = true,
     Duration initialPosition = Duration.zero,
   }) {
+    if (_shuttingDown) return Future.value();
     if (selected < 0 || selected >= source.length) return Future.value();
     tracks = List.unmodifiable(source);
     index = selected;
@@ -109,13 +113,13 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
           ),
           initialPosition: initialPosition,
         );
-        if (generation == _generation) {
+        if (generation == _generation && !_shuttingDown) {
           _loading = false;
           unawaited(saveSession(position: initialPosition));
           if (_playIntent) unawaited(play());
         }
       } catch (_) {
-        if (generation == _generation) {
+        if (generation == _generation && !_shuttingDown) {
           _loading = false;
           _playIntent = false;
           await player.stop();
@@ -148,6 +152,7 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
 
   @override
   Future<void> play() async {
+    if (_shuttingDown) return;
     _playIntent = true;
     if (_loading) return;
     try {
@@ -232,6 +237,8 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
     ++_generation;
     _playIntent = false;
     _loading = false;
+    await player.pause();
+    await saveSession();
     await player.stop();
     await super.stop();
   }
@@ -255,17 +262,30 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
     await select(tracks, (index - 1 + tracks.length) % tracks.length);
   }
 
-  Future<void> close() async {
+  Future<void> setAppVolume(double value) =>
+      player.setVolume(value.clamp(0.0, 1.0));
+
+  Future<void> close() => _closing ??= _closeInternal();
+
+  Future<void> _closeInternal() async {
+    _shuttingDown = true;
     _checkpointTimer?.cancel();
     _seekCheckpoint?.cancel();
     ++_generation;
-    await _operations;
+    _playIntent = false;
+    // Silence first; saving state and native disposal happen after sound stops.
+    await player.setVolume(0);
+    await player.pause();
     await saveSession();
+    await player.stop();
+    if (_loading) await _operations;
     _closed = true;
     for (final subscription in _subscriptions) {
-      await subscription.cancel();
+      // Cancellation stops delivery immediately; do not wait on UI stream clocks.
+      unawaited(subscription.cancel());
     }
     await player.dispose();
-    await errors.close();
+    // Error observers must not hold the native player/window open on exit.
+    unawaited(errors.close());
   }
 }

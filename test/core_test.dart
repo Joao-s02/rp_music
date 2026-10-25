@@ -40,6 +40,18 @@ void main() {
   tearDown(() async {
     await temporary.delete(recursive: true);
   });
+  test('volumen y preferencia de bandeja sobreviven al reinicio', () async {
+    final library = LibraryController(LocalStore(temporary), FakeFiles());
+    await library.initialize();
+    await library.setVolume(0.4);
+    await library.setCloseToTray(false);
+    final restored = LibraryController(LocalStore(temporary), FakeFiles());
+    await restored.initialize();
+    expect(restored.volume, 0.4);
+    expect(restored.closeToTray, isFalse);
+    library.dispose();
+    restored.dispose();
+  });
 
   test(
     'listas cuentan disponibles y conservan referencias al cambiar de raíz',

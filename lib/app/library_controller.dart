@@ -23,6 +23,8 @@ class LibraryController extends ChangeNotifier {
   int scanTotal = 0;
   bool choosing = false;
   bool dark = true;
+  bool closeToTray = true;
+  double volume = 1;
   String? message;
   Set<String> favorites = {};
   Map<String, List<String>> playlists = {};
@@ -52,6 +54,8 @@ class LibraryController extends ChangeNotifier {
             .toList();
         activeExtensionId = json['activeExtension'] as String?;
         dark = json['dark'] as bool? ?? true;
+        closeToTray = json['closeToTray'] as bool? ?? true;
+        volume = ((json['volume'] as num?)?.toDouble() ?? 1).clamp(0.0, 1.0);
       }
     } catch (_) {
       message = 'No se pudo recuperar la biblioteca guardada. Selecciona tu carpeta para reconstruirla.';
@@ -70,6 +74,8 @@ class LibraryController extends ChangeNotifier {
       'extensions': extensions.map((e) => e.toJson()).toList(),
       'activeExtension': activeExtensionId,
       'dark': dark,
+      'closeToTray': closeToTray,
+      'volume': volume,
     };
     try {
       await store.save(snapshot);
@@ -204,6 +210,17 @@ class LibraryController extends ChangeNotifier {
   Future<void> setDark(bool value) async {
     dark = value;
     notifyListeners();
+    await persist();
+  }
+
+  Future<void> setCloseToTray(bool value) async {
+    closeToTray = value;
+    notifyListeners();
+    await persist();
+  }
+
+  Future<void> setVolume(double value) async {
+    volume = value.clamp(0.0, 1.0);
     await persist();
   }
 

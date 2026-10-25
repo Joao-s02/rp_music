@@ -7,11 +7,21 @@ import 'package:flutter/material.dart';
 import '../domain/track.dart';
 import '../playback/music_handler.dart';
 import 'library_controller.dart';
+import 'volume_control.dart';
+import '../platform/android_notifications.dart';
+
+import 'dart:io';
 
 class MusicApp extends StatelessWidget {
-  const MusicApp({super.key, required this.library, required this.audio});
+  const MusicApp({
+    super.key,
+    required this.library,
+    required this.audio,
+    this.notifications,
+  });
   final LibraryController library;
   final MusicHandler audio;
+  final AndroidNotifications? notifications;
   @override
   Widget build(BuildContext context) => ListenableBuilder(
     listenable: library,
@@ -32,16 +42,26 @@ class MusicApp extends StatelessWidget {
           useMaterial3: true,
         ),
         themeMode: library.dark ? ThemeMode.dark : ThemeMode.light,
-        home: MusicHome(library: library, audio: audio),
+        home: MusicHome(
+          library: library,
+          audio: audio,
+          notifications: notifications,
+        ),
       );
     },
   );
 }
 
 class MusicHome extends StatefulWidget {
-  const MusicHome({super.key, required this.library, required this.audio});
+  const MusicHome({
+    super.key,
+    required this.library,
+    required this.audio,
+    this.notifications,
+  });
   final LibraryController library;
   final MusicHandler audio;
+  final AndroidNotifications? notifications;
   @override
   State<MusicHome> createState() => _MusicHomeState();
 }
@@ -94,6 +114,7 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state != AppLifecycleState.resumed) unawaited(audio.saveSession());
+    if (state == AppLifecycleState.resumed) widget.notifications?.refresh();
   }
 
   void navigate(int value) => setState(() {
@@ -617,6 +638,39 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
         value: library.dark,
         onChanged: library.setDark,
       ),
+      if (Platform.isWindows)
+        SwitchListTile(
+          title: const Text('Seguir reproduciendo al cerrar la ventana'),
+          subtitle: const Text(
+            'Se mantiene en la bandeja. Usa Salir en el icono para cerrar completamente.',
+          ),
+          value: library.closeToTray,
+          onChanged: library.setCloseToTray,
+        ),
+      if (widget.notifications != null)
+        ListenableBuilder(
+          listenable: widget.notifications!,
+          builder: (context, _) => Column(
+            children: [
+              ListTile(
+                title: const Text('Notificaciones de reproducción'),
+                subtitle: Text(
+                  widget.notifications!.enabled == true
+                      ? 'Permitidas por Android'
+                      : 'Permite las notificaciones para ver los controles.',
+                ),
+                trailing: TextButton(
+                  onPressed: () => widget.notifications!.request(),
+                  child: const Text('Solicitar'),
+                ),
+              ),
+              TextButton(
+                onPressed: widget.notifications!.openSettings,
+                child: const Text('Abrir ajustes de notificaciones'),
+              ),
+            ],
+          ),
+        ),
       ListTile(
         leading: const Icon(Icons.folder_open),
         title: const Text('Carpeta de música'),
@@ -629,7 +683,7 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
         subtitle: Text('Tu biblioteca permanece en este dispositivo.'),
       ),
       const ListTile(
-        title: Text('RP Music · 0.2.1'),
+        title: Text('RP Music · 0.2.2'),
         subtitle: Text('Base en reconstrucción · Android y Windows'),
       ),
     ],
@@ -766,6 +820,9 @@ class _PlayerPanelState extends State<PlayerPanel> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
+                  Expanded(
+                    child: VolumeControl(audio: audio, library: library),
+                  ),
                   IconButton(
                     tooltip: 'Aleatorio',
                     isSelected: audio.shuffle,

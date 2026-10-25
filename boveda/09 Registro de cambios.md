@@ -1,7 +1,7 @@
 ---
 tipo: historial
 estado: vigente
-actualizado: 2026-10-24
+actualizado: 2026-10-25
 ---
 # Registro de cambios
 
@@ -70,5 +70,21 @@ actualizado: 2026-10-24
 - Confirmación y límites en [[13 Pruebas reales y correcciones 0.2.1]].
 
 ## Formato de siguientes registros
+
+## 2026-10-25 — Segundo informe real y correcciones 0.2.2
+
+- El usuario confirmó mejoras de indexación/listas Android y estabilidad/formato Windows; reportó notificaciones ausentes, falta de volumen/bandeja y cierre de audio lento, e instalación inválida en Tecno Android 16.
+- Se implementaron propagación multimedia y permiso de notificaciones, volumen persistente, bandeja Win32 y cierre coordinado. No se añadieron permisos generales de archivos por la hipótesis del antivirus.
+- APK 0.2.1 local válido en firma y alineación; causa del rechazo Tecno aún pendiente. Se prepara variante ARM64 y diagnóstico ADB manual.
+- 25 pruebas y una prueba nativa Windows final aprobadas; análisis limpio. APK universal/ARM64 y ZIP Windows compilados y verificados con guías y SHA-256 en `dist/0.2.2`. La variante ARM64 utiliza separación por ABI sin inflar el código de versión. Estado final y límites en [[14 Pruebas 0.2.1 y correcciones 0.2.2]]. No se publicó otra release.
+
+## Siguientes registros
+
+## 2026-10-25 — Publicación solicitada de 0.2.2
+
+- El usuario autorizó crear la release de la nueva versión. Se comprobó coincidencia de `main` local y remoto antes de incorporar los cambios.
+- Preparación de `v0.2.2-alpha.1`, fuentes, APK universal/ARM64, Windows, guías y diagnóstico. Estado final en [[14 Pruebas 0.2.1 y correcciones 0.2.2]].
+
+## Próximos registros
 
 Registrar fecha, petición o motivo, decisiones y su estado, notas afectadas, comprobaciones y límites, y siguientes pendientes. No rellenar resultados antes de verificarlos.

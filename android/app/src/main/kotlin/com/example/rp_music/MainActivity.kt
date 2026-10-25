@@ -1,6 +1,11 @@
 package com.example.rp_music
 
 import android.app.Activity
+import android.Manifest
+import android.app.NotificationManager
+import android.content.pm.PackageManager
+import android.os.Build
+import android.provider.Settings
 import android.content.Intent
 import android.media.MediaMetadataRetriever
 import android.net.Uri
@@ -11,10 +16,37 @@ import java.util.concurrent.Executors
 
 class MainActivity : AudioServiceActivity() {
     private var picker: MethodChannel.Result? = null
+    private var notificationRequest: MethodChannel.Result? = null
     private val worker = Executors.newSingleThreadExecutor()
 
     override fun configureFlutterEngine(engine: FlutterEngine) {
         super.configureFlutterEngine(engine)
+        MethodChannel(engine.dartExecutor.binaryMessenger, "rp_music/system").setMethodCallHandler { call, result ->
+            when (call.method) {
+                "notificationsEnabled" -> result.success(notificationsEnabled())
+                "notificationSettings" -> {
+                    val intent = if (Build.VERSION.SDK_INT >= 26) {
+                        Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).putExtra(Settings.EXTRA_APP_PACKAGE, packageName)
+                    } else Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:$packageName"))
+                    startActivity(intent); result.success(null)
+                }
+                "requestNotifications" -> {
+                    val prefs = getSharedPreferences("system_permissions", MODE_PRIVATE)
+                    val firstLaunch = call.argument<Boolean>("firstLaunch") == true
+                    if (Build.VERSION.SDK_INT < 33 || checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED ||
+                        (firstLaunch && prefs.getBoolean("notificationAsked", false))) {
+                        result.success(notificationsEnabled())
+                    } else if (notificationRequest != null) {
+                        result.success(notificationsEnabled())
+                    } else {
+                        notificationRequest = result
+                        prefs.edit().putBoolean("notificationAsked", true).apply()
+                        requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), 811)
+                    }
+                }
+                else -> result.notImplemented()
+            }
+        }
         val channel = MethodChannel(engine.dartExecutor.binaryMessenger, "rp_music/library")
         channel.setMethodCallHandler { call, result ->
                 when (call.method) {
@@ -59,6 +91,18 @@ class MainActivity : AudioServiceActivity() {
                     else -> result.notImplemented()
                 }
             }
+    }
+
+    private fun notificationsEnabled(): Boolean = if (Build.VERSION.SDK_INT >= 24) {
+        getSystemService(NotificationManager::class.java).areNotificationsEnabled()
+    } else true
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == 811) {
+            val result = notificationRequest; notificationRequest = null
+            result?.success(notificationsEnabled())
+        }
     }
 
     @Deprecated("Uses the platform document picker result")

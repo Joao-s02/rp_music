@@ -1,7 +1,7 @@
 name: rp_music
 description: Reproductor local extensible para Android y Windows.
 publish_to: none
-version: 0.2.1+3
+version: 0.2.2+4
 environment:
   sdk: ^3.13.5
 dependencies:

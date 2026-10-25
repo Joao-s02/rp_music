@@ -1,11 +1,13 @@
 ---
 tipo: estado
 estado: primer-incremento-compilado
-actualizado: 2026-10-24
+actualizado: 2026-10-25
 ---
 # Estado del repositorio
 
 ## Estado actual
+
+Actualización local 2026-10-25: aplicación `0.2.2+4` con notificaciones, volumen y bandeja, a partir del nuevo informe real. Ver [[14 Pruebas 0.2.1 y correcciones 0.2.2]]. Esta corrección todavía no está publicada; el estado de GitHub que sigue corresponde a 0.2.1.
 
 Actualización posterior: aplicación `0.2.1+3`, publicada como release preliminar `v0.2.1-alpha.1` en GitHub tras autorización. Etiqueta sobre `4b094e164123a5615285e5637043a4bcf24811c5`; seis adjuntos y sus hashes verificados. Ver [[13 Pruebas reales y correcciones 0.2.1]] para implementación, evidencia y pendientes. Las afirmaciones de la primera base que siguen describen el antecedente 0.2.0.
 

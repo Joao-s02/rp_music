@@ -1,7 +1,7 @@
 ---
 tipo: indice
 estado: vigente
-actualizado: 2026-10-24
+actualizado: 2026-10-25
 ---
 # RP Music — red de conocimiento
 
@@ -22,6 +22,7 @@ Bóveda de Obsidian para conservar el contexto del reproductor y permitir que cu
 11. [[11 Reconstruccion - primera base]] — implementación inicial y sus límites.
 12. [[12 Release 0.2.0-alpha.1]] — distribución e instrucciones de instalación.
 13. [[13 Pruebas reales y correcciones 0.2.1]] — informe de dispositivos y correcciones posteriores.
+14. [[14 Pruebas 0.2.1 y correcciones 0.2.2]] — notificaciones, volumen, bandeja e instalación Tecno.
 
 ## Cómo abrirla
 

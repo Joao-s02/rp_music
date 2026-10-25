@@ -3,6 +3,8 @@
 
 #include <flutter/dart_project.h>
 #include <flutter/flutter_view_controller.h>
+#include <flutter/method_channel.h>
+#include <flutter/encodable_value.h>
 
 #include <memory>
 
@@ -28,6 +30,15 @@ class FlutterWindow : public Win32Window {
 
   // The Flutter instance hosted by this window.
   std::unique_ptr<flutter::FlutterViewController> flutter_controller_;
+  std::unique_ptr<flutter::MethodChannel<flutter::EncodableValue>> desktop_channel_;
+  bool desktop_ready_ = false;
+  bool allow_close_ = false;
+  bool tray_visible_ = false;
+  HWND tray_window_ = nullptr;
+  bool AddTrayIcon();
+  void RemoveTrayIcon();
+  void ShowFromTray();
+  void SendDesktopEvent(const char* event);
 };
 
 #endif  // RUNNER_FLUTTER_WINDOW_H_

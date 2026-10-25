@@ -10,8 +10,33 @@ import 'package:rp_music/data/local_store.dart';
 import 'package:rp_music/data/music_files.dart';
 import 'package:rp_music/domain/track.dart';
 import 'package:rp_music/playback/music_handler.dart';
+import 'package:rp_music/platform/desktop_lifecycle.dart';
+import 'package:audio_service/audio_service.dart';
+
+class FakeDesktopWindow implements DesktopWindow {
+  FakeDesktopWindow(this.calls, {this.tray = true});
+  final List<String> calls;
+  final bool tray;
+  @override
+  Future<bool> initialize(Future<void> Function(String) handler) async => tray;
+  @override
+  Future<void> hide() async {
+    calls.add('hide');
+  }
+
+  @override
+  Future<void> finishClose() async {
+    calls.add('finishClose');
+  }
+}
 
 class FakePlayer implements AudioPlayer {
+  FakePlayer({this.liveStates = false});
+  final bool liveStates;
+  final states = StreamController<PlayerState>.broadcast();
+  final calls = <String>[];
+  double currentVolume = 1;
+  bool isPlaying = false;
   final loaded = <Uri>[];
   final played = <Uri>[];
   Completer<void>? gate;
@@ -19,7 +44,24 @@ class FakePlayer implements AudioPlayer {
   Uri? current;
   Duration currentPosition = Duration.zero;
   @override
-  bool get playing => false;
+  bool get playing => isPlaying;
+  @override
+  double get volume => currentVolume;
+  @override
+  Stream<double> get volumeStream => Stream.value(currentVolume);
+  @override
+  Future<void> setVolume(double value) async {
+    calls.add('volume:$value');
+    currentVolume = value;
+  }
+
+  @override
+  ProcessingState get processingState =>
+      current == null ? ProcessingState.idle : ProcessingState.ready;
+  @override
+  Duration get bufferedPosition => Duration.zero;
+  @override
+  double get speed => 1;
   @override
   Stream<PlaybackEvent> get playbackEventStream => const Stream.empty();
   @override
@@ -30,8 +72,9 @@ class FakePlayer implements AudioPlayer {
   Stream<Duration?> get durationStream =>
       Stream.value(const Duration(seconds: 30));
   @override
-  Stream<PlayerState> get playerStateStream =>
-      Stream.value(PlayerState(false, ProcessingState.idle));
+  Stream<PlayerState> get playerStateStream => liveStates
+      ? states.stream
+      : Stream.value(PlayerState(playing, processingState));
   @override
   Duration get position => currentPosition;
   @override
@@ -52,14 +95,29 @@ class FakePlayer implements AudioPlayer {
   @override
   Future<void> play() async {
     played.add(current!);
+    isPlaying = true;
+    states.add(PlayerState(true, processingState));
   }
 
   @override
-  Future<void> pause() async {}
+  Future<void> pause() async {
+    calls.add('pause');
+    isPlaying = false;
+    states.add(PlayerState(false, processingState));
+  }
+
   @override
-  Future<void> stop() async {}
+  Future<void> stop() async {
+    calls.add('stop');
+    isPlaying = false;
+  }
+
   @override
-  Future<void> dispose() async {}
+  Future<void> dispose() async {
+    calls.add('dispose');
+    unawaited(states.close());
+  }
+
   @override
   Future<void> seek(Duration? position, {int? index}) async {
     currentPosition = position ?? Duration.zero;
@@ -75,6 +133,90 @@ void main() {
     Track(id: 'C:/music/dos.mp3', title: 'Dos', folder: '.'),
     Track(id: 'C:/music/tres.mp3', title: 'Tres', folder: '.'),
   ];
+  test(
+    'el servicio multimedia recibe reproducir y pausar sin eventos de carga',
+    () async {
+      final player = FakePlayer(liveStates: true);
+      final handler = MusicHandler(player: player);
+      await handler.select(tracks, 0);
+      await Future<void>.delayed(Duration.zero);
+      expect(handler.playbackState.value.playing, isTrue);
+      expect(
+        handler.playbackState.value.controls,
+        contains(MediaControl.pause),
+      );
+      await handler.pause();
+      await Future<void>.delayed(Duration.zero);
+      expect(handler.playbackState.value.playing, isFalse);
+      expect(handler.playbackState.value.controls, contains(MediaControl.play));
+      await handler.close();
+    },
+  );
+  test(
+    'cerrar a bandeja mantiene audio y salir silencia antes de destruir',
+    () async {
+      final player = FakePlayer();
+      final audio = MusicHandler(player: player);
+      final library = LibraryController(
+        LocalStore(Directory('unused-test-store')),
+        MusicFiles(),
+      );
+      final desktop = DesktopLifecycle(
+        FakeDesktopWindow(player.calls),
+        library,
+        audio,
+      );
+      await desktop.initialize();
+      await audio.select(tracks, 0);
+      player.calls.clear();
+      await desktop.handle('closeRequested');
+      expect(player.playing, isTrue);
+      expect(player.calls, ['hide']);
+      await desktop.handle('quitRequested');
+      await audio.close();
+      expect(player.calls, [
+        'hide',
+        'volume:0.0',
+        'pause',
+        'stop',
+        'dispose',
+        'finishClose',
+      ]);
+      library.dispose();
+    },
+  );
+  test(
+    'sin icono de bandeja el cierre sale y no oculta una app inaccesible',
+    () async {
+      final player = FakePlayer();
+      final audio = MusicHandler(player: player);
+      final library = LibraryController(
+        LocalStore(Directory('unused-test-store')),
+        MusicFiles(),
+      );
+      final desktop = DesktopLifecycle(
+        FakeDesktopWindow(player.calls, tray: false),
+        library,
+        audio,
+      );
+      await desktop.initialize();
+      await desktop.handle('closeRequested');
+      expect(player.calls, isNot(contains('hide')));
+      expect(player.calls.last, 'finishClose');
+      library.dispose();
+    },
+  );
+  test('volumen se limita al intervalo permitido', () async {
+    final player = FakePlayer();
+    final audio = MusicHandler(player: player);
+    await audio.setAppVolume(0.35);
+    expect(player.volume, 0.35);
+    await audio.setAppVolume(-1);
+    expect(player.volume, 0);
+    await audio.setAppVolume(4);
+    expect(player.volume, 1);
+    await audio.close();
+  });
   test(
     'restaura pista, cola disponible y posición sin comenzar a reproducir',
     () async {
