@@ -1,6 +1,8 @@
 # RP Music
 
-Base reconstruida en Flutter para Android y Windows. Aplicación local, sin cuenta. La versión preliminar 0.2.2 añade notificaciones, volumen y bandeja; todavía no implementa toda la visión del proyecto. Consulta [qué volver a probar](docs/PRUEBAS-0.2.2.md).
+Reproductor de música local construido en Flutter para Android y Windows. Escucha tus archivos sin conexión y sin cuentas, con biblioteca, favoritos y listas de reproducción.
+
+**Versión publicada: [0.2.4-alpha.1](https://github.com/Joao-s02/rp_music/releases/tag/v0.2.4-alpha.1)** (aplicación `0.2.4+6`). Sigue en desarrollo: las funciones disponibles y los pendientes se detallan a continuación. Consulta la [guía de pruebas de 0.2.4](docs/PRUEBAS-0.2.4.md).
 
 ## Tráiler
 
@@ -12,19 +14,34 @@ Base reconstruida en Flutter para Android y Windows. Aplicación local, sin cuen
 
 Los binarios se distribuyen en [Releases de GitHub](https://github.com/Joao-s02/rp_music/releases). Consulta la [guía de uso](docs/USO.md) para instalar el APK, abrir el paquete portable Windows e importar el ejemplo de personalización.
 
+- **Android:** APK ARM64 o universal. Para actualizar una instalación anterior, instala encima sin desinstalar para conservar los datos. La firma sigue siendo de desarrollo.
+- **Windows x64:** extrae el ZIP completo y abre `rp_music.exe` conservando sus DLL y la carpeta de datos.
+- **Primera instalación de 0.2.4:** descarga manualmente desde Releases; 0.2.3 todavía no incluía el actualizador.
+
+## Novedades de 0.2.4
+
+- Búsqueda móvil desde la lupa, con foco estable al abrir el teclado, y nueva presentación de biblioteca vacía.
+- Correcciones del servicio de audio Android durante pausas y cambios de pista; Detener libera el servicio y la notificación. El retesteo prolongado en teléfonos físicos sigue pendiente.
+- Diagnóstico multimedia con copia de texto, exportación e importación de logs locales.
+- Consulta opcional de actualizaciones, automática como máximo una vez al día o manual desde Ajustes. Puede desactivarse y permite elegir si incluir versiones de prueba.
+- En Android, descarga con progreso/cancelación y validación de integridad, paquete, versión y firma antes de abrir el instalador del sistema. La instalación requiere tu confirmación. En Windows se ofrece el enlace de descarga.
+
+La interfaz renovada de 0.2.3, con la identidad nocturna cian/violeta, fuentes locales y adaptación a móvil/escritorio, también está incluida. Consultar actualizaciones requiere internet; reproducir tu biblioteca local sigue funcionando sin conexión.
+
 ## Disponible en esta base
 
 - Una carpeta raíz con subcarpetas; escaneo manual progresivo y caché de metadatos fuera de la interfaz.
 - Canciones, álbumes, artistas, carpetas y búsqueda.
 - Reproducción, pausa, posición, anterior/siguiente, aleatorio y repetición de una canción.
-- Cola de la selección actual, favoritos y listas persistentes con eliminación de entradas y contador de disponibles/ausentes.
+- Cola de la selección actual, favoritos y listas persistentes con eliminación de entradas o listas completas y contador de disponibles/ausentes. Eliminar una lista no borra los archivos musicales.
 - Restauración de canción, cola y posición sin iniciar reproducción automáticamente.
 - Volumen de la aplicación y silenciar, con nivel guardado.
 - Windows: cerrar a bandeja o salir completamente según preferencia; menú para abrir, reproducir/pausar y salir.
 - Android: permiso de notificaciones en el primer ingreso, estado/ajustes y propagación de cambios reproducir/pausar al servicio multimedia.
 - Metadatos para organizar la biblioteca y carátula de la canción activa.
 - Tema claro/oscuro y navegación adaptable en español.
-- Integración de servicio multimedia Android preparada mediante audio_service.
+- Servicio multimedia Android con controles de notificación y reproducción en segundo plano, sujeto a permisos y restricciones del dispositivo; consulta los límites de validación más abajo.
+- Diagnóstico multimedia y actualizaciones opcionales desde Ajustes.
 - Importación de extensiones declarativas JSON, selección de presentación y retorno a la base.
 
 El reconocimiento de archivos MP3, FLAC, M4A, MP4, WAV y OPUS no garantiza que todo códec sea reproducible en todos los dispositivos. MP4 se trata como fuente de audio.
@@ -70,10 +87,16 @@ Windows requiere Visual Studio con herramientas C++ y soporte para enlaces de co
 
 Las pruebas verifican biblioteca, guardados, progreso/caché, cambios de raíz, listas, extensiones, restauración, carreras al cambiar pistas, teclado y navegación móvil/escritorio. La prueba nativa Windows con WAV silenciosos generados se ejecuta con `flutter test integration_test/windows_playback_test.dart -d windows`. Ejecutarla antes de compilar paquetes de distribución, sin otras compilaciones nativas en paralelo. No comprueba todos los formatos ni reproduce necesariamente el crash de la PC del usuario.
 
+Para 0.2.4 se aprobaron 42 pruebas automatizadas y el análisis estático. En emulador Android API 37 se verificaron cambios automáticos en segundo plano, pausa/reanudación y liberación al detener; también se probaron el foco del buscador y las validaciones nativas del actualizador. El alcance y las pruebas físicas pendientes están en la [guía de 0.2.4](docs/PRUEBAS-0.2.4.md).
+
 ## Pendiente
 
-Letras, edición de etiquetas, cola editable, fundidos, gapless, controles multimedia del sistema Windows, carátulas en la biblioteca, mediciones de rendimiento y recursos por extensión, runtime programable, permisos de dos niveles, catálogo e integraciones con servicios. Falta confirmar notificaciones en teléfonos reales y diagnosticar el rechazo de APK en Tecno Android 16. Web no está soportada por este incremento.
+Letras, edición de etiquetas, cola editable, fundidos, gapless, controles multimedia del sistema Windows, carátulas en la biblioteca, mediciones de rendimiento y recursos por extensión, runtime programable, permisos de dos niveles, catálogo e integraciones con servicios. Web no está soportada por este incremento.
+
+Falta repetir reproducción prolongada con pantalla apagada y controles en Galaxy A34 Android 16/Poco X6, completar una actualización entre dos releases públicas desde el instalador y comprobar los datos conservados. Siguen pendientes el rechazo de instalación en Tecno Android 16 y la confirmación del comportamiento de cierre en Windows por el usuario. Las pruebas en emulador no sustituyen estas verificaciones.
 
 ## Contexto para colaborar
 
 Leer `AGENTS.md` y abrir `boveda` en Obsidian. La bóveda registra requisitos, decisiones técnicas provisionales, verificaciones y pendientes. El documento `arquitectura-reproductor-flutter.md` es histórico. La distribución se documenta en la nota de release de la bóveda.
+
+En cada actualización del proyecto se debe revisar y actualizar este README: versión, novedades, instalación, funciones disponibles, comprobaciones y pendientes. Debe distinguir lo implementado de lo propuesto y mantenerse alineado con la bóveda. Esto no autoriza por sí solo publicar o enviar cambios a GitHub.
