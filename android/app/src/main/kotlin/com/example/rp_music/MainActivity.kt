@@ -24,6 +24,18 @@ class MainActivity : AudioServiceActivity() {
         MethodChannel(engine.dartExecutor.binaryMessenger, "rp_music/system").setMethodCallHandler { call, result ->
             when (call.method) {
                 "notificationsEnabled" -> result.success(notificationsEnabled())
+                "playbackDiagnostics" -> {
+                    val manager = getSystemService(NotificationManager::class.java)
+                    val notifications = manager.activeNotifications.filter { it.notification.category == "transport" }
+                    val channel = if (Build.VERSION.SDK_INT >= 26) manager.getNotificationChannel("rp_music.playback") else null
+                    result.success(mapOf(
+                        "notificationsEnabled" to notificationsEnabled(),
+                        "mediaNotifications" to notifications.size,
+                        "channelImportance" to channel?.importance,
+                        "hasMediaSession" to notifications.any { it.notification.extras.containsKey("android.mediaSession") },
+                        "ongoing" to notifications.any { (it.notification.flags and android.app.Notification.FLAG_ONGOING_EVENT) != 0 }
+                    ))
+                }
                 "notificationSettings" -> {
                     val intent = if (Build.VERSION.SDK_INT >= 26) {
                         Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).putExtra(Settings.EXTRA_APP_PACKAGE, packageName)

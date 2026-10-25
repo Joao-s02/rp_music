@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="es"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@600;700;800&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Plus+Jakarta+Sans:wght@100..900&display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"on-secondary":"#3c0091","primary-fixed-dim":"#28ddcf","on-primary-fixed":"#00201d","outline-variant":"#3b4a47","surface-container-highest":"#32353d","on-background":"#e1e2ec","secondary":"#d0bcff","primary-fixed":"#56faeb","on-tertiary-fixed":"#2d1600","on-tertiary-fixed-variant":"#6a3b00","secondary-fixed":"#e9ddff","tertiary-container":"#ffa94f","outline":"#859491","surface-variant":"#32353d","on-primary-container":"#00554f","on-error-container":"#ffdad6","on-secondary-container":"#c4abff","surface-dim":"#10131a","inverse-surface":"#e1e2ec","tertiary":"#ffcfa3","tertiary-fixed":"#ffdcbf","surface-container-lowest":"#0b0e15","on-tertiary":"#4a2800","on-tertiary-container":"#713f00","secondary-container":"#571bc1","secondary-fixed-dim":"#d0bcff","surface-container-high":"#272a32","surface-bright":"#363941","on-error":"#690005","on-secondary-fixed-variant":"#5516be","on-secondary-fixed":"#23005c","surface-container-low":"#191b23","surface":"#10131a","primary":"#47efe0","primary-container":"#00d2c4","on-primary-fixed-variant":"#00504a","surface-container":"#1d1f27","background":"#10131a","surface-tint":"#28ddcf","error":"#ffb4ab","inverse-on-surface":"#2d3038","inverse-primary":"#006a63","on-primary":"#003733","on-surface-variant":"#bacac7","error-container":"#93000a","on-surface":"#e1e2ec","tertiary-fixed-dim":"#ffb872"},borderRadius:{DEFAULT:"0.25rem",lg:"0.5rem",xl:"0.75rem",full:"9999px"},spacing:{"gutter-desktop":"1.5rem",margin:"1rem","margin-desktop":"2rem","space-lg":"1.5rem","space-xl":"2rem","space-sm":"0.5rem","space-md":"1rem",gutter:"1rem","space-xs":"0.25rem"},fontFamily:{"headline-md":["Plus Jakarta Sans"],"label-md":["Inter"],"headline-lg":["Plus Jakarta Sans"],"body-md":["Inter"],"display-lg":["Plus Jakarta Sans"],"headline-lg-mobile":["Plus Jakarta Sans"],"body-lg":["Inter"],"body-sm":["Inter"],"code-xs":["Inter"],"label-sm":["Inter"]},fontSize:{"headline-md":["1.5rem",{lineHeight:"2rem",fontWeight:"600"}],"label-md":["0.875rem",{lineHeight:"1.25rem",fontWeight:"600"}],"headline-lg":["2.25rem",{lineHeight:"2.75rem",fontWeight:"700"}],"body-md":["1rem",{lineHeight:"1.5rem",fontWeight:"400"}],"display-lg":["3.5rem",{lineHeight:"4rem",fontWeight:"800"}],"headline-lg-mobile":["1.75rem",{lineHeight:"2.25rem",fontWeight:"700"}],"body-lg":["1.125rem",{lineHeight:"1.75rem",fontWeight:"400"}],"body-sm":["0.875rem",{lineHeight:"1.25rem",fontWeight:"400"}],"code-xs":["0.6875rem",{lineHeight:"0.875rem",fontWeight:"500"}],"label-sm":["0.75rem",{lineHeight:"1rem",fontWeight:"500"}]}}}};</script></head><body class="bg-background font-body-md text-on-surface select-none antialiased min-h-screen"><header class="fixed top-0 left-0 right-0 h-16 z-50 bg-surface-container-lowest/80 backdrop-blur-xl flex items-center justify-between px-space-md shadow-[0_1px_8px_rgba(0,0,0,0.35)]"><div class="flex items-center gap-space-md w-72"><div class="w-8 h-8 rounded-lg bg-surface-container-high flex items-center justify-center text-primary shadow-[0_0_12px_rgba(0,210,196,0.2)]"><span class="material-symbols-outlined text-[20px]">graphic_eq</span></div><div class="flex flex-col"><span class="font-headline-md text-body-md tracking-tight text-on-surface font-semibold">RP Music</span><span class="font-code-xs text-code-xs text-on-surface-variant flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-primary inline-block"></span>3,420 pistas locales</span></div></div><div class="flex-1 max-w-xl mx-space-lg"><div class="relative flex items-center"><span class="material-symbols-outlined absolute left-3 text-on-surface-variant text-[18px]">search</span><input class="w-full h-9 pl-9 pr-20 bg-surface-container-low rounded-lg font-body-sm text-body-sm text-on-surface placeholder:text-outline focus:outline-none focus:ring-1 focus:ring-primary/40" placeholder="Buscar pistas, álbumes, artistas..." readonly="" type="text"/><div class="absolute right-2 flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-surface-container-highest text-on-surface-variant font-code-xs text-code-xs">Ctrl + K</div></div></div><div class="flex items-center gap-space-sm"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div><div class="flex items-center ml-space-sm bg-surface-container-low/60 rounded-lg overflow-hidden"><button aria-label="Minimize window" class="w-9 h-8 flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" type="button"><span class="material-symbols-outlined text-[16px]">minimize</span></button><button aria-label="Maximize window" class="w-9 h-8 flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" type="button"><span class="material-symbols-outlined text-[16px]">check_box_outline_blank</span></button><button aria-label="Close window" class="w-9 h-8 flex items-center justify-center text-on-surface-variant hover:bg-error hover:text-on-error transition-colors" type="button"><span class="material-symbols-outlined text-[16px]">close</span></button></div></div></header><aside class="fixed left-0 top-16 bottom-24 w-64 bg-surface-container-lowest/60 backdrop-blur-xl z-40 flex flex-col justify-between py-space-md px-space-sm overflow-y-auto"><div class="flex flex-col gap-space-lg"><div class="flex flex-col gap-space-xs"><span class="px-space-sm font-label-sm text-label-sm text-outline uppercase tracking-wider">Biblioteca</span><nav class="flex flex-col gap-0.5" data-active-classes="bg-surface-container-high text-primary font-semibold"><a class="flex items-center gap-3 px-space-sm py-2 rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="biblioteca" href="#"><span class="material-symbols-outlined text-[20px]">queue_music</span><span>Biblioteca</span></a><a class="flex items-center gap-3 px-space-sm py-2 rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="albumes" href="#"><span class="material-symbols-outlined text-[20px]">album</span><span>Álbumes</span></a><a class="flex items-center gap-3 px-space-sm py-2 rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="artistas" href="#"><span class="material-symbols-outlined text-[20px]">mic</span><span>Artistas</span></a><a class="flex items-center gap-3 px-space-sm py-2 rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="carpetas-locales" href="#"><span class="material-symbols-outlined text-[20px]">folder</span><span>Carpetas locales</span></a></nav></div><div class="flex flex-col gap-space-xs"><span class="px-space-sm font-label-sm text-label-sm text-outline uppercase tracking-wider">Colecciones & Listas</span><nav class="flex flex-col gap-0.5" data-active-classes="bg-surface-container-high text-primary font-semibold"><a class="flex items-center gap-3 px-space-sm py-2 rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="favoritos" href="#"><span class="material-symbols-outlined text-[20px] text-error">favorite</span><span>Favoritos</span></a><a class="flex items-center gap-3 px-space-sm py-2 rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="mas-reproducidas" href="#"><span class="material-symbols-outlined text-[20px]">local_fire_department</span><span>Más reproducidas</span></a><a class="flex items-center gap-3 px-space-sm py-2 rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="nuevas-incorporaciones" href="#"><span class="material-symbols-outlined text-[20px]">auto_awesome</span><span>Nuevas incorporaciones</span></a></nav></div></div><div class="flex flex-col gap-space-xs pt-space-md"><span class="px-space-sm font-label-sm text-label-sm text-outline uppercase tracking-wider">Sistema</span><nav class="flex flex-col gap-0.5" data-active-classes="bg-surface-container-high text-primary font-semibold"><a class="flex items-center justify-between px-space-sm py-2 rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="extensiones-de-la-comunidad" href="#"><div class="flex items-center gap-3"><span class="material-symbols-outlined text-[20px]">extension</span><span>Extensiones</span></div><span class="px-1.5 py-0.2 bg-secondary-container text-on-secondary-container rounded font-code-xs text-code-xs font-semibold">v1.0</span></a><a class="flex items-center gap-3 px-space-sm py-2 rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="ajustes-de-audio-y-sistema" href="#"><span class="material-symbols-outlined text-[20px]">tune</span><span>Ajustes de Audio</span></a></nav></div></aside><div class="pl-64 pb-24"><main class="relative w-full pt-16 bg-surface min-h-[calc(100vh-6rem)]"><div class="flex flex-col w-full">
+<div class="flex flex-col lg:flex-row w-full gap-gutter-desktop p-margin-desktop min-h-[calc(100vh-10rem)]">
+<!-- MAIN ALBUM AREA (~70% width) -->
+<div class="flex-1 flex flex-col min-w-0">
+<!-- HERO ALBUM HEADER -->
+<section class="relative w-full rounded-xl bg-surface-container-low p-space-lg lg:p-space-xl overflow-hidden shadow-xl mb-space-lg">
+<!-- Ambient cyan backdrop glow -->
+<div class="absolute -top-24 -left-20 w-96 h-96 rounded-full bg-primary/10 blur-3xl pointer-events-none"></div>
+<div class="absolute -bottom-24 right-1/4 w-80 h-80 rounded-full bg-secondary-container/20 blur-3xl pointer-events-none"></div>
+<div class="relative z-10 flex flex-col md:flex-row items-start md:items-end gap-space-lg lg:gap-space-xl">
+<!-- Album Artwork with layered shadow -->
+<div class="relative group flex-shrink-0">
+<div class="w-48 h-48 sm:w-56 sm:h-56 lg:w-60 lg:h-60 rounded-xl overflow-hidden shadow-[0_16px_36px_rgba(0,0,0,0.7)] bg-surface-container-highest">
+<img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" data-alt="Futuristic cybernetic metropolis album cover named Neon Horizons with electric cyan and deep indigo neon lights reflected on dark wet glass, ultra-crisp audio album aesthetic, obsidian nocturnal contrast" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBG8N_UUe7WmjyuhyQx2JYcxWWp_hNKDtcBMvqqN_naLgEhrTvFOidbnwSsvrPQjgY2ygdPMsMQIVhiciHOtxunADsD_BYDZhroihTc_xeA0hVQVnBTuv9BM6cswPFfoStKdFCkehd_cKkLzdkCL0KLZblSe1jCw9tUKjK8TopOwNfEb0-qHJTS2HlXfz8c68fLoaNp1trwJLPTD-8Wiy8TRvN_hvAaFBxKYGjf4QHOgi2NOd9EsW-pOg"/>
+</div>
+<!-- Quick hover play trigger badge -->
+<button aria-label="Reproducir álbum" class="absolute bottom-3 right-3 w-12 h-12 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center shadow-lg opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0" type="button">
+<span class="material-symbols-outlined text-[28px]" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</button>
+</div>
+<!-- Album Meta Information -->
+<div class="flex flex-col flex-1 min-w-0">
+<div class="flex flex-wrap items-center gap-space-xs mb-space-xs">
+<span class="px-2.5 py-0.5 rounded-full bg-surface-container-highest font-code-xs text-code-xs font-semibold text-primary uppercase tracking-wider">
+                Álbum Local
+              </span>
+<span class="px-2 py-0.5 rounded-full bg-surface-container-highest font-code-xs text-code-xs text-secondary font-medium">
+                FLAC 24-bit / 96kHz
+              </span>
+<span class="px-2 py-0.5 rounded-full bg-surface-container-highest font-code-xs text-code-xs text-on-surface-variant font-medium">
+                Bitrate: 1,411 kbps
+              </span>
+</div>
+<h1 class="font-display-lg text-headline-lg lg:text-display-lg text-on-surface font-extrabold tracking-tight leading-none truncate">
+              Neon Horizons
+            </h1>
+<div class="flex items-center gap-2 mt-space-xs">
+<span class="font-headline-md text-headline-md text-primary font-semibold hover:underline cursor-pointer">
+                Solar Drift
+              </span>
+<span class="w-1.5 h-1.5 rounded-full bg-outline"></span>
+<span class="font-body-md text-body-md text-on-surface-variant">2024</span>
+<span class="w-1.5 h-1.5 rounded-full bg-outline"></span>
+<span class="font-body-md text-body-md text-on-surface-variant">12 canciones, 48m 22s</span>
+</div>
+<!-- Action Controls Group -->
+<div class="flex flex-wrap items-center gap-space-sm mt-space-md pt-space-xs">
+<button class="flex items-center gap-2 px-space-md py-2.5 rounded-full bg-primary-container text-on-primary-container font-label-md text-label-md shadow-[0_0_18px_rgba(0,210,196,0.35)] hover:brightness-110 active:scale-95 transition-all" type="button">
+<span class="material-symbols-outlined text-[22px]" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+<span>Reproducir todo</span>
+</button>
+<button class="flex items-center gap-2 px-space-md py-2.5 rounded-full bg-surface-container-high text-on-surface font-label-md text-label-md hover:bg-surface-bright active:scale-95 transition-all" type="button">
+<span class="material-symbols-outlined text-[20px]">shuffle</span>
+<span>Modo Aleatorio</span>
+</button>
+<button class="flex items-center gap-2 px-space-md py-2.5 rounded-full bg-surface-container-high text-on-surface-variant hover:text-on-surface hover:bg-surface-bright transition-all" title="Añadir a lista de reproducción" type="button">
+<span class="material-symbols-outlined text-[20px]">playlist_add</span>
+<span class="hidden sm:inline font-label-md text-label-md">Añadir a lista</span>
+</button>
+<button aria-label="Más opciones" class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-bright transition-all" type="button">
+<span class="material-symbols-outlined text-[20px]">more_horiz</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- TRACKLIST TABLE (Windows Precision Data Grid) -->
+<div class="flex flex-col w-full rounded-xl bg-surface-container-low overflow-hidden shadow-md">
+<!-- Table Control Toolbar -->
+<div class="flex items-center justify-between px-space-md py-3 bg-surface-container-high/40 text-on-surface-variant font-label-sm text-label-sm">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-[18px]">graphic_eq</span>
+<span class="font-semibold uppercase tracking-wider text-outline">Pistas de audio en disco</span>
+</div>
+<div class="flex items-center gap-space-md">
+<button class="flex items-center gap-1 hover:text-on-surface transition-colors">
+<span class="material-symbols-outlined text-[16px]">filter_list</span>
+<span>Filtrar</span>
+</button>
+<button class="flex items-center gap-1 hover:text-on-surface transition-colors">
+<span class="material-symbols-outlined text-[16px]">swap_vert</span>
+<span>Orden original</span>
+</button>
+</div>
+</div>
+<!-- Table Header -->
+<div class="grid grid-cols-[3rem_1fr_12rem_5rem_3.5rem_3.5rem] items-center px-space-md py-2.5 bg-surface-container-low font-code-xs text-code-xs uppercase tracking-wider text-outline select-none">
+<div class="text-center font-bold">#</div>
+<div class="font-bold">Título & Artista</div>
+<div class="hidden sm:block font-bold">Formato & Muestreo</div>
+<div class="text-right font-bold pr-2">Duración</div>
+<div class="text-center font-bold">Fav</div>
+<div class="text-center font-bold">Menú</div>
+</div>
+<!-- Track Rows Container -->
+<div class="flex flex-col divide-y divide-surface-container/30">
+<!-- Track 01 -->
+<div class="group grid grid-cols-[3rem_1fr_12rem_5rem_3.5rem_3.5rem] items-center px-space-md py-2.5 hover:bg-surface-container-high/60 transition-colors cursor-pointer">
+<div class="text-center font-code-xs text-code-xs text-outline group-hover:hidden">01</div>
+<div class="hidden group-hover:flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-[20px]" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</div>
+<div class="flex flex-col min-w-0 pr-space-sm">
+<span class="font-label-md text-label-md text-on-surface truncate group-hover:text-primary transition-colors">Prism Light</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant truncate">Solar Drift</span>
+</div>
+<div class="hidden sm:flex items-center gap-1.5">
+<span class="px-1.5 py-0.5 rounded bg-surface-container-highest font-code-xs text-code-xs text-on-surface-variant">FLAC</span>
+<span class="font-code-xs text-code-xs text-outline">24-bit / 48kHz</span>
+</div>
+<div class="text-right font-code-xs text-code-xs text-on-surface-variant pr-2">3:42</div>
+<div class="flex items-center justify-center">
+<button aria-label="Añadir a favoritos" class="text-outline hover:text-error transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">favorite_border</span>
+</button>
+</div>
+<div class="flex items-center justify-center">
+<button aria-label="Opciones de pista" class="text-outline hover:text-on-surface transition-colors opacity-0 group-hover:opacity-100" type="button">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</div>
+</div>
+<!-- Track 02 (ACTIVE / NOW PLAYING) -->
+<div class="group grid grid-cols-[3rem_1fr_12rem_5rem_3.5rem_3.5rem] items-center px-space-md py-2.5 bg-primary/10 hover:bg-primary/15 transition-colors cursor-pointer">
+<!-- Animated Equalizer Graphic -->
+<div class="flex items-center justify-center">
+<div class="flex items-end gap-0.5 h-4 w-4">
+<span class="w-1 bg-primary rounded-full animate-[pulse_0.8s_ease-in-out_infinite] h-3.5"></span>
+<span class="w-1 bg-primary rounded-full animate-[pulse_0.6s_ease-in-out_infinite] h-2"></span>
+<span class="w-1 bg-primary rounded-full animate-[pulse_1s_ease-in-out_infinite] h-4"></span>
+</div>
+</div>
+<div class="flex flex-col min-w-0 pr-space-sm">
+<div class="flex items-center gap-2">
+<span class="font-label-md text-label-md text-primary font-bold truncate">Neon Horizons</span>
+<span class="px-1.5 py-0.2 bg-primary/20 text-primary font-code-xs text-code-xs rounded uppercase font-semibold">Sonando</span>
+</div>
+<span class="font-body-sm text-body-sm text-primary/80 truncate">Solar Drift</span>
+</div>
+<div class="hidden sm:flex items-center gap-1.5">
+<span class="px-1.5 py-0.5 rounded bg-primary/20 font-code-xs text-code-xs text-primary font-semibold">FLAC</span>
+<span class="font-code-xs text-code-xs text-primary/80">24-bit / 96kHz</span>
+</div>
+<div class="text-right font-code-xs text-code-xs text-primary font-semibold pr-2">4:18</div>
+<div class="flex items-center justify-center">
+<button aria-label="Favorito activo" class="text-error transition-transform hover:scale-110" type="button">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">favorite</span>
+</button>
+</div>
+<div class="flex items-center justify-center">
+<button aria-label="Opciones de pista" class="text-primary hover:text-on-surface transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</div>
+</div>
+<!-- Track 03 -->
+<div class="group grid grid-cols-[3rem_1fr_12rem_5rem_3.5rem_3.5rem] items-center px-space-md py-2.5 hover:bg-surface-container-high/60 transition-colors cursor-pointer">
+<div class="text-center font-code-xs text-code-xs text-outline group-hover:hidden">03</div>
+<div class="hidden group-hover:flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-[20px]" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</div>
+<div class="flex flex-col min-w-0 pr-space-sm">
+<span class="font-label-md text-label-md text-on-surface truncate group-hover:text-primary transition-colors">Midnight Pulse</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant truncate">Solar Drift</span>
+</div>
+<div class="hidden sm:flex items-center gap-1.5">
+<span class="px-1.5 py-0.5 rounded bg-surface-container-highest font-code-xs text-code-xs text-on-surface-variant">FLAC</span>
+<span class="font-code-xs text-code-xs text-outline">24-bit / 44.1kHz</span>
+</div>
+<div class="text-right font-code-xs text-code-xs text-on-surface-variant pr-2">3:55</div>
+<div class="flex items-center justify-center">
+<button aria-label="Añadir a favoritos" class="text-outline hover:text-error transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">favorite_border</span>
+</button>
+</div>
+<div class="flex items-center justify-center">
+<button aria-label="Opciones de pista" class="text-outline hover:text-on-surface transition-colors opacity-0 group-hover:opacity-100" type="button">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</div>
+</div>
+<!-- Track 04 -->
+<div class="group grid grid-cols-[3rem_1fr_12rem_5rem_3.5rem_3.5rem] items-center px-space-md py-2.5 hover:bg-surface-container-high/60 transition-colors cursor-pointer">
+<div class="text-center font-code-xs text-code-xs text-outline group-hover:hidden">04</div>
+<div class="hidden group-hover:flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-[20px]" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</div>
+<div class="flex flex-col min-w-0 pr-space-sm">
+<span class="font-label-md text-label-md text-on-surface truncate group-hover:text-primary transition-colors">Starlight Corridor</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant truncate">Solar Drift</span>
+</div>
+<div class="hidden sm:flex items-center gap-1.5">
+<span class="px-1.5 py-0.5 rounded bg-surface-container-highest font-code-xs text-code-xs text-on-surface-variant">FLAC</span>
+<span class="font-code-xs text-code-xs text-outline">24-bit / 96kHz</span>
+</div>
+<div class="text-right font-code-xs text-code-xs text-on-surface-variant pr-2">5:02</div>
+<div class="flex items-center justify-center">
+<button aria-label="Favorito activo" class="text-error" type="button">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">favorite</span>
+</button>
+</div>
+<div class="flex items-center justify-center">
+<button aria-label="Opciones de pista" class="text-outline hover:text-on-surface transition-colors opacity-0 group-hover:opacity-100" type="button">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</div>
+</div>
+<!-- Track 05 -->
+<div class="group grid grid-cols-[3rem_1fr_12rem_5rem_3.5rem_3.5rem] items-center px-space-md py-2.5 hover:bg-surface-container-high/60 transition-colors cursor-pointer">
+<div class="text-center font-code-xs text-code-xs text-outline group-hover:hidden">05</div>
+<div class="hidden group-hover:flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-[20px]" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</div>
+<div class="flex flex-col min-w-0 pr-space-sm">
+<span class="font-label-md text-label-md text-on-surface truncate group-hover:text-primary transition-colors">Binary Sunset</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant truncate">Solar Drift</span>
+</div>
+<div class="hidden sm:flex items-center gap-1.5">
+<span class="px-1.5 py-0.5 rounded bg-surface-container-highest font-code-xs text-code-xs text-on-surface-variant">MP3</span>
+<span class="font-code-xs text-code-xs text-outline">320 kbps</span>
+</div>
+<div class="text-right font-code-xs text-code-xs text-on-surface-variant pr-2">4:11</div>
+<div class="flex items-center justify-center">
+<button aria-label="Añadir a favoritos" class="text-outline hover:text-error transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">favorite_border</span>
+</button>
+</div>
+<div class="flex items-center justify-center">
+<button aria-label="Opciones de pista" class="text-outline hover:text-on-surface transition-colors opacity-0 group-hover:opacity-100" type="button">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</div>
+</div>
+<!-- Track 06 -->
+<div class="group grid grid-cols-[3rem_1fr_12rem_5rem_3.5rem_3.5rem] items-center px-space-md py-2.5 hover:bg-surface-container-high/60 transition-colors cursor-pointer">
+<div class="text-center font-code-xs text-code-xs text-outline group-hover:hidden">06</div>
+<div class="hidden group-hover:flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-[20px]" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</div>
+<div class="flex flex-col min-w-0 pr-space-sm">
+<span class="font-label-md text-label-md text-on-surface truncate group-hover:text-primary transition-colors">Subterranean Echo</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant truncate">Solar Drift</span>
+</div>
+<div class="hidden sm:flex items-center gap-1.5">
+<span class="px-1.5 py-0.5 rounded bg-surface-container-highest font-code-xs text-code-xs text-on-surface-variant">FLAC</span>
+<span class="font-code-xs text-code-xs text-outline">24-bit</span>
+</div>
+<div class="text-right font-code-xs text-code-xs text-on-surface-variant pr-2">3:30</div>
+<div class="flex items-center justify-center">
+<button aria-label="Añadir a favoritos" class="text-outline hover:text-error transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">favorite_border</span>
+</button>
+</div>
+<div class="flex items-center justify-center">
+<button aria-label="Opciones de pista" class="text-outline hover:text-on-surface transition-colors opacity-0 group-hover:opacity-100" type="button">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</div>
+</div>
+<!-- Track 07 -->
+<div class="group grid grid-cols-[3rem_1fr_12rem_5rem_3.5rem_3.5rem] items-center px-space-md py-2.5 hover:bg-surface-container-high/60 transition-colors cursor-pointer">
+<div class="text-center font-code-xs text-code-xs text-outline group-hover:hidden">07</div>
+<div class="hidden group-hover:flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-[20px]" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</div>
+<div class="flex flex-col min-w-0 pr-space-sm">
+<span class="font-label-md text-label-md text-on-surface truncate group-hover:text-primary transition-colors">Cybernetic Horizon</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant truncate">Solar Drift</span>
+</div>
+<div class="hidden sm:flex items-center gap-1.5">
+<span class="px-1.5 py-0.5 rounded bg-surface-container-highest font-code-xs text-code-xs text-on-surface-variant">FLAC</span>
+<span class="font-code-xs text-code-xs text-outline">24-bit</span>
+</div>
+<div class="text-right font-code-xs text-code-xs text-on-surface-variant pr-2">4:45</div>
+<div class="flex items-center justify-center">
+<button aria-label="Añadir a favoritos" class="text-outline hover:text-error transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">favorite_border</span>
+</button>
+</div>
+<div class="flex items-center justify-center">
+<button aria-label="Opciones de pista" class="text-outline hover:text-on-surface transition-colors opacity-0 group-hover:opacity-100" type="button">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</div>
+</div>
+<!-- Track 08 -->
+<div class="group grid grid-cols-[3rem_1fr_12rem_5rem_3.5rem_3.5rem] items-center px-space-md py-2.5 hover:bg-surface-container-high/60 transition-colors cursor-pointer">
+<div class="text-center font-code-xs text-code-xs text-outline group-hover:hidden">08</div>
+<div class="hidden group-hover:flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-[20px]" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</div>
+<div class="flex flex-col min-w-0 pr-space-sm">
+<span class="font-label-md text-label-md text-on-surface truncate group-hover:text-primary transition-colors">Quantum Drift</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant truncate">Solar Drift</span>
+</div>
+<div class="hidden sm:flex items-center gap-1.5">
+<span class="px-1.5 py-0.5 rounded bg-surface-container-highest font-code-xs text-code-xs text-on-surface-variant">FLAC</span>
+<span class="font-code-xs text-code-xs text-outline">24-bit</span>
+</div>
+<div class="text-right font-code-xs text-code-xs text-on-surface-variant pr-2">3:58</div>
+<div class="flex items-center justify-center">
+<button aria-label="Añadir a favoritos" class="text-outline hover:text-error transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">favorite_border</span>
+</button>
+</div>
+<div class="flex items-center justify-center">
+<button aria-label="Opciones de pista" class="text-outline hover:text-on-surface transition-colors opacity-0 group-hover:opacity-100" type="button">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- RIGHT SIDEBAR PANEL (~30% width) -->
+<aside class="w-full lg:w-80 xl:w-96 flex flex-col gap-space-md flex-shrink-0">
+<!-- Panel Navigation Tabs -->
+<div class="flex items-center p-1 rounded-xl bg-surface-container-low">
+<button class="flex-1 py-1.5 px-3 rounded-lg bg-surface-container-high text-primary font-label-md text-label-md text-center transition-all shadow-sm" id="tab-queue" onclick="toggleSidebarTab('queue')">
+          Cola de pistas
+        </button>
+<button class="flex-1 py-1.5 px-3 rounded-lg text-on-surface-variant hover:text-on-surface font-label-md text-label-md text-center transition-all" id="tab-lyrics" onclick="toggleSidebarTab('lyrics')">
+          Letras (.lrc)
+        </button>
+</div>
+<!-- QUEUE VIEW CONTENT -->
+<div class="flex flex-col gap-space-md" id="queue-view">
+<!-- NOW PLAYING MINI-CARD -->
+<div class="flex flex-col rounded-xl bg-surface-container-low p-space-md shadow-md relative overflow-hidden">
+<div class="flex items-center justify-between mb-space-sm">
+<span class="font-code-xs text-code-xs uppercase tracking-wider text-primary font-bold flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-primary animate-ping inline-block"></span>
+              Reproduciendo ahora
+            </span>
+<span class="font-code-xs text-code-xs text-secondary bg-surface-container-highest px-2 py-0.5 rounded">
+              96 kHz / 24-bit
+            </span>
+</div>
+<div class="flex gap-space-sm items-center">
+<div class="w-16 h-16 rounded-lg overflow-hidden bg-surface-container-high flex-shrink-0 shadow-md">
+<img class="w-full h-full object-cover" data-alt="Close up album art graphic of glowing futuristic audio synth interface with cyan reflections" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA040K2OrMTT_Jxc_dE0eAC7A6WWFHTy57L9yDJpX8VaJ050JnNWK1-T1MWDLvYP5qF-_uE5Reccm4_3whdVhwuThYbom9yzuNimEnZ7mT08DeI0A46qpYaHP3emLVxFD-IFhvufBR1ZWegqgHkrJ7hfZDINnxMueYz_3rwT5xYreCBl7NqY1ea4fKmkqi54S7CS-FZGKzIgI9a0_mrFu5yb8cEQQoMRV2XCYbvTnL8OqygPA52kw5Rng"/>
+</div>
+<div class="flex flex-col min-w-0 flex-1">
+<span class="font-label-md text-label-md text-on-surface font-bold truncate">Neon Horizons</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant truncate">Solar Drift</span>
+<div class="flex items-center gap-1 mt-1 font-code-xs text-code-xs text-outline">
+<span>Pista 02 de 12</span>
+<span>•</span>
+<span>4:18 total</span>
+</div>
+</div>
+</div>
+<!-- Dynamic Waveform Visualizer (SVG) -->
+<div class="mt-space-md pt-space-xs flex flex-col gap-1">
+<div class="flex items-center justify-between text-code-xs font-code-xs text-outline mb-1">
+<span>Osciloscopio DAC</span>
+<span class="text-primary">Activo (USB ASIO)</span>
+</div>
+<div class="w-full h-10 bg-surface-container-lowest/80 rounded-lg p-1.5 flex items-end gap-1 overflow-hidden">
+<div class="flex-1 bg-primary/40 rounded-t h-[40%] animate-[pulse_0.4s_ease-in-out_infinite]"></div>
+<div class="flex-1 bg-primary/70 rounded-t h-[75%] animate-[pulse_0.7s_ease-in-out_infinite]"></div>
+<div class="flex-1 bg-primary rounded-t h-[95%] animate-[pulse_0.3s_ease-in-out_infinite]"></div>
+<div class="flex-1 bg-primary/90 rounded-t h-[60%] animate-[pulse_0.5s_ease-in-out_infinite]"></div>
+<div class="flex-1 bg-primary/60 rounded-t h-[80%] animate-[pulse_0.9s_ease-in-out_infinite]"></div>
+<div class="flex-1 bg-primary rounded-t h-[100%] animate-[pulse_0.4s_ease-in-out_infinite]"></div>
+<div class="flex-1 bg-primary/80 rounded-t h-[50%] animate-[pulse_0.6s_ease-in-out_infinite]"></div>
+<div class="flex-1 bg-primary/50 rounded-t h-[30%] animate-[pulse_0.8s_ease-in-out_infinite]"></div>
+<div class="flex-1 bg-primary/90 rounded-t h-[85%] animate-[pulse_0.35s_ease-in-out_infinite]"></div>
+<div class="flex-1 bg-primary/70 rounded-t h-[65%] animate-[pulse_0.55s_ease-in-out_infinite]"></div>
+<div class="flex-1 bg-primary rounded-t h-[90%] animate-[pulse_0.45s_ease-in-out_infinite]"></div>
+<div class="flex-1 bg-primary/40 rounded-t h-[40%] animate-[pulse_0.65s_ease-in-out_infinite]"></div>
+</div>
+</div>
+</div>
+<!-- UP NEXT QUEUE CONTAINER -->
+<div class="flex flex-col rounded-xl bg-surface-container-low p-space-md shadow-md flex-1">
+<div class="flex items-center justify-between mb-space-sm">
+<div class="flex items-center gap-2">
+<span class="font-label-md text-label-md text-on-surface font-semibold">Cola Activa</span>
+<span class="px-1.5 py-0.5 rounded-full bg-surface-container-highest font-code-xs text-code-xs text-on-surface-variant font-bold">14 pistas</span>
+</div>
+<button class="font-code-xs text-code-xs text-outline hover:text-error transition-colors flex items-center gap-1" title="Vaciar la cola actual" type="button">
+<span class="material-symbols-outlined text-[16px]">clear_all</span>
+<span>Limpiar cola</span>
+</button>
+</div>
+<span class="font-code-xs text-code-xs uppercase text-outline tracking-wider mb-space-xs font-semibold">
+            A continuación
+          </span>
+<!-- Draggable / Reorderable Queue List -->
+<div class="flex flex-col gap-1">
+<!-- Queue Item 1 -->
+<div class="group flex items-center justify-between p-2 rounded-lg hover:bg-surface-container-high transition-colors cursor-grab active:cursor-grabbing">
+<div class="flex items-center gap-2.5 min-w-0">
+<span class="material-symbols-outlined text-outline group-hover:text-on-surface text-[18px]">drag_indicator</span>
+<div class="w-9 h-9 rounded bg-surface-container-highest overflow-hidden flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="Square synthwave cover preview showing digital neon highway with electric cyan glow" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBb5aJHA8CqnXW523xtn-IhsaMEo4Y5TfEclnnjUcrCSlyEd9EEkKXpgn-X8b_SOhL8wT25K5AWMaZGWd_gLt1pGwATcmiD4Kjuwa5BHpVj9hNuC1XaDke--yKuFz5NJoe0Fhsb-Q4mdSvBRgluH1LY1PlOSGQveDMoeB_o7ZsMeuYRBkvlS4rn_fur3ssg_7lxIhXg1pYpEfXZlBd8cWiQOBBIE5yJHBZ4MP96JYX3tedJx8R4TT6vCg"/>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-md text-body-sm text-on-surface truncate group-hover:text-primary transition-colors">Starlight Corridor</span>
+<span class="font-code-xs text-code-xs text-on-surface-variant truncate">Solar Drift</span>
+</div>
+</div>
+<div class="flex items-center gap-2 flex-shrink-0">
+<span class="font-code-xs text-code-xs text-outline">5:02</span>
+<button class="text-outline hover:text-on-surface opacity-0 group-hover:opacity-100 transition-opacity" type="button">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+</div>
+<!-- Queue Item 2 -->
+<div class="group flex items-center justify-between p-2 rounded-lg hover:bg-surface-container-high transition-colors cursor-grab active:cursor-grabbing">
+<div class="flex items-center gap-2.5 min-w-0">
+<span class="material-symbols-outlined text-outline group-hover:text-on-surface text-[18px]">drag_indicator</span>
+<div class="w-9 h-9 rounded bg-surface-container-highest overflow-hidden flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="Minimalist abstract dark cover artwork with purple ambient lighting and sleek electronic lines" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAOsGA7YjyqEX_Ll7VFjnDxxJKXNiTzjAMj-cf4o0ZxvR_j0U7VSncf7P6XhYx1xo-Hn16wdYY-HPyyjiFqw8SpBEnuUPca-NTzzcEC8aKIetNE0lUH6OtdB7nov0Gi_fzk2nE91wd1kCPF7D8KZnPu2XTVl5Go9fTpf8tmZk2KqhUABva_lefnIlLBCpjca4k0Mh3Ym6CW7dZ1fDBzpFuOD0xAWSYiexE4DWI2ch5X5nhmwraI8Ub_Qw"/>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-md text-body-sm text-on-surface truncate group-hover:text-primary transition-colors">Midnight Echoes</span>
+<span class="font-code-xs text-code-xs text-on-surface-variant truncate">Kaelen Cole</span>
+</div>
+</div>
+<div class="flex items-center gap-2 flex-shrink-0">
+<span class="font-code-xs text-code-xs text-outline">4:12</span>
+<button class="text-outline hover:text-on-surface opacity-0 group-hover:opacity-100 transition-opacity" type="button">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+</div>
+<!-- Queue Item 3 -->
+<div class="group flex items-center justify-between p-2 rounded-lg hover:bg-surface-container-high transition-colors cursor-grab active:cursor-grabbing">
+<div class="flex items-center gap-2.5 min-w-0">
+<span class="material-symbols-outlined text-outline group-hover:text-on-surface text-[18px]">drag_indicator</span>
+<div class="w-9 h-9 rounded bg-surface-container-highest overflow-hidden flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="Cyberpunk rain rain-soaked alley neon signage cover art for electronica music" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDZDtkqLdJCnaDdF4yQf6fvibnTfiMvgDlGqkIiTUpvJDkw9L-7BBxtRenQV88zS0w1eKZ2_gBuErzGiCGdUis1388TgtQ-IbZStrF4zQcyaQloNkrH0Cf-NEfNSb1XkDS5-jc0gmG83_He58BmDygmjV0AmYL0bNBqwylDZ4PDbzuxEZy11OnmR126z86t3kQgXXlhs4wmJOHQdFEGiK8mfBh3Rg7TJU_nv-P6BNbT92ryusKTzz5GoQ"/>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-md text-body-sm text-on-surface truncate group-hover:text-primary transition-colors">Cybernetic Rain</span>
+<span class="font-code-xs text-code-xs text-on-surface-variant truncate">Sector 9</span>
+</div>
+</div>
+<div class="flex items-center gap-2 flex-shrink-0">
+<span class="font-code-xs text-code-xs text-outline">3:45</span>
+<button class="text-outline hover:text-on-surface opacity-0 group-hover:opacity-100 transition-opacity" type="button">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+</div>
+<!-- Queue Item 4 -->
+<div class="group flex items-center justify-between p-2 rounded-lg hover:bg-surface-container-high transition-colors cursor-grab active:cursor-grabbing">
+<div class="flex items-center gap-2.5 min-w-0">
+<span class="material-symbols-outlined text-outline group-hover:text-on-surface text-[18px]">drag_indicator</span>
+<div class="w-9 h-9 rounded bg-surface-container-highest overflow-hidden flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="Retro 80s grid aesthetic album artwork with chrome horizon and pastel night sky" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAlsgDxYMgxMTvTLRrZpNmIFB4SdwqOfYoHc-m9NroQddtygLIdX88HWmxRxwacr02Rc7_eeFKqb-ccDXUJpMCrdEIAHCeMMR08pzAzL8_gIpkRGiNT6gtx7wQuSlZnD0PwomlQFhn_2BtFyRZnE5hy2-z85XVtI45Ohf-fp9EPBzIHPZorcIk-asW4F8LKQ33u1xUQqna95pZyyPEUH9mZS_oHrJRoq6O4zyM0ZgIu-O3mwNzde2xkJA"/>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-md text-body-sm text-on-surface truncate group-hover:text-primary transition-colors">Vapor Memories</span>
+<span class="font-code-xs text-code-xs text-on-surface-variant truncate">VHS Dreams</span>
+</div>
+</div>
+<div class="flex items-center gap-2 flex-shrink-0">
+<span class="font-code-xs text-code-xs text-outline">4:30</span>
+<button class="text-outline hover:text-on-surface opacity-0 group-hover:opacity-100 transition-opacity" type="button">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Quick Audio Device Badge -->
+<div class="mt-space-md pt-space-sm border-t border-surface-container flex items-center justify-between text-code-xs font-code-xs text-on-surface-variant">
+<span class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-primary">headphones</span>
+<span>Modo Directo DAC</span>
+</span>
+<span class="text-outline">Buffer: 64 samples</span>
+</div>
+</div>
+</div>
+<!-- LYRICS VIEW CONTENT (Hidden by default, toggleable via JavaScript) -->
+<div class="hidden flex-col rounded-xl bg-surface-container-low p-space-md shadow-md flex-1" id="lyrics-view">
+<div class="flex items-center justify-between mb-space-md">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[18px]">lyrics</span>
+<span class="font-label-md text-label-md text-on-surface font-semibold">Neon Horizons.lrc</span>
+</div>
+<span class="font-code-xs text-code-xs px-2 py-0.5 rounded bg-primary/10 text-primary">Sincronizado</span>
+</div>
+<div class="flex flex-col gap-space-md overflow-y-auto py-space-sm font-headline-md text-headline-md leading-relaxed select-none">
+<p class="text-outline/60 text-body-md font-body-md transition-colors">[00:32.10] Frecuencias oscuras en la red nocturna...</p>
+<p class="text-outline/70 text-body-md font-body-md transition-colors">[01:14.25] Luces de neón se quiebran en la lluvia</p>
+<p class="text-primary font-bold text-headline-md scale-105 origin-left transition-all">[02:45.00] Vemos el horizonte despertar de nuevo</p>
+<p class="text-on-surface-variant text-body-lg font-body-lg transition-colors">[03:10.15] Señales puras que nunca se perderán</p>
+<p class="text-outline/60 text-body-md font-body-md transition-colors">[03:42.80] Latidos sintéticos hasta el final</p>
+</div>
+</div>
+</aside>
+</div>
+</div>
+<script>
+  function toggleSidebarTab(tab) {
+    const queueView = document.getElementById('queue-view');
+    const lyricsView = document.getElementById('lyrics-view');
+    const tabQueue = document.getElementById('tab-queue');
+    const tabLyrics = document.getElementById('tab-lyrics');
+
+    if (tab === 'queue') {
+      queueView.classList.remove('hidden');
+      queueView.classList.add('flex');
+      lyricsView.classList.add('hidden');
+      lyricsView.classList.remove('flex');
+
+      tabQueue.className = "flex-1 py-1.5 px-3 rounded-lg bg-surface-container-high text-primary font-label-md text-label-md text-center transition-all shadow-sm";
+      tabLyrics.className = "flex-1 py-1.5 px-3 rounded-lg text-on-surface-variant hover:text-on-surface font-label-md text-label-md text-center transition-all";
+    } else {
+      lyricsView.classList.remove('hidden');
+      lyricsView.classList.add('flex');
+      queueView.classList.add('hidden');
+      queueView.classList.remove('flex');
+
+      tabLyrics.className = "flex-1 py-1.5 px-3 rounded-lg bg-surface-container-high text-primary font-label-md text-label-md text-center transition-all shadow-sm";
+      tabQueue.className = "flex-1 py-1.5 px-3 rounded-lg text-on-surface-variant hover:text-on-surface font-label-md text-label-md text-center transition-all";
+    }
+  }
+</script></main></div><footer class="fixed bottom-0 left-0 right-0 h-24 bg-surface-container-lowest/90 backdrop-blur-2xl z-50 flex items-center justify-between px-space-md shadow-[0_-4px_20px_rgba(0,0,0,0.5)]"><div class="flex items-center gap-space-md w-80"><div class="w-14 h-14 rounded-lg bg-surface-container-high flex-shrink-0 flex items-center justify-center overflow-hidden shadow-[0_4px_12px_rgba(0,0,0,0.4)]"><span class="material-symbols-outlined text-primary text-[28px]">music_note</span></div><div class="flex flex-col min-w-0"><div class="flex items-center gap-space-xs"><span class="font-label-md text-label-md text-on-surface truncate">Neon Horizons</span><span class="px-1.5 py-0.5 rounded bg-surface-container-highest font-code-xs text-code-xs text-secondary">FLAC 24-bit</span></div><span class="font-body-sm text-body-sm text-on-surface-variant truncate">Solar Drift • Cyber Odyssey</span></div><button aria-label="Favorite track" class="text-error hover:scale-110 transition-transform ml-1" type="button"><span class="material-symbols-outlined text-[20px]">favorite</span></button></div><div class="flex flex-col items-center gap-1.5 flex-1 max-w-2xl px-space-lg"><div class="flex items-center gap-space-md"><button aria-label="Shuffle" class="text-on-surface-variant hover:text-primary transition-colors" type="button"><span class="material-symbols-outlined text-[20px]">shuffle</span></button><button aria-label="Previous track" class="text-on-surface-variant hover:text-on-surface transition-colors" type="button"><span class="material-symbols-outlined text-[22px]">skip_previous</span></button><button aria-label="Play or Pause" class="w-11 h-11 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center hover:scale-105 active:scale-95 transition-transform shadow-[0_0_16px_rgba(0,210,196,0.35)]" type="button"><span class="material-symbols-outlined text-[24px]">pause</span></button><button aria-label="Next track" class="text-on-surface-variant hover:text-on-surface transition-colors" type="button"><span class="material-symbols-outlined text-[22px]">skip_next</span></button><button aria-label="Repeat mode" class="text-on-surface-variant hover:text-primary transition-colors" type="button"><span class="material-symbols-outlined text-[20px]">repeat</span></button></div><div class="w-full flex items-center gap-space-sm"><span class="font-code-xs text-code-xs text-on-surface-variant w-9 text-right">2:45</span><div class="relative flex-1 h-1.5 bg-surface-container-highest rounded-full overflow-hidden cursor-pointer group"><div class="absolute top-0 bottom-0 left-0 bg-primary-container rounded-full" style="width:65.7%"></div></div><span class="font-code-xs text-code-xs text-on-surface-variant w-9">4:18</span></div></div><div class="flex items-center justify-end gap-space-md w-80"><button aria-label="Toggle lyrics" class="text-on-surface-variant hover:text-on-surface transition-colors" type="button"><span class="material-symbols-outlined text-[20px]">lyrics</span></button><button aria-label="Toggle play queue" class="text-on-surface-variant hover:text-on-surface transition-colors" type="button"><span class="material-symbols-outlined text-[20px]">queue_music</span></button><div class="flex items-center gap-space-xs w-32"><span class="material-symbols-outlined text-[20px] text-on-surface-variant">volume_up</span><div class="relative flex-1 h-1.5 bg-surface-container-highest rounded-full overflow-hidden cursor-pointer"><div class="absolute top-0 bottom-0 left-0 bg-on-surface rounded-full" style="width:78%"></div></div><span class="font-code-xs text-code-xs text-on-surface-variant">78%</span></div><div class="px-2 py-1 rounded bg-surface-container-low font-code-xs text-code-xs text-primary-fixed-dim whitespace-nowrap">WASAPI Exclusivo • DAC USB</div></div></footer></body></html>

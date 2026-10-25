@@ -1,0 +1,336 @@
+<!DOCTYPE html><html class="dark" lang="es"><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0" name="viewport"><meta content="web_dashboard" name="shell-type"><link href="https://fonts.googleapis.com" rel="preconnect"><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Plus+Jakarta+Sans:wght@600;700;800&amp;family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;family=Plus+Jakarta+Sans:wght@100..900&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"on-secondary":"#3c0091","primary-fixed-dim":"#28ddcf","on-primary-fixed":"#00201d","outline-variant":"#3b4a47","surface-container-highest":"#32353d","on-background":"#e1e2ec","secondary":"#d0bcff","primary-fixed":"#56faeb","on-tertiary-fixed":"#2d1600","on-tertiary-fixed-variant":"#6a3b00","secondary-fixed":"#e9ddff","tertiary-container":"#ffa94f","outline":"#859491","surface-variant":"#32353d","on-primary-container":"#00554f","on-error-container":"#ffdad6","on-secondary-container":"#c4abff","surface-dim":"#10131a","inverse-surface":"#e1e2ec","tertiary":"#ffcfa3","tertiary-fixed":"#ffdcbf","surface-container-lowest":"#0b0e15","on-tertiary":"#4a2800","on-tertiary-container":"#713f00","secondary-container":"#571bc1","secondary-fixed-dim":"#d0bcff","surface-container-high":"#272a32","surface-bright":"#363941","on-error":"#690005","on-secondary-fixed-variant":"#5516be","on-secondary-fixed":"#23005c","surface-container-low":"#191b23","surface":"#10131a","primary":"#47efe0","primary-container":"#00d2c4","on-primary-fixed-variant":"#00504a","surface-container":"#1d1f27","background":"#10131a","surface-tint":"#28ddcf","error":"#ffb4ab","inverse-on-surface":"#2d3038","inverse-primary":"#006a63","on-primary":"#003733","on-surface-variant":"#bacac7","error-container":"#93000a","on-surface":"#e1e2ec","tertiary-fixed-dim":"#ffb872"},borderRadius:{DEFAULT:"0.25rem",lg:"0.5rem",xl:"0.75rem",full:"9999px"},spacing:{"gutter-desktop":"1.5rem",margin:"1rem","margin-desktop":"2rem","space-lg":"1.5rem","space-xl":"2rem","space-sm":"0.5rem","space-md":"1rem",gutter:"1rem","space-xs":"0.25rem"},fontFamily:{"headline-md":["Plus Jakarta Sans"],"label-md":["Inter"],"headline-lg":["Plus Jakarta Sans"],"body-md":["Inter"],"display-lg":["Plus Jakarta Sans"],"headline-lg-mobile":["Plus Jakarta Sans"],"body-lg":["Inter"],"body-sm":["Inter"],"code-xs":["Inter"],"label-sm":["Inter"]},fontSize:{"headline-md":["1.5rem",{lineHeight:"2rem",fontWeight:"600"}],"label-md":["0.875rem",{lineHeight:"1.25rem",fontWeight:"600"}],"headline-lg":["2.25rem",{lineHeight:"2.75rem",fontWeight:"700"}],"body-md":["1rem",{lineHeight:"1.5rem",fontWeight:"400"}],"display-lg":["3.5rem",{lineHeight:"4rem",fontWeight:"800"}],"headline-lg-mobile":["1.75rem",{lineHeight:"2.25rem",fontWeight:"700"}],"body-lg":["1.125rem",{lineHeight:"1.75rem",fontWeight:"400"}],"body-sm":["0.875rem",{lineHeight:"1.25rem",fontWeight:"400"}],"code-xs":["0.6875rem",{lineHeight:"0.875rem",fontWeight:"500"}],"label-sm":["0.75rem",{lineHeight:"1rem",fontWeight:"500"}]}}}};</script></head><body class="bg-background font-body-md text-on-surface select-none antialiased min-h-screen"><header class="fixed top-0 left-0 right-0 h-16 z-50 bg-surface-container-lowest/80 backdrop-blur-xl flex items-center justify-between px-space-md shadow-[0_1px_8px_rgba(0,0,0,0.35)]"><div class="flex items-center gap-space-md w-72"><div class="w-8 h-8 rounded-lg bg-surface-container-high flex items-center justify-center text-primary shadow-[0_0_12px_rgba(0,210,196,0.2)]"><span class="material-symbols-outlined text-[20px]">graphic_eq</span></div><div class="flex flex-col"><span class="font-headline-md text-body-md tracking-tight text-on-surface font-semibold">RP Music</span><span class="font-code-xs text-code-xs text-on-surface-variant flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-primary inline-block"></span>3,420 pistas locales</span></div></div><div class="flex-1 max-w-xl mx-space-lg"><div class="relative flex items-center"><span class="material-symbols-outlined absolute left-3 text-on-surface-variant text-[18px]">search</span><input class="w-full h-9 pl-9 pr-20 bg-surface-container-low rounded-lg font-body-sm text-body-sm text-on-surface placeholder:text-outline focus:outline-none focus:ring-1 focus:ring-primary/40" placeholder="Buscar pistas, álbumes, artistas..." readonly="" type="text"><div class="absolute right-2 flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-surface-container-highest text-on-surface-variant font-code-xs text-code-xs">Ctrl + K</div></div></div><div class="flex items-center gap-space-sm"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div><div class="flex items-center ml-space-sm bg-surface-container-low/60 rounded-lg overflow-hidden"><button aria-label="Minimize window" class="w-9 h-8 flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" type="button"><span class="material-symbols-outlined text-[16px]">minimize</span></button><button aria-label="Maximize window" class="w-9 h-8 flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" type="button"><span class="material-symbols-outlined text-[16px]">check_box_outline_blank</span></button><button aria-label="Close window" class="w-9 h-8 flex items-center justify-center text-on-surface-variant hover:bg-error hover:text-on-error transition-colors" type="button"><span class="material-symbols-outlined text-[16px]">close</span></button></div></div></header><aside class="fixed left-0 top-16 bottom-24 w-64 bg-surface-container-lowest/60 backdrop-blur-xl z-40 flex flex-col justify-between py-space-md px-space-sm overflow-y-auto"><div class="flex flex-col gap-space-lg"><div class="flex flex-col gap-space-xs"><span class="px-space-sm font-label-sm text-label-sm text-outline uppercase tracking-wider">Biblioteca</span><nav class="flex flex-col gap-0.5" data-active-classes="bg-surface-container-high text-primary font-semibold"><a class="flex items-center gap-3 px-space-sm py-2 rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="biblioteca" href="#"><span class="material-symbols-outlined text-[20px]">queue_music</span><span class="">Biblioteca</span></a><a class="flex items-center gap-3 px-space-sm py-2 rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="albumes" href="#"><span class="material-symbols-outlined text-[20px]">album</span><span class="">Álbumes</span></a><a class="flex items-center gap-3 px-space-sm py-2 rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="artistas" href="#"><span class="material-symbols-outlined text-[20px]">mic</span><span class="">Artistas</span></a><a class="flex items-center gap-3 px-space-sm py-2 rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="carpetas-locales" href="#"><span class="material-symbols-outlined text-[20px]">folder</span><span class="">Carpetas locales</span></a></nav></div><div class="flex flex-col gap-space-xs"><span class="px-space-sm font-label-sm text-label-sm text-outline uppercase tracking-wider">Colecciones &amp; Listas</span><nav class="flex flex-col gap-0.5" data-active-classes="bg-surface-container-high text-primary font-semibold"><a class="flex items-center gap-3 px-space-sm py-2 rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="favoritos" href="#"><span class="material-symbols-outlined text-[20px] text-error">favorite</span><span class="">Favoritos</span></a><a class="flex items-center gap-3 px-space-sm py-2 rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="mas-reproducidas" href="#"><span class="material-symbols-outlined text-[20px]">local_fire_department</span><span class="">Más reproducidas</span></a><a class="flex items-center gap-3 px-space-sm py-2 rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="nuevas-incorporaciones" href="#"><span class="material-symbols-outlined text-[20px]">auto_awesome</span><span class="">Nuevas incorporaciones</span></a></nav></div></div><div class="flex flex-col gap-space-xs pt-space-md"><span class="px-space-sm font-label-sm text-label-sm text-outline uppercase tracking-wider">Sistema</span><nav class="flex flex-col gap-0.5" data-active-classes="bg-surface-container-high text-primary font-semibold"><a class="flex items-center justify-between px-space-sm py-2 rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="extensiones-de-la-comunidad" href="#"><div class="flex items-center gap-3"><span class="material-symbols-outlined text-[20px]">extension</span><span class="">Extensiones</span></div><span class="px-1.5 py-0.2 bg-secondary-container text-on-secondary-container rounded font-code-xs text-code-xs font-semibold">v1.0</span></a><a class="flex items-center gap-3 px-space-sm py-2 rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="ajustes-de-audio-y-sistema" href="#"><span class="material-symbols-outlined text-[20px]">tune</span><span class="">Ajustes de Audio</span></a></nav></div></aside><div class="pl-64 pb-24"><main class="relative w-full pt-16 bg-surface min-h-[calc(100vh-6rem)]"><div class="flex flex-col w-full">
+<!-- Content Canvas: Fluid Desktop Diagnostics Console -->
+<div class="p-space-lg max-w-7xl mx-auto w-full flex flex-col gap-space-lg">
+<!-- Top Alert / Diagnostic Status Banner -->
+<section class="relative overflow-hidden rounded-xl bg-surface-container-high p-space-md shadow-xl">
+<div class="absolute -right-16 -top-16 w-56 h-56 rounded-full bg-tertiary-container/10 blur-3xl pointer-events-none"></div>
+<div class="absolute -left-12 -bottom-12 w-48 h-48 rounded-full bg-primary/10 blur-2xl pointer-events-none"></div>
+<div class="relative z-10 flex flex-col xl:flex-row xl:items-center justify-between gap-space-md">
+<div class="flex items-start sm:items-center gap-space-md">
+<div class="w-12 h-12 rounded-xl bg-tertiary-container/20 text-tertiary flex items-center justify-center shrink-0 shadow-sm">
+<span class="material-symbols-outlined text-[28px]" style="font-variation-settings: &quot;FILL&quot; 1;">warning</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-space-xs flex-wrap">
+<span class="font-headline-md text-headline-md text-on-surface font-semibold tracking-tight">Indexación completada con 14 advertencias</span>
+<span class="px-2 py-0.5 rounded bg-tertiary-container/30 text-tertiary font-code-xs text-code-xs font-semibold uppercase tracking-wider">Acción requerida</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant">
+              3,406 pistas añadidas al catálogo local. Se detectaron <strong class="text-tertiary">14 archivos</strong> inaccesibles, con cabeceras corruptas o permisos insuficientes en el sistema de archivos de Windows.
+            </p>
+</div>
+</div>
+<!-- Direct Actions -->
+<div class="flex items-center gap-space-sm flex-wrap self-end xl:self-auto shrink-0">
+<button class="px-space-md h-10 rounded-lg bg-primary-container text-on-primary-container font-label-md text-label-md flex items-center gap-2 hover:brightness-110 active:scale-95 transition-all shadow-md" id="btn-retry">
+<span class="material-symbols-outlined text-[18px]">replay</span>
+<span class="">Reintentar fallidos</span>
+</button>
+<button class="px-space-md h-10 rounded-lg bg-surface-container text-on-surface font-label-md text-label-md flex items-center gap-2 hover:bg-surface-bright active:scale-95 transition-all shadow-sm" id="btn-export-log">
+<span class="material-symbols-outlined text-[18px]">receipt_long</span>
+<span class="">Exportar registro (.log)</span>
+</button>
+<button class="px-space-sm h-10 rounded-lg bg-surface-container-low text-on-surface-variant font-label-md text-label-md hover:text-on-surface transition-colors flex items-center gap-1.5" id="btn-dismiss">
+<span class="material-symbols-outlined text-[18px]">done_all</span>
+<span class="">Omitir todas</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Metrics Bento & Live Engine Progress -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg">
+<!-- Live Scan Engine Monitor (8 cols) -->
+<section class="lg:col-span-8 rounded-xl bg-surface-container p-space-lg flex flex-col justify-between shadow-lg relative overflow-hidden">
+<div class="flex items-center justify-between pb-space-sm">
+<div class="flex items-center gap-space-sm">
+<span class="w-2.5 h-2.5 rounded-full bg-primary animate-pulse"></span>
+<span class="font-label-md text-label-md text-on-surface font-semibold tracking-wide uppercase">Motor de Escaneo • rp_indexer_v2.dll</span>
+</div>
+<div class="flex items-center gap-space-xs font-code-xs text-code-xs text-on-surface-variant">
+<span class="">Hilo 04: E:\Musica\Hi-Res\</span>
+<span class="text-outline">•</span>
+<span class="text-primary font-semibold">98.4%</span>
+</div>
+</div>
+<!-- Custom Linear Progress Bar -->
+<div class="my-space-md flex flex-col gap-space-xs">
+<div class="w-full h-3 rounded-full bg-surface-container-lowest p-0.5 overflow-hidden flex shadow-inner">
+<div class="h-full rounded-full bg-gradient-to-r from-primary via-primary-container to-tertiary transition-all duration-700 relative" style="width: 98.4%;">
+<div class="absolute right-0 top-0 bottom-0 w-2 bg-on-primary-fixed blur-xs animate-ping"></div>
+</div>
+</div>
+<div class="flex justify-between font-code-xs text-code-xs text-on-surface-variant">
+<span class="">Iniciado hace 1m 24s • Bloques de 64KB</span>
+<span class="">3,420 de 3,420 descriptores leídos</span>
+</div>
+</div>
+<!-- Micro Metric Grid -->
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-space-sm pt-space-xs">
+<div class="p-space-sm rounded-lg bg-surface-container-high flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Leídos</span>
+<span class="font-headline-md text-headline-md text-on-surface font-bold">3,420</span>
+<span class="font-code-xs text-code-xs text-outline mt-0.5">142.8 GB analizados</span>
+</div>
+<div class="p-space-sm rounded-lg bg-surface-container-high flex flex-col">
+<span class="font-label-sm text-label-sm text-primary uppercase tracking-wider">Indexados</span>
+<span class="font-headline-md text-headline-md text-primary font-bold">3,406</span>
+<span class="font-code-xs text-code-xs text-primary-fixed-dim mt-0.5">Listos en biblioteca</span>
+</div>
+<div class="p-space-sm rounded-lg bg-surface-container-high flex flex-col">
+<span class="font-label-sm text-label-sm text-tertiary uppercase tracking-wider">Bloqueados</span>
+<span class="font-headline-md text-headline-md text-tertiary font-bold">8</span>
+<span class="font-code-xs text-code-xs text-outline mt-0.5">Permisos NTFS / I/O</span>
+</div>
+<div class="p-space-sm rounded-lg bg-surface-container-high flex flex-col">
+<span class="font-label-sm text-label-sm text-error uppercase tracking-wider">Corruptos</span>
+<span class="font-headline-md text-headline-md text-error font-bold">6</span>
+<span class="font-code-xs text-code-xs text-outline mt-0.5">Cabeceras y tags dañados</span>
+</div>
+</div>
+</section>
+<!-- Visual Breakdown Pie / Disk Spectrum (4 cols) -->
+<section class="lg:col-span-4 rounded-xl bg-surface-container p-space-lg flex flex-col justify-between shadow-lg">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md text-on-surface font-semibold">Integridad del Lote</span>
+<span class="px-2 py-0.5 rounded bg-surface-container-highest font-code-xs text-code-xs text-secondary font-semibold">ASIO / WASAPI OK</span>
+</div>
+<!-- SVG Donut Chart Minimalist -->
+<div class="relative flex items-center justify-center my-space-sm">
+<svg class="w-36 h-36 transform -rotate-90" viewBox="0 0 100 100">
+<!-- Background Ring -->
+<circle class="text-surface-container-highest" cx="50" cy="50" fill="transparent" r="40" stroke="currentColor" stroke-width="8"></circle>
+<!-- Indexed Success Arc (98%) -->
+<circle class="text-primary transition-all duration-1000" cx="50" cy="50" fill="transparent" r="40" stroke="currentColor" stroke-dasharray="251.2" stroke-dashoffset="5.0" stroke-linecap="round" stroke-width="8"></circle>
+<!-- Permission Error Arc (0.24%) -->
+<circle class="text-tertiary" cx="50" cy="50" fill="transparent" r="40" stroke="currentColor" stroke-dasharray="251.2" stroke-dashoffset="248" stroke-width="8"></circle>
+<!-- Damaged Arc (0.17%) -->
+<circle class="text-error" cx="50" cy="50" fill="transparent" r="40" stroke="currentColor" stroke-dasharray="251.2" stroke-dashoffset="249.5" stroke-width="8"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+<span class="font-headline-md text-headline-md text-on-surface font-extrabold">99.6%</span>
+<span class="font-code-xs text-code-xs text-on-surface-variant">Ratio Éxito</span>
+</div>
+</div>
+<div class="flex flex-col gap-1.5 pt-space-xs font-code-xs text-code-xs text-on-surface-variant">
+<div class="flex items-center justify-between">
+<span class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-primary inline-block"></span>Pistas válidas (FLAC/WAV/ALAC)</span>
+<span class="text-on-surface font-semibold">99.59%</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-tertiary inline-block"></span>Acceso denegado (Windows)</span>
+<span class="text-tertiary font-semibold">0.23%</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-error inline-block"></span>Cabeceras / Duración anormal</span>
+<span class="text-error font-semibold">0.18%</span>
+</div>
+</div>
+</section>
+</div>
+<!-- Diagnostic Incident Resolution Queue -->
+<section class="rounded-xl bg-surface-container p-space-lg shadow-lg flex flex-col gap-space-md">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm pb-space-xs">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-tertiary text-[24px]">bug_report</span>
+<div>
+<h2 class="font-headline-md text-body-lg text-on-surface font-bold">Incidentes Detectados (14)</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Resuelve conflictos de archivos individuales o aplica reglas automatizadas</p>
+</div>
+</div>
+<!-- Filter Tab Group -->
+<div class="flex items-center gap-1 p-1 rounded-lg bg-surface-container-low self-start sm:self-auto font-label-sm text-label-sm">
+<button class="px-space-sm py-1 rounded bg-surface-container-high text-primary font-semibold shadow-xs">Todos (14)</button>
+<button class="px-space-sm py-1 rounded text-on-surface-variant hover:text-on-surface transition-colors">Permisos (8)</button>
+<button class="px-space-sm py-1 rounded text-on-surface-variant hover:text-on-surface transition-colors">Corruptos (6)</button>
+</div>
+</div>
+<!-- Incident Rows List -->
+<div class="flex flex-col gap-space-sm">
+<!-- Incident Item 1: Corrupted FLAC Header -->
+<div class="p-space-md rounded-xl bg-surface-container-low hover:bg-surface-container-high/80 transition-all flex flex-col md:flex-row md:items-center justify-between gap-space-md group">
+<div class="flex items-start gap-space-md min-w-0">
+<div class="w-10 h-10 rounded-lg bg-error-container/40 text-error flex items-center justify-center shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[22px]">broken_image</span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-space-xs flex-wrap">
+<span class="font-label-md text-label-md text-on-surface font-semibold truncate">track_04_damaged.flac</span>
+<span class="px-1.5 py-0.2 rounded bg-surface-container-highest text-error font-code-xs text-code-xs">Cabecera FLAC Corrupta</span>
+<span class="font-code-xs text-code-xs text-outline">fLaC sync code missing (offset 0x0000)</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant truncate">D:\Musica\Acoustic_Sessions\Vol_02\track_04_damaged.flac</span>
+<span class="font-code-xs text-code-xs text-outline mt-0.5">Tamaño: 42.1 MB • Modificado: 12/03/2024 18:22</span>
+</div>
+</div>
+<div class="flex items-center gap-space-xs shrink-0 self-end md:self-auto">
+<button class="px-space-sm h-9 rounded-lg bg-surface-container-highest text-primary font-label-md text-label-md flex items-center gap-1.5 hover:bg-surface-bright active:scale-95 transition-all">
+<span class="material-symbols-outlined text-[16px]">terminal</span>
+<span class="">Analizar con ffmpeg</span>
+</button>
+<button class="px-space-sm h-9 rounded-lg bg-surface-container-highest text-on-surface-variant font-label-md text-label-md hover:text-on-surface hover:bg-surface-bright active:scale-95 transition-all">
+<span class="">Omitir</span>
+</button>
+<button aria-label="Más opciones" class="w-9 h-9 rounded-lg bg-surface-container-highest text-on-surface-variant hover:text-on-surface flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</div>
+</div>
+<!-- Incident Item 2: Windows Access Denied / Admin Privilege -->
+<div class="p-space-md rounded-xl bg-surface-container-low hover:bg-surface-container-high/80 transition-all flex flex-col md:flex-row md:items-center justify-between gap-space-md group">
+<div class="flex items-start gap-space-md min-w-0">
+<div class="w-10 h-10 rounded-lg bg-tertiary-container/30 text-tertiary flex items-center justify-center shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[22px]">lock_reset</span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-space-xs flex-wrap">
+<span class="font-label-md text-label-md text-on-surface font-semibold truncate">E:\ExternalBackup\Rock\Album01\</span>
+<span class="px-1.5 py-0.2 rounded bg-surface-container-highest text-tertiary font-code-xs text-code-xs">Acceso Denegado (NTFS)</span>
+<span class="font-code-xs text-code-xs text-outline">WinError 5: ERROR_ACCESS_DENIED</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant truncate">Requiere privilegios de lectura para el contenedor de pistas (.wav, .dsf)</span>
+<span class="font-code-xs text-code-xs text-outline mt-0.5">8 archivos atrapados en este directorio</span>
+</div>
+</div>
+<div class="flex items-center gap-space-xs shrink-0 self-end md:self-auto">
+<button class="px-space-sm h-9 rounded-lg bg-tertiary-container text-on-tertiary-container font-label-md text-label-md flex items-center gap-1.5 hover:brightness-110 active:scale-95 transition-all shadow-sm">
+<span class="material-symbols-outlined text-[16px]">shield</span>
+<span class="">Solicitar permiso de administrador</span>
+</button>
+<button class="px-space-sm h-9 rounded-lg bg-surface-container-highest text-on-surface-variant font-label-md text-label-md hover:text-on-surface hover:bg-surface-bright active:scale-95 transition-all">
+<span class="">Cambiar ruta</span>
+</button>
+</div>
+</div>
+<!-- Incident Item 3: Auto-Discarded Memo Under 15 Seconds -->
+<div class="p-space-md rounded-xl bg-surface-container-low hover:bg-surface-container-high/80 transition-all flex flex-col md:flex-row md:items-center justify-between gap-space-md group">
+<div class="flex items-start gap-space-md min-w-0">
+<div class="w-10 h-10 rounded-lg bg-surface-container-high text-on-surface-variant flex items-center justify-center shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[22px]">timer_off</span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-space-xs flex-wrap">
+<span class="font-label-md text-label-md text-on-surface font-semibold truncate">Unknown_voice_memo.m4a</span>
+<span class="px-1.5 py-0.2 rounded bg-surface-container-highest text-outline font-code-xs text-code-xs">Descarte Automático</span>
+<span class="font-code-xs text-code-xs text-outline">Filtro de duración &lt; 15 segundos activado</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant truncate">C:\Users\Audiophile\Music\VoiceNotes\Unknown_voice_memo.m4a</span>
+<span class="font-code-xs text-code-xs text-outline mt-0.5">Duración: 00:08 • Codec: AAC-LC 128kbps</span>
+</div>
+</div>
+<div class="flex items-center gap-space-xs shrink-0 self-end md:self-auto">
+<button class="px-space-sm h-9 rounded-lg bg-surface-container-highest text-primary font-label-md text-label-md flex items-center gap-1.5 hover:bg-surface-bright active:scale-95 transition-all">
+<span class="material-symbols-outlined text-[16px]">add_circle</span>
+<span class="">Forzar inclusión</span>
+</button>
+<button class="px-space-sm h-9 rounded-lg bg-surface-container-highest text-on-surface-variant font-label-md text-label-md hover:text-on-surface hover:bg-surface-bright active:scale-95 transition-all">
+<span class="">Ignorar permanentemente</span>
+</button>
+</div>
+</div>
+<!-- Incident Item 4: Corrupted ID3 v2.4 Metadata Tags -->
+<div class="p-space-md rounded-xl bg-surface-container-low hover:bg-surface-container-high/80 transition-all flex flex-col md:flex-row md:items-center justify-between gap-space-md group">
+<div class="flex items-start gap-space-md min-w-0">
+<div class="w-10 h-10 rounded-lg bg-error-container/40 text-error flex items-center justify-center shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[22px]">label_off</span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-space-xs flex-wrap">
+<span class="font-label-md text-label-md text-on-surface font-semibold truncate">07_Midnight_City_Unknown.mp3</span>
+<span class="px-1.5 py-0.2 rounded bg-surface-container-highest text-error font-code-xs text-code-xs">ID3 Desincronizado</span>
+<span class="font-code-xs text-code-xs text-outline">Carátula binaria corrupta en tag APIC</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant truncate">D:\Musica\Synthwave\07_Midnight_City_Unknown.mp3</span>
+<span class="font-code-xs text-code-xs text-outline mt-0.5">El audio es reproducible pero no puede indexarse título ni álbum</span>
+</div>
+</div>
+<div class="flex items-center gap-space-xs shrink-0 self-end md:self-auto">
+<button class="px-space-sm h-9 rounded-lg bg-surface-container-highest text-primary font-label-md text-label-md flex items-center gap-1.5 hover:bg-surface-bright active:scale-95 transition-all">
+<span class="material-symbols-outlined text-[16px]">auto_fix_high</span>
+<span class="">Extraer tags de MusicBrainz</span>
+</button>
+<button class="px-space-sm h-9 rounded-lg bg-surface-container-highest text-on-surface-variant font-label-md text-label-md hover:text-on-surface hover:bg-surface-bright active:scale-95 transition-all">
+<span class="">Limpiar carátula rota</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Storage Diagnostics & Troubleshooting Suite (Bottom Row) -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-lg">
+<!-- Troubleshooting Card 1: External Disks -->
+<div class="rounded-xl bg-surface-container p-space-md shadow-md flex flex-col justify-between">
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center gap-space-sm text-on-surface font-semibold font-label-md text-label-md">
+<span class="material-symbols-outlined text-primary text-[20px]">hard_drive</span>
+<span class="">Verificación de Unidades</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+            La unidad externa <code class="text-tertiary font-code-xs text-code-xs">E:\ (Crucial X8 SSD)</code> tuvo 2 microdesconexiones durante la lectura del búfer I/O.
+          </p>
+</div>
+<div class="pt-space-md flex items-center justify-between">
+<span class="font-code-xs text-code-xs text-outline">Puerto USB 3.2 Gen2</span>
+<button class="px-space-sm py-1.5 rounded-lg bg-surface-container-high text-on-surface font-label-sm text-label-sm hover:bg-surface-bright transition-colors">
+            Comprobar montaje
+          </button>
+</div>
+</div>
+<!-- Troubleshooting Card 2: ID3 Quick Fixer Utility -->
+
+<!-- Troubleshooting Card 3: Realtime Background Indexing Switch -->
+<div class="rounded-xl bg-surface-container p-space-md shadow-md flex flex-col justify-between">
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center gap-space-sm text-on-surface font-semibold font-label-md text-label-md">
+<span class="material-symbols-outlined text-primary-fixed-dim text-[20px]">sync_saved_locally</span>
+<span class="">Vigilancia en Segundo Plano</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+            Usa el observador de carpetas de Windows (ReadDirectoryChangesW) para indexar cambios silenciosamente sin bloquear la CPU.
+          </p>
+</div>
+<div class="pt-space-md flex items-center justify-between">
+<span class="font-code-xs text-code-xs text-primary font-semibold">Modo Silencioso Activo</span>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" id="toggle-bg-watch" type="checkbox">
+<div class="w-11 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-surface peer-checked:bg-primary-container after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-on-primary-container after:border-surface after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
+</label>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script>
+  // Simple micro-interactions for Windows RP Music diagnostic actions
+  document.getElementById('btn-retry')?.addEventListener('click', function() {
+    const originalText = this.innerHTML;
+    this.innerHTML = '<span class="material-symbols-outlined text-[18px] animate-spin">refresh</span><span>Reintentando...</span>';
+    this.classList.add('opacity-75');
+    setTimeout(() => {
+      this.innerHTML = '<span class="material-symbols-outlined text-[18px]">check</span><span>8 archivos recuperados</span>';
+      this.classList.remove('opacity-75');
+    }, 1800);
+  });
+
+  document.getElementById('btn-export-log')?.addEventListener('click', function() {
+    const originalText = this.innerHTML;
+    this.innerHTML = '<span class="material-symbols-outlined text-[18px]">download_done</span><span>Log Guardado</span>';
+    setTimeout(() => {
+      this.innerHTML = originalText;
+    }, 2000);
+  });
+
+  document.getElementById('btn-dismiss')?.addEventListener('click', function() {
+    const parentBanner = this.closest('section');
+    if (parentBanner) {
+      parentBanner.style.transition = 'all 0.4s ease';
+      parentBanner.style.opacity = '0';
+      parentBanner.style.transform = 'translateY(-10px)';
+      setTimeout(() => parentBanner.remove(), 400);
+    }
+  });
+</script></main></div><footer class="fixed bottom-0 left-0 right-0 h-24 bg-surface-container-lowest/90 backdrop-blur-2xl z-50 flex items-center justify-between px-space-md shadow-[0_-4px_20px_rgba(0,0,0,0.5)]"><div class="flex items-center gap-space-md w-80"><div class="w-14 h-14 rounded-lg bg-surface-container-high flex-shrink-0 flex items-center justify-center overflow-hidden shadow-[0_4px_12px_rgba(0,0,0,0.4)]"><span class="material-symbols-outlined text-primary text-[28px]">music_note</span></div><div class="flex flex-col min-w-0"><div class="flex items-center gap-space-xs"><span class="font-label-md text-label-md text-on-surface truncate">Neon Horizons</span><span class="px-1.5 py-0.5 rounded bg-surface-container-highest font-code-xs text-code-xs text-secondary">FLAC 24-bit</span></div><span class="font-body-sm text-body-sm text-on-surface-variant truncate">Solar Drift • Cyber Odyssey</span></div><button aria-label="Favorite track" class="text-error hover:scale-110 transition-transform ml-1" type="button"><span class="material-symbols-outlined text-[20px]">favorite</span></button></div><div class="flex flex-col items-center gap-1.5 flex-1 max-w-2xl px-space-lg"><div class="flex items-center gap-space-md"><button aria-label="Shuffle" class="text-on-surface-variant hover:text-primary transition-colors" type="button"><span class="material-symbols-outlined text-[20px]">shuffle</span></button><button aria-label="Previous track" class="text-on-surface-variant hover:text-on-surface transition-colors" type="button"><span class="material-symbols-outlined text-[22px]">skip_previous</span></button><button aria-label="Play or Pause" class="w-11 h-11 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center hover:scale-105 active:scale-95 transition-transform shadow-[0_0_16px_rgba(0,210,196,0.35)]" type="button"><span class="material-symbols-outlined text-[24px]">pause</span></button><button aria-label="Next track" class="text-on-surface-variant hover:text-on-surface transition-colors" type="button"><span class="material-symbols-outlined text-[22px]">skip_next</span></button><button aria-label="Repeat mode" class="text-on-surface-variant hover:text-primary transition-colors" type="button"><span class="material-symbols-outlined text-[20px]">repeat</span></button></div><div class="w-full flex items-center gap-space-sm"><span class="font-code-xs text-code-xs text-on-surface-variant w-9 text-right">2:45</span><div class="relative flex-1 h-1.5 bg-surface-container-highest rounded-full overflow-hidden cursor-pointer group"><div class="absolute top-0 bottom-0 left-0 bg-primary-container rounded-full" style="width:65.7%"></div></div><span class="font-code-xs text-code-xs text-on-surface-variant w-9">4:18</span></div></div><div class="flex items-center justify-end gap-space-md w-80"><button aria-label="Toggle lyrics" class="text-on-surface-variant hover:text-on-surface transition-colors" type="button"><span class="material-symbols-outlined text-[20px]">lyrics</span></button><button aria-label="Toggle play queue" class="text-on-surface-variant hover:text-on-surface transition-colors" type="button"><span class="material-symbols-outlined text-[20px]">queue_music</span></button><div class="flex items-center gap-space-xs w-32"><span class="material-symbols-outlined text-[20px] text-on-surface-variant">volume_up</span><div class="relative flex-1 h-1.5 bg-surface-container-highest rounded-full overflow-hidden cursor-pointer"><div class="absolute top-0 bottom-0 left-0 bg-on-surface rounded-full" style="width:78%"></div></div><span class="font-code-xs text-code-xs text-on-surface-variant">78%</span></div><div class="px-2 py-1 rounded bg-surface-container-low font-code-xs text-code-xs text-primary-fixed-dim whitespace-nowrap">WASAPI Exclusivo • DAC USB</div></div></footer>
+
+</body></html>

@@ -40,6 +40,29 @@ void main() {
   tearDown(() async {
     await temporary.delete(recursive: true);
   });
+  test(
+    'eliminar una lista persiste sin tocar canciones, favoritos u otras listas',
+    () async {
+      final library = LibraryController(LocalStore(temporary), FakeFiles());
+      await library.initialize();
+      await library.refresh('raíz');
+      await library.addPlaylist('Borrar');
+      await library.addPlaylist('Conservar');
+      await library.addToPlaylist('Borrar', 'song');
+      await library.addToPlaylist('Conservar', 'song');
+      await library.toggleFavorite('song');
+      await library.deletePlaylist('Borrar');
+      final restored = LibraryController(LocalStore(temporary), FakeFiles());
+      await restored.initialize();
+      expect(restored.playlists.containsKey('Borrar'), false);
+      expect(restored.playlists['Conservar'], ['song']);
+      expect(restored.favorites, {'song'});
+      expect(restored.tracks.single.id, 'song');
+      library.dispose();
+      restored.dispose();
+    },
+  );
+
   test('volumen y preferencia de bandeja sobreviven al reinicio', () async {
     final library = LibraryController(LocalStore(temporary), FakeFiles());
     await library.initialize();

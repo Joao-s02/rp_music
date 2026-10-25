@@ -41,6 +41,9 @@ Future<void> main() async {
               baseName: 'session',
             ),
           );
+    if (Platform.isAndroid) {
+      handler.observeSystemErrors(AudioService.asyncError);
+    }
     await handler.configureSession();
     final notifications = Platform.isAndroid ? AndroidNotifications() : null;
     runApp(

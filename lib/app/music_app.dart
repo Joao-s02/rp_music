@@ -8,6 +8,7 @@ import '../domain/track.dart';
 import '../playback/music_handler.dart';
 import 'library_controller.dart';
 import 'volume_control.dart';
+import 'music_theme.dart';
 import '../platform/android_notifications.dart';
 
 import 'dart:io';
@@ -26,21 +27,12 @@ class MusicApp extends StatelessWidget {
   Widget build(BuildContext context) => ListenableBuilder(
     listenable: library,
     builder: (context, _) {
-      final seed = Color(library.activeExtension?.accent ?? 0xffb7d995);
+      final accent = library.activeExtension?.accent;
       return MaterialApp(
         title: 'RP Music',
         debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: seed),
-          useMaterial3: true,
-        ),
-        darkTheme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: seed,
-            brightness: Brightness.dark,
-          ),
-          useMaterial3: true,
-        ),
+        theme: musicTheme(Brightness.light, accent),
+        darkTheme: musicTheme(Brightness.dark, accent),
         themeMode: library.dark ? ThemeMode.dark : ThemeMode.light,
         home: MusicHome(
           library: library,
@@ -134,13 +126,15 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
               if (desktop)
                 NavigationRail(
                   extended: true,
-                  minExtendedWidth: 210,
+                  minExtendedWidth: 240,
                   leading: const Padding(
                     padding: EdgeInsets.symmetric(vertical: 28),
                     child: Text(
-                      'RP MUSIC',
+                      'RP Music',
                       style: TextStyle(
-                        letterSpacing: 4,
+                        letterSpacing: -0.5,
+                        fontSize: 24,
+                        color: Color(0xff47efe0),
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -165,10 +159,12 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
                         children: [
                           Expanded(
                             child: Text(
-                              labels[page],
+                              !desktop && page == 0 ? 'RP Music' : labels[page],
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style: Theme.of(context).textTheme.headlineMedium,
+                              style: desktop
+                                  ? Theme.of(context).textTheme.headlineMedium
+                                  : Theme.of(context).textTheme.titleLarge,
                             ),
                           ),
                           if (page == 0)
@@ -222,7 +218,16 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
                         _ => settingsView(),
                       },
                     ),
-                    if (!keyboard) PlayerPanel(audio: audio, library: library),
+                    if (!keyboard)
+                      Padding(
+                        padding: EdgeInsets.fromLTRB(
+                          desktop ? 20 : 12,
+                          8,
+                          desktop ? 20 : 12,
+                          8,
+                        ),
+                        child: PlayerPanel(audio: audio, library: library),
+                      ),
                   ],
                 ),
               ),
@@ -247,12 +252,35 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
   );
 
   Widget empty(String text, IconData icon, {Widget? action}) => Center(
-    child: Padding(
+    child: SingleChildScrollView(
       padding: const EdgeInsets.all(24),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 56),
+          if (library.root == null && page == 0) ...[
+            ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: Image.asset(
+                'assets/branding/rp-music-variant-a.png',
+                width: 96,
+                height: 96,
+              ),
+            ),
+            const SizedBox(height: 16),
+          ],
+          Container(
+            padding: const EdgeInsets.all(28),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.primary
+                  .withValues(alpha: 0.10),
+              borderRadius: BorderRadius.circular(28),
+            ),
+            child: Icon(
+              icon,
+              size: 64,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+          ),
           const SizedBox(height: 20),
           Text(
             text,
@@ -272,7 +300,7 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
     }
     if (library.root == null) {
       return empty(
-        'Tu música, a tu manera.\nElige una carpeta; incluiremos sus subcarpetas.',
+        'Tu música, sin límites.\nElige tu carpeta y dale vida a tu biblioteca local.',
         Icons.folder_open,
         action: FilledButton(
           onPressed: library.choosing ? null : library.chooseRoot,
@@ -289,6 +317,31 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
         .toList();
     return Column(
       children: [
+        if (MediaQuery.viewInsetsOf(context).bottom == 0)
+          Container(
+            margin: const EdgeInsets.fromLTRB(24, 8, 24, 0),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surfaceContainerHigh,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: ListTile(
+              leading: Icon(
+                Icons.folder_special_outlined,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+              title: const Text('Música local'),
+              subtitle: Text(
+                '${library.root} · ${library.tracks.length} pistas',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              trailing: IconButton(
+                tooltip: 'Escanear',
+                onPressed: library.scanning ? null : () => library.refresh(),
+                icon: const Icon(Icons.sync),
+              ),
+            ),
+          ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
           child: TextField(
@@ -346,7 +399,7 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
               children: [
                 Expanded(
                   child: Text(
-                    '${filtered.length} canciones${library.scanning ? ' · Metadatos ${library.scanProcessed}/${library.scanTotal}' : ''}',
+                    '${filtered.length} pistas locales${library.scanning ? ' · Metadatos ${library.scanProcessed}/${library.scanTotal}' : ''}',
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
                 ),
@@ -400,6 +453,84 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
     final keys = groups.keys.toList()
       ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
     if (keys.isEmpty) return empty('No hay resultados.', Icons.search_off);
+    if (view == 1) {
+      return LayoutBuilder(
+        builder: (context, constraints) {
+          final columns = max(2, ((constraints.maxWidth - 40) / 260).ceil());
+          final tileWidth =
+              (constraints.maxWidth - 40 - (columns - 1) * 12) / columns;
+          return GridView.builder(
+            padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: columns,
+              mainAxisExtent:
+                  tileWidth +
+                  60 +
+                  (MediaQuery.textScalerOf(context).scale(14) - 14) * 3,
+              crossAxisSpacing: 12,
+              mainAxisSpacing: 12,
+            ),
+            itemCount: keys.length,
+            itemBuilder: (context, index) {
+              final key = keys[index];
+              final items = groups[key]!;
+              return Card(
+                clipBehavior: Clip.antiAlias,
+                child: InkWell(
+                  onTap: () => setState(() => group = key),
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Stack(
+                            fit: StackFit.expand,
+                            children: [
+                              Artwork(
+                                id: items.first.id,
+                                library: library,
+                                size: double.infinity,
+                              ),
+                              Positioned(
+                                right: 6,
+                                bottom: 6,
+                                child: IconButton.filled(
+                                  tooltip: 'Reproducir álbum',
+                                  onPressed: () => audio.select(items, 0),
+                                  icon: const Icon(Icons.play_arrow),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          key.split('\n').first,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(fontWeight: FontWeight.w700),
+                        ),
+                        Text(
+                          items.first.artist,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                        Text(
+                          '${items.length} pistas',
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            },
+          );
+        },
+      );
+    }
     return ListView.builder(
       itemCount: keys.length,
       itemBuilder: (context, index) {
@@ -441,48 +572,57 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
       itemCount: tracks.length,
       itemBuilder: (context, index) {
         final track = tracks[index];
-        final tile = ListTile(
-          leading: const CircleAvatar(child: Icon(Icons.music_note)),
-          title: Text(
-            track.title,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-          subtitle: Text(
-            '${track.artist} · ${track.album}',
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-          onTap: () => audio.select(tracks, index),
-          trailing: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              IconButton(
-                tooltip: 'Favorito',
-                onPressed: () => library.toggleFavorite(track.id),
-                icon: Icon(
-                  library.favorites.contains(track.id)
-                      ? Icons.favorite
-                      : Icons.favorite_border,
-                ),
-              ),
-              if (playlist != null)
+        final tile = StreamBuilder(
+          stream: audio.mediaItem,
+          builder: (context, current) => ListTile(
+            selected: current.data?.id == track.id,
+            selectedTileColor: Theme.of(context).colorScheme.primary
+                .withValues(alpha: 0.06),
+            leading: Artwork(id: track.id, library: library),
+            title: Text(
+              track.title,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+            subtitle: Text(
+              '${track.artist} · ${track.album}',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+            onTap: () => audio.select(tracks, index),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
                 IconButton(
-                  tooltip: 'Quitar de la lista',
-                  icon: const Icon(Icons.playlist_remove),
-                  onPressed: () =>
-                      library.removeFromPlaylist(playlist, track.id),
+                  tooltip: 'Favorito',
+                  onPressed: () => library.toggleFavorite(track.id),
+                  icon: Icon(
+                    library.favorites.contains(track.id)
+                        ? Icons.favorite
+                        : Icons.favorite_border,
+                  ),
                 ),
-              if (playlist == null)
-                PopupMenuButton<String>(
-                  tooltip: 'Añadir a una lista',
-                  onSelected: (name) => library.addToPlaylist(name, track.id),
-                  itemBuilder: (_) => [
-                    for (final name in library.playlists.keys)
-                      PopupMenuItem(value: name, child: Text('Añadir a $name')),
-                  ],
-                ),
-            ],
+                if (playlist != null)
+                  IconButton(
+                    tooltip: 'Quitar de la lista',
+                    icon: const Icon(Icons.playlist_remove),
+                    onPressed: () =>
+                        library.removeFromPlaylist(playlist, track.id),
+                  ),
+                if (playlist == null)
+                  PopupMenuButton<String>(
+                    tooltip: 'Añadir a una lista',
+                    onSelected: (name) => library.addToPlaylist(name, track.id),
+                    itemBuilder: (_) => [
+                      for (final name in library.playlists.keys)
+                        PopupMenuItem(
+                          value: name,
+                          child: Text('Añadir a $name'),
+                        ),
+                    ],
+                  ),
+              ],
+            ),
           ),
         );
         return cards
@@ -504,6 +644,11 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
           ListTile(
             leading: const Icon(Icons.arrow_back),
             title: Text(group!),
+            trailing: IconButton(
+              tooltip: 'Eliminar lista',
+              onPressed: () => deletePlaylist(name),
+              icon: const Icon(Icons.delete_outline),
+            ),
             onTap: () => setState(() => group = null),
           ),
           if (missing > 0)
@@ -556,6 +701,11 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
                       ListTile(
                         leading: const Icon(Icons.queue_music),
                         title: Text(entry.key),
+                        trailing: IconButton(
+                          tooltip: 'Eliminar lista',
+                          onPressed: () => deletePlaylist(entry.key),
+                          icon: const Icon(Icons.delete_outline),
+                        ),
                         subtitle: Text(
                           '${library.playlistTracks(entry.key).length} disponibles${library.missingInPlaylist(entry.key) > 0 ? ' · ${library.missingInPlaylist(entry.key)} no disponibles' : ''}',
                         ),
@@ -566,6 +716,31 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
         ),
       ],
     );
+  }
+
+  Future<void> deletePlaylist(String name) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Eliminar lista'),
+        content: Text(
+          '¿Eliminar «$name»? Las canciones seguirán en tu dispositivo y en tu biblioteca.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancelar'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Eliminar'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+    setState(() => group = null);
+    await library.deletePlaylist(name);
   }
 
   Future<void> createPlaylist() async {
@@ -585,7 +760,7 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
       ),
       const SizedBox(height: 12),
       const Text(
-        'Prueba inicial: instala un manifiesto JSON para cambiar la biblioteca y añadir una acción. Las extensiones con código y conexiones a servicios están en desarrollo.',
+        'Personaliza el aspecto de tu biblioteca con extensiones locales. Esta versión admite manifiestos JSON; las extensiones con código siguen en desarrollo.',
       ),
       const SizedBox(height: 20),
       Align(
@@ -629,9 +804,55 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
     ],
   );
 
+  Future<void> showPlaybackDiagnostics() async {
+    final state = audio.playbackState.value;
+    Map<String, dynamic> native;
+    try {
+      native = await widget.notifications!.diagnostics();
+    } catch (_) {
+      native = {'error': 'No se pudo consultar Android'};
+    }
+    if (!mounted) return;
+    await showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Diagnóstico multimedia'),
+        content: SingleChildScrollView(
+          child: Text(
+            [
+              'Reproducción: ${state.playing ? 'activa' : 'pausada'}',
+              'Estado del audio: ${state.processingState.name}',
+              'Notificaciones multimedia: ${native['mediaNotifications'] ?? 'desconocido'}',
+              'Sesión multimedia: ${native['hasMediaSession'] == true ? 'presente' : 'no detectada'}',
+              'Canal: ${native['channelImportance'] == 0
+                  ? 'bloqueado'
+                  : native['channelImportance'] == null
+                  ? 'aún no creado'
+                  : 'habilitado'}',
+              if (native['error'] != null) '${native['error']}',
+              if (audio.lastSystemError != null)
+                'Último error del servicio: ${audio.lastSystemError}',
+              'Comprueba este diagnóstico mientras suena una canción.',
+            ].join('\n\n'),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cerrar'),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget settingsView() => ListView(
     padding: const EdgeInsets.all(24),
     children: [
+      Text('A tu manera', style: Theme.of(context).textTheme.headlineMedium),
+      const SizedBox(height: 8),
+      const Text('Tu biblioteca, tu sonido, tu espacio.'),
+      const SizedBox(height: 24),
       SwitchListTile(
         title: const Text('Tema oscuro'),
         subtitle: const Text('Personalización básica, sin extensiones.'),
@@ -656,8 +877,8 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
                 title: const Text('Notificaciones de reproducción'),
                 subtitle: Text(
                   widget.notifications!.enabled == true
-                      ? 'Permitidas por Android'
-                      : 'Permite las notificaciones para ver los controles.',
+                      ? 'Permiso concedido. Los controles dependen también del servicio multimedia.'
+                      : 'Android no permite notificaciones. Revisa sus ajustes.',
                 ),
                 trailing: TextButton(
                   onPressed: () => widget.notifications!.request(),
@@ -667,6 +888,11 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
               TextButton(
                 onPressed: widget.notifications!.openSettings,
                 child: const Text('Abrir ajustes de notificaciones'),
+              ),
+              TextButton.icon(
+                onPressed: showPlaybackDiagnostics,
+                icon: const Icon(Icons.monitor_heart_outlined),
+                label: const Text('Diagnóstico multimedia'),
               ),
             ],
           ),
@@ -683,7 +909,7 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
         subtitle: Text('Tu biblioteca permanece en este dispositivo.'),
       ),
       const ListTile(
-        title: Text('RP Music · 0.2.2'),
+        title: Text('RP Music · 0.2.3'),
         subtitle: Text('Base en reconstrucción · Android y Windows'),
       ),
     ],
@@ -727,7 +953,13 @@ class _PlaylistDialogState extends State<_PlaylistDialog> {
 }
 
 class PlayerPanel extends StatefulWidget {
-  const PlayerPanel({super.key, required this.audio, required this.library});
+  const PlayerPanel({
+    super.key,
+    required this.audio,
+    required this.library,
+    this.expanded = false,
+  });
+  final bool expanded;
   final MusicHandler audio;
   final LibraryController library;
   @override
@@ -737,40 +969,199 @@ class PlayerPanel extends StatefulWidget {
 class _PlayerPanelState extends State<PlayerPanel> {
   MusicHandler get audio => widget.audio;
   LibraryController get library => widget.library;
+  void openPlayer() => showModalBottomSheet<void>(
+    context: context,
+    isScrollControlled: true,
+    useSafeArea: true,
+    builder: (context) => FractionallySizedBox(
+      heightFactor: 0.96,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Ahora suena'),
+          leading: IconButton(
+            tooltip: 'Cerrar reproductor',
+            onPressed: () => Navigator.pop(context),
+            icon: const Icon(Icons.keyboard_arrow_down),
+          ),
+        ),
+        body: SingleChildScrollView(
+          padding: const EdgeInsets.all(20),
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 520),
+              child: PlayerPanel(
+                audio: audio,
+                library: library,
+                expanded: true,
+              ),
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
+
   @override
   Widget build(BuildContext context) => StreamBuilder(
     stream: audio.mediaItem,
     builder: (context, item) {
       final track = item.data;
+      final desktop = MediaQuery.sizeOf(context).width >= 850;
+      if (!desktop && !widget.expanded) {
+        return Material(
+          color: Theme.of(context).colorScheme.surfaceContainerHigh,
+          borderRadius: BorderRadius.circular(20),
+          clipBehavior: Clip.antiAlias,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              StreamBuilder(
+                stream: audio.player.positionStream,
+                builder: (context, position) => StreamBuilder(
+                  stream: audio.player.durationStream,
+                  builder: (context, duration) {
+                    final total = duration.data?.inMilliseconds ?? 0;
+                    return LinearProgressIndicator(
+                      minHeight: 3,
+                      value: total > 0
+                          ? ((position.data?.inMilliseconds ?? 0) / total)
+                                .clamp(0.0, 1.0)
+                          : 0,
+                    );
+                  },
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(10),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: InkWell(
+                        onTap: openPlayer,
+                        child: Row(
+                          children: [
+                            Artwork(id: track?.id, library: library),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    track?.title ?? 'Elige una canción',
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                  Text(
+                                    track?.artist ?? 'Tu biblioteca local',
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodySmall,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    IconButton(
+                      tooltip: 'Favorito',
+                      onPressed: track == null
+                          ? null
+                          : () => library.toggleFavorite(track.id),
+                      icon: Icon(
+                        library.favorites.contains(track?.id)
+                            ? Icons.favorite
+                            : Icons.favorite_border,
+                      ),
+                    ),
+                    StreamBuilder(
+                      stream: audio.player.playerStateStream,
+                      builder: (context, state) => IconButton.filled(
+                        tooltip: audio.player.playing ? 'Pausar' : 'Reproducir',
+                        onPressed: track == null
+                            ? null
+                            : () => audio.player.playing
+                                  ? audio.pause()
+                                  : audio.play(),
+                        icon: Icon(
+                          audio.player.playing ? Icons.pause : Icons.play_arrow,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      }
       return Material(
+        borderRadius: BorderRadius.circular(24),
+        clipBehavior: Clip.antiAlias,
         color: Theme.of(context).colorScheme.surfaceContainer,
         child: Padding(
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Row(
-                children: [
-                  Artwork(id: track?.id, library: library),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          track?.title ?? 'Elige una canción',
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        Text(
-                          track?.artist ?? 'Tu música permanece contigo',
-                          style: Theme.of(context).textTheme.bodySmall,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
-                    ),
+              if (widget.expanded) ...[
+                AspectRatio(
+                  aspectRatio: 1,
+                  child: Artwork(
+                    id: track?.id,
+                    library: library,
+                    size: double.infinity,
                   ),
+                ),
+                const SizedBox(height: 24),
+                Text(
+                  track?.title ?? 'Elige una canción',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.headlineMedium,
+                ),
+                Text(
+                  '${track?.artist ?? ''} · ${track?.album ?? ''}',
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 24),
+              ],
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  if (!widget.expanded)
+                    Artwork(id: track?.id, library: library),
+                  if (!widget.expanded) const SizedBox(width: 12),
+                  if (!widget.expanded)
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            track?.title ?? 'Elige una canción',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          Text(
+                            track?.artist ?? 'Tu música permanece contigo',
+                            style: Theme.of(context).textTheme.bodySmall,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
+                    ),
+                  if (!widget.expanded)
+                    IconButton(
+                      tooltip: 'Abrir reproductor',
+                      onPressed: openPlayer,
+                      icon: const Icon(Icons.open_in_full),
+                    ),
                   IconButton(
                     tooltip: 'Anterior',
                     onPressed: track == null ? null : audio.skipToPrevious,
@@ -781,6 +1172,12 @@ class _PlayerPanelState extends State<PlayerPanel> {
                     builder: (context, snapshot) {
                       final playing = snapshot.data?.playing ?? false;
                       return IconButton.filled(
+                        style: widget.expanded
+                            ? IconButton.styleFrom(
+                                minimumSize: const Size(72, 72),
+                                iconSize: 36,
+                              )
+                            : null,
                         tooltip: playing ? 'Pausar' : 'Reproducir',
                         onPressed: track == null
                             ? null
@@ -849,17 +1246,34 @@ class _PlayerPanelState extends State<PlayerPanel> {
                       0,
                       total,
                     );
-                    return SizedBox(
-                      height: 28,
-                      child: Slider(
-                        value: current.toDouble(),
-                        max: total > 0 ? total.toDouble() : 1,
-                        onChanged: total <= 0
-                            ? null
-                            : (value) => audio.seek(
-                                Duration(milliseconds: value.round()),
-                              ),
-                      ),
+                    String time(int ms) =>
+                        '${ms ~/ 60000}:${(ms ~/ 1000 % 60).toString().padLeft(2, '0')}';
+                    final slider = Slider(
+                      value: current.toDouble(),
+                      max: total > 0 ? total.toDouble() : 1,
+                      onChanged: total <= 0
+                          ? null
+                          : (value) => audio.seek(
+                              Duration(milliseconds: value.round()),
+                            ),
+                    );
+                    return Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        SizedBox(height: 28, child: slider),
+                        if (widget.expanded)
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(time(current)),
+                                const Text('Audio local'),
+                                Text(time(total)),
+                              ],
+                            ),
+                          ),
+                      ],
                     );
                   },
                 ),
@@ -873,8 +1287,14 @@ class _PlayerPanelState extends State<PlayerPanel> {
 }
 
 class Artwork extends StatefulWidget {
-  const Artwork({super.key, required this.id, required this.library});
+  const Artwork({
+    super.key,
+    required this.id,
+    required this.library,
+    this.size = 44,
+  });
   final String? id;
+  final double size;
   final LibraryController library;
   @override
   State<Artwork> createState() => _ArtworkState();
@@ -900,21 +1320,21 @@ class _ArtworkState extends State<Artwork> {
 
   @override
   Widget build(BuildContext context) => SizedBox(
-    width: 44,
-    height: 44,
+    width: widget.size,
+    height: widget.size,
     child: ClipRRect(
       borderRadius: BorderRadius.circular(8),
       child: FutureBuilder(
         future: image,
         builder: (context, snapshot) => snapshot.data == null
             ? const ColoredBox(
-                color: Color(0xff334039),
+                color: Color(0xff272a32),
                 child: Icon(Icons.album_outlined),
               )
             : Image.memory(
                 snapshot.data!,
                 fit: BoxFit.cover,
-                cacheWidth: 128,
+                cacheWidth: widget.size > 100 ? 600 : 128,
                 errorBuilder: (_, error, stack) =>
                     const Icon(Icons.album_outlined),
               ),

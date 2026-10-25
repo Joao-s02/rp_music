@@ -1,7 +1,7 @@
 name: rp_music
 description: Reproductor local extensible para Android y Windows.
 publish_to: none
-version: 0.2.2+4
+version: 0.2.3+5
 environment:
   sdk: ^3.13.5
 dependencies:
@@ -23,3 +23,12 @@ dev_dependencies:
   flutter_lints: ^6.0.0
 flutter:
   uses-material-design: true
+  assets:
+    - assets/branding/rp-music-variant-a.png
+  fonts:
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/Inter.ttf
+    - family: Plus Jakarta Sans
+      fonts:
+        - asset: assets/fonts/PlusJakartaSans.ttf

@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="es"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@600;700;800&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Plus+Jakarta+Sans:wght@100..900&display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"on-secondary":"#3c0091","primary-fixed-dim":"#28ddcf","on-primary-fixed":"#00201d","outline-variant":"#3b4a47","surface-container-highest":"#32353d","on-background":"#e1e2ec","secondary":"#d0bcff","primary-fixed":"#56faeb","on-tertiary-fixed":"#2d1600","on-tertiary-fixed-variant":"#6a3b00","secondary-fixed":"#e9ddff","tertiary-container":"#ffa94f","outline":"#859491","surface-variant":"#32353d","on-primary-container":"#00554f","on-error-container":"#ffdad6","on-secondary-container":"#c4abff","surface-dim":"#10131a","inverse-surface":"#e1e2ec","tertiary":"#ffcfa3","tertiary-fixed":"#ffdcbf","surface-container-lowest":"#0b0e15","on-tertiary":"#4a2800","on-tertiary-container":"#713f00","secondary-container":"#571bc1","secondary-fixed-dim":"#d0bcff","surface-container-high":"#272a32","surface-bright":"#363941","on-error":"#690005","on-secondary-fixed-variant":"#5516be","on-secondary-fixed":"#23005c","surface-container-low":"#191b23","surface":"#10131a","primary":"#47efe0","primary-container":"#00d2c4","on-primary-fixed-variant":"#00504a","surface-container":"#1d1f27","background":"#10131a","surface-tint":"#28ddcf","error":"#ffb4ab","inverse-on-surface":"#2d3038","inverse-primary":"#006a63","on-primary":"#003733","on-surface-variant":"#bacac7","error-container":"#93000a","on-surface":"#e1e2ec","tertiary-fixed-dim":"#ffb872"},borderRadius:{DEFAULT:"0.25rem",lg:"0.5rem",xl:"0.75rem",full:"9999px"},spacing:{"gutter-desktop":"1.5rem",margin:"1rem","margin-desktop":"2rem","space-lg":"1.5rem","space-xl":"2rem","space-sm":"0.5rem","space-md":"1rem",gutter:"1rem","space-xs":"0.25rem"},fontFamily:{"headline-md":["Plus Jakarta Sans"],"label-md":["Inter"],"headline-lg":["Plus Jakarta Sans"],"body-md":["Inter"],"display-lg":["Plus Jakarta Sans"],"headline-lg-mobile":["Plus Jakarta Sans"],"body-lg":["Inter"],"body-sm":["Inter"],"code-xs":["Inter"],"label-sm":["Inter"]},fontSize:{"headline-md":["1.5rem",{lineHeight:"2rem",fontWeight:"600"}],"label-md":["0.875rem",{lineHeight:"1.25rem",fontWeight:"600"}],"headline-lg":["2.25rem",{lineHeight:"2.75rem",fontWeight:"700"}],"body-md":["1rem",{lineHeight:"1.5rem",fontWeight:"400"}],"display-lg":["3.5rem",{lineHeight:"4rem",fontWeight:"800"}],"headline-lg-mobile":["1.75rem",{lineHeight:"2.25rem",fontWeight:"700"}],"body-lg":["1.125rem",{lineHeight:"1.75rem",fontWeight:"400"}],"body-sm":["0.875rem",{lineHeight:"1.25rem",fontWeight:"400"}],"code-xs":["0.6875rem",{lineHeight:"0.875rem",fontWeight:"500"}],"label-sm":["0.75rem",{lineHeight:"1rem",fontWeight:"500"}]}}}};</script></head><body class="bg-background font-body-md text-on-surface select-none antialiased min-h-screen"><header class="fixed top-0 left-0 right-0 h-16 z-50 bg-surface-container-lowest/80 backdrop-blur-xl flex items-center justify-between px-space-md shadow-[0_1px_8px_rgba(0,0,0,0.35)]"><div class="flex items-center gap-space-md w-72"><div class="w-8 h-8 rounded-lg bg-surface-container-high flex items-center justify-center text-primary shadow-[0_0_12px_rgba(0,210,196,0.2)]"><span class="material-symbols-outlined text-[20px]">graphic_eq</span></div><div class="flex flex-col"><span class="font-headline-md text-body-md tracking-tight text-on-surface font-semibold">RP Music</span><span class="font-code-xs text-code-xs text-on-surface-variant flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-primary inline-block"></span>3,420 pistas locales</span></div></div><div class="flex-1 max-w-xl mx-space-lg"><div class="relative flex items-center"><span class="material-symbols-outlined absolute left-3 text-on-surface-variant text-[18px]">search</span><input class="w-full h-9 pl-9 pr-20 bg-surface-container-low rounded-lg font-body-sm text-body-sm text-on-surface placeholder:text-outline focus:outline-none focus:ring-1 focus:ring-primary/40" placeholder="Buscar pistas, álbumes, artistas..." readonly="" type="text"/><div class="absolute right-2 flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-surface-container-highest text-on-surface-variant font-code-xs text-code-xs">Ctrl + K</div></div></div><div class="flex items-center gap-space-sm"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div><div class="flex items-center ml-space-sm bg-surface-container-low/60 rounded-lg overflow-hidden"><button aria-label="Minimize window" class="w-9 h-8 flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" type="button"><span class="material-symbols-outlined text-[16px]">minimize</span></button><button aria-label="Maximize window" class="w-9 h-8 flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" type="button"><span class="material-symbols-outlined text-[16px]">check_box_outline_blank</span></button><button aria-label="Close window" class="w-9 h-8 flex items-center justify-center text-on-surface-variant hover:bg-error hover:text-on-error transition-colors" type="button"><span class="material-symbols-outlined text-[16px]">close</span></button></div></div></header><aside class="fixed left-0 top-16 bottom-24 w-64 bg-surface-container-lowest/60 backdrop-blur-xl z-40 flex flex-col justify-between py-space-md px-space-sm overflow-y-auto"><div class="flex flex-col gap-space-lg"><div class="flex flex-col gap-space-xs"><span class="px-space-sm font-label-sm text-label-sm text-outline uppercase tracking-wider">Biblioteca</span><nav class="flex flex-col gap-0.5" data-active-classes="bg-surface-container-high text-primary font-semibold"><a class="flex items-center gap-3 px-space-sm py-2 rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="biblioteca" href="#"><span class="material-symbols-outlined text-[20px]">queue_music</span><span>Biblioteca</span></a><a class="flex items-center gap-3 px-space-sm py-2 rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="albumes" href="#"><span class="material-symbols-outlined text-[20px]">album</span><span>Álbumes</span></a><a class="flex items-center gap-3 px-space-sm py-2 rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="artistas" href="#"><span class="material-symbols-outlined text-[20px]">mic</span><span>Artistas</span></a><a class="flex items-center gap-3 px-space-sm py-2 rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="carpetas-locales" href="#"><span class="material-symbols-outlined text-[20px]">folder</span><span>Carpetas locales</span></a></nav></div><div class="flex flex-col gap-space-xs"><span class="px-space-sm font-label-sm text-label-sm text-outline uppercase tracking-wider">Colecciones & Listas</span><nav class="flex flex-col gap-0.5" data-active-classes="bg-surface-container-high text-primary font-semibold"><a class="flex items-center gap-3 px-space-sm py-2 rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="favoritos" href="#"><span class="material-symbols-outlined text-[20px] text-error">favorite</span><span>Favoritos</span></a><a class="flex items-center gap-3 px-space-sm py-2 rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="mas-reproducidas" href="#"><span class="material-symbols-outlined text-[20px]">local_fire_department</span><span>Más reproducidas</span></a><a class="flex items-center gap-3 px-space-sm py-2 rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="nuevas-incorporaciones" href="#"><span class="material-symbols-outlined text-[20px]">auto_awesome</span><span>Nuevas incorporaciones</span></a></nav></div></div><div class="flex flex-col gap-space-xs pt-space-md"><span class="px-space-sm font-label-sm text-label-sm text-outline uppercase tracking-wider">Sistema</span><nav class="flex flex-col gap-0.5" data-active-classes="bg-surface-container-high text-primary font-semibold"><a class="flex items-center justify-between px-space-sm py-2 rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="extensiones-de-la-comunidad" href="#"><div class="flex items-center gap-3"><span class="material-symbols-outlined text-[20px]">extension</span><span>Extensiones</span></div><span class="px-1.5 py-0.2 bg-secondary-container text-on-secondary-container rounded font-code-xs text-code-xs font-semibold">v1.0</span></a><a aria-current="page" class="flex items-center gap-3 px-space-sm py-2 rounded-lg transition-colors bg-surface-container-high text-primary font-semibold" data-path="ajustes-de-audio-y-sistema" href="#"><span class="material-symbols-outlined text-[20px]">tune</span><span>Ajustes de Audio</span></a></nav></div></aside><div class="pl-64 pb-24"><main class="relative w-full pt-16 bg-surface min-h-[calc(100vh-6rem)]"><div class="flex flex-col w-full">
+<!-- Audio Settings & Plugin Control Deck -->
+<div class="px-space-md py-space-lg max-w-7xl mx-auto w-full flex flex-col gap-space-lg">
+<!-- Header Block & Breadcrumb / Status Metadata -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-space-md">
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center gap-2">
+<span class="font-code-xs text-code-xs uppercase tracking-widest text-primary flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+            DirectX & WASAPI Core Audio v2.4.1
+          </span>
+<span class="text-outline text-body-sm">•</span>
+<span class="font-code-xs text-code-xs text-secondary bg-surface-container-high px-2 py-0.5 rounded">64-bit Exclusive Host</span>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">Configuración del Sistema & Plugins</h1>
+</div>
+<!-- Right Quick Actions -->
+<div class="flex items-center gap-space-sm">
+<button class="flex items-center gap-2 px-space-md py-2 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface transition-all text-label-md font-label-md" type="button">
+<span class="material-symbols-outlined text-[18px] text-primary">restart_alt</span>
+<span>Restablecer DSP</span>
+</button>
+<button class="flex items-center gap-2 px-space-md py-2 rounded-lg bg-primary text-on-primary font-label-md text-label-md shadow-[0_0_16px_rgba(0,210,196,0.35)] hover:brightness-110 active:scale-95 transition-all" type="button">
+<span class="material-symbols-outlined text-[18px]">save</span>
+<span>Guardar Cambios</span>
+</button>
+</div>
+</div>
+<!-- Sub-navigation Tabs -->
+<div class="bg-surface-container-lowest/80 backdrop-blur-md p-1.5 rounded-xl flex items-center gap-1 overflow-x-auto shadow-sm">
+<button class="flex items-center gap-2 px-space-md py-2.5 rounded-lg bg-surface-container-high text-primary font-label-md text-label-md transition-all shadow-sm" type="button">
+<span class="material-symbols-outlined text-[18px]">settings_input_component</span>
+<span>Salida de Audio & DAC</span>
+<span class="w-2 h-2 rounded-full bg-primary inline-block ml-1"></span>
+</button>
+<button class="flex items-center gap-2 px-space-md py-2.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all font-label-md text-label-md" type="button">
+<span class="material-symbols-outlined text-[18px]">folder_special</span>
+<span>Carpetas Locales & Indexación</span>
+</button>
+<button class="flex items-center gap-2 px-space-md py-2.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all font-label-md text-label-md" type="button">
+<span class="material-symbols-outlined text-[18px]">palette</span>
+<span>Apariencia & Interfaz</span>
+</button>
+<button class="flex items-center gap-2 px-space-md py-2.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all font-label-md text-label-md" type="button">
+<span class="material-symbols-outlined text-[18px]">extension</span>
+<span>Ecosistema de Extensiones</span>
+<span class="px-1.5 py-0.2 bg-secondary-container text-on-secondary-container rounded font-code-xs text-code-xs">4 Activadas</span>
+</button>
+</div>
+<!-- Main Settings 2-Column Responsive Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-start">
+<!-- LEFT COLUMN: Audiophile Audio Engine & Hardware Configuration (7 Cols) -->
+<div class="lg:col-span-7 flex flex-col gap-space-lg">
+<!-- SECTION 1: Audio Hardware Core Engine -->
+<div class="bg-surface-container rounded-xl p-space-lg flex flex-col gap-space-md shadow-md relative overflow-hidden">
+<div class="absolute -right-8 -bottom-8 w-48 h-48 bg-primary/5 rounded-full blur-3xl pointer-events-none"></div>
+<div class="flex items-center justify-between pb-space-xs">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-surface-container-high flex items-center justify-center text-primary shadow-[0_0_12px_rgba(0,210,196,0.15)]">
+<span class="material-symbols-outlined text-[22px]">tune</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-md text-headline-md text-on-surface">Motor de Audio Audiófilo</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Windows 11 Core Audio Architecture & Subsystem</span>
+</div>
+</div>
+<div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary/10 text-primary font-code-xs text-code-xs">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+              Bit-Perfect Activo
+            </div>
+</div>
+<!-- Driver Output Selector (WASAPI Exclusive) -->
+<div class="flex flex-col gap-2 pt-space-xs">
+<div class="flex items-center justify-between">
+<label class="font-label-md text-label-md text-on-surface flex items-center gap-1.5" for="audio-driver-select">
+<span>Protocolo de Controlador de Audio</span>
+<span class="material-symbols-outlined text-outline text-[16px] cursor-help" title="WASAPI Exclusivo salta el mezclador del sistema operativo Windows para una ruta de señal pura.">help</span>
+</label>
+<span class="font-code-xs text-code-xs text-primary-fixed-dim">Latencia estimada: 1.67ms</span>
+</div>
+<div class="relative">
+<select class="w-full h-11 bg-surface-container-low text-on-surface px-4 pr-10 rounded-lg font-body-sm text-body-sm appearance-none focus:outline-none focus:ring-1 focus:ring-primary shadow-inner cursor-pointer" id="audio-driver-select">
+<option selected="" value="wasapi_exclusive">Modo Exclusivo WASAPI (Baja latencia bit-perfect)</option>
+<option value="directsound">DirectSound (Mezclador estándar compartido de Windows)</option>
+<option value="asio">ASIO 2.0 (Controladores profesionales Steinberg)</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-3 pointer-events-none text-on-surface-variant text-[20px]">expand_more</span>
+</div>
+</div>
+<!-- Active Output Device Card with Live Test Trigger -->
+<div class="bg-surface-container-low p-space-md rounded-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-space-md">
+<div class="flex items-center gap-3.5">
+<div class="w-12 h-12 rounded-lg bg-surface-container-high flex-shrink-0 flex items-center justify-center text-primary shadow-sm">
+<span class="material-symbols-outlined text-[24px]">speaker</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface">Topping DX3 Pro+ USB DAC</span>
+<div class="flex items-center gap-2 font-code-xs text-code-xs text-on-surface-variant">
+<span class="text-secondary font-semibold">PCM 32-bit / 384kHz</span>
+<span>•</span>
+<span>DSD512 Nativo</span>
+<span>•</span>
+<span class="text-primary-fixed-dim">USB Audio 2.0</span>
+</div>
+</div>
+</div>
+<button class="w-full sm:w-auto px-4 py-2 rounded-lg bg-surface-container-highest hover:bg-surface-bright text-on-surface font-label-md text-label-md flex items-center justify-center gap-2 transition-all active:scale-95 shadow-sm" id="btn-test-sound" type="button">
+<span class="material-symbols-outlined text-primary text-[18px]">volume_up</span>
+<span>Probar Tono 1kHz</span>
+</button>
+</div>
+<!-- Audiophile Switch 1: Bit-Perfect -->
+<div class="flex items-center justify-between py-2 px-1">
+<div class="flex flex-col pr-space-md">
+<span class="font-label-md text-label-md text-on-surface">Reproducción Bit-Perfect</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Evita la degradación y el remuestreado del mezclador compartido de Windows (KSMixer).</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer select-none">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-12 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-6 peer-checked:after:border-on-primary-container after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-on-surface after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-container peer-checked:after:bg-on-primary-fixed"></div>
+</label>
+</div>
+<!-- Hardware Buffer Size Interactive Slider -->
+<div class="bg-surface-container-low p-space-md rounded-xl flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[18px]">memory</span>
+<span class="font-label-md text-label-md text-on-surface">Hardware Buffer Size (Muestras ASIO/WASAPI)</span>
+</div>
+<span class="font-code-xs text-code-xs text-primary bg-surface-container-high px-2 py-1 rounded" id="buffer-display">64 samples (1.5ms) - Latencia ultra baja</span>
+</div>
+<input class="w-full h-1.5 bg-surface-container-highest rounded-lg appearance-none cursor-pointer accent-primary focus:outline-none" id="buffer-slider" max="1024" min="32" step="32" type="range" value="64"/>
+<div class="flex justify-between font-code-xs text-code-xs text-outline px-1">
+<span>32 (0.7ms)</span>
+<span>64 (1.5ms) [Recomendado]</span>
+<span>256 (5.8ms)</span>
+<span>1024 (23ms)</span>
+</div>
+</div>
+<!-- Audiophile Switch 2: Dither & Noise Shaping -->
+<div class="flex items-center justify-between py-2 px-1">
+<div class="flex flex-col pr-space-md">
+<span class="font-label-md text-label-md text-on-surface">Dither triangular (TPDF) en pistas de 16-bit</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Minimiza errores de cuantización al renderizar masters CD RedBook hacia DAC de 24/32-bit.</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer select-none">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-12 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-6 peer-checked:after:border-on-primary-container after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-on-surface after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-container peer-checked:after:bg-on-primary-fixed"></div>
+</label>
+</div>
+<!-- Live Signal Chain Flow Vis (Inline SVG) -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl flex flex-col gap-2">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-outline">Cadena de Señal de Audio en Vivo</span>
+<div class="w-full h-14 flex items-center justify-between px-2 overflow-x-auto text-center">
+<!-- Source -->
+<div class="flex flex-col items-center min-w-[70px]">
+<span class="material-symbols-outlined text-primary text-[20px]">audio_file</span>
+<span class="font-code-xs text-code-xs text-on-surface">FLAC 24/96</span>
+</div>
+<span class="text-primary-fixed-dim">➔</span>
+<!-- Decoder -->
+<div class="flex flex-col items-center min-w-[70px]">
+<span class="material-symbols-outlined text-secondary text-[20px]">code</span>
+<span class="font-code-xs text-code-xs text-on-surface">LibFLAC Core</span>
+</div>
+<span class="text-primary-fixed-dim">➔</span>
+<!-- DSP / EQ -->
+<div class="flex flex-col items-center min-w-[70px]">
+<span class="material-symbols-outlined text-primary text-[20px]">equalizer</span>
+<span class="font-code-xs text-code-xs text-on-surface">Parametric 32</span>
+</div>
+<span class="text-primary-fixed-dim">➔</span>
+<!-- WASAPI Exclusive -->
+<div class="flex flex-col items-center min-w-[80px]">
+<span class="material-symbols-outlined text-primary-fixed text-[20px]">bolt</span>
+<span class="font-code-xs text-code-xs text-primary-fixed font-semibold">WASAPI Direct</span>
+</div>
+<span class="text-primary-fixed-dim">➔</span>
+<!-- Endpoint DAC -->
+<div class="flex flex-col items-center min-w-[70px]">
+<span class="material-symbols-outlined text-secondary text-[20px]">album</span>
+<span class="font-code-xs text-code-xs text-on-surface">Topping DX3</span>
+</div>
+</div>
+</div>
+</div>
+<!-- SECTION 2: Windows Local Directories Manager -->
+<div class="bg-surface-container rounded-xl p-space-lg flex flex-col gap-space-md shadow-md">
+<div class="flex items-center justify-between pb-space-xs">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-surface-container-high flex items-center justify-center text-primary shadow-[0_0_12px_rgba(0,210,196,0.15)]">
+<span class="material-symbols-outlined text-[22px]">folder_copy</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-md text-headline-md text-on-surface">Gestor de Carpetas Locales</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Monitoreo de sistema de archivos NTFS/ReFS en tiempo real</span>
+</div>
+</div>
+<button class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary/10 hover:bg-primary/20 text-primary font-label-md text-label-md transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">add_circle</span>
+<span>Añadir Carpeta</span>
+</button>
+</div>
+<!-- Directory 1 -->
+<div class="bg-surface-container-low p-space-md rounded-xl flex items-center justify-between gap-space-md hover:bg-surface-container-high/60 transition-colors">
+<div class="flex items-center gap-3 min-w-0">
+<div class="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-[22px]">hard_drive</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-md text-label-md text-on-surface truncate font-semibold">D:\Music\Hi-Res Library</span>
+<div class="flex items-center gap-2 font-code-xs text-code-xs text-on-surface-variant">
+<span class="text-primary font-semibold">2,180 pistas</span>
+<span>•</span>
+<span class="flex items-center gap-1 text-primary-fixed-dim">
+<span class="w-1.5 h-1.5 rounded-full bg-primary inline-block"></span>
+                    Monitoreo en tiempo real activo
+                  </span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-2 flex-shrink-0">
+<button class="p-2 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest transition-colors" title="Forzar re-escaneo" type="button">
+<span class="material-symbols-outlined text-[18px]">sync</span>
+</button>
+<button class="p-2 rounded-lg text-on-surface-variant hover:text-error hover:bg-surface-container-highest transition-colors" title="Eliminar monitor" type="button">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+</button>
+</div>
+</div>
+<!-- Directory 2 -->
+<div class="bg-surface-container-low p-space-md rounded-xl flex items-center justify-between gap-space-md hover:bg-surface-container-high/60 transition-colors">
+<div class="flex items-center gap-3 min-w-0">
+<div class="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[22px]">folder</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-md text-label-md text-on-surface truncate font-semibold">C:\Users\Ruben\Music</span>
+<div class="flex items-center gap-2 font-code-xs text-code-xs text-on-surface-variant">
+<span class="text-primary font-semibold">1,240 pistas</span>
+<span>•</span>
+<span class="flex items-center gap-1 text-primary-fixed-dim">
+<span class="w-1.5 h-1.5 rounded-full bg-primary inline-block"></span>
+                    Monitoreo en tiempo real activo
+                  </span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-2 flex-shrink-0">
+<button class="p-2 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest transition-colors" title="Forzar re-escaneo" type="button">
+<span class="material-symbols-outlined text-[18px]">sync</span>
+</button>
+<button class="p-2 rounded-lg text-on-surface-variant hover:text-error hover:bg-surface-container-highest transition-colors" title="Eliminar monitor" type="button">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+</button>
+</div>
+</div>
+<!-- Filter condition: Ignore audio below 30s -->
+<div class="flex items-center justify-between py-2 px-1">
+<div class="flex flex-col pr-space-md">
+<span class="font-label-md text-label-md text-on-surface">Filtrar archivos menores a 30 segundos</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Descarta notas de voz de WhatsApp, tonos de notificación y muestras incompletas.</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer select-none">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-12 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-6 peer-checked:after:border-on-primary-container after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-on-surface after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-container peer-checked:after:bg-on-primary-fixed"></div>
+</label>
+</div>
+</div>
+</div>
+<!-- RIGHT COLUMN: Community Extensions & Plugins Engine (5 Cols) -->
+<div class="lg:col-span-5 flex flex-col gap-space-lg">
+<!-- Architecture Banner -->
+<div class="bg-gradient-to-br from-surface-container to-surface-container-high rounded-xl p-space-lg relative overflow-hidden shadow-md flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-secondary text-[24px]">verified_user</span>
+<span class="font-headline-md text-body-md text-on-surface font-semibold">RP Music Plugin Engine</span>
+</div>
+<span class="px-2 py-0.5 rounded bg-secondary-container text-on-secondary-container font-code-xs text-code-xs font-semibold">v1.0 Sandboxed</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+            Entorno seguro de ejecución aislado en WebAssembly y Chromium V8 con enlaces directos C++ a pipelines de renderizado DSP.
+          </p>
+<div class="flex items-center gap-space-sm pt-1">
+<button class="flex-1 py-2 px-3 rounded-lg bg-primary text-on-primary font-label-md text-label-md flex items-center justify-center gap-2 shadow-[0_0_14px_rgba(0,210,196,0.3)] hover:brightness-110 active:scale-95 transition-all" type="button">
+<span class="material-symbols-outlined text-[18px]">public</span>
+<span>Explorar Repositorio</span>
+</button>
+<button class="py-2 px-3 rounded-lg bg-surface-container-low hover:bg-surface-container-highest text-on-surface font-label-md text-label-md flex items-center justify-center gap-2 transition-all" type="button">
+<span class="material-symbols-outlined text-[18px] text-primary">upload_file</span>
+<span>Instalar .rpext</span>
+</button>
+</div>
+</div>
+<!-- Section: Extension List Header -->
+<div class="flex items-center justify-between px-1">
+<div class="flex items-center gap-2">
+<span class="font-headline-md text-body-lg text-on-surface font-semibold">Extensiones Instaladas</span>
+<span class="w-6 h-6 rounded-full bg-surface-container-high text-primary font-code-xs text-code-xs flex items-center justify-center">4</span>
+</div>
+<span class="font-code-xs text-code-xs text-outline cursor-pointer hover:text-primary transition-colors">Buscar actualizaciones</span>
+</div>
+<!-- Extension Cards Grid/List -->
+<div class="flex flex-col gap-space-md">
+<!-- EXTENSION 1: Dynamic LRC -->
+<div class="bg-surface-container p-space-md rounded-xl flex flex-col gap-3 shadow-sm hover:translate-y-[-2px] transition-transform">
+<div class="flex items-start justify-between gap-space-sm">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-secondary/15 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-[22px]">lyrics</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-2">
+<span class="font-label-md text-label-md text-on-surface font-semibold">Dynamic LRC Lyrics Sync</span>
+<span class="font-code-xs text-code-xs text-secondary bg-secondary-container/30 px-1.5 py-0.2 rounded">v1.2.0</span>
+</div>
+<span class="font-code-xs text-code-xs text-on-surface-variant">Por @soundcraft • Local Engine</span>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer select-none">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-10 h-5 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-5 peer-checked:after:border-on-primary-container after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-on-surface after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary-container peer-checked:after:bg-on-primary-fixed"></div>
+</label>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+              Sincronizador local de letras milisegundo a milisegundo con lectura de archivos .lrc y ventana superpuesta Always-on-Top estilo Karaoke.
+            </p>
+<div class="flex items-center justify-between pt-1">
+<span class="font-code-xs text-code-xs text-primary-fixed-dim flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+                Activo en panel flotante
+              </span>
+<button class="p-1 rounded text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">settings</span>
+</button>
+</div>
+</div>
+<!-- EXTENSION 2: Parametric 32-Band EQ -->
+<div class="bg-surface-container p-space-md rounded-xl flex flex-col gap-3 shadow-sm hover:translate-y-[-2px] transition-transform">
+<div class="flex items-start justify-between gap-space-sm">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-primary/15 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[22px]">graphic_eq</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-2">
+<span class="font-label-md text-label-md text-on-surface font-semibold">Parametric 32-Band Equalizer Pro</span>
+<span class="font-code-xs text-code-xs text-primary-fixed-dim bg-primary/15 px-1.5 py-0.2 rounded">v2.0</span>
+</div>
+<span class="font-code-xs text-code-xs text-on-surface-variant">Por AudiophileDSP Labs • Direct2D</span>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer select-none">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-10 h-5 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-5 peer-checked:after:border-on-primary-container after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-on-surface after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary-container peer-checked:after:bg-on-primary-fixed"></div>
+</label>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+              Filtro IIR de fase lineal con curvas Q variables, soporte Harman Target para auriculares y compensación de ganancia automática.
+            </p>
+<div class="flex items-center justify-between pt-1">
+<span class="font-code-xs text-code-xs text-primary-fixed-dim flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">graphic_eq</span>
+                Preset: Sennheiser HD650 Target
+              </span>
+<button class="p-1 rounded text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">tune</span>
+</button>
+</div>
+</div>
+<!-- EXTENSION 3: WebGL Spectrum 3D -->
+<div class="bg-surface-container p-space-md rounded-xl flex flex-col gap-3 shadow-sm hover:translate-y-[-2px] transition-transform">
+<div class="flex items-start justify-between gap-space-sm">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-tertiary-container/20 flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined text-[22px]">view_in_ar</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-2">
+<span class="font-label-md text-label-md text-on-surface font-semibold">WebGL Spectrum Visualizer 3D</span>
+<span class="font-code-xs text-code-xs text-tertiary bg-tertiary-container/30 px-1.5 py-0.2 rounded">v0.9.5</span>
+</div>
+<span class="font-code-xs text-code-xs text-on-surface-variant">Por @gl_render • GPU DirectX 12</span>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer select-none">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-10 h-5 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-5 peer-checked:after:border-on-primary-container after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-on-surface after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary-container peer-checked:after:bg-on-primary-fixed"></div>
+</label>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+              Espectrograma y visualizador de cascada en tiempo real a 120 FPS sin caída de rendimiento con shaders de neón cian y violeta.
+            </p>
+<div class="flex items-center justify-between pt-1">
+<span class="font-code-xs text-code-xs text-primary-fixed-dim flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">speed</span>
+                Renderizando a 120 FPS
+              </span>
+<button class="p-1 rounded text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">settings</span>
+</button>
+</div>
+</div>
+<!-- EXTENSION 4: MusicBrainz Auto-Tagger Offline -->
+<div class="bg-surface-container p-space-md rounded-xl flex flex-col gap-3 shadow-sm hover:translate-y-[-2px] transition-transform">
+<div class="flex items-start justify-between gap-space-sm">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center text-outline">
+<span class="material-symbols-outlined text-[22px]">loyalty</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-2">
+<span class="font-label-md text-label-md text-on-surface font-semibold">MusicBrainz Auto-Tagger Offline</span>
+<span class="font-code-xs text-code-xs text-outline bg-surface-container-highest px-1.5 py-0.2 rounded">v1.1</span>
+</div>
+<span class="font-code-xs text-code-xs text-on-surface-variant">Por Picard Community • Cache Local</span>
+</div>
+</div>
+<button class="flex items-center gap-1 px-2.5 py-1 rounded bg-secondary-container text-on-secondary-container hover:bg-secondary hover:text-on-secondary transition-colors font-code-xs text-code-xs font-semibold" type="button">
+<span class="material-symbols-outlined text-[14px]">download</span>
+<span>Actualizar v1.2</span>
+</button>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+              Reconocimiento acústico por huella digital Chromaprint para arreglar metadatos ID3 y descargar carátulas en 1400x1400 px.
+            </p>
+<div class="flex items-center justify-between pt-1">
+<span class="font-code-xs text-code-xs text-outline flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">offline_pin</span>
+                Base de datos local: 14.2 GB
+              </span>
+<button class="p-1 rounded text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">settings</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Inline Client Interaction Script for Audio Buffer & Test Tone Simulation -->
+<script>
+    (function initAudioSettingsInteractions() {
+      const slider = document.getElementById('buffer-slider');
+      const display = document.getElementById('buffer-display');
+      const btnTest = document.getElementById('btn-test-sound');
+
+      if (slider && display) {
+        slider.addEventListener('input', function(e) {
+          const val = parseInt(e.target.value, 10);
+          const ms = ((val / 44100) * 1000).toFixed(1);
+          let label = 'Latencia estándar';
+          if (val <= 64) label = 'Latencia ultra baja';
+          else if (val <= 128) label = 'Latencia baja equilibrada';
+          else if (val <= 512) label = 'Alta estabilidad para USB';
+          else label = 'Modo seguro';
+          display.textContent = `${val} samples (${ms}ms) - ${label}`;
+        });
+      }
+
+      if (btnTest) {
+        btnTest.addEventListener('click', function() {
+          const originalContent = btnTest.innerHTML;
+          btnTest.classList.add('bg-primary', 'text-on-primary');
+          btnTest.innerHTML = '<span class="material-symbols-outlined text-[18px] animate-spin">refresh</span><span>Generando 1kHz...</span>';
+          
+          try {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            if (AudioContext) {
+              const ctx = new AudioContext();
+              const osc = ctx.createOscillator();
+              const gain = ctx.createGain();
+              osc.type = 'sine';
+              osc.frequency.setValueAtTime(1000, ctx.currentTime);
+              gain.gain.setValueAtTime(0.08, ctx.currentTime);
+              gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.35);
+              osc.connect(gain);
+              gain.connect(ctx.destination);
+              osc.start();
+              osc.stop(ctx.currentTime + 0.35);
+            }
+          } catch (err) {
+            // Audio context fallback if audio permission restricted in environment
+          }
+
+          setTimeout(() => {
+            btnTest.classList.remove('bg-primary', 'text-on-primary');
+            btnTest.innerHTML = originalContent;
+          }, 800);
+        });
+      }
+    })();
+  </script>
+</div></main></div><footer class="fixed bottom-0 left-0 right-0 h-24 bg-surface-container-lowest/90 backdrop-blur-2xl z-50 flex items-center justify-between px-space-md shadow-[0_-4px_20px_rgba(0,0,0,0.5)]"><div class="flex items-center gap-space-md w-80"><div class="w-14 h-14 rounded-lg bg-surface-container-high flex-shrink-0 flex items-center justify-center overflow-hidden shadow-[0_4px_12px_rgba(0,0,0,0.4)]"><span class="material-symbols-outlined text-primary text-[28px]">music_note</span></div><div class="flex flex-col min-w-0"><div class="flex items-center gap-space-xs"><span class="font-label-md text-label-md text-on-surface truncate">Neon Horizons</span><span class="px-1.5 py-0.5 rounded bg-surface-container-highest font-code-xs text-code-xs text-secondary">FLAC 24-bit</span></div><span class="font-body-sm text-body-sm text-on-surface-variant truncate">Solar Drift • Cyber Odyssey</span></div><button aria-label="Favorite track" class="text-error hover:scale-110 transition-transform ml-1" type="button"><span class="material-symbols-outlined text-[20px]">favorite</span></button></div><div class="flex flex-col items-center gap-1.5 flex-1 max-w-2xl px-space-lg"><div class="flex items-center gap-space-md"><button aria-label="Shuffle" class="text-on-surface-variant hover:text-primary transition-colors" type="button"><span class="material-symbols-outlined text-[20px]">shuffle</span></button><button aria-label="Previous track" class="text-on-surface-variant hover:text-on-surface transition-colors" type="button"><span class="material-symbols-outlined text-[22px]">skip_previous</span></button><button aria-label="Play or Pause" class="w-11 h-11 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center hover:scale-105 active:scale-95 transition-transform shadow-[0_0_16px_rgba(0,210,196,0.35)]" type="button"><span class="material-symbols-outlined text-[24px]">pause</span></button><button aria-label="Next track" class="text-on-surface-variant hover:text-on-surface transition-colors" type="button"><span class="material-symbols-outlined text-[22px]">skip_next</span></button><button aria-label="Repeat mode" class="text-on-surface-variant hover:text-primary transition-colors" type="button"><span class="material-symbols-outlined text-[20px]">repeat</span></button></div><div class="w-full flex items-center gap-space-sm"><span class="font-code-xs text-code-xs text-on-surface-variant w-9 text-right">2:45</span><div class="relative flex-1 h-1.5 bg-surface-container-highest rounded-full overflow-hidden cursor-pointer group"><div class="absolute top-0 bottom-0 left-0 bg-primary-container rounded-full" style="width:65.7%"></div></div><span class="font-code-xs text-code-xs text-on-surface-variant w-9">4:18</span></div></div><div class="flex items-center justify-end gap-space-md w-80"><button aria-label="Toggle lyrics" class="text-on-surface-variant hover:text-on-surface transition-colors" type="button"><span class="material-symbols-outlined text-[20px]">lyrics</span></button><button aria-label="Toggle play queue" class="text-on-surface-variant hover:text-on-surface transition-colors" type="button"><span class="material-symbols-outlined text-[20px]">queue_music</span></button><div class="flex items-center gap-space-xs w-32"><span class="material-symbols-outlined text-[20px] text-on-surface-variant">volume_up</span><div class="relative flex-1 h-1.5 bg-surface-container-highest rounded-full overflow-hidden cursor-pointer"><div class="absolute top-0 bottom-0 left-0 bg-on-surface rounded-full" style="width:78%"></div></div><span class="font-code-xs text-code-xs text-on-surface-variant">78%</span></div><div class="px-2 py-1 rounded bg-surface-container-low font-code-xs text-code-xs text-primary-fixed-dim whitespace-nowrap">WASAPI Exclusivo • DAC USB</div></div></footer></body></html>

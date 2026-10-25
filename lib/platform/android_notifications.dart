@@ -31,6 +31,11 @@ class AndroidNotifications extends ChangeNotifier {
     }
   }
 
+  Future<Map<String, dynamic>> diagnostics() async => Map<String, dynamic>.from(
+    await _channel.invokeMapMethod<String, dynamic>('playbackDiagnostics') ??
+        {},
+  );
+
   Future<void> openSettings() =>
       _channel.invokeMethod<void>('notificationSettings');
 }
