@@ -5,6 +5,33 @@ actualizado: 2026-10-25
 ---
 # Registro de cambios
 
+## 2026-10-25 — Corrección de selección del compilador Java
+
+- El usuario pidió resolver el bloqueo de compilación Android. Se añadió Eclipse Temurin JDK 17.0.20.1+1 en la carpeta `.jdks` del usuario, descargado desde la API oficial de Adoptium y con SHA-256 verificado: E53A79C3C3D86865BD7E787903884331068E71321714FFD44F145785AFFC7CB0.
+- Gradle detectó el JDK completo, pero seguía priorizando el JRE actual: se seleccionó el nuevo JDK en JAVA_HOME del usuario y en `flutter config --jdk-dir`. Se conservan el JRE y el Java de Android Studio; no se modificaron dependencias ni se fijaron rutas personales en archivos Gradle versionados.
+- Guía reproducible en docs/COMPILACION.md, basada en documentación oficial de Adoptium y Gradle. Gradle javaToolchains confirmó Is JDK=true y javac 17.0.20.1. Tras seleccionar el JDK activo, desapareció el error JAVA_COMPILER.
+- La verificación Gradle directa encontró un registro automático que aún incluía integration_test de debug. El flujo completo `flutter build apk --release` regeneró los archivos de release y terminó con BUILD SUCCESSFUL. Evitar omitir esa preparación si los registros no corresponden al modo de compilación.
+- APK local 0.2.2+4 con nuevo icono: 54 358 404 bytes, firma v2 correcta, SHA-256 37E12C6997AEDB0E7784DEE7EA7F469B514B835CF6FA1D1079B4E5EEEF89DC4C. No se publicó ni se reemplazaron adjuntos distribuidos; pendiente prueba física. Estado actualizado en [[10 Estado del repositorio]] y [[15 Identidad visual e icono]].
+
+## 2026-10-25 — Variante A elegida e integrada como icono
+
+- El usuario eligió A y autorizó convertirla en icono de la aplicación. Sustituye los iconos Flutter de Android, Windows y web; se conserva el maestro y los antecedentes.
+- Android tiene cinco densidades y recurso adaptativo con margen; Windows ICO de siete resoluciones usado por ventana y bandeja; web incluye iconos para máscara y metadatos coherentes.
+- Se documentó la identidad vigente en [[15 Identidad visual e icono]]: marca, paleta, tipografía, espacios, formas, componentes y discrepancias entre tokens/narrativa del MD. El documento original permanece completo en assets/branding. No se rediseñó el tema Flutter.
+- Se añadió regeneración reproducible con tools/generar_iconos.py. Dimensiones PNG/ICO comprobadas, revisión visual del adaptativo, recursos Android compilados con AAPT2 y compilación Windows debug correcta. `git diff --check` sin errores.
+- APK completo sin validar: intentos Flutter cancelados tras espera sin resultado; intento Gradle offline falló porque Java 17 detectado es JRE sin JAVA_COMPILER para android_file_picker. No se alteró Java global. Pendiente JDK requerido y recompilación Android; sin publicación ni comprobación física de lanzadores.
+
+## 2026-10-25 — Tres variantes de icono para elegir
+
+- El usuario indicó que la primera propuesta no le convencía del todo y pidió variantes de la misma idea.
+- Se generaron, revisaron visualmente y conservaron tres PNG y sus prompts: geométrico, entrelazado y orgánico. Ver [[15 Identidad visual e icono]].
+- Ninguno está elegido o integrado; se conserva el original. Sin cambios de código, compilaciones ni publicaciones.
+
+## 2026-10-25 — Propuesta de icono desde boceto
+
+- A petición del usuario, se creó un PNG de RP con ecualizador siguiendo su boceto y el documento Nocturnal Pulse; recurso, referencia y prompt conservados en `assets/branding/`.
+- Revisión visual realizada: RP cian, cinco barras violetas y fondo oscuro. Propuesta pendiente de aprobación e integración por plataforma; no se cambiaron lanzadores ni se hicieron compilaciones o publicaciones. Ver [[15 Identidad visual e icono]].
+
 ## 2026-10-24 — Creación de la red de conocimiento
 
 - Se consolidaron la petición original y tres rondas de entrevista en [[08 Entrevista consolidada]].
@@ -97,3 +124,22 @@ actualizado: 2026-10-25
 ## Convención de registros siguientes
 
 Registrar fecha, petición o motivo, decisiones y su estado, notas afectadas, comprobaciones y límites, y siguientes pendientes. No rellenar resultados antes de verificarlos.
+
+## 2026-10-25 — Informe 0.2.2, rediseño Stitch y preparación local 0.2.3
+
+- Requisito: Galaxy A34/Poco X6 siguen sin controles con permiso concedido y APK ARM64; añadir eliminación de listas y cambiar interfaz por el ZIP entregado.
+- Implementado: adaptación visual Flutter móvil/escritorio con fuentes locales e identidad A; minirreproductor/reproductor completo, álbumes en tarjetas y eliminación confirmada/persistida sin borrar música.
+- Notificaciones: recursos dinámicos audio_service ausentes del APK anterior; regla de conservación ampliada, estado/cola/duración y errores de servicio observados, diagnóstico en Ajustes. La comparación release posterior confirmó la causa en emulador: iconos recortados producen CustomAction sin icono y cero notificaciones; protegidos producen una sesión/notificación sin errores. Sigue pendiente retesteo físico.
+- Verificado: 30 pruebas aprobadas, cuatro capturas revisadas con texto 130 %, prueba nativa debug y sonda release con notificación/sesión real y pausa/reanudación en emulador API 37. Límites y resultados finales en [[16 Pruebas 0.2.2 y rediseno 0.2.3]].
+- Se conserva el trabajo previo sin publicar, crear repositorios, enviar cambios a GitHub ni alterar historial. Faltan retesteo físico y pendientes previos de Tecno/Windows.
+
+### Resultado final del trabajo 0.2.3
+
+- Comparación release confirmada: la regla anterior produce CustomAction sin icono y ninguna notificación aun con permiso concedido; la regla nueva permite la sesión/notificación y pausa/reanudación sin errores. Comprobación automática añadida para rechazar APK sin los iconos.
+- 30 pruebas aprobadas, análisis limpio, revisión de cuatro capturas con texto ampliado e inicio normal de APK final comprobado en emulador. Se registró por separado un aviso transitorio de System UI del emulador y su recuperación, sin atribuirlo a RP Music.
+- APK universal (56 489 408 bytes), ARM64 (21 139 469) y ZIP Windows (14 438 895) preparados localmente con guías y SHA-256 en dist/0.2.3. Ambos APK firmados v2, versión 0.2.3+5 y certificado compatible con 0.2.2; recursos y alineación comprobados. Windows EXE 0.2.3+5 y contenido del ZIP verificados.
+- Pendiente: confirmación física Galaxy A34/Poco X6, problemas previos Tecno y cierre subjetivo Windows. Sin publicación ni cambios remotos. Ver [[16 Pruebas 0.2.2 y rediseno 0.2.3]].
+
+## Publicación solicitada de 0.2.3 — 2026-10-25
+
+El usuario autorizó publicar la release en GitHub. Se prepara `v0.2.3-alpha.1` como preliminar con fuentes, APK universal/ARM64, Windows x64, guías, ejemplo y SHA-256. Se mantienen los binarios comprobados; confirmar URL y adjuntos tras publicar.

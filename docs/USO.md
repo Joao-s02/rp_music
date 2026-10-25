@@ -1,14 +1,14 @@
 # RP Music — guía de uso
 
-Versión preliminar de correcciones **0.2.2-alpha.1** para Android y Windows. Reproductor de música local, sin cuenta ni conexión a internet obligatoria. Todavía no es una versión estable. Véase también [qué volver a probar](PRUEBAS-0.2.2.md).
+Versión preliminar **0.2.3-alpha.1** para Android y Windows. Reproductor de música local, sin cuenta ni conexión a internet obligatoria. Todavía no es una versión estable. Véase también [qué volver a probar](PRUEBAS-0.2.3.md).
 
 ## Qué descargar
 
-- **Android:** `RP-Music-0.2.2-android.apk`.
-- **Windows x64:** `RP-Music-0.2.2-windows-x64.zip`.
+- **Android:** `RP-Music-0.2.3-android.apk` (universal) o `RP-Music-0.2.3-android-arm64.apk` (más pequeño, ARM64).
+- **Windows x64:** `RP-Music-0.2.3-windows-x64.zip`.
 - **Ejemplo de personalización:** `descubrir.json`, también incluido dentro del ZIP de Windows.
 
-Los paquetes corregidos se distribuyen mediante la [release 0.2.2-alpha.1 de GitHub](https://github.com/Joao-s02/rp_music/releases/tag/v0.2.2-alpha.1). Los archivos automáticos «Source code» son para desarrollar; no son instaladores. La copia local de los adjuntos se prepara en `dist/0.2.2`.
+Paquetes de la [release 0.2.3-alpha.1](https://github.com/Joao-s02/rp_music/releases/tag/v0.2.3-alpha.1). La copia local se conserva en `dist/0.2.3`. Los archivos «Source code» de releases anteriores son para desarrollar, no instaladores.
 
 ## Instalar en Android
 
@@ -40,6 +40,8 @@ Es una aplicación portable para Windows x64: no incluye un instalador. Si Windo
 - Usa los controles inferiores para pausar, avanzar, retroceder o mover la posición. También puedes activar aleatorio y repetición de una canción.
 - El botón de cola permite ver y seleccionar canciones de la cola actual.
 - El corazón agrega o quita un favorito.
+- En móvil, pulsa título/carátula del minirreproductor para abrir la vista completa; incluye volumen, posición y cola.
+- En **Listas**, la papelera de la fila o del detalle permite eliminar una lista con confirmación, sin borrar archivos.
 - En **Listas**, crea una lista. Después usa el menú de una canción en la biblioteca para añadirla.
 - Dentro de una lista, **Quitar de la lista** retira esa entrada sin borrar el archivo. Los contadores distinguen disponibles y ausentes; **Quitar** permite limpiar las referencias no disponibles. Si las conservas, reaparecen al volver a la carpeta que las contiene.
 - En **Ajustes**, cambia entre tema oscuro y claro o elige otra carpeta.
@@ -66,14 +68,16 @@ El catálogo, favoritos, listas, tema y selección de extensión se guardan en e
 
 La canción, cola y posición se guardan por separado y se restauran en pausa al abrir. Durante reproducción se guarda aproximadamente cada cinco segundos; pausar o pasar a segundo plano también guarda. Un cierre forzado puede perder los últimos segundos desde el checkpoint anterior. Al abrir el teclado se ocultan temporalmente los controles inferiores para dar espacio a la búsqueda.
 
-Pendientes: letras, edición de etiquetas, edición de cola, controles multimedia del sistema Windows, fundidos, gapless, carátulas en toda la biblioteca, métricas y runtime programable de extensiones. En Windows, cerrar mantiene reproducción en bandeja por defecto; se cambia en Ajustes. Para cerrar completamente, usa Salir en el icono de bandeja.
+Pendientes: letras, edición de etiquetas, edición de cola, controles multimedia del sistema Windows, fundidos, gapless, métricas y runtime programable de extensiones. En Windows, cerrar mantiene reproducción en bandeja por defecto; se cambia en Ajustes. Para cerrar completamente, usa Salir en el icono de bandeja.
 
-El usuario comprobó buena fluidez en tres celulares y reportó los problemas que motivan esta compilación. Se aprobaron 25 pruebas automatizadas y una prueba nativa Windows con WAV generados. La mejora de escaneo en esos celulares, el cierre con los archivos originales de Windows, segundo plano y pantalla de bloqueo aún necesitan repetirse en dispositivos. No se han medido todavía RAM, batería o latencias.
+La versión actual tiene 30 pruebas automatizadas aprobadas y comprobación multimedia nativa debug/release en emulador Android API 37. La comparación release reprodujo la ausencia de controles cuando se eliminaban sus iconos y confirmó la notificación al conservarlos. Windows release fue compilado; su comprobación nativa anterior corresponde a 0.2.2. El cierre con los archivos originales de Windows y los controles en Galaxy A34/Poco X6 aún necesitan repetirse en dispositivos. No se han medido todavía RAM, batería o latencias.
 
 ## Reportar un problema
 
 Crear un [issue en GitHub](https://github.com/Joao-s02/rp_music/issues) con versión de la app, sistema/dispositivo, pasos para reproducir, resultado esperado y resultado observado. Si es un fallo de audio, indicar formato y códec si se conocen. Evitar compartir credenciales o archivos musicales privados.
 
-## Notificaciones y volumen en 0.2.2
+## Notificaciones y volumen en 0.2.3
 
-Android solicita el permiso de notificaciones al ingresar por primera vez en esta versión. Puedes gestionarlo desde Ajustes. El volumen y silencio están en la barra inferior y se conserva el nivel elegido. Consulta el plan de pruebas 0.2.2 para bandeja, cierre completo y diagnóstico Tecno.
+Se conservan los iconos multimedia que el optimizador eliminaba del APK y se actualiza la sesión con cola, índice y duración real. **Ajustes → Diagnóstico multimedia** permite comprobar notificación, sesión, canal y errores mientras suena una canción. El permiso concedido no demuestra por sí solo que el servicio haya publicado sus controles.
+
+El volumen y silencio se conservan. En móvil están en el reproductor completo; en Windows, en la franja inferior. Consulta el [plan de pruebas 0.2.3](PRUEBAS-0.2.3.md) para el retesteo de Galaxy/Poco. El problema de instalación Tecno anterior sigue sin confirmación física.

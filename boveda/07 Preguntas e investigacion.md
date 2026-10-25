@@ -20,6 +20,10 @@ Consultar fuentes oficiales actuales cuando se realice esta investigación y reg
 
 ## Preguntas de producto abiertas
 
+Identidad base resuelta el 2026-10-25: variante A elegida e integrada en recursos; parámetros en [[15 Identidad visual e icono]]. Aplicación y validación del tema de interfaz aún pendientes.
+
+Bloqueo de compilación por Java resuelto en esta máquina: JDK 17 completo instalado/seleccionado y APK release compilado y con firma verificada. Pasos de configuración en docs/COMPILACION.md; antecedentes y evidencia en [[09 Registro de cambios]].
+
 - ¿Android y Windows se desarrollarán desde el inicio en paralelo o habrá una plataforma inicial? La respuesta autorizó reconstruir, pero no resolvió este punto.
 - ¿Qué dispositivos, versiones mínimas de sistemas y biblioteca de referencia se usarán?
 - ¿Actualizar automáticamente el índice al abrir, observar cambios continuamente o hacerlo manualmente?
@@ -41,3 +45,7 @@ No es necesario preguntar todo de una vez. Resolver primero lo que bloquee la si
 [[11 Reconstruccion - primera base]] registra la elección provisional de audio/persistencia, acceso SAF Android y una prueba declarativa de personalización. La tabla anterior conserva las investigaciones completas pendientes; no interpretar el backend provisional como validación de gapless, ecualizador o todos los códecs. Se trabaja en ambas plataformas en este incremento. El escaneo actual es manual; falta validar con el usuario su comportamiento final.
 
 Relaciones: [[02 Vision y decisiones]], [[03 Biblioteca y reproduccion]], [[04 Extensiones]], [[05 Rendimiento]], [[06 Primera version]].
+
+## Notificaciones y rediseño posteriores a 0.2.2
+
+El informe físico sigue negativo en Galaxy A34 y Poco X6, incluido ARM64 y permiso concedido. Se detectaron iconos dinámicos ausentes del APK reducido y se corrigió su conservación. Sonda release con sesión/notificación real aprobada en emulador API 37; comparación causal posterior reprodujo el fallo CustomAction sin icono al recortar los recursos; detalle y validación final en [[16 Pruebas 0.2.2 y rediseno 0.2.3]]. La aplicación inicial del tema ya está implementada; no mantenerla como completamente pendiente ni inferir soporte de DSP/DAC/ecualizador desde el ZIP.

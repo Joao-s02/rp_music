@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="es" style=""><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Plus+Jakarta+Sans:wght@600;700;800&amp;family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;family=Plus+Jakarta+Sans:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}
+@keyframes rippleGlow {
+  0% { transform: scale(0.95); opacity: 0.8; }
+  50% { transform: scale(1.12); opacity: 0.3; }
+  100% { transform: scale(1.28); opacity: 0; }
+}
+.animate-ripple-wave {
+  animation: rippleGlow 2s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+}
+</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"on-secondary":"#3c0091","primary-fixed-dim":"#28ddcf","on-primary-fixed":"#00201d","outline-variant":"#3b4a47","surface-container-highest":"#32353d","on-background":"#e1e2ec","secondary":"#d0bcff","primary-fixed":"#56faeb","on-tertiary-fixed":"#2d1600","on-tertiary-fixed-variant":"#6a3b00","secondary-fixed":"#e9ddff","tertiary-container":"#ffa94f","outline":"#859491","surface-variant":"#32353d","on-primary-container":"#00554f","on-error-container":"#ffdad6","on-secondary-container":"#c4abff","surface-dim":"#10131a","inverse-surface":"#e1e2ec","tertiary":"#ffcfa3","tertiary-fixed":"#ffdcbf","surface-container-lowest":"#0b0e15","on-tertiary":"#4a2800","on-tertiary-container":"#713f00","secondary-container":"#571bc1","secondary-fixed-dim":"#d0bcff","surface-container-high":"#272a32","surface-bright":"#363941","on-error":"#690005","on-secondary-fixed-variant":"#5516be","on-secondary-fixed":"#23005c","surface-container-low":"#191b23","surface":"#10131a","primary":"#47efe0","primary-container":"#00d2c4","on-primary-fixed-variant":"#00504a","surface-container":"#1d1f27","background":"#10131a","surface-tint":"#28ddcf","error":"#ffb4ab","inverse-on-surface":"#2d3038","inverse-primary":"#006a63","on-primary":"#003733","on-surface-variant":"#bacac7","error-container":"#93000a","on-surface":"#e1e2ec","tertiary-fixed-dim":"#ffb872"},borderRadius:{DEFAULT:"0.25rem",lg:"0.5rem",xl:"0.75rem",full:"9999px"},spacing:{"gutter-desktop":"1.5rem",margin:"1rem","margin-desktop":"2rem","space-lg":"1.5rem","space-xl":"2rem","space-sm":"0.5rem","space-md":"1rem",gutter:"1rem","space-xs":"0.25rem"},fontFamily:{"headline-md":["Plus Jakarta Sans"],"label-md":["Inter"],"headline-lg":["Plus Jakarta Sans"],"body-md":["Inter"],"display-lg":["Plus Jakarta Sans"],"headline-lg-mobile":["Plus Jakarta Sans"],"body-lg":["Inter"],"body-sm":["Inter"],"code-xs":["Inter"],"label-sm":["Inter"]},fontSize:{"headline-md":["1.5rem",{lineHeight:"2rem",fontWeight:"600"}],"label-md":["0.875rem",{lineHeight:"1.25rem",fontWeight:"600"}],"headline-lg":["2.25rem",{lineHeight:"2.75rem",fontWeight:"700"}],"body-md":["1rem",{lineHeight:"1.5rem",fontWeight:"400"}],"display-lg":["3.5rem",{lineHeight:"4rem",fontWeight:"800"}],"headline-lg-mobile":["1.75rem",{lineHeight:"2.25rem",fontWeight:"700"}],"body-lg":["1.125rem",{lineHeight:"1.75rem",fontWeight:"400"}],"body-sm":["0.875rem",{lineHeight:"1.25rem",fontWeight:"400"}],"code-xs":["0.6875rem",{lineHeight:"0.875rem",fontWeight:"500"}],"label-sm":["0.75rem",{lineHeight:"1rem",fontWeight:"500"}]}}}};</script></head><body class="bg-background font-body-md text-on-surface select-none antialiased min-h-screen"><header class="fixed top-0 left-0 right-0 h-16 z-50 bg-surface-container-lowest/80 backdrop-blur-xl flex items-center justify-between px-space-md shadow-[0_1px_8px_rgba(0,0,0,0.35)]"><div class="flex items-center gap-space-md w-72"><div class="w-8 h-8 rounded-lg bg-surface-container-high flex items-center justify-center text-primary shadow-[0_0_12px_rgba(0,210,196,0.2)]"><span class="material-symbols-outlined text-[20px]">graphic_eq</span></div><div class="flex flex-col"><span class="font-headline-md text-body-md tracking-tight text-on-surface font-semibold">RP Music</span><span class="font-code-xs text-code-xs text-on-surface-variant flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-primary inline-block"></span>3,420 pistas locales</span></div></div><div class="flex-1 max-w-xl mx-space-lg"><div class="relative flex items-center"><span class="material-symbols-outlined absolute left-3 text-on-surface-variant text-[18px]">search</span><input class="w-full h-9 pl-9 pr-20 bg-surface-container-low rounded-lg font-body-sm text-body-sm text-on-surface placeholder:text-outline focus:outline-none focus:ring-1 focus:ring-primary/40" placeholder="Buscar pistas, álbumes, artistas..." readonly="" type="text"/><div class="absolute right-2 flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-surface-container-highest text-on-surface-variant font-code-xs text-code-xs">Ctrl + K</div></div></div><div class="flex items-center gap-space-sm"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div><div class="flex items-center ml-space-sm bg-surface-container-low/60 rounded-lg overflow-hidden"><button aria-label="Minimize window" class="w-9 h-8 flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" type="button"><span class="material-symbols-outlined text-[16px]">minimize</span></button><button aria-label="Maximize window" class="w-9 h-8 flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" type="button"><span class="material-symbols-outlined text-[16px]">check_box_outline_blank</span></button><button aria-label="Close window" class="w-9 h-8 flex items-center justify-center text-on-surface-variant hover:bg-error hover:text-on-error transition-colors" type="button"><span class="material-symbols-outlined text-[16px]">close</span></button></div></div></header><aside class="fixed left-0 top-16 bottom-24 w-64 bg-surface-container-lowest/60 backdrop-blur-xl z-40 flex flex-col justify-between py-space-md px-space-sm overflow-y-auto"><div class="flex flex-col gap-space-lg"><div class="flex flex-col gap-space-xs"><span class="px-space-sm font-label-sm text-label-sm text-outline uppercase tracking-wider">Biblioteca</span><nav class="flex flex-col gap-0.5" data-active-classes="bg-surface-container-high text-primary font-semibold"><a class="flex items-center gap-3 px-space-sm py-2 rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="biblioteca" href="#"><span class="material-symbols-outlined text-[20px]">queue_music</span><span class="">Biblioteca</span></a><a class="flex items-center gap-3 px-space-sm py-2 rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="albumes" href="#"><span class="material-symbols-outlined text-[20px]">album</span><span class="">Álbumes</span></a><a class="flex items-center gap-3 px-space-sm py-2 rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="artistas" href="#"><span class="material-symbols-outlined text-[20px]">mic</span><span class="">Artistas</span></a><a class="flex items-center gap-3 px-space-sm py-2 rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="carpetas-locales" href="#"><span class="material-symbols-outlined text-[20px]">folder</span><span class="">Carpetas locales</span></a></nav></div><div class="flex flex-col gap-space-xs"><span class="px-space-sm font-label-sm text-label-sm text-outline uppercase tracking-wider">Colecciones &amp; Listas</span><nav class="flex flex-col gap-0.5" data-active-classes="bg-surface-container-high text-primary font-semibold"><a class="flex items-center gap-3 px-space-sm py-2 rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="favoritos" href="#"><span class="material-symbols-outlined text-[20px] text-error">favorite</span><span class="">Favoritos</span></a><a class="flex items-center gap-3 px-space-sm py-2 rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="mas-reproducidas" href="#"><span class="material-symbols-outlined text-[20px]">local_fire_department</span><span class="">Más reproducidas</span></a><a class="flex items-center gap-3 px-space-sm py-2 rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="nuevas-incorporaciones" href="#"><span class="material-symbols-outlined text-[20px]">auto_awesome</span><span class="">Nuevas incorporaciones</span></a></nav></div></div><div class="flex flex-col gap-space-xs pt-space-md"><span class="px-space-sm font-label-sm text-label-sm text-outline uppercase tracking-wider">Sistema</span><nav class="flex flex-col gap-0.5" data-active-classes="bg-surface-container-high text-primary font-semibold"><a class="flex items-center justify-between px-space-sm py-2 rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="extensiones-de-la-comunidad" href="#"><div class="flex items-center gap-3"><span class="material-symbols-outlined text-[20px]">extension</span><span class="">Extensiones</span></div><span class="px-1.5 py-0.2 bg-secondary-container text-on-secondary-container rounded font-code-xs text-code-xs font-semibold">v1.0</span></a><a class="flex items-center gap-3 px-space-sm py-2 rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="ajustes-de-audio-y-sistema" href="#"><span class="material-symbols-outlined text-[20px]">tune</span><span class="">Ajustes de Audio</span></a></nav></div></aside><div class="pl-64 pb-24"><main class="relative w-full pt-16 bg-surface min-h-[calc(100vh-6rem)]"><div class="flex flex-col w-full">
+<div class="relative px-space-md lg:px-margin-desktop py-space-lg max-w-7xl mx-auto w-full flex flex-col gap-space-xl">
+<!-- Ambient Backdrop Aura (Contained) -->
+<div class="absolute -top-24 left-1/2 -translate-x-1/2 w-[700px] h-[360px] bg-gradient-to-b from-primary/10 via-secondary-container/10 to-transparent blur-3xl pointer-events-none rounded-full"></div>
+<!-- Header Section -->
+<div class="relative flex flex-col md:flex-row md:items-end justify-between gap-space-md pb-space-sm">
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center gap-space-xs">
+<span class="px-2 py-0.5 rounded bg-primary/10 text-primary font-code-xs text-code-xs tracking-wider uppercase font-semibold">Configuración Inicial</span>
+<span class="text-on-surface-variant font-code-xs text-code-xs">• Paso 1 de 1</span>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">Tu biblioteca de música está lista para empezar</h1>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-2xl">
+          RP Music es un reproductor de audio local de alta precisión. Vincula tus carpetas locales para indexar pistas con metadatos extendidos, carátulas incrustadas y soporte bit-perfect sin conexión.
+        </p>
+</div>
+<!-- Drag Preview Simulator Button -->
+<div class="flex items-center gap-2 self-start md:self-auto">
+<button class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-container-high hover:bg-surface-container-highest border border-outline-variant/60 text-on-surface-variant hover:text-primary transition-all text-label-sm font-label-sm shadow-sm active:scale-95" id="btn-toggle-drag-sim" title="Simular la apariencia cuando un usuario arrastra archivos sobre la dropzone" type="button">
+<span class="material-symbols-outlined text-[16px]">animation</span>
+<span id="btn-drag-sim-text">Probar estado Drag-over</span>
+</button>
+</div>
+</div>
+<!-- Main Bento Grid: Hero Action & Pre-Scan Options -->
+<div class="w-full flex flex-col items-center gap-space-lg">
+<div class="flex flex-col justify-between p-space-xl rounded-xl bg-surface-container-low relative overflow-hidden transition-all duration-300 group cursor-pointer hover:bg-surface-container w-full max-w-4xl border-2 border-dashed border-outline-variant hover:border-primary/50 shadow-md" id="drop-zone">
+<!-- Drag-over Background Reactive Glow Overlay -->
+<div class="absolute inset-0 bg-gradient-to-b from-primary/15 via-primary-container/10 to-secondary-container/15 opacity-0 pointer-events-none transition-opacity duration-300 backdrop-blur-[1px]" id="drag-overlay-bg"></div>
+<!-- Drag-over Active Wave Concentric Rings -->
+<div class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-0 transition-opacity duration-300" id="drag-ripple-container">
+<div class="w-72 h-72 rounded-full border-2 border-primary/40 animate-ripple-wave absolute"></div>
+<div class="w-96 h-96 rounded-full border border-primary/25 animate-ripple-wave absolute" style="animation-delay: 0.6s;"></div>
+<div class="w-[450px] h-[450px] rounded-full border border-primary/15 animate-ripple-wave absolute" style="animation-delay: 1.2s;"></div>
+</div>
+<!-- Active Badge Pill (shown on dragover) -->
+<div class="absolute top-4 left-1/2 -translate-x-1/2 opacity-0 -translate-y-2 pointer-events-none transition-all duration-300 flex items-center gap-2 px-3 py-1 rounded-full bg-primary-container/20 border border-primary/50 text-primary shadow-[0_0_15px_rgba(0,210,196,0.3)]" id="drag-active-badge">
+<span class="w-2 h-2 rounded-full bg-primary animate-ping"></span>
+<span class="font-code-xs text-code-xs font-semibold uppercase tracking-wider">Listo para analizar</span>
+</div>
+<div class="relative w-full flex items-center justify-center py-6">
+<div class="transition-transform duration-500 ease-out" id="graphic-wrapper">
+<svg class="w-56 h-56 max-w-full drop-shadow-[0_0_24px_rgba(0,210,196,0.25)] transition-all duration-500 group-hover:scale-105" fill="none" id="drop-graphic-svg" viewbox="0 0 240 240" xmlns="http://www.w3.org/2000/svg">
+<circle cx="120" cy="120" id="svg-outer-ring" r="100" stroke="#272A32" stroke-dasharray="6 6" stroke-width="2"></circle>
+<circle cx="120" cy="120" fill="#141720" r="82"></circle>
+<circle cx="120" cy="120" r="82" stroke="#571BC1" stroke-opacity="0.4" stroke-width="1.5"></circle>
+<circle cx="120" cy="120" r="70" stroke="#32353D" stroke-width="1"></circle>
+<circle cx="120" cy="120" id="svg-dashed-ring" r="58" stroke="#32353D" stroke-dasharray="14 4" stroke-width="1"></circle>
+<circle cx="120" cy="120" r="46" stroke="#272A32" stroke-width="1"></circle>
+<circle cx="120" cy="120" fill="#003733" r="32"></circle>
+<circle cx="120" cy="120" id="svg-center-glow" r="32" stroke="#00D2C4" stroke-width="2"></circle>
+<circle cx="120" cy="120" fill="#10131A" r="8"></circle>
+<circle cx="120" cy="120" fill="#47EFE0" r="3"></circle>
+<g class="transition-transform duration-300" id="svg-folder-badge" transform="translate(132, 132)">
+<rect fill="#1D1F27" height="50" rx="8" width="68" x="0" y="6"></rect>
+<path d="M0 12C0 8.68629 2.68629 6 6 6H24L30 12H62C65.3137 12 68 14.6863 68 18V50C68 53.3137 65.3137 56 62 56H6C2.68629 56 0 53.3137 0 50V12Z" fill="#272A32"></path>
+<circle cx="34" cy="34" fill="#00D2C4" fill-opacity="0.15" r="12"></circle>
+<path d="M34 26V42M26 34H42" stroke="#47EFE0" stroke-linecap="round" stroke-width="2.5"></path>
+</g>
+<path d="M38 120C38 100 48 84 62 76" stroke="#47EFE0" stroke-linecap="round" stroke-opacity="0.6" stroke-width="2"></path>
+<path d="M202 120C202 140 192 156 178 164" stroke="#D0BCFF" stroke-linecap="round" stroke-opacity="0.6" stroke-width="2"></path>
+</svg>
+</div>
+</div>
+<div class="flex flex-col items-center text-center gap-space-md z-10">
+<div class="flex flex-col items-center gap-space-xs transition-all duration-300">
+<h2 class="font-headline-md text-headline-md text-on-surface tracking-tight transition-colors duration-200" id="drop-heading">
+          Arrastra tus carpetas de música aquí
+        </h2>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-xl text-center transition-colors duration-200" id="drop-description">
+          Arrastra una carpeta completa o bibliotecas anidadas para comenzar la indexación instantánea con aceleración multiproceso.
+        </p>
+</div>
+<div class="flex flex-wrap items-center justify-center gap-space-sm w-full pt-space-xs">
+<button class="flex items-center gap-2 px-space-lg py-3 rounded-xl bg-primary-container text-on-primary-container font-label-md text-label-md shadow-md hover:scale-105 active:scale-95 transition-transform duration-150" id="btn-browse-folder" type="button">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">folder_open</span>
+<span>Seleccionar Carpeta Principal</span>
+</button>
+</div>
+<div class="flex items-center gap-2 text-outline font-code-xs text-code-xs pt-space-xs text-center">
+<span class="material-symbols-outlined text-[16px]">info</span>
+<span>Compatible con discos internos NVMe/SSD, discos duros mecánicos y particiones NTFS/exFAT.</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Quick Start Suggestions: 3 Action Cards -->
+<!-- Quick Help & Technical Reference Accordion / Strip -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-md pt-space-xs pb-space-lg">
+</div>
+</div>
+<!-- Interactive Simulation Script -->
+<script>
+    const dropZone = document.getElementById('drop-zone');
+    const dragOverlayBg = document.getElementById('drag-overlay-bg');
+    const dragRippleContainer = document.getElementById('drag-ripple-container');
+    const dragActiveBadge = document.getElementById('drag-active-badge');
+    const graphicWrapper = document.getElementById('graphic-wrapper');
+    const dropHeading = document.getElementById('drop-heading');
+    const dropDescription = document.getElementById('drop-description');
+    const svgOuterRing = document.getElementById('svg-outer-ring');
+    const svgCenterGlow = document.getElementById('svg-center-glow');
+    const svgFolderBadge = document.getElementById('svg-folder-badge');
+    const btnToggleDragSim = document.getElementById('btn-toggle-drag-sim');
+    const btnDragSimText = document.getElementById('btn-drag-sim-text');
+
+    let isDragActive = false;
+    let dragCounter = 0;
+
+    function activateDragOver() {
+      if (isDragActive) return;
+      isDragActive = true;
+
+      // Dropzone container highlight with neon cyan glow and scale
+      dropZone.classList.add('border-primary', 'shadow-[0_0_35px_rgba(0,210,196,0.38)]', 'scale-[1.015]');
+      dropZone.classList.remove('border-outline-variant', 'border-dashed');
+      dropZone.classList.add('border-solid');
+
+      // Show animated gradient aura and ripple rings
+      if (dragOverlayBg) dragOverlayBg.classList.remove('opacity-0');
+      if (dragRippleContainer) dragRippleContainer.classList.remove('opacity-0');
+      
+      // Show badge
+      if (dragActiveBadge) {
+        dragActiveBadge.classList.remove('opacity-0', '-translate-y-2');
+        dragActiveBadge.classList.add('opacity-100', 'translate-y-0');
+      }
+
+      // Graphic expand & pulse
+      if (graphicWrapper) {
+        graphicWrapper.classList.add('scale-110');
+      }
+      if (svgOuterRing) {
+        svgOuterRing.setAttribute('stroke', '#00D2C4');
+        svgOuterRing.setAttribute('stroke-width', '3');
+      }
+      if (svgCenterGlow) {
+        svgCenterGlow.setAttribute('stroke-width', '3.5');
+      }
+      if (svgFolderBadge) {
+        svgFolderBadge.classList.add('-translate-y-1', 'scale-110');
+      }
+
+      // Dynamic text feedback
+      if (dropHeading) {
+        dropHeading.textContent = '¡Suelta tus carpetas aquí para iniciar la indexación!';
+        dropHeading.classList.add('text-primary');
+      }
+      if (dropDescription) {
+        dropDescription.textContent = 'Soltar iniciará la lectura de metadatos multihilo y carátulas de alta resolución.';
+        dropDescription.classList.add('text-on-surface');
+      }
+
+      if (btnDragSimText) {
+        btnDragSimText.textContent = 'Desactivar estado Drag-over';
+      }
+    }
+
+    function deactivateDragOver() {
+      if (!isDragActive) return;
+      isDragActive = false;
+
+      // Restore container styles
+      dropZone.classList.remove('border-primary', 'shadow-[0_0_35px_rgba(0,210,196,0.38)]', 'scale-[1.015]', 'border-solid');
+      dropZone.classList.add('border-outline-variant', 'border-dashed');
+
+      // Hide glow & ripples
+      if (dragOverlayBg) dragOverlayBg.classList.add('opacity-0');
+      if (dragRippleContainer) dragRippleContainer.classList.add('opacity-0');
+      
+      // Hide badge
+      if (dragActiveBadge) {
+        dragActiveBadge.classList.add('opacity-0', '-translate-y-2');
+        dragActiveBadge.classList.remove('opacity-100', 'translate-y-0');
+      }
+
+      // Graphic reset
+      if (graphicWrapper) {
+        graphicWrapper.classList.remove('scale-110');
+      }
+      if (svgOuterRing) {
+        svgOuterRing.setAttribute('stroke', '#272A32');
+        svgOuterRing.setAttribute('stroke-width', '2');
+      }
+      if (svgCenterGlow) {
+        svgCenterGlow.setAttribute('stroke-width', '2');
+      }
+      if (svgFolderBadge) {
+        svgFolderBadge.classList.remove('-translate-y-1', 'scale-110');
+      }
+
+      // Restore texts
+      if (dropHeading) {
+        dropHeading.textContent = 'Arrastra tus carpetas de música aquí';
+        dropHeading.classList.remove('text-primary');
+      }
+      if (dropDescription) {
+        dropDescription.textContent = 'Arrastra una carpeta completa o bibliotecas anidadas para comenzar la indexación instantánea con aceleración multiproceso.';
+        dropDescription.classList.remove('text-on-surface');
+      }
+
+      if (btnDragSimText) {
+        btnDragSimText.textContent = 'Probar estado Drag-over';
+      }
+    }
+
+    // Toggle simulation button for instant manual preview
+    if (btnToggleDragSim) {
+      btnToggleDragSim.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (isDragActive) {
+          deactivateDragOver();
+        } else {
+          activateDragOver();
+        }
+      });
+    }
+
+    // Native Drag and Drop listeners with nested elements counter protection
+    if (dropZone) {
+      window.addEventListener('dragover', (e) => {
+        e.preventDefault();
+      });
+      window.addEventListener('drop', (e) => {
+        e.preventDefault();
+      });
+
+      dropZone.addEventListener('dragenter', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dragCounter++;
+        activateDragOver();
+      });
+
+      dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (!isDragActive) {
+          activateDragOver();
+        }
+      });
+
+      dropZone.addEventListener('dragleave', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dragCounter--;
+        if (dragCounter <= 0) {
+          dragCounter = 0;
+          deactivateDragOver();
+        }
+      });
+
+      dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dragCounter = 0;
+        deactivateDragOver();
+        
+        const filesCount = e.dataTransfer && e.dataTransfer.files ? e.dataTransfer.files.length : 1;
+        alert(`¡Carpeta recibida (${filesCount > 0 ? filesCount + ' elemento(s)' : '1 carpeta'})! Iniciando indexación y extracción de carátulas FLAC/DSD...`);
+      });
+    }
+
+    // Browse button simulation
+    const btnBrowse = document.getElementById('btn-browse-folder');
+    if (btnBrowse) {
+      btnBrowse.addEventListener('click', (e) => {
+        e.stopPropagation();
+        alert('Abriendo selector nativo de carpetas de Windows...');
+      });
+    }
+
+    // Demo Mode loader
+    function loadDemoLibrary() {
+      alert('Cargando pistas de demostración Hi-Res (FLAC 24-bit / 96kHz)... Tu biblioteca se inicializará temporalmente.');
+    }
+
+    // Update Shell Miniplayer to Idle State
+    (function syncIdlePlayer() {
+      const footer = document.querySelector('footer');
+      if (footer) {
+        const titleEl = footer.querySelector('.font-label-md.text-label-md.text-on-surface');
+        if (titleEl) {
+          titleEl.textContent = 'Sin reproducción activa';
+        }
+        const badgeEl = footer.querySelector('.font-code-xs.text-code-xs.text-secondary');
+        if (badgeEl) {
+          badgeEl.textContent = 'En espera';
+          badgeEl.className = 'px-1.5 py-0.5 rounded bg-surface-container-highest font-code-xs text-code-xs text-outline';
+        }
+        const artistEl = footer.querySelector('.font-body-sm.text-body-sm.text-on-surface-variant');
+        if (artistEl) {
+          artistEl.textContent = 'Selecciona una carpeta o pista para comenzar a escuchar';
+        }
+        const playBtn = footer.querySelector('button[aria-label="Play or Pause"]');
+        if (playBtn) {
+          playBtn.innerHTML = '<span class="material-symbols-outlined text-[24px]">play_arrow</span>';
+          playBtn.classList.add('opacity-60', 'cursor-not-allowed');
+        }
+        const progressBar = footer.querySelector('footer div[style*="width:65.7%"]');
+        if (progressBar) {
+          progressBar.style.width = '0%';
+        }
+        const timeCurrent = footer.querySelector('footer span.w-9.text-right');
+        if (timeCurrent) timeCurrent.textContent = '0:00';
+        const timeTotal = footer.querySelector('footer span.w-9:not(.text-right)');
+        if (timeTotal) timeTotal.textContent = '0:00';
+      }
+    })();
+  </script>
+</div></main></div><footer class="fixed bottom-0 left-0 right-0 h-24 bg-surface-container-lowest/90 backdrop-blur-2xl z-50 flex items-center justify-between px-space-md shadow-[0_-4px_20px_rgba(0,0,0,0.5)]"><div class="flex items-center gap-space-md w-80"><div class="w-14 h-14 rounded-lg bg-surface-container-high flex-shrink-0 flex items-center justify-center overflow-hidden shadow-[0_4px_12px_rgba(0,0,0,0.4)]"><span class="material-symbols-outlined text-primary text-[28px]">music_note</span></div><div class="flex flex-col min-w-0"><div class="flex items-center gap-space-xs"><span class="font-label-md text-label-md text-on-surface truncate">Neon Horizons</span><span class="px-1.5 py-0.5 rounded bg-surface-container-highest font-code-xs text-code-xs text-secondary">FLAC 24-bit</span></div><span class="font-body-sm text-body-sm text-on-surface-variant truncate">Solar Drift • Cyber Odyssey</span></div><button aria-label="Favorite track" class="text-error hover:scale-110 transition-transform ml-1" type="button"><span class="material-symbols-outlined text-[20px]">favorite</span></button></div><div class="flex flex-col items-center gap-1.5 flex-1 max-w-2xl px-space-lg"><div class="flex items-center gap-space-md"><button aria-label="Shuffle" class="text-on-surface-variant hover:text-primary transition-colors" type="button"><span class="material-symbols-outlined text-[20px]">shuffle</span></button><button aria-label="Previous track" class="text-on-surface-variant hover:text-on-surface transition-colors" type="button"><span class="material-symbols-outlined text-[22px]">skip_previous</span></button><button aria-label="Play or Pause" class="w-11 h-11 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center hover:scale-105 active:scale-95 transition-transform shadow-[0_0_16px_rgba(0,210,196,0.35)]" type="button"><span class="material-symbols-outlined text-[24px]">pause</span></button><button aria-label="Next track" class="text-on-surface-variant hover:text-on-surface transition-colors" type="button"><span class="material-symbols-outlined text-[22px]">skip_next</span></button><button aria-label="Repeat mode" class="text-on-surface-variant hover:text-primary transition-colors" type="button"><span class="material-symbols-outlined text-[20px]">repeat</span></button></div><div class="w-full flex items-center gap-space-sm"><span class="font-code-xs text-code-xs text-on-surface-variant w-9 text-right">2:45</span><div class="relative flex-1 h-1.5 bg-surface-container-highest rounded-full overflow-hidden cursor-pointer group"><div class="absolute top-0 bottom-0 left-0 bg-primary-container rounded-full" style="width:65.7%"></div></div><span class="font-code-xs text-code-xs text-on-surface-variant w-9">4:18</span></div></div><div class="flex items-center justify-end gap-space-md w-80"><button aria-label="Toggle lyrics" class="text-on-surface-variant hover:text-on-surface transition-colors" type="button"><span class="material-symbols-outlined text-[20px]">lyrics</span></button><button aria-label="Toggle play queue" class="text-on-surface-variant hover:text-on-surface transition-colors" type="button"><span class="material-symbols-outlined text-[20px]">queue_music</span></button><div class="flex items-center gap-space-xs w-32"><span class="material-symbols-outlined text-[20px] text-on-surface-variant">volume_up</span><div class="relative flex-1 h-1.5 bg-surface-container-highest rounded-full overflow-hidden cursor-pointer"><div class="absolute top-0 bottom-0 left-0 bg-on-surface rounded-full" style="width:78%"></div></div><span class="font-code-xs text-code-xs text-on-surface-variant">78%</span></div><div class="px-2 py-1 rounded bg-surface-container-low font-code-xs text-code-xs text-primary-fixed-dim whitespace-nowrap">WASAPI Exclusivo • DAC USB</div></div></footer>
+</body></html>

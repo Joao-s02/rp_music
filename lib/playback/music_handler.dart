@@ -16,6 +16,7 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
   bool _closed = false;
   bool _shuttingDown = false;
   Future<void>? _closing;
+  String? lastSystemError;
   final errors = StreamController<String>.broadcast();
   final _subscriptions = <StreamSubscription<dynamic>>[];
   Future<void> _operations = Future.value();
@@ -49,6 +50,28 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
       }),
     );
   }
+  void observeSystemErrors(Stream<Object> source) {
+    _subscriptions.add(
+      source.listen((error) {
+        if (lastSystemError == error.toString()) return;
+        lastSystemError = error.toString();
+        errors.add(
+          'Android no pudo actualizar los controles multimedia. Consulta el diagnóstico en Ajustes.',
+        );
+      }),
+    );
+  }
+
+  MediaItem _mediaItem(Track track) => MediaItem(
+    id: track.id,
+    title: track.title,
+    artist: track.artist,
+    album: track.album,
+    duration: track.durationMs > 0
+        ? Duration(milliseconds: track.durationMs)
+        : null,
+  );
+
   Future<void> configureSession() async {
     final session = await AudioSession.instance;
     await session.configure(const AudioSessionConfiguration.music());
@@ -62,7 +85,15 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
         MediaControl.skipToNext,
         MediaControl.stop,
       ],
-      systemActions: const {MediaAction.seek},
+      systemActions: const {
+        MediaAction.seek,
+        MediaAction.play,
+        MediaAction.pause,
+        MediaAction.playPause,
+        MediaAction.skipToNext,
+        MediaAction.skipToPrevious,
+      },
+      queueIndex: index >= 0 ? index : null,
       androidCompactActionIndices: const [0, 1, 2],
       processingState: switch (player.processingState) {
         ProcessingState.idle => AudioProcessingState.idle,
@@ -95,17 +126,16 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
       if (generation != _generation) return;
       await player.pause();
       if (generation != _generation) return;
-      mediaItem.add(
-        MediaItem(
-          id: track.id,
-          title: track.title,
-          artist: track.artist,
-          album: track.album,
-          duration: Duration(milliseconds: track.durationMs),
-        ),
-      );
+      final nextQueue = tracks.map(_mediaItem).toList();
+      final previousQueue = queue.value;
+      if (previousQueue.length != nextQueue.length ||
+          Iterable<int>.generate(nextQueue.length)
+              .any((i) => previousQueue[i] != nextQueue[i])) {
+        queue.add(nextQueue);
+      }
+      mediaItem.add(_mediaItem(track));
       try {
-        await player.setAudioSource(
+        final duration = await player.setAudioSource(
           AudioSource.uri(
             track.id.startsWith('content://')
                 ? Uri.parse(track.id)
@@ -115,6 +145,10 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
         );
         if (generation == _generation && !_shuttingDown) {
           _loading = false;
+          if (duration != null) {
+            mediaItem.add(_mediaItem(track).copyWith(duration: duration));
+          }
+          _publish();
           unawaited(saveSession(position: initialPosition));
           if (_playIntent) unawaited(play());
         }
@@ -156,7 +190,9 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
     _playIntent = true;
     if (_loading) return;
     try {
-      await player.play();
+      final playback = player.play();
+      _publish();
+      await playback;
     } catch (_) {
       errors.add('No se pudo iniciar el audio.');
     }
@@ -165,7 +201,10 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
   @override
   Future<void> pause() {
     _playIntent = false;
-    return player.pause().then((_) => saveSession());
+    return player.pause().then((_) {
+      _publish();
+      return saveSession();
+    });
   }
 
   @override
@@ -240,8 +279,12 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
     await player.pause();
     await saveSession();
     await player.stop();
+    _publish();
     await super.stop();
   }
+
+  @override
+  Future<void> skipToQueueItem(int index) => select(tracks, index);
 
   @override
   Future<void> skipToNext() async {

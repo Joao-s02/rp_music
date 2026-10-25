@@ -13,6 +13,12 @@ import 'package:rp_music/playback/music_handler.dart';
 import 'package:rp_music/platform/desktop_lifecycle.dart';
 import 'package:audio_service/audio_service.dart';
 
+class MemoryStore extends LocalStore {
+  MemoryStore() : super(Directory('unused-memory-store'));
+  @override
+  Future<void> save(Map<String, dynamic> value) async {}
+}
+
 class FakeDesktopWindow implements DesktopWindow {
   FakeDesktopWindow(this.calls, {this.tray = true});
   final List<String> calls;
@@ -152,6 +158,24 @@ void main() {
       await handler.close();
     },
   );
+  test('publica cola, índice, duración real y errores del servicio', () async {
+    final handler = MusicHandler(player: FakePlayer());
+    final systemErrors = StreamController<Object>();
+    handler.observeSystemErrors(systemErrors.stream);
+    await handler.select(tracks, 1);
+    expect(handler.queue.value.map((item) => item.title), ['Uno', 'Dos', 'Tres']);
+    expect(handler.playbackState.value.queueIndex, 1);
+    expect(handler.mediaItem.value?.duration, const Duration(seconds: 30));
+    await handler.skipToQueueItem(2);
+    expect(handler.mediaItem.value?.title, 'Tres');
+    final error = handler.errors.stream.first;
+    systemErrors.add(StateError('Fallo multimedia de prueba'));
+    expect(await error, contains('diagnóstico'));
+    expect(handler.lastSystemError, contains('Fallo multimedia de prueba'));
+    await handler.close();
+    await systemErrors.close();
+  });
+
   test(
     'cerrar a bandeja mantiene audio y salir silencia antes de destruir',
     () async {
@@ -319,6 +343,36 @@ void main() {
     },
   );
 
+  testWidgets('eliminar lista pide confirmación y cancelar la conserva', (
+    tester,
+  ) async {
+    final library = LibraryController(MemoryStore(), MusicFiles())
+      ..loading = false;
+    await library.addPlaylist('Viaje');
+    final audio = MusicHandler(player: FakePlayer());
+    await tester.pumpWidget(MusicApp(library: library, audio: audio));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byIcon(Icons.queue_music).last);
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip('Eliminar lista'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Cancelar'));
+    await tester.pumpAndSettle();
+    expect(library.playlists.containsKey('Viaje'), true);
+    await tester.tap(find.byTooltip('Eliminar lista'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Eliminar'));
+    await tester.runAsync(() async {
+      await Future<void>.delayed(const Duration(milliseconds: 200));
+    });
+    await tester.pumpAndSettle();
+    expect(library.playlists.containsKey('Viaje'), false);
+    expect(tester.takeException(), isNull);
+    await tester.pumpWidget(const SizedBox.shrink());
+    await tester.runAsync(audio.close);
+    library.dispose();
+  });
+
   for (final width in [360.0, 1280.0]) {
     testWidgets('interfaz vacía y navegación sin desbordes a $width px', (
       tester,
@@ -338,14 +392,14 @@ void main() {
         const Duration(seconds: 5),
       );
       expect(find.text('Seleccionar mi música'), findsOneWidget);
-      await tester.tap(find.text('Extensiones').last);
+      await tester.tap(find.byIcon(Icons.extension_outlined).last);
       await tester.pumpAndSettle(
         const Duration(milliseconds: 100),
         EnginePhase.sendSemanticsUpdate,
         const Duration(seconds: 5),
       );
       expect(find.text('Importar extensión'), findsOneWidget);
-      await tester.tap(find.text('Ajustes').last);
+      await tester.tap(find.byIcon(Icons.settings_outlined).last);
       await tester.pumpAndSettle(
         const Duration(milliseconds: 100),
         EnginePhase.sendSemanticsUpdate,

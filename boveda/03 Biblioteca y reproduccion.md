@@ -46,3 +46,7 @@ La prioridad y compatibilidad de gapless y fundido deben validarse; están dentr
 Frecuencia de escaneo, detección automática de cambios, biblioteca cacheada, agrupación de etiquetas incompletas y cambios de carpeta raíz todavía requieren decisión o propuesta explícita. Se sugirió mostrar lo guardado y actualizar en segundo plano, pero la respuesta confirmó la raíz única sin aprobar expresamente todo ese comportamiento.
 
 Relaciones: [[02 Vision y decisiones]], [[04 Extensiones]], [[05 Rendimiento]], [[07 Preguntas e investigacion]].
+
+## Actualización confirmada e implementación local — 2026-10-25
+
+El usuario pidió eliminar listas completas. Implementado con confirmación y persistencia, conservando archivos, favoritos, catálogo y otras listas; pruebas aprobadas. Rediseño e investigación de notificaciones posteriores a 0.2.2 en [[16 Pruebas 0.2.2 y rediseno 0.2.3]]. La comprobación en emulador no sustituye al retesteo físico.

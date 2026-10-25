@@ -5,6 +5,8 @@ actualizado: 2026-10-25
 ---
 # RP Music — red de conocimiento
 
+Identidad visual confirmada e icono elegido: [[15 Identidad visual e icono]].
+
 Bóveda de Obsidian para conservar el contexto del reproductor y permitir que cualquier agente continúe el trabajo sin repetir la entrevista.
 
 ## Recorrido recomendado
@@ -36,3 +38,5 @@ En Obsidian, elegir «Abrir carpeta como bóveda» y seleccionar la carpeta `bov
 - **Comprobado:** observado o verificado; debe indicarse su alcance.
 
 La fecha de una nota es la de su actualización, no necesariamente la fecha de la entrevista. La documentación describe intenciones salvo que indique explícitamente una implementación comprobada.
+
+Último trabajo: [[16 Pruebas 0.2.2 y rediseno 0.2.3]] — informe Galaxy/Poco, notificaciones, eliminación de listas y adaptación del diseño Stitch.

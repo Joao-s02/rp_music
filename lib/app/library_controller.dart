@@ -175,6 +175,12 @@ class LibraryController extends ChangeNotifier {
     await persist();
   }
 
+  Future<void> deletePlaylist(String name) async {
+    if (playlists.remove(name) == null) return;
+    notifyListeners();
+    await persist();
+  }
+
   Future<void> addToPlaylist(String name, String id) async {
     final list = playlists[name];
     if (list == null || list.contains(id)) return;
