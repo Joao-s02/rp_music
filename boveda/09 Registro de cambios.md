@@ -87,4 +87,13 @@ actualizado: 2026-10-25
 
 ## Próximos registros
 
+## 2026-10-25 — Release 0.2.2 publicada y verificada
+
+- Publicadas fuentes y release preliminar `v0.2.2-alpha.1` sobre `9f1e4f80966d5d020235200e23b6b58170c8b7fc`.
+- Ocho adjuntos completos verificados automáticamente por tamaño y SHA-256: ambos APK, Windows, dos guías, diagnóstico manual, ejemplo y sumas.
+- Se actualizaron guías y ZIP para distribución manteniendo los binarios comprobados. No se sustituyeron releases anteriores.
+- Confirmación, URL y límites de retesteo en [[14 Pruebas 0.2.1 y correcciones 0.2.2]].
+
+## Convención de registros siguientes
+
 Registrar fecha, petición o motivo, decisiones y su estado, notas afectadas, comprobaciones y límites, y siguientes pendientes. No rellenar resultados antes de verificarlos.

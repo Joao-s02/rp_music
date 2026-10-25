@@ -37,4 +37,4 @@ Conservar el historial de cambios de criterio. No registrar secretos, tokens, cr
 
 La primera base de [[11 Reconstruccion - primera base]] se publicó en [[12 Release 0.2.0-alpha.1]]. El estado local posterior y los resultados del usuario están en [[13 Pruebas reales y correcciones 0.2.1]]: leer esa nota antes de continuar. Seguir [[06 Primera version]] y resolver las investigaciones de extensiones conservando esta documentación y Git. Ver [[10 Estado del repositorio]].
 
-Último informe y cambios locales: [[14 Pruebas 0.2.1 y correcciones 0.2.2]]. Leerlo primero para no tratar instalación Tecno o notificaciones físicas como problemas ya verificados en los teléfonos.
+Último informe y versión publicada: [[14 Pruebas 0.2.1 y correcciones 0.2.2]]. Leerlo primero para no tratar instalación Tecno o notificaciones físicas como problemas ya verificados en los teléfonos.

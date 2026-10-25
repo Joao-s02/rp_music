@@ -1,6 +1,6 @@
 ---
 tipo: pruebas-y-correcciones
-estado: compilado-y-verificado-localmente
+estado: publicado-con-validacion-local
 actualizado: 2026-10-25
 ---
 # Pruebas 0.2.1 y correcciones 0.2.2
@@ -40,10 +40,19 @@ actualizado: 2026-10-25
 - [Android: permiso de notificaciones y exenciones multimedia](https://developer.android.com/develop/ui/views/notifications/notification-permission).
 - [audio_service](https://pub.dev/packages/audio_service).
 
-Consultadas el 2026-10-25 junto con las fuentes locales y el manifiesto. La nueva versión permanece local hasta autorización de publicación.
+Consultadas el 2026-10-25 junto con las fuentes locales y el manifiesto. La versión se mantuvo local durante las correcciones; su publicación autorizada se registra a continuación.
 
 Relaciones: [[13 Pruebas reales y correcciones 0.2.1]], [[03 Biblioteca y reproduccion]], [[05 Rendimiento]], [[10 Estado del repositorio]], [[09 Registro de cambios]].
 
 ## Publicación solicitada
 
 El usuario autorizó crear una nueva release. Se prepara `v0.2.2-alpha.1` como preliminar con las fuentes correspondientes, ambos APK, ZIP Windows, guías, ejemplo, diagnóstico manual y SHA-256. Se mantienen los binarios ya verificados y se actualizan las guías empaquetadas. Confirmar URL, commit y adjuntos tras publicar.
+
+## Publicación confirmada — 2026-10-25
+
+- [Release v0.2.2-alpha.1](https://github.com/Joao-s02/rp_music/releases/tag/v0.2.2-alpha.1), confirmada como publicada (`isDraft=false`) y preliminar (`isPrerelease=true`).
+- Etiqueta sobre `9f1e4f80966d5d020235200e23b6b58170c8b7fc`; fuentes publicadas en `main`. La actualización de esta confirmación es posterior al commit etiquetado.
+- Ocho adjuntos: APK universal, APK ARM64, ZIP Windows, `USO.md`, `PRUEBAS-0.2.2.md`, script de diagnóstico manual, ejemplo `descubrir.json` y SHA-256.
+- Verificación automática de todos los tamaños y digest SHA-256 publicados contra los archivos locales; todos en estado `uploaded`. Ambos APK mantienen sus binarios compilados y firmas verificadas. No se descargaron nuevamente desde GitHub.
+- Se actualizaron y reempaquetaron las guías para distribución; ZIP final de 12 819 019 bytes. No se sustituyeron releases anteriores.
+- Instalación Tecno, notificaciones en teléfonos y sonido de cierre subjetivo en la PC siguen pendientes de retesteo: publicar la release no modifica esos límites.
