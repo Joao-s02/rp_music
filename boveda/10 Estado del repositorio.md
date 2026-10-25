@@ -75,3 +75,15 @@ El usuario autorizó subir la nueva release a GitHub. Se prepara v0.2.4-alpha.1 
 - Siete adjuntos en estado uploaded, verificados contra los archivos locales por tamaño y digest SHA-256 de GitHub: APK universal/ARM64, ZIP Windows, USO.md, PRUEBAS-0.2.4.md, descubrir.json y SHA256SUMS.txt.
 - Se actualizaron las guías y reempaquetó Windows para distribución: ZIP final de 14 506 717 bytes. Binarios compilados y ambos APK se conservaron sin cambios.
 - 0.2.4 debe instalarse manualmente sobre la anterior para habilitar detección de versiones futuras. Publicar no sustituye el retesteo prolongado Galaxy A34 Android 16/Poco X6 ni completa por sí solo una actualización entre releases desde el instalador. No se alteraron releases anteriores.
+
+## Tráiler local — 2026-10-25
+
+Se creó un proyecto audiovisual separado en la carpeta hermana rp_music_trailer, solicitada por el usuario. No se modifica Flutter. Composición editable de 30 s con identidad A, capturas de prueba identificadas y extensiones como visión futura. ESLint/TypeScript aprobados. Alcance y comprobación visual en [[19 Trailer de RP Music]]. Sin exportación MP4 ni publicación.
+
+Verificación audiovisual final: cinco fotogramas de las cinco escenas generados/revisados con Remotion y Edge; encuadre aprobado. Sin revisión interactiva integrada por timeout; detalles en [[19 Trailer de RP Music]].
+
+Tráiler actualizado con icono animado en apertura/cierre: R/P escalonadas y barras móviles; comprobación visual y ESLint/TypeScript aprobados. Solo proyecto audiovisual hermano; ver [[19 Trailer de RP Music]].
+
+La música vigente del tráiler es pulse-trap.wav, tras aclaración del usuario (trap urbano). Pista original local y animación de barras a half-time 72 BPM; ver [[19 Trailer de RP Music]]. No modifica la app Flutter.
+
+Pista audiovisual vigente: pulse-dark-trap.wav, dirección oscura/épica solicitada por el usuario; sustituye pulse-trap.wav sin borrarla. Detalles y límites en [[19 Trailer de RP Music]].

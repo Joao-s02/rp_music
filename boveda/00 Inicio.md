@@ -44,3 +44,5 @@ Antecedente: [[16 Pruebas 0.2.2 y rediseno 0.2.3]] — informe Galaxy/Poco, noti
 Nueva investigación: [[17 Actualizaciones opcionales desde la app]] — investigación inicial y mecanismo posteriormente implementado en 0.2.4.
 
 Trabajo vigente: [[18 Pruebas 0.2.3 y correcciones 0.2.4]] — teclado/búsqueda, servicio de audio, logs y actualizador opcional; v0.2.4-alpha.1 publicada y adjuntos verificados.
+
+Producción audiovisual: [[19 Trailer de RP Music]] — tráiler editable de 30 segundos en la carpeta hermana rp_music_trailer.

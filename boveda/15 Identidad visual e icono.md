@@ -104,3 +104,7 @@ Ver [[10 Estado del repositorio]] y [[09 Registro de cambios]].
 ## Aplicación posterior del tema — 2026-10-25
 
 La afirmación anterior de interfaz sin rediseñar describe la integración inicial de iconos. El usuario aportó posteriormente un ZIP de pantallas Stitch y pidió aplicar esa interfaz. Se implementan tema, fuentes locales y composición adaptable conservando A; alcance, verificaciones y diferencias funcionales en [[16 Pruebas 0.2.2 y rediseno 0.2.3]]. Las funciones ilustradas no equivalen a implementación.
+
+## Uso audiovisual animado — 2026-10-25
+
+El usuario pidió animar la marca dentro del tráiler aprobado. R/P aparecen escalonadas y las cinco barras cambian de altura; se usan recortes del PNG A, conservando el dibujo del monograma. Esta adaptación solo afecta al vídeo; maestro e iconos instalables intactos. Implementación y comprobaciones en [[19 Trailer de RP Music]].

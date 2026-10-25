@@ -2,6 +2,12 @@
 
 Base reconstruida en Flutter para Android y Windows. Aplicación local, sin cuenta. La versión preliminar 0.2.2 añade notificaciones, volumen y bandeja; todavía no implementa toda la visión del proyecto. Consulta [qué volver a probar](docs/PRUEBAS-0.2.2.md).
 
+## Tráiler
+
+[![RP Music — Tu música. Tus reglas. Ver el tráiler en YouTube](design/youtube/rp-music-miniatura.jpg)](https://youtu.be/lobwRKtXv-M)
+
+▶ **[Ver el tráiler de RP Music en YouTube](https://youtu.be/lobwRKtXv-M)**
+
 ## Descargar y usar
 
 Los binarios se distribuyen en [Releases de GitHub](https://github.com/Joao-s02/rp_music/releases). Consulta la [guía de uso](docs/USO.md) para instalar el APK, abrir el paquete portable Windows e importar el ejemplo de personalización.

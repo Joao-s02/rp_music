@@ -178,3 +178,25 @@ El usuario autorizó subir la nueva release a GitHub. Se prepara v0.2.4-alpha.1 
 - Siete adjuntos en estado uploaded, verificados contra los archivos locales por tamaño y digest SHA-256 de GitHub: APK universal/ARM64, ZIP Windows, USO.md, PRUEBAS-0.2.4.md, descubrir.json y SHA256SUMS.txt.
 - Se actualizaron las guías y reempaquetó Windows para distribución: ZIP final de 14 506 717 bytes. Binarios compilados y ambos APK se conservaron sin cambios.
 - 0.2.4 debe instalarse manualmente sobre la anterior para habilitar detección de versiones futuras. Publicar no sustituye el retesteo prolongado Galaxy A34 Android 16/Poco X6 ni completa por sí solo una actualización entre releases desde el instalador. No se alteraron releases anteriores.
+
+## Tráiler de RP Music — 2026-10-25
+
+Petición del usuario y carpeta confirmada: ../rp_music_trailer. Reutilizado Remotion 4.0.538 para composición Full HD de 30 s y cinco escenas editables. Marca A/fuentes locales, capturas verificadas de la app con datos de prueba identificados y música electrónica original sintetizada. Se distinguen funciones presentes de extensiones futuras. ESLint/TypeScript aprobados; Studio iniciado, navegador integrado con timeout, comprobación de fotogramas pendiente al registrar. Sin cambios Flutter, publicación ni MP4. Ver [[19 Trailer de RP Music]].
+
+Resultado final del tráiler: cinco PNG generados y revisados (uno por escena) con Edge instalado; encuadre y textos correctos. Descarga inicial de Headless interrumpida, alternativa Edge aprobada. ESLint/TypeScript finales aprobados. Límite: vista interactiva integrada con timeout y mezcla completa no escuchada; MP4 no exportado. Detalles en [[19 Trailer de RP Music]].
+
+Corrección de acceso al tráiler: puerto 3000 no disponible; Studio independiente en 3100, HTTP 200 y apertura real en navegador integrado comprobados. Play cambió a Pause. Enlace vigente y alcance en [[19 Trailer de RP Music]].
+
+Icono animado del tráiler a petición del usuario: entrada escalonada R/P, cinco barras violetas con movimiento por fotograma, en apertura y cierre. Se reutilizan recortes del maestro A sin modificarlo. Vista Studio comprobada en fotograma 55 y sin error activo; detalles en [[19 Trailer de RP Music]].
+
+Verificación final del icono animado: ESLint/TypeScript aprobados; alturas distintas comprobadas visualmente en fotogramas 55/67 y reproducción reiniciada desde cero.
+
+Música del tráiler revisada por petición del usuario: nueva base original más animada a 128 BPM, en tono mayor y con batería/bajo más marcados. Se conserva pista anterior; pulso del icono ajustado y nueva pista cargada en Studio con reproducción iniciada. ESLint/TypeScript aprobados; mediciones y límites en [[19 Trailer de RP Music]].
+
+Dirección musical corregida por el usuario: trap urbano con ritmo y atractivo propio, en lugar de base alegre. Instrumental original a 144 BPM/half-time 72 con 808, campanas menores, batería y redobles; antecedentes conservados. WAV y código verificados, pista cargada y reproducción iniciada en Studio. Alcance y métricas en [[19 Trailer de RP Music]].
+
+Nueva revisión musical: el usuario pide trap oscuro y épico. Pista original pulse-dark-trap.wav con pedal grave, metales, 808 saturado e impactos, sin campanas; 140 BPM/half-time 70. WAV/código verificados y reproducción en Studio iniciada. Ver [[19 Trailer de RP Music]].
+
+Miniatura YouTube creada y guardada como PNG/JPEG en design/youtube, usando la marca A como referencia y texto del tráiler. Imagen revisada; no se publica. Ver [[19 Trailer de RP Music]].
+
+El usuario confirmó publicación de su tráiler en YouTube (lobwRKtXv-M) y autorizó añadirlo al README en GitHub. Añadida miniatura enlazada y enlace textual cerca del inicio, usando JPEG local. Se prepara commit/publicación con contexto del tráiler; ver [[19 Trailer de RP Music]].
