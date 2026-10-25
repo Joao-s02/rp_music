@@ -200,3 +200,9 @@ Nueva revisión musical: el usuario pide trap oscuro y épico. Pista original pu
 Miniatura YouTube creada y guardada como PNG/JPEG en design/youtube, usando la marca A como referencia y texto del tráiler. Imagen revisada; no se publica. Ver [[19 Trailer de RP Music]].
 
 El usuario confirmó publicación de su tráiler en YouTube (lobwRKtXv-M) y autorizó añadirlo al README en GitHub. Añadida miniatura enlazada y enlace textual cerca del inicio, usando JPEG local. Se prepara commit/publicación con contexto del tráiler; ver [[19 Trailer de RP Music]].
+
+Integración del tráiler publicada: 026c87e enviado a main; README remoto confirmado por API con miniatura JPEG y enlace YouTube. Confirmación posterior al commit.
+
+## README vigente y mantenimiento obligatorio — 2026-10-25
+
+El usuario detectó que la descripción seguía en 0.2.2 y pidió actualizarla, además de exigir mantenimiento en cada actualización. README alineado con 0.2.4+6/v0.2.4-alpha.1: descarga ARM64/universal/Windows, instalación manual inicial, novedades 0.2.3/0.2.4, listas completas, diagnóstico, actualizador, 42 pruebas documentadas y límites de validación física. Tráiler conservado. Regla principal incorporada en [[01 Contexto para agentes]]: revisión completa en cada actualización, diferenciando publicado/local e implementación/propuestas; no autoriza publicaciones por sí misma. Verificación de enlaces locales y diff antes de publicar; no se recompila Flutter por ser documentación.

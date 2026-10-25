@@ -87,3 +87,7 @@ Tráiler actualizado con icono animado en apertura/cierre: R/P escalonadas y bar
 La música vigente del tráiler es pulse-trap.wav, tras aclaración del usuario (trap urbano). Pista original local y animación de barras a half-time 72 BPM; ver [[19 Trailer de RP Music]]. No modifica la app Flutter.
 
 Pista audiovisual vigente: pulse-dark-trap.wav, dirección oscura/épica solicitada por el usuario; sustituye pulse-trap.wav sin borrarla. Detalles y límites en [[19 Trailer de RP Music]].
+
+## README alineado con 0.2.4 — 2026-10-25
+
+Se actualiza presentación pública para 0.2.4+6/v0.2.4-alpha.1 con novedades, instalación, diagnóstico/actualizador y límites de pruebas existentes. No cambia implementación ni se repiten pruebas de Flutter. El requisito de mantener README en cada actualización se conserva en [[01 Contexto para agentes]].

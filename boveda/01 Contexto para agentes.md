@@ -30,6 +30,7 @@ En cada tarea con cambios relevantes de contexto:
 4. Actualizar [[07 Preguntas e investigacion]] si se resuelve o surge una duda.
 5. Registrar en [[09 Registro de cambios]] qué cambió, por qué, qué se comprobó y qué queda pendiente.
 6. Actualizar [[10 Estado del repositorio]] cuando cambie la implementación o su validación.
+7. **Revisar y actualizar README.md en cada actualización del proyecto**, por requisito explícito del usuario (2026-10-25). Mantener versión publicada y versión local claramente diferenciadas, novedades, enlaces de descarga/pruebas, instalación, capacidades reales, verificaciones y pendientes. Si una sección no cambia, comprobar que sigue vigente; no basta con cambiar el número de versión. Actualizarlo antes de terminar el trabajo y, cuando se autorice una publicación, incluirlo en los cambios que se envían. Esta obligación no concede autorización automática para publicar, hacer push o crear releases.
 
 Conservar el historial de cambios de criterio. No registrar secretos, tokens, credenciales ni datos privados de bibliotecas de servicios. Una actualización pequeña no necesita una nota nueva si encaja en una existente.
 

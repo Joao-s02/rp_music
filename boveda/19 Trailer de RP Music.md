@@ -62,3 +62,5 @@ Creada por petición del usuario con herramienta de imágenes usando icono A com
 ## Publicación del vídeo e integración en README — 2026-10-25
 
 El usuario confirmó que publicó el vídeo en https://youtu.be/lobwRKtXv-M y autorizó incorporarlo al README del repositorio GitHub. Se añade una sección Tráiler después de la introducción, con miniatura JPEG local enlazada y enlace textual accesible al mismo vídeo. Se usa enlace a YouTube porque el README de GitHub no reproduce un iframe de YouTube. La confirmación de publicación del vídeo procede del usuario; no equivale a revisión del contenido remoto. Se prepara envío del README, miniatura JPEG y contexto documental del tráiler.
+
+Publicación comprobada: commit 026c87e enviado a origin/main; lectura posterior del README mediante API GitHub confirmó la sección, ruta de miniatura y enlace lobwRKtXv-M. Esta confirmación es posterior al commit publicado.
