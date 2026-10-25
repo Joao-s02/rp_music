@@ -21,6 +21,7 @@ Bóveda de Obsidian para conservar el contexto del reproductor y permitir que cu
 10. [[10 Estado del repositorio]] — código alfa y situación comprobada.
 11. [[11 Reconstruccion - primera base]] — implementación inicial y sus límites.
 12. [[12 Release 0.2.0-alpha.1]] — distribución e instrucciones de instalación.
+13. [[13 Pruebas reales y correcciones 0.2.1]] — informe de dispositivos y correcciones posteriores.
 
 ## Cómo abrirla
 

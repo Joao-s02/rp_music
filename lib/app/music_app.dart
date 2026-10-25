@@ -46,7 +46,7 @@ class MusicHome extends StatefulWidget {
   State<MusicHome> createState() => _MusicHomeState();
 }
 
-class _MusicHomeState extends State<MusicHome> {
+class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
   int page = 0;
   int view = 0;
   String query = '';
@@ -73,6 +73,7 @@ class _MusicHomeState extends State<MusicHome> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     errors = audio.errors.stream.listen((text) {
       if (mounted) {
         ScaffoldMessenger.of(context)
@@ -83,10 +84,16 @@ class _MusicHomeState extends State<MusicHome> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     errors?.cancel();
     debounce?.cancel();
     search.dispose();
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state != AppLifecycleState.resumed) unawaited(audio.saveSession());
   }
 
   void navigate(int value) => setState(() {
@@ -98,6 +105,7 @@ class _MusicHomeState extends State<MusicHome> {
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, size) {
       final desktop = size.maxWidth >= 850;
+      final keyboard = MediaQuery.viewInsetsOf(context).bottom > 0;
       return Scaffold(
         body: SafeArea(
           child: Row(
@@ -137,6 +145,8 @@ class _MusicHomeState extends State<MusicHome> {
                           Expanded(
                             child: Text(
                               labels[page],
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                               style: Theme.of(context).textTheme.headlineMedium,
                             ),
                           ),
@@ -191,14 +201,14 @@ class _MusicHomeState extends State<MusicHome> {
                         _ => settingsView(),
                       },
                     ),
-                    PlayerPanel(audio: audio, library: library),
+                    if (!keyboard) PlayerPanel(audio: audio, library: library),
                   ],
                 ),
               ),
             ],
           ),
         ),
-        bottomNavigationBar: desktop
+        bottomNavigationBar: desktop || keyboard
             ? null
             : NavigationBar(
                 selectedIndex: page,
@@ -284,51 +294,55 @@ class _MusicHomeState extends State<MusicHome> {
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: SizedBox(
             width: double.infinity,
-            child: Wrap(
-              spacing: 8,
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                spacing: 8,
+                children: [
+                  for (final (i, label) in [
+                    'Canciones',
+                    'Álbumes',
+                    'Artistas',
+                    'Carpetas',
+                  ].indexed)
+                    ChoiceChip(
+                      label: Text(label),
+                      selected: view == i,
+                      onSelected: (_) => setState(() {
+                        view = i;
+                        group = null;
+                      }),
+                    ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        if (MediaQuery.viewInsetsOf(context).bottom == 0)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+            child: Row(
               children: [
-                for (final (i, label) in [
-                  'Canciones',
-                  'Álbumes',
-                  'Artistas',
-                  'Carpetas',
-                ].indexed)
-                  ChoiceChip(
-                    label: Text(label),
-                    selected: view == i,
-                    onSelected: (_) => setState(() {
-                      view = i;
-                      group = null;
-                    }),
+                Expanded(
+                  child: Text(
+                    '${filtered.length} canciones${library.scanning ? ' · Metadatos ${library.scanProcessed}/${library.scanTotal}' : ''}',
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                ),
+                if (library.activeExtension?.randomAction == true)
+                  TextButton.icon(
+                    onPressed: filtered.isEmpty
+                        ? null
+                        : () => audio.select(
+                            filtered,
+                            Random().nextInt(filtered.length),
+                          ),
+                    icon: const Icon(Icons.casino_outlined),
+                    label: const Text('Sorpréndeme'),
                   ),
               ],
             ),
           ),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-          child: Row(
-            children: [
-              Expanded(
-                child: Text(
-                  '${filtered.length} canciones${library.scanning ? ' · Actualizando…' : ''}',
-                  style: Theme.of(context).textTheme.bodySmall,
-                ),
-              ),
-              if (library.activeExtension?.randomAction == true)
-                TextButton.icon(
-                  onPressed: filtered.isEmpty
-                      ? null
-                      : () => audio.select(
-                          filtered,
-                          Random().nextInt(filtered.length),
-                        ),
-                  icon: const Icon(Icons.casino_outlined),
-                  label: const Text('Sorpréndeme'),
-                ),
-            ],
-          ),
-        ),
         Expanded(
           child: view == 0 ? trackList(filtered) : groupedTracks(filtered),
         ),
@@ -395,6 +409,7 @@ class _MusicHomeState extends State<MusicHome> {
 
   Widget trackList(
     List<Track> tracks, {
+    String? playlist,
     String empty =
         'No hay canciones. Actualiza la carpeta o cambia tu búsqueda.',
   }) {
@@ -430,14 +445,22 @@ class _MusicHomeState extends State<MusicHome> {
                       : Icons.favorite_border,
                 ),
               ),
-              PopupMenuButton<String>(
-                tooltip: 'Añadir a una lista',
-                onSelected: (name) => library.addToPlaylist(name, track.id),
-                itemBuilder: (_) => [
-                  for (final name in library.playlists.keys)
-                    PopupMenuItem(value: name, child: Text('Añadir a $name')),
-                ],
-              ),
+              if (playlist != null)
+                IconButton(
+                  tooltip: 'Quitar de la lista',
+                  icon: const Icon(Icons.playlist_remove),
+                  onPressed: () =>
+                      library.removeFromPlaylist(playlist, track.id),
+                ),
+              if (playlist == null)
+                PopupMenuButton<String>(
+                  tooltip: 'Añadir a una lista',
+                  onSelected: (name) => library.addToPlaylist(name, track.id),
+                  itemBuilder: (_) => [
+                    for (final name in library.playlists.keys)
+                      PopupMenuItem(value: name, child: Text('Añadir a $name')),
+                  ],
+                ),
             ],
           ),
         );
@@ -453,8 +476,8 @@ class _MusicHomeState extends State<MusicHome> {
 
   Widget playlistView() {
     if (group != null && library.playlists.containsKey(group)) {
-      final ids = library.playlists[group]!;
-      final byId = {for (final t in library.tracks) t.id: t};
+      final name = group!;
+      final missing = library.missingInPlaylist(name);
       return Column(
         children: [
           ListTile(
@@ -462,11 +485,27 @@ class _MusicHomeState extends State<MusicHome> {
             title: Text(group!),
             onTap: () => setState(() => group = null),
           ),
+          if (missing > 0)
+            ListTile(
+              title: Text('$missing canciones no disponibles en esta carpeta'),
+              subtitle: const Text(
+                'Se conservan por si vuelves a la carpeta anterior.',
+              ),
+              trailing: TextButton(
+                onPressed: library.scanning
+                    ? null
+                    : () => library.removeMissingFromPlaylist(name),
+                child: const Text('Quitar'),
+              ),
+            ),
           Expanded(
-            child: trackList([
-              for (final id in ids)
-                if (byId[id] != null) byId[id]!,
-            ], empty: 'Añade canciones desde el menú de la biblioteca.'),
+            child: trackList(
+              library.playlistTracks(name),
+              playlist: name,
+              empty: missing > 0
+                  ? 'Las canciones de esta lista están fuera de la carpeta actual.'
+                  : 'Añade canciones desde el menú de la biblioteca.',
+            ),
           ),
         ],
       );
@@ -496,7 +535,9 @@ class _MusicHomeState extends State<MusicHome> {
                       ListTile(
                         leading: const Icon(Icons.queue_music),
                         title: Text(entry.key),
-                        subtitle: Text('${entry.value.length} canciones'),
+                        subtitle: Text(
+                          '${library.playlistTracks(entry.key).length} disponibles${library.missingInPlaylist(entry.key) > 0 ? ' · ${library.missingInPlaylist(entry.key)} no disponibles' : ''}',
+                        ),
                         onTap: () => setState(() => group = entry.key),
                       ),
                   ],
@@ -588,7 +629,7 @@ class _MusicHomeState extends State<MusicHome> {
         subtitle: Text('Tu biblioteca permanece en este dispositivo.'),
       ),
       const ListTile(
-        title: Text('RP Music · 0.2.0'),
+        title: Text('RP Music · 0.2.1'),
         subtitle: Text('Base en reconstrucción · Android y Windows'),
       ),
     ],

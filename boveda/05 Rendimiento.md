@@ -22,6 +22,8 @@ No hay cifras acordadas de RAM, batería, tamaño, tiempo de arranque, latencia 
 
 ## Plan de evidencia pendiente
 
+El usuario ya probó tres celulares y una PC: informó buena fluidez general, pero escaneo de uno a dos minutos en celulares. La corrección local incorpora descubrimiento progresivo, MediaStore cuando procede y huellas de archivos; todavía falta medir la mejora en esos equipos. Véase [[13 Pruebas reales y correcciones 0.2.1]].
+
 Elegir Android y Windows de referencia, una biblioteca reproducible y modo de compilación adecuado. Registrar hardware, cantidad y formatos de archivos, condiciones de caché, extensiones activas y resultados. Acordar presupuestos después de medir una primera prueba, sin inventar garantías.
 
 El panel de consumo por extensión es un requisito de [[04 Extensiones]]; su precisión depende del mecanismo elegido. Ver [[07 Preguntas e investigacion]] y [[06 Primera version]].

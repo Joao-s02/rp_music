@@ -1,14 +1,14 @@
 # RP Music — guía de uso
 
-Versión preliminar **0.2.0-alpha.1** para Android y Windows. Reproductor de música local, sin cuenta ni conexión a internet obligatoria. Todavía no es una versión estable.
+Versión preliminar de correcciones **0.2.1-alpha.1** para Android y Windows. Reproductor de música local, sin cuenta ni conexión a internet obligatoria. Todavía no es una versión estable. Véase también [qué volver a probar](PRUEBAS-0.2.1.md).
 
 ## Qué descargar
 
-- **Android:** `RP-Music-0.2.0-alpha.1-android.apk`.
-- **Windows x64:** `RP-Music-0.2.0-alpha.1-windows-x64.zip`.
+- **Android:** `RP-Music-0.2.1-android.apk`.
+- **Windows x64:** `RP-Music-0.2.1-windows-x64.zip`.
 - **Ejemplo de personalización:** `descubrir.json`, también incluido dentro del ZIP de Windows.
 
-Los archivos están en los adjuntos de la [release de GitHub](https://github.com/Joao-s02/rp_music/releases/tag/v0.2.0-alpha.1). Los archivos automáticos «Source code» son para desarrollar; no son instaladores.
+Los paquetes corregidos se distribuyen mediante la [release 0.2.1-alpha.1 de GitHub](https://github.com/Joao-s02/rp_music/releases/tag/v0.2.1-alpha.1). Los archivos automáticos «Source code» son para desarrollar; no son instaladores. La copia local de los adjuntos se prepara en `dist/0.2.1`.
 
 ## Instalar en Android
 
@@ -41,9 +41,10 @@ Es una aplicación portable para Windows x64: no incluye un instalador. Si Windo
 - El botón de cola permite ver y seleccionar canciones de la cola actual.
 - El corazón agrega o quita un favorito.
 - En **Listas**, crea una lista. Después usa el menú de una canción en la biblioteca para añadirla.
+- Dentro de una lista, **Quitar de la lista** retira esa entrada sin borrar el archivo. Los contadores distinguen disponibles y ausentes; **Quitar** permite limpiar las referencias no disponibles. Si las conservas, reaparecen al volver a la carpeta que las contiene.
 - En **Ajustes**, cambia entre tema oscuro y claro o elige otra carpeta.
 
-Al añadir, eliminar o cambiar archivos dentro de tu carpeta, pulsa **Actualizar biblioteca**. En este incremento el escaneo es manual. La biblioteca guardada se muestra al volver a abrir sin esperar un escaneo nuevo. Si falla el acceso a una nueva carpeta, se conserva el catálogo anterior.
+Al añadir, eliminar o cambiar archivos dentro de tu carpeta, pulsa **Actualizar biblioteca**. El escaneo es manual y progresivo: primero aparecen los archivos y después se completa su información. Las actualizaciones reutilizan archivos sin cambios. La biblioteca guardada se muestra al volver a abrir sin esperar un escaneo nuevo. Si falla el acceso a una nueva carpeta, se conserva el catálogo anterior.
 
 Se reconocen archivos MP3, FLAC, M4A, MP4, WAV y OPUS. La reproducción real depende del códec y de las capacidades del sistema. MP4 se utiliza como audio, no como vídeo. Los metadatos se leen para organizar la biblioteca; los archivos musicales no se modifican.
 
@@ -63,9 +64,11 @@ Esta extensión es un manifiesto declarativo: utiliza presentaciones y acciones 
 
 El catálogo, favoritos, listas, tema y selección de extensión se guardan en el soporte local de la aplicación, en una subcarpeta `v2`, con respaldo del guardado anterior. No se migran datos de la antigua alfa. Desinstalar o borrar los datos de la app puede eliminar esas preferencias.
 
-Pendientes: letras, edición de etiquetas, restauración de cola y posición, edición de cola, bandeja y controles multimedia del sistema Windows, fundidos, gapless, carátulas en toda la biblioteca, métricas y runtime programable de extensiones. Cerrar la ventana de Windows actualmente termina la aplicación.
+La canción, cola y posición se guardan por separado y se restauran en pausa al abrir. Durante reproducción se guarda aproximadamente cada cinco segundos; pausar o pasar a segundo plano también guarda. Un cierre forzado puede perder los últimos segundos desde el checkpoint anterior. Al abrir el teclado se ocultan temporalmente los controles inferiores para dar espacio a la búsqueda.
 
-La integración multimedia Android está compilada, pero reproducción física, segundo plano y pantalla de bloqueo aún necesitan pruebas en dispositivos. No se han medido todavía RAM, batería o latencias. Se aprobaron 13 pruebas automatizadas y el análisis estático; eso no garantiza compatibilidad con todos los dispositivos o formatos.
+Pendientes: letras, edición de etiquetas, edición de cola, bandeja y controles multimedia del sistema Windows, fundidos, gapless, carátulas en toda la biblioteca, métricas y runtime programable de extensiones. Cerrar la ventana de Windows actualmente termina la aplicación.
+
+El usuario comprobó buena fluidez en tres celulares y reportó los problemas que motivan esta compilación. Se aprobaron 18 pruebas automatizadas y una prueba nativa Windows con WAV generados. La mejora de escaneo en esos celulares, el cierre con los archivos originales de Windows, segundo plano y pantalla de bloqueo aún necesitan repetirse en dispositivos. No se han medido todavía RAM, batería o latencias.
 
 ## Reportar un problema
 

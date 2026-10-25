@@ -12,14 +12,23 @@ import 'package:rp_music/domain/track.dart';
 class FakeFiles extends MusicFiles {
   bool fail = false;
   String? selection;
+  bool preview = false;
+  Future<void> Function()? beforeFinish;
+  List<Track> result = const [Track(id: 'song', title: 'Canción', folder: '.')];
   @override
   Future<String?> chooseRoot() async => selection;
   @override
-  Future<ScanResult> scan(String root) async {
+  Future<ScanResult> scan(
+    String root, {
+    List<Track> cached = const [],
+    void Function(ScanProgress)? onProgress,
+  }) async {
+    if (preview) {
+      onProgress?.call(ScanProgress(result, 0, result.length, discovery: true));
+    }
+    await beforeFinish?.call();
     if (fail) throw const FileSystemException('Sin acceso');
-    return const ScanResult([
-      Track(id: 'song', title: 'Canción', folder: '.'),
-    ], 0);
+    return ScanResult(result, 0);
   }
 }
 
@@ -30,6 +39,76 @@ void main() {
   });
   tearDown(() async {
     await temporary.delete(recursive: true);
+  });
+
+  test(
+    'listas cuentan disponibles y conservan referencias al cambiar de raíz',
+    () async {
+      final files = FakeFiles();
+      final controller = LibraryController(LocalStore(temporary), files);
+      await controller.initialize();
+      await controller.refresh('primera');
+      await controller.addPlaylist('Viaje');
+      await controller.addToPlaylist('Viaje', 'song');
+      files.result = const [Track(id: 'otra', title: 'Otra', folder: '.')];
+      await controller.refresh('segunda');
+      expect(controller.playlistTracks('Viaje'), isEmpty);
+      expect(controller.missingInPlaylist('Viaje'), 1);
+      expect(controller.playlists['Viaje'], ['song']);
+      files.result = const [Track(id: 'song', title: 'Canción', folder: '.')];
+      await controller.refresh('primera');
+      expect(controller.playlistTracks('Viaje').single.id, 'song');
+      await controller.removeFromPlaylist('Viaje', 'song');
+      final restored = LibraryController(LocalStore(temporary), files);
+      await restored.initialize();
+      expect(restored.playlists['Viaje'], isEmpty);
+      controller.dispose();
+      restored.dispose();
+    },
+  );
+
+  test(
+    'quitar no disponibles limpia solo las referencias ajenas al catálogo',
+    () async {
+      final controller = LibraryController(LocalStore(temporary), FakeFiles());
+      await controller.initialize();
+      await controller.refresh('raíz');
+      await controller.addPlaylist('Lista');
+      await controller.addToPlaylist('Lista', 'song');
+      await controller.addToPlaylist('Lista', 'ausente');
+      await controller.removeMissingFromPlaylist('Lista');
+      expect(controller.playlists['Lista'], ['song']);
+      controller.dispose();
+    },
+  );
+
+  test('escaneo publica archivos antes de etiquetas y reutiliza solo huellas intactas', () async {
+    final file = await File('${temporary.path}/prueba.mp3').writeAsBytes([0]);
+    final stat = await file.stat();
+    final scannedId = scanDirectory(temporary.path).tracks.single.id;
+    final cached = Track(
+      id: scannedId,
+      title: 'Etiqueta cacheada',
+      folder: '.',
+      size: stat.size,
+      modifiedMs: stat.modified.millisecondsSinceEpoch,
+      metadataLoaded: true,
+    );
+    final progress = <ScanProgress>[];
+    final result = await MusicFiles().scan(
+      temporary.path,
+      cached: [cached],
+      onProgress: progress.add,
+    );
+    expect(progress.first.discovery, isTrue);
+    expect(progress.first.processed, 0);
+    expect(progress.first.batch.single.metadataLoaded, isFalse);
+    expect(result.tracks.single.title, 'Etiqueta cacheada');
+    expect(result.skipped, 0);
+    await file.writeAsBytes([0, 1]);
+    final changed = scanDirectory(temporary.path, cached: [cached]);
+    expect(changed.tracks.single.title, 'prueba');
+    expect(changed.skipped, 1);
   });
 
   test(
@@ -103,6 +182,17 @@ void main() {
       await controller.chooseRoot();
       expect(controller.root, 'original');
       files.fail = true;
+      files.preview = true;
+      files.result = const [
+        Track(id: 'preview', title: 'Temporal', folder: '.'),
+      ];
+      files.beforeFinish = () async {
+        expect(controller.tracks.single.id, 'preview');
+        await controller.toggleFavorite('song');
+        final snapshot = await controller.store.load();
+        expect(snapshot['root'], 'original');
+        expect((snapshot['tracks'] as List).single['id'], 'song');
+      };
       await controller.refresh('otra');
       expect(controller.root, 'original');
       expect(controller.tracks.single.id, 'song');

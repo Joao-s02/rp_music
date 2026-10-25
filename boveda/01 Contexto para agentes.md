@@ -9,7 +9,7 @@ actualizado: 2026-10-24
 
 RP Music será un reproductor de música local de código abierto, construido en Flutter, dirigido a una comunidad que pueda personalizarlo mediante extensiones. Android y Windows son prioritarios; web es opcional. El núcleo debe ser sencillo, fluido, sin internet y sin cuenta. Las extensiones podrán ampliar funciones y transformar la interfaz. Ver [[02 Vision y decisiones]], [[03 Biblioteca y reproduccion]] y [[04 Extensiones]].
 
-El usuario está aprendiendo Dart y Flutter. Este es uno de sus primeros proyectos ambiciosos. Prefiere explicaciones claras y decisiones sostenibles. Flutter, Git y GitHub CLI están instalados según su declaración; no se han verificado durante esta tarea.
+El usuario está aprendiendo Dart y Flutter. Este es uno de sus primeros proyectos ambiciosos. Prefiere explicaciones claras y decisiones sostenibles. Flutter, Git y GitHub CLI se verificaron durante la reconstrucción y publicación; ver [[10 Estado del repositorio]].
 
 ## Orden de autoridad
 
@@ -35,4 +35,4 @@ Conservar el historial de cambios de criterio. No registrar secretos, tokens, cr
 
 ## Siguiente trabajo
 
-La bóveda está creada y el usuario autorizó iniciar la reconstrucción. Ya existe el primer incremento descrito en [[11 Reconstruccion - primera base]]. Continuar desde ese estado, seguir [[06 Primera version]] y resolver las investigaciones que condicionan las extensiones. Conservar esta documentación y el historial Git. Ver [[10 Estado del repositorio]].
+La primera base de [[11 Reconstruccion - primera base]] se publicó en [[12 Release 0.2.0-alpha.1]]. El estado local posterior y los resultados del usuario están en [[13 Pruebas reales y correcciones 0.2.1]]: leer esa nota antes de continuar. Seguir [[06 Primera version]] y resolver las investigaciones de extensiones conservando esta documentación y Git. Ver [[10 Estado del repositorio]].

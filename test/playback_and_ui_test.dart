@@ -17,6 +17,9 @@ class FakePlayer implements AudioPlayer {
   Completer<void>? gate;
   bool fail = false;
   Uri? current;
+  Duration currentPosition = Duration.zero;
+  @override
+  bool get playing => false;
   @override
   Stream<PlaybackEvent> get playbackEventStream => const Stream.empty();
   @override
@@ -30,7 +33,7 @@ class FakePlayer implements AudioPlayer {
   Stream<PlayerState> get playerStateStream =>
       Stream.value(PlayerState(false, ProcessingState.idle));
   @override
-  Duration get position => Duration.zero;
+  Duration get position => currentPosition;
   @override
   Future<Duration?> setAudioSource(
     AudioSource audioSource, {
@@ -39,6 +42,7 @@ class FakePlayer implements AudioPlayer {
     Duration? initialPosition,
   }) async {
     current = (audioSource as UriAudioSource).uri;
+    currentPosition = initialPosition ?? Duration.zero;
     loaded.add(current!);
     await gate?.future;
     if (fail) throw StateError('Archivo ilegible');
@@ -57,7 +61,10 @@ class FakePlayer implements AudioPlayer {
   @override
   Future<void> dispose() async {}
   @override
-  Future<void> seek(Duration? position, {int? index}) async {}
+  Future<void> seek(Duration? position, {int? index}) async {
+    currentPosition = position ?? Duration.zero;
+  }
+
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
@@ -68,6 +75,62 @@ void main() {
     Track(id: 'C:/music/dos.mp3', title: 'Dos', folder: '.'),
     Track(id: 'C:/music/tres.mp3', title: 'Tres', folder: '.'),
   ];
+  test(
+    'restaura pista, cola disponible y posición sin comenzar a reproducir',
+    () async {
+      final directory = await Directory.systemTemp.createTemp('rp_session_');
+      final store = LocalStore(directory, baseName: 'session');
+      final handler = MusicHandler(player: FakePlayer(), sessionStore: store);
+      await handler.select(tracks, 1);
+      await handler.seek(const Duration(seconds: 12));
+      handler.shuffle = true;
+      await handler.close();
+      final player = FakePlayer();
+      final restored = MusicHandler(player: player, sessionStore: store);
+      await restored.restoreSession(tracks.sublist(1));
+      expect(restored.mediaItem.value?.title, 'Dos');
+      expect(restored.tracks, hasLength(2));
+      expect(player.position, const Duration(seconds: 12));
+      expect(player.played, isEmpty);
+      expect(restored.shuffle, isTrue);
+      await restored.close();
+      await directory.delete(recursive: true);
+    },
+  );
+
+  testWidgets(
+    'búsqueda con teclado y texto ampliado no desborda en Android compacto',
+    (tester) async {
+      tester.view.physicalSize = const Size(360, 640);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      addTearDown(tester.view.resetViewInsets);
+      tester.platformDispatcher.textScaleFactorTestValue = 1.3;
+      addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+      final library =
+          LibraryController(
+              LocalStore(Directory('unused-widget-test-store')),
+              MusicFiles(),
+            )
+            ..loading = false
+            ..root = 'raíz'
+            ..tracks = tracks;
+      final audio = MusicHandler(player: FakePlayer());
+      await tester.pumpWidget(MusicApp(library: library, audio: audio));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byType(TextField));
+      tester.view.viewInsets = const FakeViewPadding(bottom: 350);
+      await tester.pumpAndSettle();
+      expect(find.byType(NavigationBar), findsNothing);
+      await tester.enterText(find.byType(TextField), 'Dos');
+      await tester.pump(const Duration(milliseconds: 200));
+      expect(find.text('Dos'), findsWidgets);
+      await tester.pumpWidget(const SizedBox.shrink());
+      await tester.runAsync(audio.close);
+      library.dispose();
+    },
+  );
   test(
     'cambios rápidos descartan selecciones obsoletas sin reproducirlas',
     () async {

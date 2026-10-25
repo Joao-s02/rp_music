@@ -14,9 +14,13 @@ class LibraryController extends ChangeNotifier {
   final LocalStore store;
   final MusicFiles files;
   List<Track> tracks = [];
+  List<Track>? _stableTracks;
+  String? _stableRoot;
   String? root;
   bool loading = true;
   bool scanning = false;
+  int scanProcessed = 0;
+  int scanTotal = 0;
   bool choosing = false;
   bool dark = true;
   String? message;
@@ -59,8 +63,8 @@ class LibraryController extends ChangeNotifier {
   Future<void> persist() async {
     final snapshot = {
       'schema': 1,
-      'root': root,
-      'tracks': tracks.map((e) => e.toJson()).toList(),
+      'root': _stableTracks == null ? root : _stableRoot,
+      'tracks': (_stableTracks ?? tracks).map((e) => e.toJson()).toList(),
       'favorites': favorites.toList(),
       'playlists': playlists.map((k, v) => MapEntry(k, List<String>.of(v))),
       'extensions': extensions.map((e) => e.toJson()).toList(),
@@ -95,17 +99,54 @@ class LibraryController extends ChangeNotifier {
     if (candidate == null || scanning) return;
     scanning = true;
     message = null;
+    scanProcessed = 0;
+    scanTotal = 0;
+    final previousRoot = root;
+    final previousTracks = tracks;
+    _stableTracks = previousTracks;
+    _stableRoot = previousRoot;
+    final staging = <Track>[];
+    final positions = <String, int>{};
     notifyListeners();
     try {
-      final result = await files.scan(candidate);
+      final result = await files.scan(
+        candidate,
+        cached: candidate == previousRoot ? previousTracks : const [],
+        onProgress: (progress) {
+          if (progress.discovery) {
+            staging.clear();
+            positions.clear();
+            staging.addAll(progress.batch);
+            for (var i = 0; i < staging.length; i++) {
+              positions[staging[i].id] = i;
+            }
+          } else {
+            for (final track in progress.batch) {
+              final index = positions[track.id];
+              if (index != null) staging[index] = track;
+            }
+          }
+          root = candidate;
+          tracks = List.unmodifiable(staging);
+          scanProcessed = progress.processed;
+          scanTotal = progress.total;
+          notifyListeners();
+        },
+      );
       // Commit only after a successful scan; cancellation/failure keeps the previous library.
       root = candidate;
       tracks = List.unmodifiable(result.tracks);
+      _stableTracks = null;
+      _stableRoot = null;
       message = result.skipped > 0
           ? '${result.skipped} archivos o carpetas no pudieron leerse completamente.'
           : null;
       await persist();
     } catch (_) {
+      root = previousRoot;
+      tracks = previousTracks;
+      _stableTracks = null;
+      _stableRoot = null;
       message =
           'No se pudo leer la carpeta. Se conserva la biblioteca anterior.';
     } finally {
@@ -132,6 +173,30 @@ class LibraryController extends ChangeNotifier {
     final list = playlists[name];
     if (list == null || list.contains(id)) return;
     list.add(id);
+    notifyListeners();
+    await persist();
+  }
+
+  List<Track> playlistTracks(String name) {
+    final byId = {for (final track in tracks) track.id: track};
+    return [
+      for (final id in playlists[name] ?? <String>[])
+        if (byId[id] != null) byId[id]!,
+    ];
+  }
+
+  int missingInPlaylist(String name) =>
+      (playlists[name]?.length ?? 0) - playlistTracks(name).length;
+
+  Future<void> removeFromPlaylist(String name, String id) async {
+    playlists[name]?.remove(id);
+    notifyListeners();
+    await persist();
+  }
+
+  Future<void> removeMissingFromPlaylist(String name) async {
+    final available = tracks.map((t) => t.id).toSet();
+    playlists[name]?.removeWhere((id) => !available.contains(id));
     notifyListeners();
     await persist();
   }

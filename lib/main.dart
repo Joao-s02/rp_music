@@ -20,17 +20,28 @@ Future<void> main() async {
     );
     final handler = Platform.isAndroid
         ? await AudioService.init(
-            builder: MusicHandler.new,
+            builder: () => MusicHandler(
+              sessionStore: LocalStore(
+                Directory('${directory.path}/v2'),
+                baseName: 'session',
+              ),
+            ),
             config: const AudioServiceConfig(
               androidNotificationChannelId: 'rp_music.playback',
               androidNotificationChannelName: 'Reproducción',
               androidNotificationOngoing: true,
             ),
           )
-        : MusicHandler();
+        : MusicHandler(
+            sessionStore: LocalStore(
+              Directory('${directory.path}/v2'),
+              baseName: 'session',
+            ),
+          );
     await handler.configureSession();
     runApp(MusicApp(library: controller, audio: handler));
     await controller.initialize();
+    await handler.restoreSession(controller.tracks);
   } catch (_) {
     runApp(
       const MaterialApp(

@@ -6,9 +6,14 @@ import 'package:audio_session/audio_session.dart';
 import 'package:just_audio/just_audio.dart';
 
 import '../domain/track.dart';
+import '../data/local_store.dart';
 
 class MusicHandler extends BaseAudioHandler with SeekHandler {
   final AudioPlayer player;
+  final LocalStore? sessionStore;
+  Timer? _checkpointTimer;
+  Timer? _seekCheckpoint;
+  bool _closed = false;
   final errors = StreamController<String>.broadcast();
   final _subscriptions = <StreamSubscription<dynamic>>[];
   Future<void> _operations = Future.value();
@@ -19,7 +24,13 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
   int index = -1;
   bool shuffle = false;
   bool repeat = false;
-  MusicHandler({AudioPlayer? player}) : player = player ?? AudioPlayer() {
+  MusicHandler({AudioPlayer? player, this.sessionStore})
+    : player = player ?? AudioPlayer() {
+    if (sessionStore != null) {
+      _checkpointTimer = Timer.periodic(const Duration(seconds: 5), (_) {
+        if (this.player.playing && !_loading) unawaited(saveSession());
+      });
+    }
     _subscriptions.add(
       this.player.playbackEventStream.listen(
         (_) => _publish(),
@@ -63,14 +74,19 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
       speed: player.speed,
     ),
   );
-  Future<void> select(List<Track> source, int selected) {
+  Future<void> select(
+    List<Track> source,
+    int selected, {
+    bool autoplay = true,
+    Duration initialPosition = Duration.zero,
+  }) {
     if (selected < 0 || selected >= source.length) return Future.value();
     tracks = List.unmodifiable(source);
     index = selected;
     final track = tracks[index];
     final generation = ++_generation;
     _loading = true;
-    _playIntent = true;
+    _playIntent = autoplay;
     final operation = _operations.then((_) async {
       if (generation != _generation) return;
       await player.pause();
@@ -91,9 +107,11 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
                 ? Uri.parse(track.id)
                 : Uri.file(track.id),
           ),
+          initialPosition: initialPosition,
         );
         if (generation == _generation) {
           _loading = false;
+          unawaited(saveSession(position: initialPosition));
           if (_playIntent) unawaited(play());
         }
       } catch (_) {
@@ -142,11 +160,73 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
   @override
   Future<void> pause() {
     _playIntent = false;
-    return player.pause();
+    return player.pause().then((_) => saveSession());
   }
 
   @override
-  Future<void> seek(Duration position) => player.seek(position);
+  Future<void> seek(Duration position) async {
+    await player.seek(position);
+    if (sessionStore != null) {
+      _seekCheckpoint?.cancel();
+      _seekCheckpoint = Timer(
+        const Duration(milliseconds: 350),
+        () => unawaited(saveSession()),
+      );
+    }
+  }
+
+  Future<void> saveSession({Duration? position}) async {
+    if (_closed ||
+        sessionStore == null ||
+        index < 0 ||
+        index >= tracks.length ||
+        _loading) {
+      return;
+    }
+    final snapshot = <String, dynamic>{
+      'schema': 1,
+      'ids': tracks.map((t) => t.id).toList(),
+      'current': tracks[index].id,
+      'positionMs': (position ?? player.position).inMilliseconds,
+      'shuffle': shuffle,
+      'repeat': repeat,
+    };
+    try {
+      await sessionStore!.save(snapshot);
+    } catch (_) {
+      if (!_closed) errors.add('No se pudo guardar la sesión de reproducción.');
+    }
+  }
+
+  Future<void> restoreSession(List<Track> library) async {
+    if (sessionStore == null || _generation != 0) return;
+    try {
+      final saved = await sessionStore!.load();
+      if (saved['schema'] != 1 || _generation != 0) return;
+      final byId = {for (final t in library) t.id: t};
+      final queue = [
+        for (final id in (saved['ids'] as List))
+          if (byId[id] != null) byId[id]!,
+      ];
+      final selected = queue.indexWhere((t) => t.id == saved['current']);
+      if (selected < 0) return;
+      shuffle = saved['shuffle'] as bool? ?? false;
+      repeat = saved['repeat'] as bool? ?? false;
+      var position = (saved['positionMs'] as num?)?.toInt() ?? 0;
+      if (position < 0) position = 0;
+      final duration = queue[selected].durationMs;
+      if (duration > 0 && position >= duration) position = 0;
+      await select(
+        queue,
+        selected,
+        autoplay: false,
+        initialPosition: Duration(milliseconds: position),
+      );
+    } catch (_) {
+      errors.add('No se pudo recuperar la última sesión.');
+    }
+  }
+
   @override
   Future<void> stop() async {
     ++_generation;
@@ -176,8 +256,12 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
   }
 
   Future<void> close() async {
+    _checkpointTimer?.cancel();
+    _seekCheckpoint?.cancel();
     ++_generation;
     await _operations;
+    await saveSession();
+    _closed = true;
     for (final subscription in _subscriptions) {
       await subscription.cancel();
     }

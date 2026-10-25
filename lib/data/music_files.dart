@@ -1,20 +1,29 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:isolate';
 
 import 'package:audio_metadata_reader/audio_metadata_reader.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/services.dart';
-import 'package:path/path.dart' as p;
 
 import '../domain/track.dart';
+import 'library_scanner.dart';
+export 'library_scanner.dart';
 
-const audioExtensions = {'.mp3', '.flac', '.m4a', '.mp4', '.wav', '.opus'};
 const _channel = MethodChannel('rp_music/library');
 
-class ScanResult {
-  const ScanResult(this.tracks, this.skipped);
-  final List<Track> tracks;
-  final int skipped;
+void _scanWorker((String, List<Track>, SendPort) request) {
+  final (root, cached, port) = request;
+  try {
+    final result = scanDirectory(
+      root,
+      cached: cached,
+      onProgress: (progress) => port.send(progress),
+    );
+    port.send(result);
+  } catch (_) {
+    port.send('No se pudo leer la carpeta.');
+  }
 }
 
 class MusicFiles {
@@ -23,19 +32,68 @@ class MusicFiles {
       : FilePicker.getDirectoryPath(
           dialogTitle: 'Seleccionar carpeta de música',
         );
-  Future<ScanResult> scan(String root) async {
+
+  Future<ScanResult> scan(
+    String root, {
+    List<Track> cached = const [],
+    void Function(ScanProgress)? onProgress,
+  }) async {
     if (Platform.isAndroid) {
-      final result = await _channel.invokeMapMethod<String, dynamic>('scan', {
-        'root': root,
+      _channel.setMethodCallHandler((call) async {
+        if (call.method != 'scanProgress') return;
+        final map = Map<String, dynamic>.from(call.arguments as Map);
+        onProgress?.call(
+          ScanProgress(
+            (map['tracks'] as List)
+                .map((t) => Track.fromJson(Map<String, dynamic>.from(t as Map)))
+                .toList(),
+            map['processed'] as int,
+            map['total'] as int,
+            discovery: map['discovery'] as bool? ?? false,
+          ),
+        );
       });
-      return ScanResult(
-        (result!['tracks'] as List)
-            .map((t) => Track.fromJson(Map<String, dynamic>.from(t as Map)))
-            .toList(),
-        result['skipped'] as int? ?? 0,
-      );
+      try {
+        final result = await _channel.invokeMapMethod<String, dynamic>('scan', {
+          'root': root,
+          'cached': cached.map((t) => t.toJson()).toList(),
+        });
+        return ScanResult(
+          (result!['tracks'] as List)
+              .map((t) => Track.fromJson(Map<String, dynamic>.from(t as Map)))
+              .toList(),
+          result['skipped'] as int? ?? 0,
+        );
+      } finally {
+        _channel.setMethodCallHandler(null);
+      }
     }
-    return Isolate.run(() => scanDirectory(root));
+    final port = ReceivePort();
+    final done = Completer<ScanResult>();
+    final subscription = port.listen((event) {
+      if (event is ScanProgress) {
+        onProgress?.call(event);
+      } else if (event is ScanResult) {
+        done.complete(event);
+      } else if (!done.isCompleted) {
+        done.completeError(
+          const FileSystemException('No se pudo leer la carpeta.'),
+        );
+      }
+    });
+    Isolate? worker;
+    try {
+      worker = await Isolate.spawn(_scanWorker, (
+        root,
+        cached,
+        port.sendPort,
+      ), onError: port.sendPort);
+      return await done.future;
+    } finally {
+      await subscription.cancel();
+      port.close();
+      worker?.kill();
+    }
   }
 
   Future<Uint8List?> artwork(String id) async {
@@ -53,62 +111,4 @@ class MusicFiles {
       }
     });
   }
-}
-
-/// Runs outside the UI isolate; never follows symlinks outside the root.
-ScanResult scanDirectory(String root) {
-  final directory = Directory(root);
-  if (!directory.existsSync()) {
-    throw const FileSystemException('La carpeta no está disponible.');
-  }
-  final tracks = <Track>[];
-  var skipped = 0;
-  final pending = [directory];
-  while (pending.isNotEmpty) {
-    final current = pending.removeLast();
-    List<FileSystemEntity> entries;
-    try {
-      entries = current.listSync(followLinks: false);
-    } on FileSystemException {
-      if (current.path == directory.path) rethrow;
-      skipped++;
-      continue;
-    }
-    for (final entry in entries) {
-      if (entry is Directory) {
-        pending.add(entry);
-        continue;
-      }
-      if (entry is! File ||
-          !audioExtensions.contains(p.extension(entry.path).toLowerCase())) {
-        continue;
-      }
-      var title = p.basenameWithoutExtension(entry.path);
-      String? artist, album;
-      var duration = 0;
-      try {
-        final tags = readMetadata(entry);
-        if (tags.title?.trim().isNotEmpty == true) title = tags.title!;
-        artist = tags.artist;
-        album = tags.album;
-        duration = tags.duration?.inMilliseconds ?? 0;
-      } catch (_) {
-        skipped++;
-      }
-      tracks.add(
-        Track(
-          id: entry.path,
-          title: title,
-          folder: p.relative(entry.parent.path, from: root),
-          artist: artist?.trim().isNotEmpty == true
-              ? artist!
-              : 'Artista desconocido',
-          album: album?.trim().isNotEmpty == true ? album! : 'Sin álbum',
-          durationMs: duration,
-        ),
-      );
-    }
-  }
-  tracks.sort((a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase()));
-  return ScanResult(tracks, skipped);
 }
