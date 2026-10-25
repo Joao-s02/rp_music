@@ -1,14 +1,14 @@
 # RP Music — guía de uso
 
-Versión preliminar de correcciones **0.2.1-alpha.1** para Android y Windows. Reproductor de música local, sin cuenta ni conexión a internet obligatoria. Todavía no es una versión estable. Véase también [qué volver a probar](PRUEBAS-0.2.1.md).
+Versión preliminar de correcciones **0.2.2-alpha.1** para Android y Windows. Reproductor de música local, sin cuenta ni conexión a internet obligatoria. Todavía no es una versión estable. Véase también [qué volver a probar](PRUEBAS-0.2.2.md).
 
 ## Qué descargar
 
-- **Android:** `RP-Music-0.2.1-android.apk`.
-- **Windows x64:** `RP-Music-0.2.1-windows-x64.zip`.
+- **Android:** `RP-Music-0.2.2-android.apk`.
+- **Windows x64:** `RP-Music-0.2.2-windows-x64.zip`.
 - **Ejemplo de personalización:** `descubrir.json`, también incluido dentro del ZIP de Windows.
 
-Los paquetes corregidos se distribuyen mediante la [release 0.2.1-alpha.1 de GitHub](https://github.com/Joao-s02/rp_music/releases/tag/v0.2.1-alpha.1). Los archivos automáticos «Source code» son para desarrollar; no son instaladores. La copia local de los adjuntos se prepara en `dist/0.2.1`.
+Los paquetes corregidos se distribuyen mediante la [release 0.2.2-alpha.1 de GitHub](https://github.com/Joao-s02/rp_music/releases/tag/v0.2.2-alpha.1). Los archivos automáticos «Source code» son para desarrollar; no son instaladores. La copia local de los adjuntos se prepara en `dist/0.2.2`.
 
 ## Instalar en Android
 
@@ -66,10 +66,14 @@ El catálogo, favoritos, listas, tema y selección de extensión se guardan en e
 
 La canción, cola y posición se guardan por separado y se restauran en pausa al abrir. Durante reproducción se guarda aproximadamente cada cinco segundos; pausar o pasar a segundo plano también guarda. Un cierre forzado puede perder los últimos segundos desde el checkpoint anterior. Al abrir el teclado se ocultan temporalmente los controles inferiores para dar espacio a la búsqueda.
 
-Pendientes: letras, edición de etiquetas, edición de cola, bandeja y controles multimedia del sistema Windows, fundidos, gapless, carátulas en toda la biblioteca, métricas y runtime programable de extensiones. Cerrar la ventana de Windows actualmente termina la aplicación.
+Pendientes: letras, edición de etiquetas, edición de cola, controles multimedia del sistema Windows, fundidos, gapless, carátulas en toda la biblioteca, métricas y runtime programable de extensiones. En Windows, cerrar mantiene reproducción en bandeja por defecto; se cambia en Ajustes. Para cerrar completamente, usa Salir en el icono de bandeja.
 
-El usuario comprobó buena fluidez en tres celulares y reportó los problemas que motivan esta compilación. Se aprobaron 18 pruebas automatizadas y una prueba nativa Windows con WAV generados. La mejora de escaneo en esos celulares, el cierre con los archivos originales de Windows, segundo plano y pantalla de bloqueo aún necesitan repetirse en dispositivos. No se han medido todavía RAM, batería o latencias.
+El usuario comprobó buena fluidez en tres celulares y reportó los problemas que motivan esta compilación. Se aprobaron 25 pruebas automatizadas y una prueba nativa Windows con WAV generados. La mejora de escaneo en esos celulares, el cierre con los archivos originales de Windows, segundo plano y pantalla de bloqueo aún necesitan repetirse en dispositivos. No se han medido todavía RAM, batería o latencias.
 
 ## Reportar un problema
 
 Crear un [issue en GitHub](https://github.com/Joao-s02/rp_music/issues) con versión de la app, sistema/dispositivo, pasos para reproducir, resultado esperado y resultado observado. Si es un fallo de audio, indicar formato y códec si se conocen. Evitar compartir credenciales o archivos musicales privados.
+
+## Notificaciones y volumen en 0.2.2
+
+Android solicita el permiso de notificaciones al ingresar por primera vez en esta versión. Puedes gestionarlo desde Ajustes. El volumen y silencio están en la barra inferior y se conserva el nivel elegido. Consulta el plan de pruebas 0.2.2 para bandeja, cierre completo y diagnóstico Tecno.

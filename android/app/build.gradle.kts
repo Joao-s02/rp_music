@@ -4,6 +4,12 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+// The single-ABI download must remain upgrade-compatible with the universal
+// APK rather than gaining the default ABI-specific version-code offset.
+if (project.findProperty("target-platform") == "android-arm64") {
+    project.extensions.extraProperties.set("force-version-code-ignoring-abi", true)
+}
+
 android {
     namespace = "com.example.rp_music"
     compileSdk = flutter.compileSdkVersion

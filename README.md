@@ -1,6 +1,6 @@
 # RP Music
 
-Base reconstruida en Flutter para Android y Windows. Aplicación local, sin cuenta. La versión preliminar 0.2.1 incorpora correcciones de las pruebas reales; todavía no implementa toda la visión del proyecto. Consulta [qué volver a probar](docs/PRUEBAS-0.2.1.md).
+Base reconstruida en Flutter para Android y Windows. Aplicación local, sin cuenta. La versión preliminar 0.2.2 añade notificaciones, volumen y bandeja; todavía no implementa toda la visión del proyecto. Consulta [qué volver a probar](docs/PRUEBAS-0.2.2.md).
 
 ## Descargar y usar
 
@@ -13,6 +13,9 @@ Los binarios se distribuyen en [Releases de GitHub](https://github.com/Joao-s02/
 - Reproducción, pausa, posición, anterior/siguiente, aleatorio y repetición de una canción.
 - Cola de la selección actual, favoritos y listas persistentes con eliminación de entradas y contador de disponibles/ausentes.
 - Restauración de canción, cola y posición sin iniciar reproducción automáticamente.
+- Volumen de la aplicación y silenciar, con nivel guardado.
+- Windows: cerrar a bandeja o salir completamente según preferencia; menú para abrir, reproducir/pausar y salir.
+- Android: permiso de notificaciones en el primer ingreso, estado/ajustes y propagación de cambios reproducir/pausar al servicio multimedia.
 - Metadatos para organizar la biblioteca y carátula de la canción activa.
 - Tema claro/oscuro y navegación adaptable en español.
 - Integración de servicio multimedia Android preparada mediante audio_service.
@@ -63,7 +66,7 @@ Las pruebas verifican biblioteca, guardados, progreso/caché, cambios de raíz, 
 
 ## Pendiente
 
-Letras, edición de etiquetas, cola editable, fundidos, gapless, bandeja y controles del sistema Windows, carátulas en la biblioteca, mediciones de rendimiento y recursos por extensión, runtime programable, permisos de dos niveles, catálogo e integraciones con servicios. Web no está soportada por este incremento.
+Letras, edición de etiquetas, cola editable, fundidos, gapless, controles multimedia del sistema Windows, carátulas en la biblioteca, mediciones de rendimiento y recursos por extensión, runtime programable, permisos de dos niveles, catálogo e integraciones con servicios. Falta confirmar notificaciones en teléfonos reales y diagnosticar el rechazo de APK en Tecno Android 16. Web no está soportada por este incremento.
 
 ## Contexto para colaborar
 

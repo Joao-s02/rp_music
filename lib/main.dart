@@ -9,6 +9,8 @@ import 'app/music_app.dart';
 import 'data/local_store.dart';
 import 'data/music_files.dart';
 import 'playback/music_handler.dart';
+import 'platform/android_notifications.dart';
+import 'platform/desktop_lifecycle.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,6 +32,7 @@ Future<void> main() async {
               androidNotificationChannelId: 'rp_music.playback',
               androidNotificationChannelName: 'Reproducción',
               androidNotificationOngoing: true,
+              androidNotificationIcon: 'drawable/ic_stat_music',
             ),
           )
         : MusicHandler(
@@ -39,8 +42,26 @@ Future<void> main() async {
             ),
           );
     await handler.configureSession();
-    runApp(MusicApp(library: controller, audio: handler));
+    final notifications = Platform.isAndroid ? AndroidNotifications() : null;
+    runApp(
+      MusicApp(
+        library: controller,
+        audio: handler,
+        notifications: notifications,
+      ),
+    );
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      notifications?.request(firstLaunch: true);
+    });
     await controller.initialize();
+    await handler.setAppVolume(controller.volume);
+    if (Platform.isWindows) {
+      await DesktopLifecycle(
+        NativeDesktopWindow(),
+        controller,
+        handler,
+      ).initialize();
+    }
     await handler.restoreSession(controller.tracks);
   } catch (_) {
     runApp(

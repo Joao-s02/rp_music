@@ -5,6 +5,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:rp_music/domain/track.dart';
 import 'package:rp_music/playback/music_handler.dart';
+import 'package:rp_music/platform/desktop_lifecycle.dart';
+import 'package:rp_music/app/library_controller.dart';
+import 'package:rp_music/data/local_store.dart';
+import 'package:rp_music/data/music_files.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
@@ -61,6 +65,42 @@ void main() {
           await Future<void>.delayed(const Duration(milliseconds: 250));
           expect(errors, isEmpty);
           expect(handler.player.duration, const Duration(seconds: 3));
+          await handler.setAppVolume(0.35);
+          expect(handler.player.volume, 0.35);
+          final library = LibraryController(
+            LocalStore(directory),
+            MusicFiles(),
+          );
+          final desktop = DesktopLifecycle(
+            NativeDesktopWindow(),
+            library,
+            handler,
+          );
+          try {
+            await desktop.initialize();
+            expect(
+              desktop.hasTray,
+              isTrue,
+              reason: 'La prueba requiere la bandeja de Windows disponible',
+            );
+            await NativeDesktopWindow.channel.invokeMethod<void>(
+              'requestClose',
+            );
+            await Future<void>.delayed(const Duration(milliseconds: 200));
+            expect(
+              await NativeDesktopWindow.channel.invokeMethod<bool>('isVisible'),
+              isFalse,
+            );
+            expect(handler.player.playing, isTrue);
+            await NativeDesktopWindow.channel.invokeMethod<void>('show');
+            expect(
+              await NativeDesktopWindow.channel.invokeMethod<bool>('isVisible'),
+              isTrue,
+            );
+          } finally {
+            await NativeDesktopWindow.channel.invokeMethod<void>('dispose');
+            library.dispose();
+          }
           await handler.pause();
         } finally {
           await subscription.cancel();
