@@ -10,11 +10,12 @@ Future<Map<String, dynamic>> _decodeSnapshot(String value) =>
 
 /// Ordered writes with a recoverable previous snapshot.
 class LocalStore {
-  LocalStore(this.directory);
+  LocalStore(this.directory, {this.baseName = 'library'});
   final Directory directory;
+  final String baseName;
   Future<void> _pending = Future.value();
   Future<Map<String, dynamic>> load() async {
-    for (final name in ['library.json', 'library.backup.json']) {
+    for (final name in ['$baseName.json', '$baseName.backup.json']) {
       try {
         final file = File('${directory.path}/$name');
         if (!await file.exists()) continue;
@@ -33,9 +34,9 @@ class LocalStore {
     final operation = _pending.then((_) async {
       final encoded = await _encodeSnapshot(value);
       await directory.create(recursive: true);
-      final target = File('${directory.path}/library.json');
-      final backup = File('${directory.path}/library.backup.json');
-      final temporary = File('${directory.path}/library.pending.json');
+      final target = File('${directory.path}/$baseName.json');
+      final backup = File('${directory.path}/$baseName.backup.json');
+      final temporary = File('${directory.path}/$baseName.pending.json');
       await temporary.writeAsString(encoded, flush: true);
       if (await target.exists()) {
         if (await backup.exists()) await backup.delete();
