@@ -39,3 +39,16 @@ Usar el flujo completo de Flutter para que regenere el registro de plugins corre
 Si Gradle espera comprobaciones de red, todas las dependencias están en caché y Flutter **ya generó los archivos para release**, se puede verificar desde `android` con `.\gradlew.bat assembleRelease --offline --console=plain`. Esta alternativa produce el APK en `build/app/outputs/apk/release/` y no sustituye la preparación de Flutter.
 
 Descargar desde [Adoptium](https://adoptium.net/temurin/releases/?version=17), elegir Windows x64 **JDK** y verificar el SHA-256 oficial. Referencias: [API oficial de descarga y verificación](https://adoptium.net/installation/ci-scripts) y [detección de herramientas Java de Gradle](https://docs.gradle.org/current/userguide/toolchains.html).
+
+
+## audio_service local en 0.2.4
+
+El proyecto incluye third_party/audio_service 0.18.19 con dos ajustes Android de foreground/wake lock descritos en su RP-MUSIC-PATCH.md; se selecciona mediante dependency_overrides. No sustituir por Pub sin revisar la corrección y repetir las pruebas nativas. No se modifica la caché global. La copia incluye licencia MIT y fuentes de las plataformas declaradas.
+
+Para probar segundo plano: `flutter test integration_test/android_notification_test.dart -d <emulador>`. La sonda release de tools/android_notification_probe.dart es independiente de la entrada normal; no distribuirla. Se puede enviar la actividad a Inicio después de RP_PROBE_READY y leer RP_RELEASE_PROBE en logcat.
+
+La prueba integration_test/update_install_test.dart necesita preparar antes un APK real del mismo certificado con código superior. El escenario usado fue una sonda local con --build-number 7, mientras la app de prueba era código 6. Guardar la sonda en build/update-check, instalar manualmente la APK debug de integración, transferir la muestra con `adb push` a /data/local/tmp/rp-update-fixture.apk y copiarla con `adb shell run-as com.example.rp_music` a files/updates/rp-music-update.apk. Crear primero files/updates con run-as. Con REQUEST_INSTALL_PACKAGES deshabilitado para la fuente, la prueba espera que se abra autorización después de validar hash/versión/firma. Ejecutar la prueba sobre la app debug ya preparada; su limpieza automática puede desinstalarla al terminar. No requiere root. No se confirmó instalación ni se distribuyó esa sonda de código 7.
+
+Después de pruebas, compilar siempre la entrada normal `flutter build apk --release`; comprobar versión 0.2.4/código 6, firma y recursos antes de copiar a dist. Para ARM64: `flutter build apk --release --split-per-abi --target-platform android-arm64`. La versión de pubspec y lib/app/app_version.dart deben avanzar juntas en futuras entregas, incluyendo el canal/tag y un código superior para cada actualización instalable.
+
+En esta máquina, la regeneración de plugins requirió restaurar enlaces temporales Windows mediante junctions locales dentro de windows/flutter/ephemeral/.plugin_symlinks. No se modificó la configuración global del sistema. Esos enlaces generados no forman parte de la distribución ni del repositorio; en otros entornos Flutter puede requerir soporte de enlaces o Modo de desarrollador.

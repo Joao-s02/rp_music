@@ -163,7 +163,11 @@ void main() {
     final systemErrors = StreamController<Object>();
     handler.observeSystemErrors(systemErrors.stream);
     await handler.select(tracks, 1);
-    expect(handler.queue.value.map((item) => item.title), ['Uno', 'Dos', 'Tres']);
+    expect(handler.queue.value.map((item) => item.title), [
+      'Uno',
+      'Dos',
+      'Tres',
+    ]);
     expect(handler.playbackState.value.queueIndex, 1);
     expect(handler.mediaItem.value?.duration, const Duration(seconds: 30));
     await handler.skipToQueueItem(2);
@@ -175,6 +179,28 @@ void main() {
     await handler.close();
     await systemErrors.close();
   });
+
+  test(
+    'cada rechazo de foreground pausa aunque el mensaje sea repetido',
+    () async {
+      final player = FakePlayer();
+      final audio = MusicHandler(player: player);
+      final systemErrors = StreamController<Object>();
+      audio.observeSystemErrors(systemErrors.stream);
+      final error = StateError('startForegroundService() not allowed');
+      await audio.select(tracks, 0);
+      systemErrors.add(error);
+      await Future<void>.delayed(Duration.zero);
+      expect(player.playing, false);
+      await audio.play();
+      expect(player.playing, true);
+      systemErrors.add(error);
+      await Future<void>.delayed(Duration.zero);
+      expect(player.playing, false);
+      await audio.close();
+      await systemErrors.close();
+    },
+  );
 
   test(
     'cerrar a bandeja mantiene audio y salir silencia antes de destruir',
@@ -285,13 +311,32 @@ void main() {
       final audio = MusicHandler(player: FakePlayer());
       await tester.pumpWidget(MusicApp(library: library, audio: audio));
       await tester.pumpAndSettle();
+      expect(find.byType(TextField), findsNothing);
+      await tester.tap(find.byTooltip('Buscar'));
+      await tester.pumpAndSettle();
+      final originalSearchState = tester.state(find.byType(EditableText));
       await tester.tap(find.byType(TextField));
       tester.view.viewInsets = const FakeViewPadding(bottom: 350);
       await tester.pumpAndSettle();
       expect(find.byType(NavigationBar), findsNothing);
+      expect(
+        identical(originalSearchState, tester.state(find.byType(EditableText))),
+        true,
+      );
+      expect(
+        tester.widget<TextField>(find.byType(TextField)).focusNode!.hasFocus,
+        true,
+      );
       await tester.enterText(find.byType(TextField), 'Dos');
       await tester.pump(const Duration(milliseconds: 200));
       expect(find.text('Dos'), findsWidgets);
+      await tester.enterText(find.byType(TextField), 'Uno');
+      await tester.tap(find.byTooltip('Cerrar búsqueda'));
+      tester.view.viewInsets = const FakeViewPadding();
+      await tester.pump(const Duration(milliseconds: 250));
+      await tester.pumpAndSettle();
+      expect(find.byType(TextField), findsNothing);
+      expect(find.text('3 pistas locales'), findsOneWidget);
       await tester.pumpWidget(const SizedBox.shrink());
       await tester.runAsync(audio.close);
       library.dispose();
@@ -391,7 +436,8 @@ void main() {
         EnginePhase.sendSemanticsUpdate,
         const Duration(seconds: 5),
       );
-      expect(find.text('Seleccionar mi música'), findsOneWidget);
+      expect(find.text('Tu biblioteca está en silencio'), findsOneWidget);
+      expect(find.text('Elegir carpeta'), findsWidgets);
       await tester.tap(find.byIcon(Icons.extension_outlined).last);
       await tester.pumpAndSettle(
         const Duration(milliseconds: 100),

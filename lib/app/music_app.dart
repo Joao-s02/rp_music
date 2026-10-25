@@ -9,6 +9,11 @@ import '../playback/music_handler.dart';
 import 'library_controller.dart';
 import 'volume_control.dart';
 import 'music_theme.dart';
+import 'empty_library.dart';
+import 'app_version.dart';
+import '../platform/playback_diagnostics.dart';
+import '../updates/update_controller.dart';
+import '../updates/update_widgets.dart';
 import '../platform/android_notifications.dart';
 
 import 'dart:io';
@@ -19,10 +24,12 @@ class MusicApp extends StatelessWidget {
     required this.library,
     required this.audio,
     this.notifications,
+    this.updates,
   });
   final LibraryController library;
   final MusicHandler audio;
   final AndroidNotifications? notifications;
+  final UpdateController? updates;
   @override
   Widget build(BuildContext context) => ListenableBuilder(
     listenable: library,
@@ -38,6 +45,7 @@ class MusicApp extends StatelessWidget {
           library: library,
           audio: audio,
           notifications: notifications,
+          updates: updates,
         ),
       );
     },
@@ -50,10 +58,12 @@ class MusicHome extends StatefulWidget {
     required this.library,
     required this.audio,
     this.notifications,
+    this.updates,
   });
   final LibraryController library;
   final MusicHandler audio;
   final AndroidNotifications? notifications;
+  final UpdateController? updates;
   @override
   State<MusicHome> createState() => _MusicHomeState();
 }
@@ -62,6 +72,8 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
   int page = 0;
   int view = 0;
   String query = '';
+  bool searchExpanded = false;
+  final searchFocus = FocusNode();
   String? group;
   Timer? debounce;
   StreamSubscription<String>? errors;
@@ -100,16 +112,19 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
     errors?.cancel();
     debounce?.cancel();
     search.dispose();
+    searchFocus.dispose();
     super.dispose();
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
+    audio.recordEvent('Ciclo de vida: ${state.name}');
     if (state != AppLifecycleState.resumed) unawaited(audio.saveSession());
     if (state == AppLifecycleState.resumed) widget.notifications?.refresh();
   }
 
   void navigate(int value) => setState(() {
+    searchFocus.unfocus();
     page = value;
     group = null;
   });
@@ -157,17 +172,70 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
                       padding: const EdgeInsets.fromLTRB(24, 20, 16, 8),
                       child: Row(
                         children: [
+                          if (page == 0) ...[
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                              child: Image.asset(
+                                'assets/branding/rp-music-variant-a.png',
+                                width: 36,
+                                height: 36,
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                          ],
                           Expanded(
-                            child: Text(
-                              !desktop && page == 0 ? 'RP Music' : labels[page],
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: desktop
-                                  ? Theme.of(context).textTheme.headlineMedium
-                                  : Theme.of(context).textTheme.titleLarge,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  page == 0 ? 'RP Music' : labels[page],
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: desktop
+                                      ? Theme.of(context)
+                                            .textTheme
+                                            .headlineMedium
+                                      : Theme.of(context).textTheme.titleLarge,
+                                ),
+                                if (page == 0)
+                                  Text(
+                                    'Biblioteca · ${library.tracks.length} pistas',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodySmall,
+                                  ),
+                              ],
                             ),
                           ),
                           if (page == 0)
+                            IconButton(
+                              tooltip: searchExpanded
+                                  ? 'Cerrar búsqueda'
+                                  : 'Buscar',
+                              icon: Icon(
+                                searchExpanded ? Icons.close : Icons.search,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  searchExpanded = !searchExpanded;
+                                  if (!searchExpanded) {
+                                    debounce?.cancel();
+                                    search.clear();
+                                    query = '';
+                                  }
+                                });
+                                if (searchExpanded) {
+                                  WidgetsBinding.instance.addPostFrameCallback((
+                                    _,
+                                  ) {
+                                    if (mounted) searchFocus.requestFocus();
+                                  });
+                                } else {
+                                  searchFocus.unfocus();
+                                }
+                              },
+                            ),
+                          if (page == 0 && desktop)
                             IconButton(
                               onPressed:
                                   library.scanning || library.root == null
@@ -176,7 +244,7 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
                               tooltip: 'Actualizar biblioteca',
                               icon: const Icon(Icons.refresh),
                             ),
-                          if (page == 0)
+                          if (page == 0 && desktop)
                             FilledButton.tonalIcon(
                               onPressed: library.scanning || library.choosing
                                   ? null
@@ -189,6 +257,39 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
                         ],
                       ),
                     ),
+                    if (page == 0 && searchExpanded)
+                      Padding(
+                        key: const ValueKey('library-search'),
+                        padding: const EdgeInsets.fromLTRB(20, 4, 20, 12),
+                        child: TextField(
+                          key: const ValueKey('library-search-field'),
+                          controller: search,
+                          focusNode: searchFocus,
+                          decoration: const InputDecoration(
+                            prefixIcon: Icon(Icons.search),
+                            hintText: 'Buscar en tu música',
+                          ),
+                          onChanged: (value) {
+                            debounce?.cancel();
+                            debounce = Timer(
+                              const Duration(milliseconds: 180),
+                              () {
+                                if (mounted) {
+                                  setState(() {
+                                    query = value.toLowerCase().trim();
+                                    group = null;
+                                  });
+                                }
+                              },
+                            );
+                          },
+                        ),
+                      ),
+                    if (widget.updates != null)
+                      UpdateNotice(
+                        updates: widget.updates!,
+                        onOpen: () => navigate(4),
+                      ),
                     if (library.scanning || library.loading)
                       const LinearProgressIndicator(minHeight: 2),
                     if (library.message != null)
@@ -299,13 +400,9 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
       return empty('Abriendo tu biblioteca…', Icons.library_music_outlined);
     }
     if (library.root == null) {
-      return empty(
-        'Tu música, sin límites.\nElige tu carpeta y dale vida a tu biblioteca local.',
-        Icons.folder_open,
-        action: FilledButton(
-          onPressed: library.choosing ? null : library.chooseRoot,
-          child: const Text('Seleccionar mi música'),
-        ),
+      return EmptyLibrary(
+        onChoose: library.choosing ? null : library.chooseRoot,
+        busy: library.choosing,
       );
     }
     final filtered = library.tracks
@@ -342,28 +439,6 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
               ),
             ),
           ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-          child: TextField(
-            controller: search,
-            decoration: const InputDecoration(
-              prefixIcon: Icon(Icons.search),
-              hintText: 'Buscar en tu música',
-              border: OutlineInputBorder(),
-            ),
-            onChanged: (value) {
-              debounce?.cancel();
-              debounce = Timer(const Duration(milliseconds: 180), () {
-                if (mounted) {
-                  setState(() {
-                    query = value.toLowerCase().trim();
-                    group = null;
-                  });
-                }
-              });
-            },
-          ),
-        ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: SizedBox(
@@ -804,47 +879,8 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
     ],
   );
 
-  Future<void> showPlaybackDiagnostics() async {
-    final state = audio.playbackState.value;
-    Map<String, dynamic> native;
-    try {
-      native = await widget.notifications!.diagnostics();
-    } catch (_) {
-      native = {'error': 'No se pudo consultar Android'};
-    }
-    if (!mounted) return;
-    await showDialog<void>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Diagnóstico multimedia'),
-        content: SingleChildScrollView(
-          child: Text(
-            [
-              'Reproducción: ${state.playing ? 'activa' : 'pausada'}',
-              'Estado del audio: ${state.processingState.name}',
-              'Notificaciones multimedia: ${native['mediaNotifications'] ?? 'desconocido'}',
-              'Sesión multimedia: ${native['hasMediaSession'] == true ? 'presente' : 'no detectada'}',
-              'Canal: ${native['channelImportance'] == 0
-                  ? 'bloqueado'
-                  : native['channelImportance'] == null
-                  ? 'aún no creado'
-                  : 'habilitado'}',
-              if (native['error'] != null) '${native['error']}',
-              if (audio.lastSystemError != null)
-                'Último error del servicio: ${audio.lastSystemError}',
-              'Comprueba este diagnóstico mientras suena una canción.',
-            ].join('\n\n'),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cerrar'),
-          ),
-        ],
-      ),
-    );
-  }
+  Future<void> showPlaybackDiagnostics() =>
+      showDiagnostics(context, audio, widget.notifications);
 
   Widget settingsView() => ListView(
     padding: const EdgeInsets.all(24),
@@ -889,6 +925,10 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
                 onPressed: widget.notifications!.openSettings,
                 child: const Text('Abrir ajustes de notificaciones'),
               ),
+              TextButton(
+                onPressed: () => widget.notifications!.openBatterySettings(),
+                child: const Text('Revisar restricciones de batería'),
+              ),
               TextButton.icon(
                 onPressed: showPlaybackDiagnostics,
                 icon: const Icon(Icons.monitor_heart_outlined),
@@ -908,8 +948,13 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
         title: Text('Local y sin cuenta'),
         subtitle: Text('Tu biblioteca permanece en este dispositivo.'),
       ),
+      if (widget.updates != null)
+        UpdateSettings(
+          updates: widget.updates!,
+          beforeInstall: audio.saveSession,
+        ),
       const ListTile(
-        title: Text('RP Music · 0.2.3'),
+        title: Text('RP Music · $appVersion'),
         subtitle: Text('Base en reconstrucción · Android y Windows'),
       ),
     ],
@@ -1191,6 +1236,12 @@ class _PlayerPanelState extends State<PlayerPanel> {
                     onPressed: track == null ? null : audio.skipToNext,
                     icon: const Icon(Icons.skip_next),
                   ),
+                  if (widget.expanded)
+                    IconButton(
+                      tooltip: 'Detener',
+                      onPressed: audio.stop,
+                      icon: const Icon(Icons.stop_circle_outlined),
+                    ),
                   IconButton(
                     tooltip: 'Ver cola',
                     onPressed: track == null

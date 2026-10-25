@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:async';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
@@ -9,8 +10,10 @@ import 'app/music_app.dart';
 import 'data/local_store.dart';
 import 'data/music_files.dart';
 import 'playback/music_handler.dart';
+import 'playback/playback_config.dart';
 import 'platform/android_notifications.dart';
 import 'platform/desktop_lifecycle.dart';
+import 'updates/update_controller.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,12 +31,7 @@ Future<void> main() async {
                 baseName: 'session',
               ),
             ),
-            config: const AudioServiceConfig(
-              androidNotificationChannelId: 'rp_music.playback',
-              androidNotificationChannelName: 'Reproducción',
-              androidNotificationOngoing: true,
-              androidNotificationIcon: 'drawable/ic_stat_music',
-            ),
+            config: playbackServiceConfig,
           )
         : MusicHandler(
             sessionStore: LocalStore(
@@ -46,16 +44,21 @@ Future<void> main() async {
     }
     await handler.configureSession();
     final notifications = Platform.isAndroid ? AndroidNotifications() : null;
+    final updates = UpdateController(
+      LocalStore(Directory('${directory.path}/v2'), baseName: 'updates'),
+    );
     runApp(
       MusicApp(
         library: controller,
         audio: handler,
         notifications: notifications,
+        updates: updates,
       ),
     );
     WidgetsBinding.instance.addPostFrameCallback((_) {
       notifications?.request(firstLaunch: true);
     });
+    unawaited(updates.initialize());
     await controller.initialize();
     await handler.setAppVolume(controller.volume);
     if (Platform.isWindows) {

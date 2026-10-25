@@ -11,6 +11,7 @@ import 'package:flutter/services.dart';
 
 import 'package:rp_music/domain/track.dart';
 import 'package:rp_music/playback/music_handler.dart';
+import 'package:rp_music/playback/playback_config.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,12 +19,7 @@ Future<void> main() async {
   AudioService.asyncError.listen((error) => failures.add(error.toString()));
   final handler = await AudioService.init(
     builder: () => MusicHandler(),
-    config: const AudioServiceConfig(
-      androidNotificationChannelId: 'rp_music.playback',
-      androidNotificationChannelName: 'Reproducción',
-      androidNotificationOngoing: true,
-      androidNotificationIcon: 'drawable/ic_stat_music',
-    ),
+    config: playbackServiceConfig,
   );
   runApp(
     const MaterialApp(
@@ -32,7 +28,7 @@ Future<void> main() async {
       ),
     ),
   );
-  final bytes = ByteData(44 + 16000 * 180);
+  final bytes = ByteData(44 + 16000 * 4);
   void ascii(int offset, String value) {
     for (var i = 0; i < value.length; i++) {
       bytes.setUint8(offset + i, value.codeUnitAt(i));
@@ -56,30 +52,30 @@ Future<void> main() async {
       .writeAsBytes(bytes.buffer.asUint8List());
   await handler.configureSession();
   await handler.setAppVolume(0);
+  final second = await File('${Directory.systemTemp.path}/rp-probe-second.wav').writeAsBytes(bytes.buffer.asUint8List());
   await handler.select([
-    Track(id: file.path, title: 'RP Music · prueba release', folder: '.'),
+    Track(id: file.path, title: 'RP Music · primera', folder: '.'),
+    Track(id: second.path, title: 'RP Music · segunda', folder: '.'),
   ], 0);
-  await Future<void>.delayed(const Duration(seconds: 3));
+  debugPrint('RP_PROBE_READY');
+  await Future<void>.delayed(const Duration(seconds: 5));
   const channel = MethodChannel('rp_music/system');
-  final playing = await channel.invokeMapMethod<String, dynamic>(
-    'playbackDiagnostics',
-  );
+  Future<Map<String, dynamic>> snapshot() async {
+    final raw = await channel.invokeMapMethod<String, dynamic>('playbackDiagnostics') ?? {};
+    return {for (final key in ['mediaNotifications', 'foreground', 'hasMediaSession']) key: raw[key]};
+  }
+  final advanced = handler.index == 1 && handler.player.playing;
+  final playing = await snapshot();
   await handler.pause();
-  await Future<void>.delayed(const Duration(milliseconds: 400));
-  final paused = await channel.invokeMapMethod<String, dynamic>(
-    'playbackDiagnostics',
-  );
+  await Future<void>.delayed(const Duration(milliseconds: 300));
+  final paused = await snapshot();
   unawaited(handler.play());
-  await Future<void>.delayed(const Duration(milliseconds: 400));
-  final resumed = await channel.invokeMapMethod<String, dynamic>(
-    'playbackDiagnostics',
-  );
-  final result = jsonEncode({
-    'playing': playing,
-    'paused': paused,
-    'resumed': resumed,
-    'errors': failures,
-  });
+  await Future<void>.delayed(const Duration(milliseconds: 300));
+  final resumed = await snapshot();
+  await handler.stop();
+  await Future<void>.delayed(const Duration(milliseconds: 300));
+  final stopped = await snapshot();
+  final result = jsonEncode({'advanced': advanced, 'playing': playing, 'paused': paused, 'resumed': resumed, 'stopped': stopped, 'errors': failures});
   // Read with adb logcat; does not contain library/account information.
   debugPrint('RP_RELEASE_PROBE $result');
   runApp(

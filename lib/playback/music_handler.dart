@@ -17,6 +17,13 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
   bool _shuttingDown = false;
   Future<void>? _closing;
   String? lastSystemError;
+  final List<String> diagnosticEvents = [];
+  String _lastState = '';
+  void recordEvent(String text) {
+    diagnosticEvents.add('${DateTime.now().toUtc().toIso8601String()} $text');
+    if (diagnosticEvents.length > 100) diagnosticEvents.removeAt(0);
+  }
+
   final errors = StreamController<String>.broadcast();
   final _subscriptions = <StreamSubscription<dynamic>>[];
   Future<void> _operations = Future.value();
@@ -53,8 +60,15 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
   void observeSystemErrors(Stream<Object> source) {
     _subscriptions.add(
       source.listen((error) {
-        if (lastSystemError == error.toString()) return;
-        lastSystemError = error.toString();
+        final message = error.toString();
+        if (message.contains('startForeground') ||
+            message.contains('ForegroundServiceStartNotAllowed')) {
+          _playIntent = false;
+          unawaited(player.pause().catchError((Object _) {}));
+        }
+        if (lastSystemError == message) return;
+        lastSystemError = message;
+        recordEvent('Error del servicio: $lastSystemError');
         errors.add(
           'Android no pudo actualizar los controles multimedia. Consulta el diagnóstico en Ajustes.',
         );
@@ -77,37 +91,48 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
     await session.configure(const AudioSessionConfiguration.music());
   }
 
-  void _publish() => playbackState.add(
-    PlaybackState(
-      controls: [
-        MediaControl.skipToPrevious,
-        player.playing ? MediaControl.pause : MediaControl.play,
-        MediaControl.skipToNext,
-        MediaControl.stop,
-      ],
-      systemActions: const {
-        MediaAction.seek,
-        MediaAction.play,
-        MediaAction.pause,
-        MediaAction.playPause,
-        MediaAction.skipToNext,
-        MediaAction.skipToPrevious,
-      },
-      queueIndex: index >= 0 ? index : null,
-      androidCompactActionIndices: const [0, 1, 2],
-      processingState: switch (player.processingState) {
-        ProcessingState.idle => AudioProcessingState.idle,
-        ProcessingState.loading => AudioProcessingState.loading,
-        ProcessingState.buffering => AudioProcessingState.buffering,
-        ProcessingState.ready => AudioProcessingState.ready,
-        ProcessingState.completed => AudioProcessingState.completed,
-      },
-      playing: player.playing,
-      updatePosition: player.position,
-      bufferedPosition: player.bufferedPosition,
-      speed: player.speed,
-    ),
-  );
+  void _publish() {
+    final state =
+        '${player.processingState.name}/${player.playing}/carga=$_loading/índice=$index';
+    if (state != _lastState) {
+      recordEvent('Audio: $state');
+      _lastState = state;
+    }
+    playbackState.add(
+      PlaybackState(
+        controls: [
+          MediaControl.skipToPrevious,
+          player.playing ? MediaControl.pause : MediaControl.play,
+          MediaControl.skipToNext,
+          MediaControl.stop,
+        ],
+        systemActions: const {
+          MediaAction.seek,
+          MediaAction.play,
+          MediaAction.pause,
+          MediaAction.playPause,
+          MediaAction.skipToNext,
+          MediaAction.skipToPrevious,
+        },
+        queueIndex: index >= 0 ? index : null,
+        androidCompactActionIndices: const [0, 1, 2],
+        processingState: _loading
+            ? AudioProcessingState.loading
+            : switch (player.processingState) {
+                ProcessingState.idle => AudioProcessingState.idle,
+                ProcessingState.loading => AudioProcessingState.loading,
+                ProcessingState.buffering => AudioProcessingState.buffering,
+                ProcessingState.ready => AudioProcessingState.ready,
+                ProcessingState.completed => AudioProcessingState.completed,
+              },
+        playing: player.playing || (_loading && _playIntent),
+        updatePosition: player.position,
+        bufferedPosition: player.bufferedPosition,
+        speed: player.speed,
+      ),
+    );
+  }
+
   Future<void> select(
     List<Track> source,
     int selected, {
@@ -119,6 +144,9 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
     tracks = List.unmodifiable(source);
     index = selected;
     final track = tracks[index];
+    recordEvent(
+      'Selección de pista: $selected/${tracks.length}; autoplay=$autoplay',
+    );
     final generation = ++_generation;
     _loading = true;
     _playIntent = autoplay;
@@ -157,6 +185,7 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
           _loading = false;
           _playIntent = false;
           await player.stop();
+          recordEvent('Error al cargar pista: índice=$index');
           errors.add(
             'No se pudo abrir «${track.title}». Comprueba el archivo y su formato.',
           );
@@ -201,6 +230,7 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
   @override
   Future<void> pause() {
     _playIntent = false;
+    recordEvent('Pausa solicitada');
     return player.pause().then((_) {
       _publish();
       return saveSession();

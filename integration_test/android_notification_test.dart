@@ -8,6 +8,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:rp_music/domain/track.dart';
 import 'package:rp_music/playback/music_handler.dart';
+import 'package:rp_music/playback/playback_config.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
@@ -19,15 +20,10 @@ void main() {
       final subscription = AudioService.asyncError.listen(errors.add);
       final handler = await AudioService.init(
         builder: () => MusicHandler(),
-        config: const AudioServiceConfig(
-          androidNotificationChannelId: 'rp_music.playback',
-          androidNotificationChannelName: 'Reproducción',
-          androidNotificationOngoing: true,
-          androidNotificationIcon: 'drawable/ic_stat_music',
-        ),
+        config: playbackServiceConfig,
       );
       final directory = await Directory.systemTemp.createTemp('rp_android_');
-      final bytes = ByteData(44 + 16000 * 30);
+      final bytes = ByteData(44 + 16000 * 4);
       void ascii(int offset, String value) {
         for (var i = 0; i < value.length; i++) {
           bytes.setUint8(offset + i, value.codeUnitAt(i));
@@ -52,8 +48,11 @@ void main() {
       try {
         await handler.configureSession();
         await handler.setAppVolume(0);
+        final second = await File('${directory.path}/segunda.wav')
+            .writeAsBytes(bytes.buffer.asUint8List());
         await handler.select([
           Track(id: file.path, title: 'Prueba Android', folder: '.'),
+          Track(id: second.path, title: 'Segunda Android', folder: '.'),
         ], 0);
         await Future<void>.delayed(const Duration(seconds: 2));
         expect(
@@ -67,12 +66,39 @@ void main() {
         );
         expect(diagnostics?['mediaNotifications'], 1, reason: '$diagnostics');
         expect(diagnostics?['hasMediaSession'], true);
+        await channel.invokeMethod<void>('testMoveToBackground');
+        await Future<void>.delayed(const Duration(seconds: 3));
+        expect(
+          handler.index,
+          1,
+          reason: 'La pista debe avanzar con la actividad en segundo plano',
+        );
+        expect(handler.player.playing, true);
         await handler.pause();
         await Future<void>.delayed(const Duration(milliseconds: 300));
         expect(handler.playbackState.value.playing, false);
+        final paused = await channel.invokeMapMethod<String, dynamic>(
+          'playbackDiagnostics',
+        );
+        expect(
+          paused?['foreground'],
+          true,
+          reason: 'Pausar no debe degradar el servicio',
+        );
         unawaited(handler.play());
         await Future<void>.delayed(const Duration(milliseconds: 400));
         expect(handler.playbackState.value.playing, true);
+        expect(errors, isEmpty);
+        await handler.stop();
+        await Future<void>.delayed(const Duration(milliseconds: 400));
+        final stopped = await channel.invokeMapMethod<String, dynamic>(
+          'playbackDiagnostics',
+        );
+        expect(
+          stopped?['foreground'],
+          false,
+          reason: 'Detener debe liberar el servicio',
+        );
       } finally {
         await handler.stop();
         await handler.close();
