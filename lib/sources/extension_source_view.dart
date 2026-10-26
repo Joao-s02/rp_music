@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 
 import '../app/library_controller.dart';
@@ -7,40 +5,37 @@ import '../app/music_app.dart' show PlayerPanel, Artwork;
 import '../domain/track.dart';
 import '../extensions/program_controller.dart';
 import '../playback/music_handler.dart';
-import 'youtube_music_api.dart';
+import 'extension_source_service.dart';
 
-class YoutubeSourceView extends StatefulWidget {
-  const YoutubeSourceView({
+class ExtensionSourceView extends StatefulWidget {
+  const ExtensionSourceView({
     super.key,
     required this.programs,
     required this.extensionId,
     required this.audio,
     required this.library,
-    this.api,
-    this.platformSupported,
+    this.service,
+    this.embedded = false,
   });
   final ProgramController programs;
   final String extensionId;
   final MusicHandler audio;
   final LibraryController library;
-  final YoutubeMusicApi? api;
-  final bool Function()? platformSupported;
+  final ExtensionSourceService? service;
+  final bool embedded;
   @override
-  State<YoutubeSourceView> createState() => _YoutubeSourceViewState();
+  State<ExtensionSourceView> createState() => _ExtensionSourceViewState();
 }
 
-class _YoutubeSourceViewState extends State<YoutubeSourceView> {
+class _ExtensionSourceViewState extends State<ExtensionSourceView> {
   final query = TextEditingController();
-  late final api = widget.api ?? YoutubeMusicApi();
+  late final service =
+      widget.service ?? ExtensionSourceService(widget.programs);
   List<Track> results = [];
   bool searching = false;
   String? error;
   int generation = 0;
-  bool get allowed =>
-      (widget.platformSupported?.call() ?? Platform.isAndroid) &&
-      widget.programs.owner('source')?.package.id == widget.extensionId &&
-      widget.programs.allowed(widget.extensionId, 'network.youtube') &&
-      widget.programs.allowed(widget.extensionId, 'playback.control');
+  bool get allowed => service.available(widget.extensionId);
   @override
   void initState() {
     super.initState();
@@ -79,32 +74,14 @@ class _YoutubeSourceViewState extends State<YoutubeSourceView> {
       error = null;
     });
     try {
-      final request = await widget.programs.invoke(
-        widget.extensionId,
-        'source',
-        {'query': text},
-      );
-      if (request == null ||
-          request['provider'] != 'youtube-music' ||
-          request['query'] is! String) {
-        throw const FormatException(
-          'La extensión no devolvió una búsqueda compatible.',
-        );
-      }
-      if (!allowed ||
-          widget.programs.installed[widget.extensionId] != installed) {
-        return;
-      }
-      final found = await api.search(
-        request['query'] as String,
-        widget.extensionId,
-      );
+      final found = await service.search(text, widget.extensionId);
       if (!mounted ||
           current != generation ||
           !allowed ||
           widget.programs.installed[widget.extensionId] != installed) {
         return;
       }
+      widget.library.rememberRemoteTracks(found);
       setState(() => results = found);
     } catch (e) {
       if (mounted && current == generation) {
@@ -120,18 +97,26 @@ class _YoutubeSourceViewState extends State<YoutubeSourceView> {
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: const Text('YouTube Music · experimental')),
-    body: Column(
+  Widget build(BuildContext context) {
+    final name =
+        widget
+            .programs
+            .installed[widget.extensionId]
+            ?.package
+            .sourceSpec
+            ?.name ??
+        'Fuente en línea';
+    final content = Column(
       children: [
         Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Text(
-                'Canciones · sin cuenta. Reproducción en línea; requiere conexión. Algunas canciones pueden no estar disponibles.',
-              ),
+              if (MediaQuery.viewInsetsOf(context).bottom == 0)
+                const Text(
+                  'Canciones · sin cuenta. Reproducción en línea; requiere conexión. Algunas canciones pueden no estar disponibles.',
+                ),
               const SizedBox(height: 12),
               TextField(
                 controller: query,
@@ -190,8 +175,15 @@ class _YoutubeSourceViewState extends State<YoutubeSourceView> {
                   },
                 ),
         ),
-        PlayerPanel(audio: widget.audio, library: widget.library),
+        if (!widget.embedded && MediaQuery.viewInsetsOf(context).bottom == 0)
+          PlayerPanel(audio: widget.audio, library: widget.library),
       ],
-    ),
-  );
+    );
+    return widget.embedded
+        ? content
+        : Scaffold(
+            appBar: AppBar(title: Text(name)),
+            body: SafeArea(child: content),
+          );
+  }
 }

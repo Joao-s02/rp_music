@@ -8,6 +8,49 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:rp_music/extensions/program_catalog.dart';
 
 void main() {
+  test('elige la variante compatible sin alterar clientes anteriores', () {
+    final base = {
+      'id': 'test.cloud',
+      'name': 'Nube',
+      'version': '0.1.0',
+      'description': 'Demo',
+      'path': 'packages/cloud.rpmx',
+      'sha256': 'a' * 64,
+    };
+    final modern = {
+      ...base,
+      'version': '0.2.0',
+      'path': 'previews/cloud.rpmx',
+      'minAppVersion': '0.3.2',
+    };
+    final data = {
+      'schemaVersion': 1,
+      'extensions': [
+        {
+          ...base,
+          'versions': [modern],
+        },
+      ],
+    };
+    expect(
+      ProgramCatalog.parse(
+        'a/b',
+        'main',
+        data,
+        hostVersion: '0.3.1',
+      ).entries.single.version,
+      '0.1.0',
+    );
+    expect(
+      ProgramCatalog.parse(
+        'a/b',
+        'main',
+        data,
+        hostVersion: '0.3.2',
+      ).entries.single.version,
+      '0.2.0',
+    );
+  });
   test('solo ofrece actualizar una versión instalada inferior', () {
     final entry = CatalogEntry('a', 'A', '0.2.0', 'D', 'a.rpmx', '');
     expect(entry.offersUpdate('0.1.9'), isTrue);

@@ -9,6 +9,9 @@ class Track {
     this.size = 0,
     this.modifiedMs = 0,
     this.metadataLoaded = false,
+    this.sourceId,
+    this.sourceName,
+    this.artwork,
   });
   final String id;
   final String title;
@@ -19,6 +22,7 @@ class Track {
   final int size;
   final int modifiedMs;
   final bool metadataLoaded;
+  final String? sourceId, sourceName, artwork;
   factory Track.fromJson(Map<String, dynamic> json) => Track(
     id: json['id'] as String,
     title: json['title'] as String,
@@ -29,6 +33,9 @@ class Track {
     size: (json['size'] as num?)?.toInt() ?? 0,
     modifiedMs: (json['modifiedMs'] as num?)?.toInt() ?? 0,
     metadataLoaded: json['metadataLoaded'] as bool? ?? false,
+    sourceId: json['sourceId'] as String?,
+    sourceName: json['sourceName'] as String?,
+    artwork: json['artwork'] as String?,
   );
   Map<String, dynamic> toJson() => {
     'id': id,
@@ -40,5 +47,8 @@ class Track {
     'size': size,
     'modifiedMs': modifiedMs,
     'metadataLoaded': metadataLoaded,
+    if (sourceId != null) 'sourceId': sourceId,
+    if (sourceName != null) 'sourceName': sourceName,
+    if (artwork != null) 'artwork': artwork,
   };
 }

@@ -32,6 +32,10 @@ En cada tarea con cambios relevantes de contexto:
 6. Actualizar [[10 Estado del repositorio]] cuando cambie la implementación o su validación.
 7. **Revisar y actualizar README.md en cada actualización del proyecto**, por requisito explícito del usuario (2026-10-25). Mantener versión publicada y versión local claramente diferenciadas, novedades, enlaces de descarga/pruebas, instalación, capacidades reales, verificaciones y pendientes. Si una sección no cambia, comprobar que sigue vigente; no basta con cambiar el número de versión. Actualizarlo antes de terminar el trabajo y, cuando se autorice una publicación, incluirlo en los cambios que se envían. Esta obligación no concede autorización automática para publicar, hacer push o crear releases.
 
+8. **Antes de publicar una release de GitHub, leer y cumplir [[27 Publicacion de releases - contenido obligatorio]]**, por instrucción explícita del usuario (2026-10-26). Entrega conjunta de Android universal, Android ARM64, Windows y adjuntos documentales. Priorizar Android en desarrollo no permite publicar una entrega parcial sin excepción expresa.
+
+9. **Antes de crear o modificar una extensión, cumplir la separación de repositorios de [[04 Extensiones]].** Sus fuentes, paquetes y lógica específica van exclusivamente a rp-music-extensions; el repositorio principal contiene el motor/SDK y capacidades genéricas. No copiar extensiones al principal ni adjuntarlas a sus releases.
+
 Conservar el historial de cambios de criterio. No registrar secretos, tokens, credenciales ni datos privados de bibliotecas de servicios. Una actualización pequeña no necesita una nota nueva si encaja en una existente.
 
 ## Siguiente trabajo
@@ -66,3 +70,9 @@ Publicación vigente confirmada: v0.3.0-alpha.1, Android universal/ARM64 y Windo
 
 
 Publicación vigente confirmada: 0.3.1-alpha.1 Android, con cinco adjuntos y README remoto verificados. Mismo APK validado por el usuario; diseño pendiente para siguiente versión. Windows mantiene 0.3.0. Ver [[26 Release 0.3.1]].
+
+
+2026-10-26: trabajo local vigente 0.3.2+11 en [[28 Pruebas 0.3.1 y mejoras 0.3.2]]: detalle de álbum, áreas seguras, nombre de fuente y navegación aportada por extensión. Se migra la lógica específica de la fuente al repositorio de extensiones; contrato HTTP genérico en la app y actualización de paquete requerida. Material previo de Biblioteca viva/Pulso aún pendiente de migración. No se publica 0.3.2 en esta tarea.
+
+
+Cierre local 0.3.2: tres paquetes normales compilados (universal/ARM64/Windows), guías y hashes en dist/0.3.2-local; APK universal instalado/abierto, firma compatible con 0.3.1 y Windows iniciado. Suite inicial 75 pruebas, comprobación adicional de navegación y prueba nativa Android aprobadas; análisis sin incidencias. Extensión 0.2.0 aparte, actualización con permisos requerida. No hay publicación ni push de estos cambios; probar por archivo local hasta publicar catálogo. Resultados, tamaños, hashes y límites en [[28 Pruebas 0.3.1 y mejoras 0.3.2]].

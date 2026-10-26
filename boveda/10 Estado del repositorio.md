@@ -154,3 +154,15 @@ Publicación vigente confirmada: v0.3.0-alpha.1, Android universal/ARM64 y Windo
 
 
 Publicación vigente confirmada: 0.3.1-alpha.1 Android, con cinco adjuntos y README remoto verificados. Mismo APK validado por el usuario; diseño pendiente para siguiente versión. Windows mantiene 0.3.0. Ver [[26 Release 0.3.1]].
+
+
+Política de distribución vigente desde 2026-10-26: [[27 Publicacion de releases - contenido obligatorio]]. Esta actualización solo documenta el requisito; no cambia los adjuntos ni el estado histórico de 0.3.1.
+
+
+2026-10-26: usuario confirma separación estricta: nuevas extensiones solo en rp-music-extensions, nunca en rp_music. Requisito principal en [[04 Extensiones]], enlazado desde Contexto/Inicio y coherente con [[27 Publicacion de releases - contenido obligatorio]]. Incluye fuentes, paquetes, recursos y pruebas específicos; la app conserva motor/SDK genéricos. Los prototipos/código específico y paquete ya publicados en el principal constituyen migración pendiente, no realizada en este cambio documental. No se borraron código, releases ni historial ni se enviaron cambios a GitHub en esta tarea.
+
+
+2026-10-26: trabajo local vigente 0.3.2+11 en [[28 Pruebas 0.3.1 y mejoras 0.3.2]]: detalle de álbum, áreas seguras, nombre de fuente y navegación aportada por extensión. Se migra la lógica específica de la fuente al repositorio de extensiones; contrato HTTP genérico en la app y actualización de paquete requerida. Material previo de Biblioteca viva/Pulso aún pendiente de migración. No se publica 0.3.2 en esta tarea.
+
+
+Cierre local 0.3.2: tres paquetes normales compilados (universal/ARM64/Windows), guías y hashes en dist/0.3.2-local; APK universal instalado/abierto, firma compatible con 0.3.1 y Windows iniciado. Suite inicial 75 pruebas, comprobación adicional de navegación y prueba nativa Android aprobadas; análisis sin incidencias. Extensión 0.2.0 aparte, actualización con permisos requerida. No hay publicación ni push de estos cambios; probar por archivo local hasta publicar catálogo. Resultados, tamaños, hashes y límites en [[28 Pruebas 0.3.1 y mejoras 0.3.2]].

@@ -296,3 +296,22 @@ Sincronización local final: main apunta a 475eb97 (confirmación documental); t
 
 
 Publicación vigente confirmada: 0.3.1-alpha.1 Android, con cinco adjuntos y README remoto verificados. Mismo APK validado por el usuario; diseño pendiente para siguiente versión. Windows mantiene 0.3.0. Ver [[26 Release 0.3.1]].
+
+
+2026-10-26 — Nueva instrucción de distribución confirmada por el usuario: cada release debe incluir Android universal/global, APK ARM64 y Windows, un MD de pruebas a realizar, un MD separado de cambios y demás archivos necesarios. Política consolidada en [[27 Publicacion de releases - contenido obligatorio]], enlazada desde Inicio/Contexto para agentes y README. Se fijan nombres de adjuntos, guía de uso, hashes y verificación previa de publicación. No inferir permiso de omitir plataformas por priorizar Android; cualquier excepción requiere instrucción expresa. Cambio documental, sin modificar ni completar automáticamente las releases existentes. Revisión de enlaces y diff realizada; no requiere pruebas de código.
+
+
+2026-10-26: usuario confirma separación estricta: nuevas extensiones solo en rp-music-extensions, nunca en rp_music. Requisito principal en [[04 Extensiones]], enlazado desde Contexto/Inicio y coherente con [[27 Publicacion de releases - contenido obligatorio]]. Incluye fuentes, paquetes, recursos y pruebas específicos; la app conserva motor/SDK genéricos. Los prototipos/código específico y paquete ya publicados en el principal constituyen migración pendiente, no realizada en este cambio documental. No se borraron código, releases ni historial ni se enviaron cambios a GitHub en esta tarea.
+
+
+## 2026-10-26 — 0.3.2 local en verificación
+
+Informe físico 0.3.1 y referencia de álbum confirmados. Se implementa nuevo detalle de álbum, SafeArea de fuente, metadatos de servicio y contribución de navegación desde manifiesto; se migra cliente/parser/paquete de fuente al repositorio separado por regla del usuario. SDK HTTP genérico y variantes compatibles de catálogo. Búsqueda real y 64 KiB de audio verificados con programa externo; suite inicial 75 pruebas aprobadas. Ver resultados finales y límites en [[28 Pruebas 0.3.1 y mejoras 0.3.2]]. No se publican app ni release nueva.
+
+
+Cierre local 0.3.2: tres paquetes normales compilados (universal/ARM64/Windows), guías y hashes en dist/0.3.2-local; APK universal instalado/abierto, firma compatible con 0.3.1 y Windows iniciado. Suite inicial 75 pruebas, comprobación adicional de navegación y prueba nativa Android aprobadas; análisis sin incidencias. Extensión 0.2.0 aparte, actualización con permisos requerida. No hay publicación ni push de estos cambios; probar por archivo local hasta publicar catálogo. Resultados, tamaños, hashes y límites en [[28 Pruebas 0.3.1 y mejoras 0.3.2]].
+
+
+## 2026-10-26 — autorización de publicación 0.3.2
+
+Usuario autoriza nueva release de GitHub. Preparación de app 0.3.2+11 con Android universal/ARM64, Windows, USO/PRUEBAS/CAMBIOS y hashes; extensión y catálogo exclusivamente en repositorio de extensiones. Ver [[28 Pruebas 0.3.1 y mejoras 0.3.2]] para resultados de publicación cuando se confirmen.

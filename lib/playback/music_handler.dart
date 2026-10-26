@@ -38,7 +38,7 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
   Future<({AudioSource source, Uri? artwork})> Function(Track)?
   onlineSourceLoader;
   bool Function(Track)? onlineAllowed;
-  bool _online(Track track) => track.id.startsWith('rpmusic-youtube:');
+  bool _online(Track track) => track.sourceId != null;
   bool shuffle = false;
   bool repeat = false;
   MusicHandler({
@@ -92,6 +92,10 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
     title: track.title,
     artist: track.artist,
     album: track.album,
+    extras: {
+      'sourceName': track.sourceName ?? 'Audio local',
+      if (track.sourceId != null) 'sourceId': track.sourceId,
+    },
     duration: track.durationMs > 0
         ? Duration(milliseconds: track.durationMs)
         : null,

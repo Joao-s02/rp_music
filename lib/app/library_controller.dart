@@ -16,6 +16,16 @@ class LibraryController extends ChangeNotifier {
   final LocalStore store;
   final MusicFiles files;
   List<Track> tracks = [];
+  final Map<String, Track> remoteTracks = {};
+  void rememberRemoteTracks(List<Track> values) {
+    for (final track in values) {
+      remoteTracks[track.id] = track;
+    }
+    while (remoteTracks.length > 2000) {
+      remoteTracks.remove(remoteTracks.keys.first);
+    }
+  }
+
   List<Track>? _stableTracks;
   String? _stableRoot;
   String? root;

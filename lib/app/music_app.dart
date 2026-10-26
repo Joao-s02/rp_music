@@ -1,4 +1,5 @@
 import 'scrolling_title.dart';
+import 'album_detail_view.dart';
 
 import 'dart:async';
 import 'dart:math';
@@ -7,9 +8,11 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 
 import '../domain/track.dart';
-import '../sources/youtube_music_api.dart';
+import '../sources/extension_source_service.dart';
+import '../sources/extension_source_view.dart';
 import '../domain/track_sort.dart';
 import '../extensions/program_library_view.dart';
+import '../extensions/extension_navigation.dart';
 import '../extensions/program_manager_view.dart';
 import 'playlist_cover.dart';
 import '../platform/home_widget.dart';
@@ -78,6 +81,7 @@ class MusicHome extends StatefulWidget {
 
 class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
   int page = 0;
+  String? sourceDestination;
   int view = 0;
   String query = '';
   bool searchExpanded = false;
@@ -133,13 +137,35 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
 
   void navigate(int value) => setState(() {
     searchFocus.unfocus();
-    page = value;
+    final entries = extensionDestinations(
+      library.programs,
+      Platform.operatingSystem,
+    );
+    sourceDestination =
+        value >= labels.length && value - labels.length < entries.length
+        ? entries[value - labels.length].id
+        : null;
+    page = sourceDestination == null ? value.clamp(0, labels.length - 1) : 0;
     group = null;
   });
 
   @override
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, size) {
+      final contributions = extensionDestinations(
+        library.programs,
+        Platform.operatingSystem,
+      );
+      final selectedContribution = contributions
+          .where((entry) => entry.id == sourceDestination)
+          .firstOrNull;
+      if (sourceDestination != null && selectedContribution == null) {
+        sourceDestination = null;
+        page = 0;
+      }
+      final selectedIndex = selectedContribution == null
+          ? page
+          : labels.length + contributions.indexOf(selectedContribution);
       final desktop = size.maxWidth >= 850;
       final keyboard = MediaQuery.viewInsetsOf(context).bottom > 0;
       return Scaffold(
@@ -168,8 +194,13 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
                         icon: Icon(icons[i]),
                         label: Text(labels[i]),
                       ),
+                    for (final entry in contributions)
+                      NavigationRailDestination(
+                        icon: ExtensionNavigationIcon(entry),
+                        label: Text(entry.label),
+                      ),
                   ],
-                  selectedIndex: page,
+                  selectedIndex: selectedIndex,
                   onDestinationSelected: navigate,
                 ),
               if (desktop) const VerticalDivider(width: 1),
@@ -180,7 +211,7 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
                       padding: const EdgeInsets.fromLTRB(24, 20, 16, 8),
                       child: Row(
                         children: [
-                          if (page == 0) ...[
+                          if (page == 0 && sourceDestination == null) ...[
                             ClipRRect(
                               borderRadius: BorderRadius.circular(10),
                               child: Image.asset(
@@ -196,7 +227,12 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  page == 0 ? 'RP Music' : labels[page],
+                                  selectedContribution?.label ??
+                                      (page == 0
+                                          ? (view == 1 && group != null
+                                                ? 'Detalle de álbum'
+                                                : 'RP Music')
+                                          : labels[page]),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   style: desktop
@@ -205,7 +241,7 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
                                             .headlineMedium
                                       : Theme.of(context).textTheme.titleLarge,
                                 ),
-                                if (page == 0)
+                                if (page == 0 && sourceDestination == null)
                                   Text(
                                     'Biblioteca · ${library.tracks.length} pistas',
                                     style: Theme.of(context)
@@ -215,7 +251,7 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
                               ],
                             ),
                           ),
-                          if (page == 0)
+                          if (page == 0 && sourceDestination == null)
                             IconButton(
                               tooltip: searchExpanded
                                   ? 'Cerrar búsqueda'
@@ -243,7 +279,7 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
                                 }
                               },
                             ),
-                          if (page == 0 && desktop)
+                          if (page == 0 && sourceDestination == null && desktop)
                             IconButton(
                               onPressed:
                                   library.scanning || library.root == null
@@ -252,7 +288,7 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
                               tooltip: 'Actualizar biblioteca',
                               icon: const Icon(Icons.refresh),
                             ),
-                          if (page == 0 && desktop)
+                          if (page == 0 && sourceDestination == null && desktop)
                             FilledButton.tonalIcon(
                               onPressed: library.scanning || library.choosing
                                   ? null
@@ -265,7 +301,9 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
                         ],
                       ),
                     ),
-                    if (page == 0 && searchExpanded)
+                    if (page == 0 &&
+                        sourceDestination == null &&
+                        searchExpanded)
                       Padding(
                         key: const ValueKey('library-search'),
                         padding: const EdgeInsets.fromLTRB(20, 4, 20, 12),
@@ -314,18 +352,30 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
                         ],
                       ),
                     Expanded(
-                      child: switch (page) {
-                        0 => libraryView(),
-                        1 => trackList(
-                          library.tracks
-                              .where((t) => library.favorites.contains(t.id))
-                              .toList(),
-                          empty: 'Tus canciones favoritas aparecerán aquí.',
-                        ),
-                        2 => playlistView(),
-                        3 => extensionView(),
-                        _ => settingsView(),
-                      },
+                      child: selectedContribution != null
+                          ? ExtensionSourceView(
+                              key: ValueKey(selectedContribution.id),
+                              programs: library.programs!,
+                              extensionId: selectedContribution.id,
+                              audio: audio,
+                              library: library,
+                              embedded: true,
+                            )
+                          : switch (page) {
+                              0 => libraryView(),
+                              1 => trackList(
+                                library.tracks
+                                    .where(
+                                      (t) => library.favorites.contains(t.id),
+                                    )
+                                    .toList(),
+                                empty:
+                                    'Tus canciones favoritas aparecerán aquí.',
+                              ),
+                              2 => playlistView(),
+                              3 => extensionView(),
+                              _ => settingsView(),
+                            },
                     ),
                     if (!keyboard)
                       Padding(
@@ -346,13 +396,21 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
         bottomNavigationBar: desktop || keyboard
             ? null
             : NavigationBar(
-                selectedIndex: page,
+                labelBehavior: contributions.isEmpty
+                    ? NavigationDestinationLabelBehavior.alwaysShow
+                    : NavigationDestinationLabelBehavior.onlyShowSelected,
+                selectedIndex: selectedIndex,
                 onDestinationSelected: navigate,
                 destinations: [
                   for (var i = 0; i < labels.length; i++)
                     NavigationDestination(
                       icon: Icon(icons[i]),
                       label: labels[i],
+                    ),
+                  for (final entry in contributions)
+                    NavigationDestination(
+                      icon: ExtensionNavigationIcon(entry),
+                      label: entry.label,
                     ),
                 ],
               ),
@@ -457,6 +515,37 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
               .contains(query),
         )
         .toList();
+    if (view == 1 && group != null) {
+      return AlbumDetailView(
+        key: ValueKey(group),
+        tracks: filtered.where((t) => groupKey(t) == group).toList(),
+        audio: audio,
+        library: library,
+        onBack: () => setState(() => group = null),
+        menu: albumTrackMenu,
+        onSave: () async {
+          final name = await showDialog<String>(
+            context: context,
+            builder: (_) => const _PlaylistDialog(),
+          );
+          if (name == null) return;
+          try {
+            await library.createPlaylistWithTracks(
+              name,
+              filtered
+                  .where((t) => groupKey(t) == group)
+                  .map((t) => t.id)
+                  .toList(),
+            );
+          } on FormatException catch (e) {
+            if (mounted) {
+              ScaffoldMessenger.of(context)
+                  .showSnackBar(SnackBar(content: Text(e.message.toString())));
+            }
+          }
+        },
+      );
+    }
     return Column(
       children: [
         if (MediaQuery.viewInsetsOf(context).bottom == 0)
@@ -543,6 +632,40 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
       ],
     );
   }
+
+  Widget albumTrackMenu(Track track) => track.sourceId != null
+      ? const SizedBox(width: 8)
+      : PopupMenuButton<String>(
+          tooltip: 'Opciones de canción',
+          onSelected: (value) {
+            if (value == 'favorite') {
+              library.toggleFavorite(track.id);
+            } else if (value == 'delete') {
+              deleteTrack(track);
+            } else {
+              library.addToPlaylist(value.substring(5), track.id);
+            }
+          },
+          itemBuilder: (_) => [
+            PopupMenuItem(
+              value: 'favorite',
+              child: Text(
+                library.favorites.contains(track.id)
+                    ? 'Quitar de favoritos'
+                    : 'Añadir a favoritos',
+              ),
+            ),
+            for (final name in library.playlists.keys.where(
+              (name) => !library.automaticPlaylist(name),
+            ))
+              PopupMenuItem(value: 'list:$name', child: Text('Añadir a $name')),
+            PopupMenuItem(
+              value: 'delete',
+              enabled: !library.scanning && !library.deleting,
+              child: const Text('Eliminar del dispositivo'),
+            ),
+          ],
+        );
 
   String groupKey(Track t) => switch (view) {
     1 => '${t.album}\n${t.artist}',
@@ -1286,7 +1409,7 @@ class _PlayerPanelState extends State<PlayerPanel> {
                       tooltip: 'Favorito',
                       onPressed:
                           track == null ||
-                              track.id.startsWith('rpmusic-youtube:')
+                              ExtensionSourceService.remote(track.id)
                           ? null
                           : () => library.toggleFavorite(track.id),
                       icon: Icon(
@@ -1489,7 +1612,14 @@ class _PlayerPanelState extends State<PlayerPanel> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(time(current)),
-                                const Text('Audio local'),
+                                Flexible(
+                                  child: Text(
+                                    track?.extras?['sourceName'] as String? ??
+                                        'Audio local',
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
                                 Text(time(total)),
                               ],
                             ),
@@ -1644,7 +1774,7 @@ class _ArtworkState extends State<Artwork> {
   }
 
   void load() {
-    image = widget.id == null || YoutubeMusicApi.identity(widget.id!) != null
+    image = widget.id == null || ExtensionSourceService.remote(widget.id!)
         ? null
         : widget.library.files.artwork(widget.id!);
   }
@@ -1656,19 +1786,17 @@ class _ArtworkState extends State<Artwork> {
     child: ClipRRect(
       borderRadius: BorderRadius.circular(8),
       child:
-          YoutubeMusicApi.identity(widget.id ?? '') != null &&
+          widget.library.remoteTracks[widget.id]?.artwork != null &&
               widget.library.programs?.allowed(
-                    YoutubeMusicApi.identity(widget.id!)![1],
-                    'network.youtube',
+                    widget.library.remoteTracks[widget.id]!.sourceId!,
+                    'network.http',
                   ) ==
                   true
           ? Image.network(
-              YoutubeMusicApi.artwork(YoutubeMusicApi.identity(widget.id!)![2])
-                  .toString(),
+              widget.library.remoteTracks[widget.id]!.artwork!,
               fit: BoxFit.cover,
               cacheWidth: widget.size > 100 ? 600 : 128,
-              errorBuilder: (_, error, stack) =>
-                  const Icon(Icons.album_outlined),
+              errorBuilder: (_, e, s) => const Icon(Icons.album_outlined),
             )
           : FutureBuilder(
               future: image,

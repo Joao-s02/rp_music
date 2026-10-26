@@ -1,7 +1,23 @@
 import 'dart:convert';
 
+import 'source_spec.dart';
+
+bool versionAtLeast(String actual, String minimum) {
+  if (![actual, minimum].every((v) => RegExp(r'^\d+\.\d+\.\d+$').hasMatch(v))) {
+    return false;
+  }
+  final a = actual.split('.').map(int.parse).toList();
+  final b = minimum.split('.').map(int.parse).toList();
+  for (var i = 0; i < 3; i++) {
+    if (a[i] != b[i]) return a[i] > b[i];
+  }
+  return true;
+}
+
 const programPermissions = {
-  'network.youtube': 'Buscar y reproducir desde YouTube Music (internet)',
+  'network.youtube': 'Permiso de fuente heredado (requiere actualizar)',
+  'network.http': 'Conectarse a los dominios declarados de la fuente',
+  'navigation.add': 'Añadir un acceso en la navegación de la app',
   'library.read': 'Leer metadatos de la biblioteca y favoritos',
   'playback.control': 'Controlar la reproducción',
   'playlists.manage': 'Crear y actualizar listas de la app',
@@ -25,11 +41,15 @@ class ProgramPackage {
     this.source,
     this.permissions,
     this.slots,
-    this.advanced,
-  );
+    this.advanced, {
+    this.sourceSpec,
+    this.minAppVersion = '0.3.0',
+  });
   final String id, name, version, description, source;
   final Set<String> permissions, slots;
   final bool advanced;
+  final SourceSpec? sourceSpec;
+  final String minAppVersion;
   factory ProgramPackage.parse(Map<String, dynamic> json) {
     String text(String key, int max) {
       final value = json[key];
@@ -95,11 +115,27 @@ class ProgramPackage {
       throw const FormatException('Esta capacidad requiere playback.control.');
     }
     if (slots.contains('source') &&
-        (!permissions.contains('network.youtube') ||
+        ((!permissions.contains('network.youtube') &&
+                !permissions.contains('network.http')) ||
             !permissions.contains('playback.control'))) {
       throw const FormatException(
-        'Una fuente requiere network.youtube y playback.control.',
+        'Una fuente requiere permiso de red y reproducción.',
       );
+    }
+    final spec = json['sourceConfig'] == null
+        ? null
+        : SourceSpec.parse(json['sourceConfig']);
+    if (spec != null &&
+        (!slots.contains('source') || !permissions.contains('network.http'))) {
+      throw const FormatException('La fuente necesita network.http.');
+    }
+    if (spec?.navigationLabel != null &&
+        !permissions.contains('navigation.add')) {
+      throw const FormatException('La navegación requiere navigation.add.');
+    }
+    final minimum = json['minAppVersion'] ?? '0.3.0';
+    if (minimum is! String || !RegExp(r'^\d+\.\d+\.\d+$').hasMatch(minimum)) {
+      throw const FormatException('Versión mínima inválida.');
     }
     return ProgramPackage(
       id,
@@ -110,6 +146,8 @@ class ProgramPackage {
       permissions,
       slots,
       advanced,
+      sourceSpec: spec,
+      minAppVersion: minimum,
     );
   }
   Map<String, dynamic> toJson() => {
@@ -120,6 +158,8 @@ class ProgramPackage {
     'version': version,
     'description': description,
     'source': source,
+    'minAppVersion': minAppVersion,
+    if (sourceSpec != null) 'sourceConfig': sourceSpec!.toJson(),
     'permissions': permissions.toList(),
     'capabilities': slots.toList(),
   };

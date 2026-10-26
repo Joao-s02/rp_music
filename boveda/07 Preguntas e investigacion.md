@@ -74,3 +74,6 @@ Trabajo vigente 2026-10-26: [[24 YouTube Music - definicion e investigacion]] �
 
 
 2026-10-26: usuario valida 0.3.1 (búsqueda/audio rápidos, sin bugs ni lag observados) y autoriza nueva release. Diseño reportado queda para próxima versión. Comunicación pública: soporte de extensiones para fuentes de música en la nube, con adaptador inicial Android; no prometer cualquier proveedor ni ocultar límites. Se publica el mismo APK validado; Windows mantiene 0.3.0. Seguimiento en [[26 Release 0.3.1]].
+
+
+2026-10-26: la separación del proveedor se comprueba parcialmente en el desarrollo 0.3.2: programa externo interpretado realiza búsqueda/resolución mediante HTTP genérico acotado; HTTP y prueba nativa Android aprobados. Ya no requiere cliente específico en el anfitrión para esa fuente. No resuelve Windows, cuentas ni aislamiento duro del motor; ver [[28 Pruebas 0.3.1 y mejoras 0.3.2]].

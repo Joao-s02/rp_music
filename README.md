@@ -2,9 +2,20 @@
 
 Reproductor de música local construido en Flutter para Android y Windows. Escucha tus archivos sin conexión y sin cuentas, con biblioteca, favoritos y listas de reproducción.
 
-**Versión publicada Android: [0.3.1-alpha.1](https://github.com/Joao-s02/rp_music/releases/tag/v0.3.1-alpha.1)** (aplicación `0.3.1+10`). [Windows continúa en 0.3.0-alpha.1](https://github.com/Joao-s02/rp_music/releases/tag/v0.3.0-alpha.1). [Guía de uso](docs/USO-0.3.1.md).
+**Versión 0.3.2-alpha.1 para Android y Windows:** [descargas y adjuntos](https://github.com/Joao-s02/rp_music/releases/tag/v0.3.2-alpha.1) · [Guía de uso](docs/USO-0.3.2.md) · [Pruebas](docs/PRUEBAS-0.3.2.md) · [Cambios](docs/CAMBIOS-0.3.2.md).
 
-## Novedades de 0.3.1 · extensiones para música en la nube
+## Novedades de 0.3.2
+
+- Detalle de álbum renovado: carátula, información disponible, reproducir/aleatorio/guardar lista, pistas y cola con canción activa destacada.
+- Corrección del espacio inferior en la búsqueda de fuentes y nombre del servicio en el reproductor ampliado.
+- Las extensiones compatibles pueden aportar un acceso a la navegación con icono, etiqueta y color, sujeto a permiso y selección de la fuente.
+- La lógica de conexión a servicios se traslada al repositorio de extensiones. La app incorpora un contrato HTTP genérico limitado y compatibilidad de versiones del catálogo.
+
+Distribución: Android universal/global, Android ARM64 y Windows x64 portable completo, acompañados de USO, PRUEBAS, CAMBIOS y SHA-256. La fuente inicial requiere Android y actualizar su paquete a **0.2.0**, aceptando los nuevos permisos. Consulta el [repositorio de extensiones](https://github.com/Joao-s02/rp-music-extensions) desde la app o importa el paquete compatible. Las extensiones se distribuyen por separado; no se incluyen en los instaladores ni en los adjuntos de la app. Windows conserva reproducción local y recibe las mejoras visuales; no se promete reproducción de la fuente inicial en Windows.
+
+Validación: suite completa inicial de 75 pruebas aprobada, comprobación adicional de navegación aprobada, análisis sin incidencias y prueba nativa Android de búsqueda/audio/controles/revocación aprobada, con HOME y pantalla apagada durante observación. APK universal instalado y abierto, firma compatible con 0.3.1, ARM64 verificado y Windows iniciado en una instancia de prueba. Pendientes: retesteo físico, sesiones prolongadas y recorrido manual completo de escritorio. [Resultados y límites](boveda/28%20Pruebas%200.3.1%20y%20mejoras%200.3.2.md).
+
+## Antecedente 0.3.1 · extensiones para música en la nube
 
 RP Music incorpora en Android el primer soporte experimental para **extensiones que añaden fuentes de música en la nube**, con un adaptador inicial para catálogos como YT. La fuente se habilita instalando un paquete compatible y aceptando sus permisos.
 
@@ -137,3 +148,13 @@ Falta repetir reproducción prolongada con pantalla apagada y controles en Galax
 Leer `AGENTS.md` y abrir `boveda` en Obsidian. La bóveda registra requisitos, decisiones técnicas provisionales, verificaciones y pendientes. El documento `arquitectura-reproductor-flutter.md` es histórico. La distribución se documenta en la nota de release de la bóveda.
 
 En cada actualización del proyecto se debe revisar y actualizar este README: versión, novedades, instalación, funciones disponibles, comprobaciones y pendientes. Debe distinguir lo implementado de lo propuesto y mantenerse alineado con la bóveda. Esto no autoriza por sí solo publicar o enviar cambios a GitHub.
+
+
+## Preparar una release
+
+Cada release debe adjuntar Android universal/global, Android ARM64 y Windows, además de `PRUEBAS-<version>.md`, `CAMBIOS-<version>.md`, `USO.md`, `SHA256SUMS.txt` y los archivos auxiliares necesarios. El MD de cambios es independiente del texto de GitHub. Revisar versiones, firmas, contenido y hashes antes de publicar; cualquier excepción a la entrega completa requiere una instrucción explícita del usuario. [Política de publicación](boveda/27%20Publicacion%20de%20releases%20-%20contenido%20obligatorio.md).
+
+
+## Repositorios de aplicación y extensiones
+
+Las nuevas extensiones —fuentes, paquetes, recursos y pruebas propios— se desarrollan y publican exclusivamente en [rp-music-extensions](https://github.com/Joao-s02/rp-music-extensions). El repositorio de la aplicación contiene el reproductor, motor, SDK, permisos e interfaces genéricas. Los paquetes de extensiones se obtienen desde su catálogo/repositorio; no deben añadirse a releases del repositorio principal. El material de los prototipos y la lógica específica ya presentes en este repositorio están pendientes de separación; este cambio documental no los ha migrado todavía.
