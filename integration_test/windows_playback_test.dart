@@ -102,6 +102,41 @@ void main() {
             library.dispose();
           }
           await handler.pause();
+          final target = handler.tracks[handler.index];
+          final deletionLibrary =
+              LibraryController(
+                  LocalStore(directory, baseName: 'deletion'),
+                  MusicFiles(),
+                )
+                ..tracks = List.of(tracks)
+                ..favorites = {target.id}
+                ..playlists = {'Prueba': tracks.map((t) => t.id).toList()};
+          try {
+            expect(
+              await deletionLibrary.deleteTrack(
+                target,
+                beforeDelete: handler.stop,
+              ),
+              isTrue,
+            );
+            await handler.removeTrack(target.id);
+            expect(await File(target.id).exists(), isFalse);
+            expect(deletionLibrary.favorites, isEmpty);
+            expect(
+              deletionLibrary.playlists['Prueba'],
+              isNot(contains(target.id)),
+            );
+            expect(handler.mediaItem.value, isNull);
+            expect(
+              handler.queue.value.map((t) => t.id),
+              isNot(contains(target.id)),
+            );
+            for (final track in tracks.where((t) => t.id != target.id)) {
+              expect(await File(track.id).exists(), isTrue);
+            }
+          } finally {
+            deletionLibrary.dispose();
+          }
         } finally {
           await subscription.cancel();
           await handler.close();

@@ -148,13 +148,16 @@ void main() {
       await Future<void>.delayed(Duration.zero);
       expect(handler.playbackState.value.playing, isTrue);
       expect(
-        handler.playbackState.value.controls,
-        contains(MediaControl.pause),
+        handler.playbackState.value.controls.map((control) => control.action),
+        contains(MediaAction.pause),
       );
       await handler.pause();
       await Future<void>.delayed(Duration.zero);
       expect(handler.playbackState.value.playing, isFalse);
-      expect(handler.playbackState.value.controls, contains(MediaControl.play));
+      expect(
+        handler.playbackState.value.controls.map((control) => control.action),
+        contains(MediaAction.play),
+      );
       await handler.close();
     },
   );

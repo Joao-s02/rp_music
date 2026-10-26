@@ -11,7 +11,7 @@ $buildTools = Get-ChildItem -LiteralPath (Join-Path $SdkPath 'build-tools') -Dir
 if ($null -eq $buildTools) { throw 'No se encontró AAPT en el SDK indicado.' }
 $resources = & (Join-Path $buildTools.FullName 'aapt.exe') dump resources $apk
 if ($LASTEXITCODE -ne 0) { throw 'No se pudo leer la tabla de recursos del APK.' }
-$required = @('ic_stat_music', 'audio_service_play_arrow', 'audio_service_pause', 'audio_service_skip_next', 'audio_service_skip_previous', 'audio_service_stop')
+$required = @('ic_stat_music', 'audio_service_play_arrow', 'audio_service_pause', 'audio_service_skip_next', 'audio_service_skip_previous', 'audio_service_stop', 'rp_play', 'rp_pause', 'rp_next', 'rp_previous', 'rp_stop')
 foreach ($icon in $required) {
     if (-not ($resources -match (':drawable/' + [regex]::Escape($icon) + ':'))) {
         throw "Falta el icono dinámico $icon. No distribuir este APK: puede fallar la sesión multimedia."

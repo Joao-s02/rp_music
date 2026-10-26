@@ -1,3 +1,5 @@
+import 'scrolling_title.dart';
+
 import 'dart:async';
 import 'dart:math';
 import 'dart:typed_data';
@@ -684,18 +686,33 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
                     onPressed: () =>
                         library.removeFromPlaylist(playlist, track.id),
                   ),
-                if (playlist == null)
-                  PopupMenuButton<String>(
-                    tooltip: 'Añadir a una lista',
-                    onSelected: (name) => library.addToPlaylist(name, track.id),
-                    itemBuilder: (_) => [
-                      for (final name in library.playlists.keys)
-                        PopupMenuItem(
-                          value: name,
-                          child: Text('Añadir a $name'),
-                        ),
-                    ],
-                  ),
+                PopupMenuButton<String>(
+                  tooltip: 'Opciones de canción',
+                  onSelected: (value) {
+                    if (value == 'delete') {
+                      deleteTrack(track);
+                    } else {
+                      library.addToPlaylist(value.substring(5), track.id);
+                    }
+                  },
+                  itemBuilder: (_) => [
+                    for (final name in library.playlists.keys)
+                      PopupMenuItem(
+                        value: 'list:$name',
+                        child: Text('Añadir a $name'),
+                      ),
+                    const PopupMenuDivider(),
+                    PopupMenuItem(
+                      value: 'delete',
+                      enabled: !library.scanning && !library.deleting,
+                      child: const ListTile(
+                        contentPadding: EdgeInsets.zero,
+                        leading: Icon(Icons.delete_outline),
+                        title: Text('Eliminar del dispositivo'),
+                      ),
+                    ),
+                  ],
+                ),
               ],
             ),
           ),
@@ -879,8 +896,65 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
     ],
   );
 
+  Future<void> deleteTrack(Track track) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('¿Eliminar del dispositivo?'),
+        content: Text(
+          'Se borrará el archivo de «${track.title}» y se quitará de favoritos y listas. Esta acción no se puede deshacer.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancelar'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Eliminar archivo'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+    final success = await library.deleteTrack(
+      track,
+      beforeDelete: () async {
+        if (audio.mediaItem.value?.id == track.id) await audio.stop();
+      },
+    );
+    if (success) await audio.removeTrack(track.id);
+  }
+
   Future<void> showPlaybackDiagnostics() =>
       showDiagnostics(context, audio, widget.notifications);
+
+  Widget settingsSection(String title, IconData icon, List<Widget> children) =>
+      Card(
+        margin: const EdgeInsets.only(bottom: 16),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
+                children: [
+                  Icon(icon, color: Theme.of(context).colorScheme.primary),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      title,
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              ...children,
+            ],
+          ),
+        ),
+      );
 
   Widget settingsView() => ListView(
     padding: const EdgeInsets.all(24),
@@ -889,12 +963,15 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
       const SizedBox(height: 8),
       const Text('Tu biblioteca, tu sonido, tu espacio.'),
       const SizedBox(height: 24),
-      SwitchListTile(
-        title: const Text('Tema oscuro'),
-        subtitle: const Text('Personalización básica, sin extensiones.'),
-        value: library.dark,
-        onChanged: library.setDark,
-      ),
+      settingsSection('Apariencia', Icons.palette_outlined, [
+        SwitchListTile(
+          secondary: const Icon(Icons.dark_mode_outlined),
+          title: const Text('Tema oscuro'),
+          subtitle: const Text('Personalización básica, sin extensiones.'),
+          value: library.dark,
+          onChanged: library.setDark,
+        ),
+      ]),
       if (Platform.isWindows)
         SwitchListTile(
           title: const Text('Seguir reproduciendo al cerrar la ventana'),
@@ -905,49 +982,67 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
           onChanged: library.setCloseToTray,
         ),
       if (widget.notifications != null)
-        ListenableBuilder(
-          listenable: widget.notifications!,
-          builder: (context, _) => Column(
-            children: [
-              ListTile(
-                title: const Text('Notificaciones de reproducción'),
-                subtitle: Text(
-                  widget.notifications!.enabled == true
-                      ? 'Permiso concedido. Los controles dependen también del servicio multimedia.'
-                      : 'Android no permite notificaciones. Revisa sus ajustes.',
-                ),
-                trailing: TextButton(
-                  onPressed: () => widget.notifications!.request(),
-                  child: const Text('Solicitar'),
-                ),
+        settingsSection(
+          'Reproducción en segundo plano',
+          Icons.headphones_outlined,
+          [
+            ListenableBuilder(
+              listenable: widget.notifications!,
+              builder: (context, _) => Column(
+                children: [
+                  ListTile(
+                    title: const Text('Notificaciones de reproducción'),
+                    subtitle: Text(
+                      widget.notifications!.enabled == true
+                          ? 'Permiso concedido. Los controles dependen también del servicio multimedia.'
+                          : 'Android no permite notificaciones. Revisa sus ajustes.',
+                    ),
+                  ),
+                  FilledButton.tonalIcon(
+                    onPressed: () => widget.notifications!.request(),
+                    icon: const Icon(Icons.notifications_active_outlined),
+                    label: const Text('Solicitar permiso'),
+                  ),
+                  OutlinedButton.icon(
+                    onPressed: widget.notifications!.openSettings,
+                    icon: const Icon(Icons.notifications_outlined),
+                    label: const Text('Abrir ajustes de notificaciones'),
+                  ),
+                  OutlinedButton.icon(
+                    onPressed: () =>
+                        widget.notifications!.openBatterySettings(),
+                    icon: const Icon(Icons.battery_saver_outlined),
+                    label: const Text('Revisar restricciones de batería'),
+                  ),
+                  OutlinedButton.icon(
+                    onPressed: showPlaybackDiagnostics,
+                    icon: const Icon(Icons.monitor_heart_outlined),
+                    label: const Text('Diagnóstico multimedia'),
+                  ),
+                ],
               ),
-              TextButton(
-                onPressed: widget.notifications!.openSettings,
-                child: const Text('Abrir ajustes de notificaciones'),
-              ),
-              TextButton(
-                onPressed: () => widget.notifications!.openBatterySettings(),
-                child: const Text('Revisar restricciones de batería'),
-              ),
-              TextButton.icon(
-                onPressed: showPlaybackDiagnostics,
-                icon: const Icon(Icons.monitor_heart_outlined),
-                label: const Text('Diagnóstico multimedia'),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
-      ListTile(
-        leading: const Icon(Icons.folder_open),
-        title: const Text('Carpeta de música'),
-        subtitle: Text(library.root ?? 'Sin seleccionar'),
-        onTap: library.scanning || library.choosing ? null : library.chooseRoot,
-      ),
-      const ListTile(
-        leading: Icon(Icons.offline_bolt_outlined),
-        title: Text('Local y sin cuenta'),
-        subtitle: Text('Tu biblioteca permanece en este dispositivo.'),
-      ),
+      settingsSection('Biblioteca', Icons.library_music_outlined, [
+        ListTile(
+          leading: const Icon(Icons.folder_open),
+          title: const Text('Carpeta de música'),
+          subtitle: Text(library.root ?? 'Sin seleccionar'),
+        ),
+        FilledButton.tonalIcon(
+          onPressed: library.scanning || library.choosing || library.deleting
+              ? null
+              : library.chooseRoot,
+          icon: const Icon(Icons.folder_open),
+          label: const Text('Cambiar carpeta'),
+        ),
+        const ListTile(
+          leading: Icon(Icons.offline_bolt_outlined),
+          title: Text('Local y sin cuenta'),
+          subtitle: Text('Tu biblioteca permanece en este dispositivo.'),
+        ),
+      ]),
       if (widget.updates != null)
         UpdateSettings(
           updates: widget.updates!,
@@ -1014,13 +1109,10 @@ class PlayerPanel extends StatefulWidget {
 class _PlayerPanelState extends State<PlayerPanel> {
   MusicHandler get audio => widget.audio;
   LibraryController get library => widget.library;
-  void openPlayer() => showModalBottomSheet<void>(
-    context: context,
-    isScrollControlled: true,
-    useSafeArea: true,
-    builder: (context) => FractionallySizedBox(
-      heightFactor: 0.96,
-      child: Scaffold(
+  void openPlayer() => Navigator.of(context).push<void>(
+    MaterialPageRoute(
+      fullscreenDialog: true,
+      builder: (context) => Scaffold(
         appBar: AppBar(
           title: const Text('Ahora suena'),
           leading: IconButton(
@@ -1165,9 +1257,8 @@ class _PlayerPanelState extends State<PlayerPanel> {
                   ),
                 ),
                 const SizedBox(height: 24),
-                Text(
-                  track?.title ?? 'Elige una canción',
-                  textAlign: TextAlign.center,
+                ScrollingTitle(
+                  text: track?.title ?? 'Elige una canción',
                   style: Theme.of(context).textTheme.headlineMedium,
                 ),
                 Text(

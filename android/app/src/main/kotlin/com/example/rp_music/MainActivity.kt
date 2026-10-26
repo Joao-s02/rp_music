@@ -84,7 +84,7 @@ class MainActivity : AudioServiceActivity() {
                             picker = result
                             try {
                                 startActivityForResult(Intent(Intent.ACTION_OPEN_DOCUMENT_TREE).apply {
-                                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or
+                                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION or
                                         Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION or
                                         Intent.FLAG_GRANT_PREFIX_URI_PERMISSION)
                                 }, 810)
@@ -105,6 +105,28 @@ class MainActivity : AudioServiceActivity() {
                         } catch (e: Exception) {
                             runOnUiThread { result.error("scan", "No se pudo leer la carpeta", null) }
                         }
+                    }
+                    "deleteTrack" -> worker.execute {
+                        try {
+                            val uri = Uri.parse(call.argument<String>("id")!!)
+                            check(android.provider.DocumentsContract.deleteDocument(contentResolver, uri))
+                            runOnUiThread { result.success(null) }
+                        } catch (e: Exception) {
+                            runOnUiThread { result.error("delete", "No se pudo eliminar. Vuelve a elegir la carpeta y permite escritura.", null) }
+                        }
+                    }
+                    "artworkUri" -> worker.execute {
+                        val retriever = MediaMetadataRetriever()
+                        try {
+                            retriever.setDataSource(this, Uri.parse(call.argument<String>("id")!!))
+                            val bytes = retriever.embeddedPicture
+                            val dir = java.io.File(cacheDir, "notification_art").apply { mkdirs() }
+                            val file = if (bytes == null) null else java.io.File.createTempFile("cover", ".img", dir).apply { writeBytes(bytes) }
+                            dir.listFiles()?.sortedByDescending { it.lastModified() }?.drop(8)?.forEach { it.delete() }
+                            runOnUiThread { result.success(file?.toURI()?.toString()) }
+                        } catch (e: Exception) {
+                            runOnUiThread { result.success(null) }
+                        } finally { retriever.release() }
                     }
                     "artwork" -> worker.execute {
                         val retriever = MediaMetadataRetriever()
@@ -142,7 +164,7 @@ class MainActivity : AudioServiceActivity() {
         val uri = data?.data
         if (resultCode != Activity.RESULT_OK || uri == null) { result.success(null); return }
         try {
-            contentResolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            contentResolver.takePersistableUriPermission(uri, data!!.flags and (Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION))
             result.success(uri.toString())
         } catch (e: Exception) { result.error("permission", "No se pudo conservar el acceso", null) }
     }

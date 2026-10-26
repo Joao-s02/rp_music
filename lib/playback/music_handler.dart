@@ -10,6 +10,7 @@ import '../data/local_store.dart';
 
 class MusicHandler extends BaseAudioHandler with SeekHandler {
   final AudioPlayer player;
+  final Future<Uri?> Function(String)? artworkLoader;
   final LocalStore? sessionStore;
   Timer? _checkpointTimer;
   Timer? _seekCheckpoint;
@@ -34,7 +35,7 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
   int index = -1;
   bool shuffle = false;
   bool repeat = false;
-  MusicHandler({AudioPlayer? player, this.sessionStore})
+  MusicHandler({AudioPlayer? player, this.sessionStore, this.artworkLoader})
     : player = player ?? AudioPlayer() {
     if (sessionStore != null) {
       _checkpointTimer = Timer.periodic(const Duration(seconds: 5), (_) {
@@ -101,10 +102,32 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
     playbackState.add(
       PlaybackState(
         controls: [
-          MediaControl.skipToPrevious,
-          player.playing ? MediaControl.pause : MediaControl.play,
-          MediaControl.skipToNext,
-          MediaControl.stop,
+          const MediaControl(
+            androidIcon: 'drawable/rp_previous',
+            label: 'Anterior',
+            action: MediaAction.skipToPrevious,
+          ),
+          player.playing
+              ? const MediaControl(
+                  androidIcon: 'drawable/rp_pause',
+                  label: 'Pausar',
+                  action: MediaAction.pause,
+                )
+              : const MediaControl(
+                  androidIcon: 'drawable/rp_play',
+                  label: 'Reproducir',
+                  action: MediaAction.play,
+                ),
+          const MediaControl(
+            androidIcon: 'drawable/rp_next',
+            label: 'Siguiente',
+            action: MediaAction.skipToNext,
+          ),
+          const MediaControl(
+            androidIcon: 'drawable/rp_stop',
+            label: 'Detener',
+            action: MediaAction.stop,
+          ),
         ],
         systemActions: const {
           MediaAction.seek,
@@ -162,6 +185,7 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
         queue.add(nextQueue);
       }
       mediaItem.add(_mediaItem(track));
+      unawaited(_loadArtwork(track, generation));
       try {
         final duration = await player.setAudioSource(
           AudioSource.uri(
@@ -174,7 +198,7 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
         if (generation == _generation && !_shuttingDown) {
           _loading = false;
           if (duration != null) {
-            mediaItem.add(_mediaItem(track).copyWith(duration: duration));
+            mediaItem.add(mediaItem.value!.copyWith(duration: duration));
           }
           _publish();
           unawaited(saveSession(position: initialPosition));
@@ -197,6 +221,40 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
       onError: (Object _, StackTrace _) {},
     );
     return operation;
+  }
+
+  Future<void> _loadArtwork(Track track, int generation) async {
+    try {
+      final uri = await artworkLoader?.call(track.id);
+      if (uri != null && generation == _generation && !_shuttingDown) {
+        mediaItem.add(mediaItem.value!.copyWith(artUri: uri));
+      }
+    } catch (_) {
+      /* Artwork failure must not interrupt playback. */
+    }
+  }
+
+  Future<void> removeTrack(String id) async {
+    final current = mediaItem.value?.id;
+    final remaining = tracks.where((t) => t.id != id).toList();
+    if (current == id) {
+      await stop();
+      tracks = remaining;
+      index = -1;
+      mediaItem.add(null);
+      queue.add(remaining.map(_mediaItem).toList());
+      await sessionStore?.save({
+        'schema': 1,
+        'ids': <String>[],
+        'current': null,
+      });
+    } else {
+      tracks = remaining;
+      index = tracks.indexWhere((t) => t.id == current);
+      queue.add(tracks.map(_mediaItem).toList());
+      _publish();
+      await saveSession();
+    }
   }
 
   Future<void> _advance() async {

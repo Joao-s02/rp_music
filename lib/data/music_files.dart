@@ -96,6 +96,20 @@ class MusicFiles {
     }
   }
 
+  Future<void> delete(String id) async {
+    if (Platform.isAndroid) {
+      await _channel.invokeMethod<void>('deleteTrack', {'id': id});
+    } else {
+      await File(id).delete();
+    }
+  }
+
+  Future<Uri?> notificationArtwork(String id) async {
+    if (!Platform.isAndroid) return null;
+    final value = await _channel.invokeMethod<String>('artworkUri', {'id': id});
+    return value == null ? null : Uri.parse(value);
+  }
+
   Future<Uint8List?> artwork(String id) async {
     if (Platform.isAndroid) {
       return _channel.invokeMethod<Uint8List>('artwork', {'id': id});
