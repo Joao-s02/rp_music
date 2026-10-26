@@ -7,6 +7,8 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 
 import '../domain/track.dart';
+import '../domain/track_sort.dart';
+import '../platform/home_widget.dart';
 import '../playback/music_handler.dart';
 import 'library_controller.dart';
 import 'volume_control.dart';
@@ -290,7 +292,7 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
                     if (widget.updates != null)
                       UpdateNotice(
                         updates: widget.updates!,
-                        onOpen: () => navigate(4),
+                        beforeInstall: audio.saveSession,
                       ),
                     if (library.scanning || library.loading)
                       const LinearProgressIndicator(minHeight: 2),
@@ -394,6 +396,39 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
             Padding(padding: const EdgeInsets.only(top: 20), child: action),
         ],
       ),
+    ),
+  );
+
+  Widget sortControls() => Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
+    child: Row(
+      children: [
+        const Icon(Icons.sort, size: 20),
+        const SizedBox(width: 8),
+        Expanded(
+          child: DropdownButton<TrackSort>(
+            isExpanded: true,
+            value: library.sort,
+            underline: const SizedBox.shrink(),
+            onChanged: (value) {
+              if (value != null) library.setSort(value);
+            },
+            items: [
+              for (final value in TrackSort.values)
+                DropdownMenuItem(value: value, child: Text(value.label)),
+            ],
+          ),
+        ),
+        IconButton(
+          tooltip: library.ascending
+              ? 'Ascendente · cambiar a descendente'
+              : 'Descendente · cambiar a ascendente',
+          onPressed: library.toggleSortDirection,
+          icon: Icon(
+            library.ascending ? Icons.arrow_upward : Icons.arrow_downward,
+          ),
+        ),
+      ],
     ),
   );
 
@@ -643,8 +678,9 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
         'No hay canciones. Actualiza la carpeta o cambia tu búsqueda.',
   }) {
     if (tracks.isEmpty) return this.empty(empty, Icons.music_note_outlined);
+    tracks = library.ordered(tracks);
     final cards = library.activeExtension?.layout == 'cards';
-    return ListView.builder(
+    final list = ListView.builder(
       itemExtent: cards ? 88 : 72,
       itemCount: tracks.length,
       itemBuilder: (context, index) {
@@ -724,6 +760,12 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
               )
             : tile;
       },
+    );
+    return Column(
+      children: [
+        sortControls(),
+        Expanded(child: list),
+      ],
     );
   }
 
@@ -1024,6 +1066,33 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
             ),
           ],
         ),
+      if (Platform.isAndroid)
+        settingsSection('Pantalla de inicio', Icons.widgets_outlined, [
+          const Text(
+            'Carátula, anterior, reproducir/pausar y siguiente sin abrir la app.',
+          ),
+          const SizedBox(height: 12),
+          FilledButton.tonalIcon(
+            onPressed: () async {
+              var offered = false;
+              try {
+                offered = await HomeWidget.pin();
+              } catch (_) {}
+              if (!mounted) return;
+              if (!offered) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text(
+                      'Mantén pulsada la pantalla de inicio → Widgets → RP Music.',
+                    ),
+                  ),
+                );
+              }
+            },
+            icon: const Icon(Icons.add_to_home_screen),
+            label: const Text('Añadir widget'),
+          ),
+        ]),
       settingsSection('Biblioteca', Icons.library_music_outlined, [
         ListTile(
           leading: const Icon(Icons.folder_open),
@@ -1037,6 +1106,18 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
           icon: const Icon(Icons.folder_open),
           label: const Text('Cambiar carpeta'),
         ),
+        if (Platform.isAndroid)
+          OutlinedButton.icon(
+            onPressed:
+                library.root == null ||
+                    library.choosing ||
+                    library.scanning ||
+                    library.deleting
+                ? null
+                : library.requestWriteAccess,
+            icon: const Icon(Icons.folder_shared_outlined),
+            label: const Text('Permitir eliminar archivos'),
+          ),
         const ListTile(
           leading: Icon(Icons.offline_bolt_outlined),
           title: Text('Local y sin cuenta'),

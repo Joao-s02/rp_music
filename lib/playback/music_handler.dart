@@ -10,6 +10,7 @@ import '../data/local_store.dart';
 
 class MusicHandler extends BaseAudioHandler with SeekHandler {
   final AudioPlayer player;
+  final Future<void> Function()? onEmptyPlay;
   final Future<Uri?> Function(String)? artworkLoader;
   final LocalStore? sessionStore;
   Timer? _checkpointTimer;
@@ -35,8 +36,12 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
   int index = -1;
   bool shuffle = false;
   bool repeat = false;
-  MusicHandler({AudioPlayer? player, this.sessionStore, this.artworkLoader})
-    : player = player ?? AudioPlayer() {
+  MusicHandler({
+    AudioPlayer? player,
+    this.sessionStore,
+    this.artworkLoader,
+    this.onEmptyPlay,
+  }) : player = player ?? AudioPlayer() {
     if (sessionStore != null) {
       _checkpointTimer = Timer.periodic(const Duration(seconds: 5), (_) {
         if (this.player.playing && !_loading) unawaited(saveSession());
@@ -274,6 +279,8 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
   @override
   Future<void> play() async {
     if (_shuttingDown) return;
+    if (index < 0) await onEmptyPlay?.call();
+    if (_shuttingDown || index < 0) return;
     _playIntent = true;
     if (_loading) return;
     try {

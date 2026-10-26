@@ -58,3 +58,7 @@ Búsqueda móvil expandible desde lupa con foco estable al aparecer teclado; bib
 ## Mejoras solicitadas tras probar 0.2.4
 
 Confirmado: título largo animado en una línea y reproductor a pantalla completa; carátula e iconos simples en notificaciones; Ajustes agrupados y acciones con botones; eliminación de archivo desde tres puntos con confirmación. Implementación local, límites y verificaciones en [[20 Pruebas 0.2.4 y mejoras 0.2.5]]. El informe del usuario confirma que los controles de notificación ya aparecen en 0.2.4 móvil.
+
+## Mejoras posteriores a 0.2.5
+
+Orden por título/artista/álbum/duración/modificación/tamaño/archivo, con dirección persistida; widget Android de inicio; escritura SAF solicitada en contexto al borrar. Estado y límites en [[21 Pruebas 0.2.5 y mejoras 0.2.6]]. Carátulas de listas y reglas automáticas aceptadas para la primera extensión programable, todavía no implementadas: [[22 Extensiones - alcance del primer sistema]].

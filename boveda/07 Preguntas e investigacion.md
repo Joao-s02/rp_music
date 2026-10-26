@@ -57,3 +57,7 @@ Viabilidad documental evaluada en [[17 Actualizaciones opcionales desde la app]]
 ## Informe móvil posterior a 0.2.4
 
 El usuario confirma que ya aparecen los controles de notificación; el informe negativo anterior se conserva como antecedente. Se añade carátula e iconos simplificados en sesión Android; falta verificar su presentación física. Borrado de archivos mediante SAF implementado con permiso de escritura y confirmación, sujeto al proveedor; comprobar permiso antiguo de solo lectura y SD. Ver [[20 Pruebas 0.2.4 y mejoras 0.2.5]].
+
+## Entrevista de extensiones y mejoras 0.2.6
+
+Resueltos para la primera entrega: ejemplo de biblioteca, varias extensiones, conflictos elegidos por el usuario, instalación por archivo, permisos normales separados, recuperación y conservación de datos; carátulas propias/mosaico y listas automáticas. Falta elegir runtime, lenguaje, formato, límites y contratos; ver [[22 Extensiones - alcance del primer sistema]]. SAF no se puede ampliar a escritura silenciosamente: 0.2.6 solicita autorización de la misma carpeta al borrar. MediaStore.createDeleteRequest es alternativa investigada, sin implementar; ver [[21 Pruebas 0.2.5 y mejoras 0.2.6]].

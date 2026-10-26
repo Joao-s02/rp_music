@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:path_provider/path_provider.dart';
 
 import '../app/app_version.dart';
 import '../data/local_store.dart';
@@ -153,6 +154,7 @@ abstract class UpdatePlatform {
   Future<Map<String, dynamic>> info();
   Future<bool> install(File apk, AppRelease release);
   Future<void> openPage(String url);
+  Future<void> reveal(File file) async {}
 }
 
 class NativeUpdatePlatform implements UpdatePlatform {
@@ -162,7 +164,11 @@ class NativeUpdatePlatform implements UpdatePlatform {
       ? Map<String, dynamic>.from(
           await channel.invokeMapMethod<String, dynamic>('info') ?? {},
         )
-      : {'arm64': false};
+      : {
+          'arm64': false,
+          'directory':
+              '${(await getApplicationSupportDirectory()).path}/updates',
+        };
   @override
   Future<bool> install(File apk, AppRelease release) async =>
       await channel.invokeMethod<bool>('install', {
@@ -171,6 +177,13 @@ class NativeUpdatePlatform implements UpdatePlatform {
         'version': release.version.core,
       }) ??
       false;
+  @override
+  Future<void> reveal(File file) async {
+    if (Platform.isWindows) {
+      await Process.start('explorer.exe', ['/select,', file.path]);
+    }
+  }
+
   @override
   Future<void> openPage(String url) async {
     if (!url.startsWith('https://github.com/Joao-s02/rp_music/releases/tag/')) {
@@ -203,6 +216,7 @@ class UpdateController extends ChangeNotifier {
       downloading = false,
       installing = false;
   bool _disposed = false, _cancelled = false;
+  int noticeSerial = 0;
   double progress = 0;
   String? message, skipped;
   DateTime? lastCheck;
@@ -346,6 +360,7 @@ class UpdateController extends ChangeNotifier {
       );
       lastCheck = now;
       downloaded = null;
+      if (available != null) noticeSerial++;
       if (manual) {
         message = available == null
             ? 'No hay una actualización compatible más reciente en este canal.'
@@ -366,7 +381,7 @@ class UpdateController extends ChangeNotifier {
 
   Future<void> download() async {
     final release = available;
-    if (release == null || downloading || installing || !android) return;
+    if (release == null || downloading || installing) return;
     downloading = true;
     _cancelled = false;
     downloaded = null;
@@ -382,7 +397,9 @@ class UpdateController extends ChangeNotifier {
       if (_cancelled) return;
       final directory = Directory(_info['directory'] as String);
       await directory.create(recursive: true);
-      final target = File('${directory.path}/rp-music-update.apk');
+      final target = File(
+        '${directory.path}/rp-music-update.${android ? 'apk' : 'zip'}',
+      );
       partial = File('${target.path}.part');
       final response = await _get(client, release.url);
       if (response.contentLength >= 0 &&
@@ -417,7 +434,7 @@ class UpdateController extends ChangeNotifier {
       if (_cancelled) throw const HttpException('Cancelado');
       if (await target.exists()) await target.delete();
       downloaded = await partial.rename(target.path);
-      message = 'Descarga verificada. Pulsa Instalar actualización.';
+      message = android ? 'Descarga verificada. Pulsa Instalar actualización.' : 'ZIP verificado. Extrae la nueva versión en otra carpeta y cierra la anterior desde la bandeja.';
     } catch (_) {
       message = _cancelled
           ? 'Descarga cancelada.'
@@ -457,6 +474,17 @@ class UpdateController extends ChangeNotifier {
       installing = false;
     }
     _notify();
+  }
+
+  Future<void> revealDownload() async {
+    final file = downloaded;
+    if (file == null) return;
+    try {
+      await platform.reveal(file);
+    } catch (_) {
+      message = 'No se pudo mostrar el archivo descargado: ${file.path}';
+      _notify();
+    }
   }
 
   Future<void> openRelease() async {

@@ -50,3 +50,7 @@ Relaciones: [[02 Vision y decisiones]], [[05 Rendimiento]], [[07 Preguntas e inv
 ## Implementación autorizada posterior
 
 El usuario aprobó la propuesta junto con el informe 0.2.3. Android ya consulta versiones y descarga/verifica un APK antes de pedir instalación; Windows consulta y abre la descarga. Frecuencia diaria, opción automática y canal de pruebas están implementados; detalle, verificaciones y límites en [[18 Pruebas 0.2.3 y correcciones 0.2.4]]. No se completó aún una actualización entre dos releases públicas posteriores y no se publicó 0.2.4 en esta tarea.
+
+## Evolución local 0.2.6
+
+Tras informe de botón Ver actualización poco útil, oferta centrada con versiones, descarga/progreso y posponer sin omitir. Windows también descarga/verifica ZIP en la app, con extracción/reemplazo manuales. Se conservan guardas Android. Ver [[21 Pruebas 0.2.5 y mejoras 0.2.6]] para implementación y validación.

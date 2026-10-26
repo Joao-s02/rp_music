@@ -66,8 +66,37 @@ void main() {
         );
         expect(diagnostics?['mediaNotifications'], 1, reason: '$diagnostics');
         expect(diagnostics?['hasMediaSession'], true);
+        await channel.invokeMethod<void>('testWidgetControl', {
+          'command': 'toggle',
+        });
+        await Future<void>.delayed(const Duration(milliseconds: 350));
+        expect(handler.player.playing, false);
+        var widget = await channel.invokeMapMethod<String, dynamic>(
+          'testWidgetState',
+        );
+        expect(widget?['registered'], true);
+        expect(widget?['connected'], true);
+        expect(widget?['title'], 'Prueba Android');
+        expect(widget?['playing'], false);
+        await channel.invokeMethod<void>('testWidgetControl', {
+          'command': 'next',
+        });
+        await Future<void>.delayed(const Duration(milliseconds: 350));
+        expect(handler.index, 1);
+        await channel.invokeMethod<void>('testWidgetControl', {
+          'command': 'previous',
+        });
+        await Future<void>.delayed(const Duration(milliseconds: 350));
+        expect(handler.index, 0);
+        expect(handler.player.playing, true);
+        widget = await channel.invokeMapMethod<String, dynamic>(
+          'testWidgetState',
+        );
+        expect(widget?['title'], 'Prueba Android');
+        expect(widget?['playing'], true);
         await channel.invokeMethod<void>('testMoveToBackground');
-        await Future<void>.delayed(const Duration(seconds: 3));
+        // Widget previous restarted this four-second fixture from zero.
+        await Future<void>.delayed(const Duration(seconds: 5));
         expect(
           handler.index,
           1,

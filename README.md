@@ -2,7 +2,16 @@
 
 Reproductor de música local construido en Flutter para Android y Windows. Escucha tus archivos sin conexión y sin cuentas, con biblioteca, favoritos y listas de reproducción.
 
-**Versión publicada: [0.2.5-alpha.1](https://github.com/Joao-s02/rp_music/releases/tag/v0.2.5-alpha.1)** (aplicación `0.2.5+7`). Sigue en desarrollo: las funciones disponibles y los pendientes se detallan a continuación. Consulta la [guía de pruebas de 0.2.5](docs/PRUEBAS-0.2.5.md).
+**Versión: [0.2.6-alpha.1](https://github.com/Joao-s02/rp_music/releases/tag/v0.2.6-alpha.1)** (aplicación `0.2.6+8`). Sigue en desarrollo: las funciones disponibles y los pendientes se detallan a continuación. Consulta la [guía de pruebas de 0.2.6](docs/PRUEBAS-0.2.6.md).
+
+## Novedades de 0.2.6
+
+- Ventana centrada de actualización con versión actual/nueva, descarga en la app, progreso y Actualizar después. Android abre el instalador tras verificar; Windows descarga/verifica el ZIP y permite mostrarlo para extraer manualmente.
+- Al borrar, se solicita escritura para la carpeta actual si falta. Android requiere confirmarla en su selector; no es un interruptor de Ajustes generales. También hay Permitir eliminar archivos en Ajustes de RP Music.
+- Widget Android de pantalla de inicio con carátula disponible y controles; Añadir widget desde Ajustes o mediante el selector del launcher. Proveedor y controles de sesión probados en emulador; falta retesteo en el launcher del teléfono.
+- Orden por título, artista, álbum, duración, fecha de modificación, tamaño y nombre de archivo, con ascendente/descendente guardado.
+
+Versión `0.2.6+8`, con 52 pruebas aprobadas, análisis estático limpio y pruebas nativas Android/Windows aprobadas. Ver [seguimiento de pruebas](boveda/21%20Pruebas%200.2.5%20y%20mejoras%200.2.6.md). APK universal y ZIP Windows compilados y verificados en `dist/0.2.6`; [guía de pruebas](docs/PRUEBAS-0.2.6.md). Se definieron los requisitos de las extensiones programables, incluidas listas automáticas y carátulas; su motor/SDK sigue pendiente y la extensión actual continúa siendo declarativa.
 
 ## Novedades de 0.2.5
 

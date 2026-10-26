@@ -50,3 +50,8 @@ kotlin {
 flutter {
     source = "../.."
 }
+
+// Widget controls share the audio_service compatibility media session.
+dependencies {
+    implementation("androidx.media:media:1.7.0")
+}

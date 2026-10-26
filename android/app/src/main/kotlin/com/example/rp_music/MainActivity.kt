@@ -15,6 +15,8 @@ import io.flutter.plugin.common.MethodChannel
 import java.util.concurrent.Executors
 
 class MainActivity : AudioServiceActivity() {
+    private var writeRequest: MethodChannel.Result? = null
+    private var writeRoot: Uri? = null
     private var picker: MethodChannel.Result? = null
     private var notificationRequest: MethodChannel.Result? = null
     private val worker = Executors.newSingleThreadExecutor()
@@ -25,6 +27,15 @@ class MainActivity : AudioServiceActivity() {
         MethodChannel(engine.dartExecutor.binaryMessenger, "rp_music/updates").setMethodCallHandler(updates::handle)
         MethodChannel(engine.dartExecutor.binaryMessenger, "rp_music/system").setMethodCallHandler { call, result ->
             when (call.method) {
+                "connectWidget" -> {
+                    val manager = android.appwidget.AppWidgetManager.getInstance(this)
+                    if (manager.getAppWidgetIds(android.content.ComponentName(this, MusicWidget::class.java)).isNotEmpty()) MusicWidget.observe(applicationContext)
+                    result.success(null)
+                }
+                "pinWidget" -> {
+                    val manager = android.appwidget.AppWidgetManager.getInstance(this)
+                    result.success(Build.VERSION.SDK_INT >= 26 && manager.isRequestPinAppWidgetSupported && manager.requestPinAppWidget(android.content.ComponentName(this, MusicWidget::class.java), null, null))
+                }
                 "notificationsEnabled" -> result.success(notificationsEnabled())
                 "playbackDiagnostics" -> {
                     val manager = getSystemService(NotificationManager::class.java)
@@ -43,6 +54,17 @@ class MainActivity : AudioServiceActivity() {
                         "foreground" to notifications.any { (it.notification.flags and android.app.Notification.FLAG_FOREGROUND_SERVICE) != 0 },
                         "ongoing" to notifications.any { (it.notification.flags and android.app.Notification.FLAG_ONGOING_EVENT) != 0 }
                     ))
+                }
+                "testWidgetState" -> {
+                    if ((applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0) result.success(MusicWidget.diagnostics(this))
+                    else result.notImplemented()
+                }
+                "testWidgetControl" -> {
+                    if ((applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0) {
+                        val command = call.argument<String>("command")
+                        if (command !in setOf("toggle", "previous", "next")) result.error("command", "Acción inválida", null)
+                        else MusicWidget.observe(applicationContext, command) { result.success(null) }
+                    } else result.notImplemented()
                 }
                 "testMoveToBackground" -> {
                     if ((applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0) {
@@ -78,8 +100,25 @@ class MainActivity : AudioServiceActivity() {
         val channel = MethodChannel(engine.dartExecutor.binaryMessenger, "rp_music/library")
         channel.setMethodCallHandler { call, result ->
                 when (call.method) {
+                    "ensureWritable" -> {
+                        val root = Uri.parse(call.argument<String>("root")!!)
+                        if (contentResolver.persistedUriPermissions.any { it.uri == root && it.isWritePermission }) result.success(true)
+                        else if (writeRequest != null || picker != null) result.error("busy", "Selector abierto", null)
+                        else {
+                            writeRequest = result; writeRoot = root
+                            try {
+                                startActivityForResult(Intent(Intent.ACTION_OPEN_DOCUMENT_TREE).apply {
+                                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION or Intent.FLAG_GRANT_PREFIX_URI_PERMISSION)
+                                    if (Build.VERSION.SDK_INT >= 26) putExtra(android.provider.DocumentsContract.EXTRA_INITIAL_URI, root)
+                                }, 812)
+                            } catch (e: Exception) {
+                                writeRequest = null; writeRoot = null
+                                result.error("permission", "No se pudo abrir el selector de escritura", null)
+                            }
+                        }
+                    }
                     "chooseRoot" -> {
-                        if (picker != null) result.error("busy", "Selector abierto", null)
+                        if (picker != null || writeRequest != null) result.error("busy", "Selector abierto", null)
                         else {
                             picker = result
                             try {
@@ -158,6 +197,22 @@ class MainActivity : AudioServiceActivity() {
     @Deprecated("Uses the platform document picker result")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == 812) {
+            val pending = writeRequest ?: return
+            val root = writeRoot
+            writeRequest = null; writeRoot = null
+            val selected = data?.data
+            if (resultCode != Activity.RESULT_OK || selected == null || root == null) { pending.success(false); return }
+            try {
+                if (selected.authority != root.authority || android.provider.DocumentsContract.getTreeDocumentId(selected) != android.provider.DocumentsContract.getTreeDocumentId(root)) {
+                    pending.error("folder", "Selecciona la misma carpeta para autorizar el borrado", null); return
+                }
+                val flags = data.flags and (Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+                contentResolver.takePersistableUriPermission(selected, flags)
+                pending.success(contentResolver.persistedUriPermissions.any { it.uri == root && it.isWritePermission })
+            } catch (e: Exception) { pending.error("permission", "No se pudo conservar escritura", null) }
+            return
+        }
         if (requestCode != 810) return
         val result = picker ?: return
         picker = null

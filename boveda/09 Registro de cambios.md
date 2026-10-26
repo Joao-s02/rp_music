@@ -222,3 +222,13 @@ El usuario solicita actualizar también escritorio y subir la nueva release a Gi
 [Release v0.2.5-alpha.1](https://github.com/Joao-s02/rp_music/releases/tag/v0.2.5-alpha.1) pública como preliminar; GitHub confirmó isDraft=false e isPrerelease=true. Etiqueta sobre 4e65a619a6ebed4b869cb2404f0eee221ae8690c y fuentes enviadas a main. Siete adjuntos en estado uploaded, verificados por tamaño y SHA-256 de GitHub contra dist/0.2.5: APK universal/ARM64, Windows x64, USO.md, PRUEBAS-0.2.5.md, descubrir.json y SHA256SUMS.txt. Windows incluye las mejoras compartidas y prueba nativa aprobada, incluido borrado real. La confirmación se registra después del commit etiquetado.
 
 La publicación conserva releases anteriores y no sustituye las pruebas físicas Android, instalación Tecno, actualización entre releases desde el instalador ni retesteo con los archivos originales de Windows.
+
+## 2026-10-25 — Informe 0.2.5 y entrevista de extensiones
+
+Se trabaja en 0.2.6+8 local: actualizador centrado y ZIP Windows descargable, autorización de escritura al borrar, widget Android y siete criterios de orden persistente. Motivos y validación en [[21 Pruebas 0.2.5 y mejoras 0.2.6]]. La entrevista define primera extensión de biblioteca/listas automáticas/carátulas, permisos, varias activas y recuperación; [[22 Extensiones - alcance del primer sistema]]. Distinguir esos requisitos del runtime aún no implementado. No publicar ni hacer push por este informe.
+
+Cierre 0.2.6 local: análisis limpio, 52 pruebas aprobadas, comprobaciones nativas Android API 37 (sesión/controles del widget/segundo plano) y Windows (audio/bandeja/borrado) aprobadas, APK universal y Windows release compilados y paquetes verificados. Guías y hashes locales actualizados. Límites físicos y de actualización entre releases en [[21 Pruebas 0.2.5 y mejoras 0.2.6]]. Requisitos de extensiones consolidados en [[22 Extensiones - alcance del primer sistema]], sin afirmar implementación del runtime.
+
+## Publicación 0.2.6 autorizada — 2026-10-25
+
+El usuario solicita publicar 0.2.6 antes de comenzar la implementación programable de extensiones. Se prepara v0.2.6-alpha.1 con APK universal/ARM64, Windows x64, guías, ejemplo y hashes. Fuentes de 0.2.6 y requisitos de la entrevista se incluyen; el código nuevo de extensiones será un incremento posterior separado. Confirmar publicación/adjuntos al terminar.
