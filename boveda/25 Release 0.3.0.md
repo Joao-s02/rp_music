@@ -1,6 +1,6 @@
 # Release 0.3.0-alpha.1
 
-Fecha: 2026-10-26. Estado: candidato, pendiente de confirmación de publicación.
+Fecha: 2026-10-26. Estado: publicada y adjuntos verificados.
 
 El usuario autorizó publicar 0.3.0 mientras prueba 0.3.1. Se prepara una copia separada desde el último commit publicado más los cambios de extensiones API 2 y catálogo, excluyendo fuente/capacidad/permiso/dependencias/pruebas de YouTube de 0.3.1. La copia de trabajo 0.3.1 y sus APK/paquete se conservan.
 
@@ -22,3 +22,10 @@ Adjuntos preparados en dist/0.3.0-release:
 - RP-Music-0.3.0-windows-x64.zip: 15440012 bytes; SHA-256 85abdfc716360a0a659e1496d95547c12e9613b1ff277ecb682706d8b8c659ed
 - USO.md: 2077 bytes; SHA-256 e6b47959359f9c7716cde18f3848759a2fdaa69066c0bd455fe6bbc9cf928dae
 - SHA256SUMS.txt: 532 bytes; SHA-256 f97ad9423460101dd832590ad5eaf3b144685e023ec1deb248c9f4ada50d68af
+
+
+## Publicación confirmada
+
+v0.3.0-alpha.1 publicada como prerelease el 2026-10-26. URL: https://github.com/Joao-s02/rp_music/releases/tag/v0.3.0-alpha.1 . Código etiquetado: f7b143ac1f9a81137f0fee2be5646e5b945a71f1. Borrador desactivado, siete adjuntos remotos comprobados uno a uno con tamaño y SHA-256 iguales a los archivos locales. La app 0.3.1 y su integración YouTube siguen fuera de esta release.
+
+Se publican los nuevos binarios de dist/0.3.0-release, no los viejos de dist/0.3.0-catalogo: los nuevos incorporan estado Instalada/Actualizar. Se conservan todos los paquetes anteriores. La fuente publicada no incluye dependencias ni adaptador de YouTube de 0.3.1. El working tree local se mantiene en 0.3.1 para continuar sus pruebas.

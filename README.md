@@ -15,7 +15,7 @@ Reproductor de música local construido en Flutter para Android y Windows. Escuc
 
 **YouTube Music no está incluido en 0.3.0**: su paquete requiere Android y el anfitrión experimental 0.3.1, que sigue en pruebas separadas. En esta release los programas no reciben acceso genérico a internet ni escritura de música. El SDK inicial limita los componentes visuales y los isolates no constituyen cuota dura de memoria; instala código/repositorios de confianza.
 
-Validación del candidato: análisis limpio y suite de pruebas; ver [registro de publicación](boveda/25%20Release%200.3.0.md). [Guía de uso](docs/USO-0.3.0.md) · [Guía de pruebas](docs/PRUEBAS-0.3.0.md) · [Contrato API 2](docs/EXTENSIONES-API-2.md). Pendientes: pruebas físicas y sesiones prolongadas, métricas y ampliación del SDK.
+Validación: análisis limpio, 68 pruebas aprobadas y regresión nativa Windows aprobada; ver [registro de publicación](boveda/25%20Release%200.3.0.md). [Guía de uso](docs/USO-0.3.0.md) · [Guía de pruebas](docs/PRUEBAS-0.3.0.md) · [Contrato API 2](docs/EXTENSIONES-API-2.md). Pendientes: pruebas físicas y sesiones prolongadas, métricas y ampliación del SDK.
 
 ## Novedades de 0.2.6
 

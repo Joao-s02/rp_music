@@ -1,7 +1,7 @@
 ---
 tipo: indice
 estado: vigente
-actualizado: 2026-10-25
+actualizado: 2026-10-26
 ---
 # RP Music — red de conocimiento
 
@@ -53,3 +53,6 @@ Versión vigente publicada: [[21 Pruebas 0.2.5 y mejoras 0.2.6]] — ventana de 
 
 
 2026-10-26: usuario autoriza publicar 0.3.0 mientras prueba 0.3.1. Preparación separada y alcance en [[25 Release 0.3.0]]; no incluir YouTube ni modificar la copia de pruebas 0.3.1.
+
+
+Publicación vigente confirmada: v0.3.0-alpha.1, Android universal/ARM64 y Windows, siete adjuntos verificados. Fuente y cierre en [[25 Release 0.3.0]]. 0.3.1 permanece en pruebas separadas; no está en esta release.
