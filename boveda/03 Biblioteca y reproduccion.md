@@ -62,3 +62,7 @@ Confirmado: título largo animado en una línea y reproductor a pantalla complet
 ## Mejoras posteriores a 0.2.5
 
 Orden por título/artista/álbum/duración/modificación/tamaño/archivo, con dirección persistida; widget Android de inicio; escritura SAF solicitada en contexto al borrar. Estado y límites en [[21 Pruebas 0.2.5 y mejoras 0.2.6]]. Carátulas de listas y reglas automáticas aceptadas para la primera extensión programable, todavía no implementadas: [[22 Extensiones - alcance del primer sistema]].
+
+## Trabajo local de extensiones 0.3.0
+
+Implementados prototipo de filtros por programa, listas automáticas y carátulas propias/mosaico, con reglas inactivas al desactivar proveedor y datos conservados. Política de aleatorio y disposición de reproductor aportadas por segundo programa avanzado. No son parte de la release 0.2.6; ver [[23 Extensiones programables - primer prototipo]].

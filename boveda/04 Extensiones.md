@@ -53,3 +53,6 @@ Existe una prueba declarativa JSON con dos presentaciones de biblioteca, color d
 ## Alcance confirmado posterior a 0.2.5
 
 La primera extensión será biblioteca con filtros y acciones, carátulas propias/mosaico y listas automáticas. Varias activas con selección de conflictos, permisos separados, instalación por archivo y recuperación aceptados. Las creará el agente. Sustituciones avanzadas deseadas: reproductor, aleatorio y listas. Requisitos, conservación de datos y propuestas de contrato en [[22 Extensiones - alcance del primer sistema]]. Ningún runtime/SDK programable está implementado todavía.
+
+
+Publicación 0.3.0: motor API 2 experimental, permisos, varias activas, conflictos, reglas y recuperación implementados; catálogo GitHub y estado Instalada/Actualizar incluidos. No implica SDK visual completo, acceso de red a programas ni aislamiento duro de memoria. Detalles vigentes: [[23 Extensiones programables - primer prototipo]] y [[25 Release 0.3.0]].

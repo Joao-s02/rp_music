@@ -49,3 +49,6 @@ Trabajo local posterior vigente: [[18 Pruebas 0.2.3 y correcciones 0.2.4]]. El u
 Trabajo vigente publicado: [[20 Pruebas 0.2.4 y mejoras 0.2.5]]. Informe del usuario confirma notificaciones visibles en 0.2.4 móvil; se incorporan cuatro mejoras en 0.2.5+7. Posteriormente el usuario autoriza recompilar escritorio y publicar v0.2.5-alpha.1; publicación y siete adjuntos confirmados en la nota 20. Consultar validaciones y permisos SAF de escritura antes de continuar.
 
 Tras pruebas de 0.2.5, consultar [[21 Pruebas 0.2.5 y mejoras 0.2.6]] antes de continuar con actualizador, permisos, widget y orden en 0.2.6 local. Antes del sistema programable leer [[22 Extensiones - alcance del primer sistema]]: alcance aceptado de biblioteca/listas/carátulas, varias activas, permisos y recuperación; todavía no es implementación del runtime.
+
+
+2026-10-26: usuario autoriza publicar 0.3.0 mientras prueba 0.3.1. Preparación separada y alcance en [[25 Release 0.3.0]]; no incluir YouTube ni modificar la copia de pruebas 0.3.1.

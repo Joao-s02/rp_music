@@ -61,3 +61,6 @@ El usuario confirma que ya aparecen los controles de notificación; el informe n
 ## Entrevista de extensiones y mejoras 0.2.6
 
 Resueltos para la primera entrega: ejemplo de biblioteca, varias extensiones, conflictos elegidos por el usuario, instalación por archivo, permisos normales separados, recuperación y conservación de datos; carátulas propias/mosaico y listas automáticas. Falta elegir runtime, lenguaje, formato, límites y contratos; ver [[22 Extensiones - alcance del primer sistema]]. SAF no se puede ampliar a escritura silenciosamente: 0.2.6 solicita autorización de la misma carpeta al borrar. MediaStore.createDeleteRequest es alternativa investigada, sin implementar; ver [[21 Pruebas 0.2.5 y mejoras 0.2.6]].
+
+
+Publicación 0.3.0: motor API 2 experimental, permisos, varias activas, conflictos, reglas y recuperación implementados; catálogo GitHub y estado Instalada/Actualizar incluidos. No implica SDK visual completo, acceso de red a programas ni aislamiento duro de memoria. Detalles vigentes: [[23 Extensiones programables - primer prototipo]] y [[25 Release 0.3.0]].

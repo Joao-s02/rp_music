@@ -8,6 +8,9 @@ import 'package:flutter/material.dart';
 
 import '../domain/track.dart';
 import '../domain/track_sort.dart';
+import '../extensions/program_library_view.dart';
+import '../extensions/program_manager_view.dart';
+import 'playlist_cover.dart';
 import '../platform/home_widget.dart';
 import '../playback/music_handler.dart';
 import 'library_controller.dart';
@@ -433,6 +436,10 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
   );
 
   Widget libraryView() {
+    if (library.programs?.owner('library') != null) {
+      return ProgramLibraryView(library: library, audio: audio, query: query);
+    }
+
     if (library.loading) {
       return empty('Abriendo tu biblioteca…', Icons.library_music_outlined);
     }
@@ -715,7 +722,7 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
                         : Icons.favorite_border,
                   ),
                 ),
-                if (playlist != null)
+                if (playlist != null && !library.automaticPlaylist(playlist))
                   IconButton(
                     tooltip: 'Quitar de la lista',
                     icon: const Icon(Icons.playlist_remove),
@@ -732,7 +739,9 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
                     }
                   },
                   itemBuilder: (_) => [
-                    for (final name in library.playlists.keys)
+                    for (final name in library.playlists.keys.where(
+                      (name) => !library.automaticPlaylist(name),
+                    ))
                       PopupMenuItem(
                         value: 'list:$name',
                         child: Text('Añadir a $name'),
@@ -785,6 +794,39 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
             ),
             onTap: () => setState(() => group = null),
           ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+            child: Row(
+              children: [
+                PlaylistCover(library: library, name: name, size: 80),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (library.automaticPlaylist(name))
+                        Text(
+                          library.programs?.allowed(
+                                    library.playlistMeta[name]!['owner']
+                                        as String,
+                                    'playlists.manage',
+                                  ) ==
+                                  true
+                              ? 'Lista automática · activa'
+                              : 'Lista automática · guardada e inactiva',
+                        ),
+                      TextButton.icon(
+                        onPressed: () =>
+                            choosePlaylistCover(context, library, name),
+                        icon: const Icon(Icons.photo_outlined),
+                        label: const Text('Cambiar carátula'),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
           if (missing > 0)
             ListTile(
               title: Text('$missing canciones no disponibles en esta carpeta'),
@@ -833,7 +875,10 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
                   children: [
                     for (final entry in library.playlists.entries)
                       ListTile(
-                        leading: const Icon(Icons.queue_music),
+                        leading: PlaylistCover(
+                          library: library,
+                          name: entry.key,
+                        ),
                         title: Text(entry.key),
                         trailing: IconButton(
                           tooltip: 'Eliminar lista',
@@ -885,58 +930,7 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
     if (name != null) await library.addPlaylist(name);
   }
 
-  Widget extensionView() => ListView(
-    padding: const EdgeInsets.all(24),
-    children: [
-      Text(
-        'Un reproductor que puedes transformar',
-        style: Theme.of(context).textTheme.titleLarge,
-      ),
-      const SizedBox(height: 12),
-      const Text(
-        'Personaliza el aspecto de tu biblioteca con extensiones locales. Esta versión admite manifiestos JSON; las extensiones con código siguen en desarrollo.',
-      ),
-      const SizedBox(height: 20),
-      Align(
-        alignment: Alignment.centerLeft,
-        child: FilledButton.tonalIcon(
-          onPressed: library.importExtension,
-          icon: const Icon(Icons.file_open_outlined),
-          label: const Text('Importar extensión'),
-        ),
-      ),
-      const SizedBox(height: 16),
-      ListTile(
-        title: const Text('Interfaz base'),
-        leading: const Icon(Icons.music_note_outlined),
-        trailing: library.activeExtension == null
-            ? const Icon(Icons.check)
-            : null,
-        onTap: () => library.activateExtension(null),
-      ),
-      for (final extension in library.extensions)
-        Card(
-          child: ListTile(
-            title: Text(extension.name),
-            subtitle: Text(
-              '${extension.description}\nSin permisos adicionales',
-            ),
-            isThreeLine: true,
-            leading: Icon(
-              library.activeExtensionId == extension.id
-                  ? Icons.check_circle
-                  : Icons.extension_outlined,
-            ),
-            onTap: () => library.activateExtension(extension.id),
-            trailing: IconButton(
-              tooltip: 'Desinstalar',
-              icon: const Icon(Icons.delete_outline),
-              onPressed: () => library.removeExtension(extension.id),
-            ),
-          ),
-        ),
-    ],
-  );
+  Widget extensionView() => ProgramManagerView(library: library);
 
   Future<void> deleteTrack(Track track) async {
     final confirmed = await showDialog<bool>(
@@ -1179,8 +1173,10 @@ class PlayerPanel extends StatefulWidget {
     required this.audio,
     required this.library,
     this.expanded = false,
+    this.artworkFirst = true,
   });
   final bool expanded;
+  final bool artworkFirst;
   final MusicHandler audio;
   final LibraryController library;
   @override
@@ -1207,11 +1203,9 @@ class _PlayerPanelState extends State<PlayerPanel> {
           child: Center(
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 520),
-              child: PlayerPanel(
-                audio: audio,
-                library: library,
-                expanded: true,
-              ),
+              child: library.programs?.owner('player') != null
+                  ? ProgramPlayerView(audio: audio, library: library)
+                  : PlayerPanel(audio: audio, library: library, expanded: true),
             ),
           ),
         ),
@@ -1329,14 +1323,15 @@ class _PlayerPanelState extends State<PlayerPanel> {
             mainAxisSize: MainAxisSize.min,
             children: [
               if (widget.expanded) ...[
-                AspectRatio(
-                  aspectRatio: 1,
-                  child: Artwork(
-                    id: track?.id,
-                    library: library,
-                    size: double.infinity,
+                if (widget.artworkFirst)
+                  AspectRatio(
+                    aspectRatio: 1,
+                    child: Artwork(
+                      id: track?.id,
+                      library: library,
+                      size: double.infinity,
+                    ),
                   ),
-                ),
                 const SizedBox(height: 24),
                 ScrollingTitle(
                   text: track?.title ?? 'Elige una canción',
@@ -1501,12 +1496,120 @@ class _PlayerPanelState extends State<PlayerPanel> {
                   },
                 ),
               ),
+              if (widget.expanded && !widget.artworkFirst) ...[
+                const SizedBox(height: 20),
+                AspectRatio(
+                  aspectRatio: 1,
+                  child: Artwork(
+                    id: track?.id,
+                    library: library,
+                    size: double.infinity,
+                  ),
+                ),
+              ],
             ],
           ),
         ),
       );
     },
   );
+}
+
+class ProgramPlayerView extends StatefulWidget {
+  const ProgramPlayerView({
+    super.key,
+    required this.audio,
+    required this.library,
+  });
+  final MusicHandler audio;
+  final LibraryController library;
+  @override
+  State<ProgramPlayerView> createState() => _ProgramPlayerViewState();
+}
+
+class _ProgramPlayerViewState extends State<ProgramPlayerView> {
+  Future<Map<String, dynamic>?>? view;
+  StreamSubscription? subscription;
+  String? trackId;
+  @override
+  void initState() {
+    super.initState();
+    view = load();
+    subscription = widget.audio.mediaItem.listen((item) {
+      if (trackId == item?.id || !mounted) return;
+      trackId = item?.id;
+      setState(() {
+        view = load();
+      });
+    });
+  }
+
+  Future<Map<String, dynamic>?> load() async {
+    final manager = widget.library.programs!;
+    for (var i = 0; i < 20 && manager.busy; i++) {
+      await Future<void>.delayed(const Duration(milliseconds: 150));
+    }
+    final owner = manager.owner('player');
+    if (owner == null) return null;
+    final track = widget.audio.mediaItem.value;
+    final result = await manager.invoke(owner.package.id, 'player', {
+      'title': track?.title ?? '',
+      'artist': track?.artist ?? '',
+      'album': track?.album ?? '',
+      'playing': widget.audio.player.playing,
+    });
+    if (result == null) return null;
+    if (result['title'] is! String ||
+        (result['title'] as String).length > 120 ||
+        !['artworkFirst', 'controlsFirst'].contains(result['layout'])) {
+      await manager.reject(owner.package.id, 'Diseño de reproductor inválido.');
+      return null;
+    }
+    return result;
+  }
+
+  @override
+  Widget build(BuildContext context) => ListenableBuilder(
+    listenable: widget.library.programs!,
+    builder: (context, _) => FutureBuilder<Map<String, dynamic>?>(
+      future: view,
+      builder: (context, snapshot) {
+        final data = widget.library.programs!.owner('player') == null
+            ? null
+            : snapshot.data;
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (snapshot.connectionState != ConnectionState.done)
+              const LinearProgressIndicator(),
+            if (data != null)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: Text(
+                  data['title'] as String,
+                  style: Theme.of(context).textTheme.headlineMedium,
+                ),
+              ),
+            PlayerPanel(
+              audio: widget.audio,
+              library: widget.library,
+              expanded: true,
+              artworkFirst: data?['layout'] != 'controlsFirst',
+            ),
+            TextButton(
+              onPressed: () => widget.library.programs!.choose('player', null),
+              child: const Text('Volver al reproductor base'),
+            ),
+          ],
+        );
+      },
+    ),
+  );
+  @override
+  void dispose() {
+    subscription?.cancel();
+    super.dispose();
+  }
 }
 
 class Artwork extends StatefulWidget {

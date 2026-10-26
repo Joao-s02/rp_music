@@ -2,7 +2,20 @@
 
 Reproductor de música local construido en Flutter para Android y Windows. Escucha tus archivos sin conexión y sin cuentas, con biblioteca, favoritos y listas de reproducción.
 
-**Versión publicada: [0.2.6-alpha.1](https://github.com/Joao-s02/rp_music/releases/tag/v0.2.6-alpha.1)** (aplicación `0.2.6+8`). Sigue en desarrollo: las funciones disponibles y los pendientes se detallan a continuación. Consulta la [guía de pruebas de 0.2.6](docs/PRUEBAS-0.2.6.md).
+**Versión publicada: [0.3.0-alpha.1](https://github.com/Joao-s02/rp_music/releases/tag/v0.3.0-alpha.1)** (aplicación `0.3.0+9`). Versión de prueba para Android y Windows; las releases anteriores se conservan.
+
+## Novedades de 0.3.0 · extensiones experimentales
+
+- Programas Dart API 2 instalables desde archivo o catálogo de repositorio GitHub, con permisos explícitos, selección de funciones y modo seguro. API 1 sigue disponible.
+- **Biblioteca viva:** filtros combinados, listas manuales/automáticas y carátulas propias o mosaico. Desactivar conserva listas y carátulas.
+- **Pulso nocturno:** disposición del reproductor y aleatorio que prefiere cambiar de artista.
+- Catálogo con verificación SHA-256, metadatos y revisión fija; muestra Descargar/Instalada/Actualizar según versión guardada. Los paquetes no vienen embebidos ni se activan al instalar la app.
+
+[Repositorio de extensiones](https://github.com/Joao-s02/rp-music-extensions). En la app: **Extensiones → Explorar repositorio → Consultar → elegir extensión → revisar permisos**. También admite importar `.rpmx`. No hay actualizaciones silenciosas ni firma de autor.
+
+**YouTube Music no está incluido en 0.3.0**: su paquete requiere Android y el anfitrión experimental 0.3.1, que sigue en pruebas separadas. En esta release los programas no reciben acceso genérico a internet ni escritura de música. El SDK inicial limita los componentes visuales y los isolates no constituyen cuota dura de memoria; instala código/repositorios de confianza.
+
+Validación del candidato: análisis limpio y suite de pruebas; ver [registro de publicación](boveda/25%20Release%200.3.0.md). [Guía de uso](docs/USO-0.3.0.md) · [Guía de pruebas](docs/PRUEBAS-0.3.0.md) · [Contrato API 2](docs/EXTENSIONES-API-2.md). Pendientes: pruebas físicas y sesiones prolongadas, métricas y ampliación del SDK.
 
 ## Novedades de 0.2.6
 
@@ -11,7 +24,7 @@ Reproductor de música local construido en Flutter para Android y Windows. Escuc
 - Widget Android de pantalla de inicio con carátula disponible y controles; Añadir widget desde Ajustes o mediante el selector del launcher. Proveedor y controles de sesión probados en emulador; falta retesteo en el launcher del teléfono.
 - Orden por título, artista, álbum, duración, fecha de modificación, tamaño y nombre de archivo, con ascendente/descendente guardado.
 
-Versión `0.2.6+8`, con 52 pruebas aprobadas, análisis estático limpio y pruebas nativas Android/Windows aprobadas. Ver [seguimiento de pruebas](boveda/21%20Pruebas%200.2.5%20y%20mejoras%200.2.6.md). APK universal y ZIP Windows compilados y verificados en `dist/0.2.6`; [guía de pruebas](docs/PRUEBAS-0.2.6.md). Se definieron los requisitos de las extensiones programables, incluidas listas automáticas y carátulas; su motor/SDK sigue pendiente y la extensión actual continúa siendo declarativa.
+Versión `0.2.6+8`, con 52 pruebas aprobadas, análisis estático limpio y pruebas nativas Android/Windows aprobadas. Ver [seguimiento de pruebas](boveda/21%20Pruebas%200.2.5%20y%20mejoras%200.2.6.md). APK universal y ZIP Windows compilados y verificados en `dist/0.2.6`; [guía de pruebas](docs/PRUEBAS-0.2.6.md). En esta release solo se incluyó la API 1 declarativa. El motor API 2 y las listas/carátulas aportadas por programas corresponden al prototipo local 0.3.0 descrito arriba.
 
 ## Novedades de 0.2.5
 
@@ -88,7 +101,7 @@ Los datos nuevos se guardan en el directorio de soporte de la aplicación, dentr
 4. Volver a Biblioteca: aparecerán tarjetas, un acento lavanda y la acción Sorpréndeme.
 5. Seleccionar Interfaz base o desinstalar para volver al aspecto inicial.
 
-No hace falta recompilar ni reiniciar para esta prueba. Reimportar un archivo con el mismo identificador reemplaza explícitamente la versión anterior. No hay actualización automática ni catálogo remoto.
+No hace falta recompilar ni reiniciar para esta prueba. Reimportar un archivo con el mismo identificador reemplaza explícitamente la versión anterior. No hay actualización automática; el catálogo remoto corresponde al trabajo local 0.3.x descrito arriba.
 
 Esta prueba ejecuta acciones predefinidas por la aplicación. **No ejecuta programas de terceros ni constituye todavía el SDK completo de extensiones.** Consultar `examples/extensions/README.md`.
 
@@ -109,7 +122,7 @@ Para 0.2.5 se aprobaron 46 pruebas automatizadas, el análisis estático y la pr
 
 ## Pendiente
 
-Letras, edición de etiquetas, cola editable, fundidos, gapless, controles multimedia del sistema Windows, carátulas en la biblioteca, mediciones de rendimiento y recursos por extensión, runtime programable, permisos de dos niveles, catálogo e integraciones con servicios. Web no está soportada por este incremento.
+Letras, edición de etiquetas, cola editable, fundidos, gapless, controles multimedia del sistema Windows, mediciones de rendimiento y recursos por extensión, ampliar el SDK visual/de red, firmas de autor y completar integraciones con servicios. El prototipo local ya incluye un primer runtime, permisos, catálogo y fuente Android; todavía requieren validación y mejoras. Web no está soportada por este incremento.
 
 Falta repetir reproducción prolongada con pantalla apagada y controles en Galaxy A34 Android 16/Poco X6, completar una actualización entre dos releases públicas desde el instalador y comprobar los datos conservados. Siguen pendientes el rechazo de instalación en Tecno Android 16 y la confirmación del comportamiento de cierre en Windows por el usuario. Las pruebas en emulador no sustituyen estas verificaciones.
 

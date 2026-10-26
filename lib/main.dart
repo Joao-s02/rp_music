@@ -15,6 +15,8 @@ import 'playback/playback_config.dart';
 import 'platform/android_notifications.dart';
 import 'platform/desktop_lifecycle.dart';
 import 'updates/update_controller.dart';
+import 'extensions/program_controller.dart';
+import 'extensions/program_coordinator.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -74,6 +76,23 @@ Future<void> main() async {
     });
     unawaited(updates.initialize());
     await controller.initialize();
+    final programs = ProgramController(
+      LocalStore(Directory('${directory.path}/v3'), baseName: 'extensions'),
+    );
+    try {
+      await programs.initialize();
+    } catch (_) {
+      try {
+        await programs.restoreBase();
+      } catch (_) {
+        /* Keep playback available even if registry storage fails. */
+      }
+      programs.message =
+          'Se inició en modo base por un registro de extensiones dañado.';
+    }
+    controller.attachPrograms(programs);
+    ProgramCoordinator(controller, programs, handler);
+    controller.notifyProgramsReady();
     await handler.setAppVolume(controller.volume);
     if (Platform.isWindows) {
       await DesktopLifecycle(

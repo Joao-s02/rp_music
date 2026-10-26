@@ -10,6 +10,7 @@ import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:rp_music/app/library_controller.dart';
+import 'package:rp_music/app/app_version.dart';
 import 'package:rp_music/app/music_theme.dart';
 import 'package:rp_music/data/local_store.dart';
 import 'package:rp_music/data/music_files.dart';
@@ -258,7 +259,7 @@ void main() {
           final image = await boundary.toImage();
           final data = await image.toByteData(format: ui.ImageByteFormat.png);
           await Directory('design/verification').create(recursive: true);
-          await File('design/verification/update-0.2.6-mobile.png')
+          await File('design/verification/update-$appVersion-mobile.png')
               .writeAsBytes(data!.buffer.asUint8List());
           image.dispose();
         });

@@ -1,6 +1,6 @@
 ---
 tipo: requisitos-y-propuesta
-estado: requisitos-confirmados-diseno-pendiente
+estado: requisitos-confirmados-prototipo-posterior
 actualizado: 2026-10-25
 ---
 # Extensiones - alcance del primer sistema
@@ -37,6 +37,6 @@ Elegir runtime/lenguaje y representación de pantallas tras comparar ejecución 
 
 ## Estado comprobado
 
-El código actual sigue usando ExtensionManifest v1 declarativo: dos disposiciones de biblioteca, acento y acción aleatoria predefinida. No ejecuta lógica de terceros ni permite aún carátulas de lista, reglas automáticas, varias extensiones de pantalla activas o sustitución del reproductor. Esta entrevista define el siguiente trabajo; las mejoras locales 0.2.6 de [[21 Pruebas 0.2.5 y mejoras 0.2.6]] no se anuncian como implementación de ese sistema.
+Al cerrar 0.2.6 el código solo usaba ExtensionManifest v1 declarativo. Posteriormente el usuario autorizó implementar: [[23 Extensiones programables - primer prototipo]] documenta un motor Dart y SDK inicial con contratos limitados, ejemplos, reglas y carátulas en 0.3.0 local. No equivale a todas las capacidades de esta entrevista; el alcance comprobado y pendientes se mantienen allí.
 
 Relaciones: [[04 Extensiones]], [[06 Primera version]], [[07 Preguntas e investigacion]], [[05 Rendimiento]], [[09 Registro de cambios]].

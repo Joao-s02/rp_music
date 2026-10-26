@@ -1,0 +1,18 @@
+{
+  "apiVersion": 2,
+  "version": "0.1.0",
+  "id": "rp.pulso-nocturno",
+  "name": "Pulso nocturno",
+  "description": "Controles antes de la carátula y aleatorio que cambia de artista cuando es posible.",
+  "permissions": [
+    "library.read",
+    "playback.control",
+    "behavior.override"
+  ],
+  "capabilities": [
+    "player",
+    "shuffle"
+  ],
+  "source": "import 'dart:convert';\n\nString run(String request) {\n  final Map<String, dynamic> input =\n      jsonDecode(request) as Map<String, dynamic>;\n  if (input['event'] == 'player') {\n    return jsonEncode(<String, dynamic>{\n      'title': 'Pulso nocturno',\n      'layout': 'controlsFirst',\n    });\n  }\n  final List<dynamic> tracks = input['tracks'] as List<dynamic>;\n  final String current = input['current'] == null\n      ? ''\n      : input['current'] as String;\n  String artist = '';\n  for (int i = 0; i < tracks.length; i = i + 1) {\n    final Map<String, dynamic> track = tracks[i] as Map<String, dynamic>;\n    if (track['id'] == current) artist = track['artist'] as String;\n  }\n  final List<String> candidates = <String>[];\n  for (int i = 0; i < tracks.length; i = i + 1) {\n    final Map<String, dynamic> track = tracks[i] as Map<String, dynamic>;\n    if (track['id'] != current && track['artist'] != artist) {\n      candidates.add(track['id'] as String);\n    }\n  }\n  if (candidates.isEmpty) {\n    for (int i = 0; i < tracks.length; i = i + 1) {\n      final Map<String, dynamic> track = tracks[i] as Map<String, dynamic>;\n      if (track['id'] != current || tracks.length == 1) {\n        candidates.add(track['id'] as String);\n      }\n    }\n  }\n  final int seed = input['seed'] == null ? 0 : input['seed'] as int;\n  return jsonEncode(<String, dynamic>{\n    'next': candidates.isEmpty ? '' : candidates[seed % candidates.length],\n  });\n}\n",
+  "level": "advanced"
+}

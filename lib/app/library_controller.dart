@@ -9,6 +9,7 @@ import '../data/music_files.dart';
 import '../domain/extension_manifest.dart';
 import '../domain/track.dart';
 import '../domain/track_sort.dart';
+import '../extensions/program_controller.dart';
 
 class LibraryController extends ChangeNotifier {
   LibraryController(this.store, this.files);
@@ -34,6 +35,76 @@ class LibraryController extends ChangeNotifier {
   String? message;
   Set<String> favorites = {};
   Map<String, List<String>> playlists = {};
+  Map<String, Map<String, dynamic>> playlistMeta = {};
+  ProgramController? programs;
+  VoidCallback? refreshPrograms;
+  void notifyProgramsReady() => notifyListeners();
+  void attachPrograms(ProgramController value) {
+    programs = value;
+    value.addListener(notifyListeners);
+  }
+
+  bool automaticPlaylist(String name) =>
+      playlistMeta[name]?['owner'] is String &&
+      playlistMeta[name]?['rule'] is Map;
+  Future<void> createPlaylistWithTracks(String name, List<String> ids) async {
+    final clean = name.trim();
+    if (clean.isEmpty || clean.length > 80 || playlists.containsKey(clean)) {
+      throw const FormatException('Elige un nombre nuevo para la lista.');
+    }
+    final available = tracks.map((track) => track.id).toSet();
+    playlists[clean] = ids.where(available.contains).toSet().toList();
+    await persist();
+    notifyListeners();
+  }
+
+  Future<void> createSmartPlaylist(
+    String name,
+    String owner,
+    Map<String, dynamic> rule,
+    List<String> ids,
+  ) async {
+    final clean = name.trim();
+    if (clean.isEmpty || clean.length > 80 || playlists.containsKey(clean)) {
+      throw const FormatException('Elige un nombre nuevo para la lista.');
+    }
+    playlists[clean] = ids.toSet().toList();
+    playlistMeta[clean] = {
+      'owner': owner,
+      'rule': jsonDecode(jsonEncode(rule)),
+    };
+    await persist();
+    notifyListeners();
+    refreshPrograms?.call();
+  }
+
+  Future<void> updateSmartPlaylist(
+    String name,
+    String owner,
+    List<String> ids,
+  ) async {
+    if (!playlists.containsKey(name) || playlistMeta[name]?['owner'] != owner) {
+      return;
+    }
+    final clean = ids.toSet().toList();
+    if (listEquals(playlists[name], clean)) return;
+    playlists[name] = clean;
+    await persist();
+    notifyListeners();
+  }
+
+  Future<void> setPlaylistCover(String name, String? path) async {
+    if (!playlists.containsKey(name)) return;
+    final meta = playlistMeta.putIfAbsent(name, () => {});
+    if (path == null) {
+      meta.remove('cover');
+    } else {
+      meta['cover'] = path;
+    }
+    await persist();
+    notifyListeners();
+  }
+
   List<ExtensionManifest> extensions = [];
   String? activeExtensionId;
   ExtensionManifest? get activeExtension =>
@@ -58,6 +129,13 @@ class LibraryController extends ChangeNotifier {
                   ExtensionManifest.parse(Map<String, dynamic>.from(e as Map)),
             )
             .toList();
+        playlistMeta = {
+          for (final entry in (json['playlistMeta'] as Map? ?? {}).entries)
+            if (entry.key is String && entry.value is Map)
+              entry.key as String: Map<String, dynamic>.from(
+                entry.value as Map,
+              ),
+        };
         activeExtensionId = json['activeExtension'] as String?;
         sort =
             TrackSort.values
@@ -82,6 +160,7 @@ class LibraryController extends ChangeNotifier {
       'root': _stableTracks == null ? root : _stableRoot,
       'tracks': (_stableTracks ?? tracks).map((e) => e.toJson()).toList(),
       'favorites': favorites.toList(),
+      'playlistMeta': jsonDecode(jsonEncode(playlistMeta)),
       'playlists': playlists.map((k, v) => MapEntry(k, List<String>.of(v))),
       'extensions': extensions.map((e) => e.toJson()).toList(),
       'activeExtension': activeExtensionId,
@@ -253,11 +332,13 @@ class LibraryController extends ChangeNotifier {
 
   Future<void> deletePlaylist(String name) async {
     if (playlists.remove(name) == null) return;
+    playlistMeta.remove(name);
     notifyListeners();
     await persist();
   }
 
   Future<void> addToPlaylist(String name, String id) async {
+    if (automaticPlaylist(name)) return;
     final list = playlists[name];
     if (list == null || list.contains(id)) return;
     list.add(id);
@@ -277,6 +358,7 @@ class LibraryController extends ChangeNotifier {
       (playlists[name]?.length ?? 0) - playlistTracks(name).length;
 
   Future<void> removeFromPlaylist(String name, String id) async {
+    if (automaticPlaylist(name)) return;
     playlists[name]?.remove(id);
     notifyListeners();
     await persist();
@@ -319,6 +401,13 @@ class LibraryController extends ChangeNotifier {
     await persist();
   }
 
+  Future<void> installDeclarative(ExtensionManifest extension) async {
+    extensions.removeWhere((item) => item.id == extension.id);
+    extensions.add(extension);
+    notifyListeners();
+    await persist();
+  }
+
   Future<void> importExtension() async {
     try {
       final file = await FilePicker.pickFile();
@@ -342,5 +431,11 @@ class LibraryController extends ChangeNotifier {
       message = 'No se pudo importar la extensión. Usa un manifiesto JSON compatible.';
       notifyListeners();
     }
+  }
+
+  @override
+  void dispose() {
+    programs?.removeListener(notifyListeners);
+    super.dispose();
   }
 }
