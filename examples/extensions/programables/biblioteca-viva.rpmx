@@ -1,0 +1,18 @@
+{
+  "apiVersion": 2,
+  "version": "0.1.0",
+  "id": "rp.biblioteca-viva",
+  "name": "Biblioteca viva",
+  "description": "Biblioteca con filtros combinados y listas automáticas. Carátulas propias o mosaico desde Listas.",
+  "permissions": [
+    "library.read",
+    "playback.control",
+    "playlists.manage",
+    "storage.private"
+  ],
+  "capabilities": [
+    "library",
+    "lists"
+  ],
+  "source": "// Explicit concatenation keeps this sample within the tested dart_eval subset.\n// ignore_for_file: prefer_interpolation_to_compose_strings\nimport 'dart:convert';\n\nString field(Map<String, dynamic> object, String key) {\n  if (object[key] == null) {\n    return '';\n  }\n  final String value = object[key] as String;\n  return value;\n}\n\n// This function is compiled by RP Music after importing the package.\n// It is ordinary Dart logic, not a predefined host filter action.\nString run(String request) {\n  final Map<String, dynamic> input =\n      jsonDecode(request) as Map<String, dynamic>;\n  final List<dynamic> tracks = input['tracks'] as List<dynamic>;\n  final Map<String, dynamic> filters = input['filters'] == null\n      ? <String, dynamic>{}\n      : input['filters'] as Map<String, dynamic>;\n  final List<String> ids = <String>[];\n  final String query = field(filters, 'query').toLowerCase();\n  final int maxSeconds = filters['maxSeconds'] == null\n      ? 0\n      : filters['maxSeconds'] as int;\n  for (int i = 0; i < tracks.length; i = i + 1) {\n    final Map<String, dynamic> track = tracks[i] as Map<String, dynamic>;\n    bool keep = true;\n    if (field(filters, 'artist') != '' &&\n        field(filters, 'artist') != field(track, 'artist')) {\n      keep = false;\n    }\n    if (field(filters, 'album') != '' &&\n        field(filters, 'album') != field(track, 'album')) {\n      keep = false;\n    }\n    if (field(filters, 'folder') != '' &&\n        field(filters, 'folder') != field(track, 'folder')) {\n      keep = false;\n    }\n    if (filters['favorites'] == true && track['favorite'] != true) keep = false;\n    final int duration = track['durationMs'] as int;\n    if (maxSeconds > 0 && (duration <= 0 || duration > maxSeconds * 1000)) {\n      keep = false;\n    }\n    final String text =\n        (field(track, 'title') +\n                ' ' +\n                field(track, 'artist') +\n                ' ' +\n                field(track, 'album') +\n                ' ' +\n                field(track, 'folder'))\n            .toLowerCase();\n    if (query != '' && !text.contains(query)) keep = false;\n    if (keep) ids.add(track['id'] as String);\n  }\n  final Map<String, dynamic> response = <String, dynamic>{\n    'title': 'Biblioteca viva',\n    'description': 'Filtros ejecutados por esta extensión Dart. Guarda una lista automática para mantener tus resultados al actualizar el catálogo.',\n    'layout': 'cards',\n    'ids': ids,\n  };\n  if (input['event'] == 'library') {\n    response['state'] = <String, dynamic>{'filters': filters};\n  }\n  return jsonEncode(response);\n}\n"
+}

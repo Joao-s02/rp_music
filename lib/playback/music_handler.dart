@@ -34,6 +34,7 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
   bool _playIntent = false;
   List<Track> tracks = [];
   int index = -1;
+  Future<int?> Function(List<Track>, int)? chooseNext;
   bool shuffle = false;
   bool repeat = false;
   MusicHandler({
@@ -384,9 +385,24 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
   @override
   Future<void> skipToNext() async {
     if (tracks.isEmpty) return;
-    final next = shuffle && tracks.length > 1
-        ? (index + 1 + Random().nextInt(tracks.length - 1)) % tracks.length
-        : (index + 1) % tracks.length;
+    final generation = _generation;
+    int? custom;
+    if (shuffle && chooseNext != null) {
+      try {
+        custom = await chooseNext!(tracks, index);
+      } catch (_) {
+        /* Keep native shuffle available. */
+      }
+      if (generation != _generation || _shuttingDown) return;
+      if (custom != null && (custom < 0 || custom >= tracks.length)) {
+        custom = null;
+      }
+    }
+    final next =
+        custom ??
+        (shuffle && tracks.length > 1
+            ? (index + 1 + Random().nextInt(tracks.length - 1)) % tracks.length
+            : (index + 1) % tracks.length);
     await select(tracks, next);
   }
 

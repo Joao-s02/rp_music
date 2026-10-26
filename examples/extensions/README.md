@@ -20,3 +20,7 @@ Máximo de archivo: 64 KB. No se descargan archivos, se evalúa código, se conc
 La aplicación permite activar una presentación a la vez. Se conserva la elección al reiniciar. La acción `playRandom` usa las canciones filtradas de la biblioteca. Reimportar el mismo `id` reemplaza el manifiesto; desinstalar la presentación activa restaura la interfaz base.
 
 La pantalla y la acción siguen siendo componentes programados en el núcleo: no permite todavía pantallas arbitrarias, comunicación entre extensiones, ecualización ni fuentes de audio nuevas. No confundir esta prueba con la visión completa documentada en la bóveda.
+
+## Trabajo posterior: API 2
+
+El prototipo 0.3.0 incorpora programas Dart reales instalables y conserva este ejemplo API 1. Ver [programas de ejemplo](programables/README.md) y [SDK experimental](../../docs/EXTENSIONES-API-2.md). La release 0.2.6 mantiene únicamente la API 1.
