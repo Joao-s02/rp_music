@@ -77,3 +77,6 @@ Publicación vigente confirmada: 0.3.1-alpha.1 Android, con cinco adjuntos y REA
 
 
 Cierre local 0.3.2: tres paquetes normales compilados (universal/ARM64/Windows), guías y hashes en dist/0.3.2-local; APK universal instalado/abierto, firma compatible con 0.3.1 y Windows iniciado. Suite inicial 75 pruebas, comprobación adicional de navegación y prueba nativa Android aprobadas; análisis sin incidencias. Extensión 0.2.0 aparte, actualización con permisos requerida. No hay publicación ni push de estos cambios; probar por archivo local hasta publicar catálogo. Resultados, tamaños, hashes y límites en [[28 Pruebas 0.3.1 y mejoras 0.3.2]].
+
+
+2026-10-26 — publicación confirmada: [v0.3.2-alpha.1](https://github.com/Joao-s02/rp_music/releases/tag/v0.3.2-alpha.1), app 0.3.2+11, tag b8fd967. Android universal/ARM64, Windows, USO/PRUEBAS/CAMBIOS y hashes: siete adjuntos públicos verificados por tamaño y SHA-256. Extensión 0.2.0 y catálogo compatible publicados exclusivamente en rp-music-extensions (da3e455); paquete remoto verificado y versión 0.1.0 conservada para 0.3.1. Ya no es entrega solo local. Ver [[28 Pruebas 0.3.1 y mejoras 0.3.2]] para commits, hashes, pruebas y pendientes.

@@ -315,3 +315,6 @@ Cierre local 0.3.2: tres paquetes normales compilados (universal/ARM64/Windows),
 ## 2026-10-26 — autorización de publicación 0.3.2
 
 Usuario autoriza nueva release de GitHub. Preparación de app 0.3.2+11 con Android universal/ARM64, Windows, USO/PRUEBAS/CAMBIOS y hashes; extensión y catálogo exclusivamente en repositorio de extensiones. Ver [[28 Pruebas 0.3.1 y mejoras 0.3.2]] para resultados de publicación cuando se confirmen.
+
+
+2026-10-26 — publicación confirmada: [v0.3.2-alpha.1](https://github.com/Joao-s02/rp_music/releases/tag/v0.3.2-alpha.1), app 0.3.2+11, tag b8fd967. Android universal/ARM64, Windows, USO/PRUEBAS/CAMBIOS y hashes: siete adjuntos públicos verificados por tamaño y SHA-256. Extensión 0.2.0 y catálogo compatible publicados exclusivamente en rp-music-extensions (da3e455); paquete remoto verificado y versión 0.1.0 conservada para 0.3.1. Ya no es entrega solo local. Ver [[28 Pruebas 0.3.1 y mejoras 0.3.2]] para commits, hashes, pruebas y pendientes.

@@ -1,6 +1,6 @@
 ---
 tipo: seguimiento
-estado: implementada-local-con-limites
+estado: publicada-con-retesteo-fisico-pendiente
 actualizado: 2026-10-26
 ---
 # Pruebas 0.3.1 y mejoras 0.3.2
@@ -77,3 +77,24 @@ Pendiente: retesteo físico del usuario, gestos/tres botones, texto ampliado y s
 ## Publicación autorizada
 
 El usuario solicita publicar la nueva release. Se prepara v0.3.2-alpha.1 con los tres binarios y cuatro adjuntos documentales. Los APK conservan exactamente los bytes probados; se usan nombres con versión core 0.3.2 para compatibilidad con el actualizador. El ZIP conserva los binarios y actualiza únicamente USO.md para la distribución pública. Se publicará primero el paquete 0.2.0 y catálogo compatible en el repositorio de extensiones; no se adjunta ninguna extensión a la release de la app. Confirmación remota pendiente hasta terminar subida y comprobación.
+
+
+## Publicación confirmada — v0.3.2-alpha.1
+
+2026-10-26: publicada como prerelease, accesible sin autenticación en https://github.com/Joao-s02/rp_music/releases/tag/v0.3.2-alpha.1 . Tag resuelto a b8fd96724c1923de0fd8a3cb3b36146c88d60290, aplicación 0.3.2+11. Se comprobó primero el borrador y después la respuesta pública de GitHub: siete adjuntos, todos uploaded, tamaños y digest SHA-256 de GitHub idénticos a los archivos locales finales. Los APK son los mismos bytes probados; ZIP modifica solo la guía respecto a la copia local de pruebas. Nombre de binarios con core 0.3.2 para compatibilidad con el actualizador.
+
+Extensión 0.2.0 y catálogo publicados separadamente en rp-music-extensions, commit da3e455566dd9e7e605ed9a29ffb798e5994d550. Paquete remoto comparado byte a byte y por hash con el local, variante minAppVersion=0.3.2; se conserva 0.1.0 para anfitrión 0.3.1. Ya puede descargarse la actualización de extensión desde el catálogo; requiere revisar permisos. Ningún paquete .rpmx se adjunta a esta release ni se incluye en APK/ZIP.
+
+Adjuntos públicos finales (dist/0.3.2-release; los hashes de la tabla local anterior son su antecedente, no los documentos de distribución definitivos):
+
+| Archivo | Bytes | SHA-256 |
+| --- | ---: | --- |
+| CAMBIOS-0.3.2.md | 1791 | ca1d12fc96b8a46ad1b0f7311ac7a384caa773731ade43c5ef4890ad85b08531 |
+| PRUEBAS-0.3.2.md | 2138 | 017307864f45bd44adfa2614ebd31c003f6d492b381b984866af0f1ffa3a398c |
+| RP-Music-0.3.2-android-arm64.apk | 24755169 | b68b9d8e7c203e0c92ad92b33ec320f3e441a5821129731b78172ea7132ae95f |
+| RP-Music-0.3.2-android.apk | 67690900 | 087a3a0be0158e191d07931055c998f7fa9ff6440e7c660ac084633f11d2d793 |
+| RP-Music-0.3.2-windows-x64.zip | 15599497 | 1ff446c93014eaff116cc622c16e41bae28b510484900fbbd57418ea08ae3567 |
+| SHA256SUMS.txt | 534 | 5fcab02b0eb5393640c7f5654249ef322ee0f2e52ae0d984d7bb68642f8de445 |
+| USO.md | 1352 | afde422a81f076994314e32c232a4d747a1af2fb490f00b85343fa62cf6e65b4 |
+
+Guías públicas y README actualizados. Se mantienen los límites de la validación previa: fuente inicial Android, retesteo físico/escucha prolongada y recorrido manual completo Windows pendientes; SDK experimental. Esta publicación no acredita nuevas pruebas físicas del usuario ni resuelve listas/favoritos/historial/cuentas de fuentes.

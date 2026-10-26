@@ -82,3 +82,6 @@ Inicio de integración YouTube Music y entrevista específica: [[24 YouTube Musi
 
 
 2026-10-26: trabajo local vigente 0.3.2+11 en [[28 Pruebas 0.3.1 y mejoras 0.3.2]]: detalle de álbum, áreas seguras, nombre de fuente y navegación aportada por extensión. Se migra la lógica específica de la fuente al repositorio de extensiones; contrato HTTP genérico en la app y actualización de paquete requerida. Material previo de Biblioteca viva/Pulso aún pendiente de migración. No se publica 0.3.2 en esta tarea.
+
+
+2026-10-26 — publicación confirmada: [v0.3.2-alpha.1](https://github.com/Joao-s02/rp_music/releases/tag/v0.3.2-alpha.1), app 0.3.2+11, tag b8fd967. Android universal/ARM64, Windows, USO/PRUEBAS/CAMBIOS y hashes: siete adjuntos públicos verificados por tamaño y SHA-256. Extensión 0.2.0 y catálogo compatible publicados exclusivamente en rp-music-extensions (da3e455); paquete remoto verificado y versión 0.1.0 conservada para 0.3.1. Ya no es entrega solo local. Ver [[28 Pruebas 0.3.1 y mejoras 0.3.2]] para commits, hashes, pruebas y pendientes.
