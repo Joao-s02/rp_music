@@ -1,6 +1,6 @@
 ---
 tipo: seguimiento
-estado: implementada-local-con-verificaciones-y-pendientes
+estado: publicada-con-retesteo-fisico-pendiente
 actualizado: 2026-10-26
 ---
 # Pruebas 0.3.2 y mejoras 0.3.3
@@ -82,3 +82,24 @@ Paquetes externos para esta prueba (no adjuntos de app):
 ## Publicación autorizada
 
 El usuario solicita publicar la release 0.3.3 y las actualizaciones de extensiones en su repositorio. Se preparan siete adjuntos (universal/ARM64/Windows, USO/PRUEBAS/CAMBIOS y hashes); los APK conservan bytes probados y el ZIP solo actualiza USO.md respecto a la copia de pruebas. Fuente 0.2.1 y Biblioteca viva 0.1.1 se publican exclusivamente en rp-music-extensions, manteniendo variantes anteriores. Confirmación pública y commits pendientes hasta terminar la publicación y sus verificaciones.
+
+
+## Publicación confirmada — v0.3.3-alpha.1
+
+2026-10-26: publicada como prerelease en https://github.com/Joao-s02/rp_music/releases/tag/v0.3.3-alpha.1 . Tag resuelto a 610784501ca54409a8857e2d25785dad69164249; aplicación 0.3.3+12. Primero se comprobó el borrador y después la API pública sin autenticación: siete adjuntos completos, con tamaño y digest SHA-256 de GitHub idénticos a los locales finales. Los APK conservan los bytes probados. El ZIP conserva binarios y solo actualiza USO.md para la distribución pública.
+
+Actualizaciones de extensiones publicadas exclusivamente en rp-music-extensions, commit 641d970b1501ce64eccf601e664a18135a2846be: fuente 0.2.1 y Biblioteca viva 0.1.1, ambas minAppVersion 0.3.3. Catálogo remoto y ambos paquetes descargados y comparados byte a byte y por hash con los locales. Selección compatible comprobada: anfitrión 0.3.1 conserva fuente 0.1.0; 0.3.2 conserva 0.2.0; 0.3.3 elige 0.2.1. Biblioteca viva mantiene 0.1.0 para anteriores y ofrece 0.1.1 a 0.3.3. Pulso nocturno no tuvo cambios y conserva 0.1.0. Ya se pueden actualizar desde Extensiones → Explorar repositorio, o importar paquetes; no se incluyen .rpmx en la release de la app.
+
+Adjuntos públicos definitivos en dist/0.3.3-release (la tabla local anterior queda como antecedente):
+
+| Archivo | Bytes | SHA-256 |
+| --- | ---: | --- |
+| CAMBIOS-0.3.3.md | 1894 | 1fb9defb5dbf599cf3689559804577f205a1bb02ed2cfee22d0492aa8d767049 |
+| PRUEBAS-0.3.3.md | 3011 | 961bfe0fc713f8faf342b1db7c9e86f843e9d6af8334b855ae558b4e9be40bdf |
+| RP-Music-0.3.3-android-arm64.apk | 24821253 | 37cba507700f473bfc4d6a39f369e8913fc5ba206ae94a4c219a6fbfac4e081b |
+| RP-Music-0.3.3-android.apk | 67888056 | 3011c98d21ac2d325911cd62788805ce7cb8ee493190b421aeece014e808a863 |
+| RP-Music-0.3.3-windows-x64.zip | 15626440 | 71fe2d10dacb7a154de964effccf30ed8dced96268c9d9320a4f7bb7a461cf98 |
+| SHA256SUMS.txt | 534 | 5ede977c17b9960291acd9f93c2040a029a8d105efa90da8504e8cf66a617e12 |
+| USO.md | 1295 | 75c8176cc10135ce8b279e02ee18c9c8fbfe8011ca4eb3377c5a0d178616e37f |
+
+Guías y README actualizados. La publicación no añade una prueba física del usuario ni una nueva observación con pantalla apagada: conserva los límites descritos en Verificación. Fuente inicial Android, escucha prolongada y recorrido físico completo de Windows pendientes. Ecualizador reservado a futura extensión.

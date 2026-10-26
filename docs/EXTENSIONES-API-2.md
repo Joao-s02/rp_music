@@ -106,6 +106,6 @@ El catálogo schemaVersion=1 admite `versions` por entrada con metadatos complet
 Prueba HTTP independiente: `dart run tools/verify_source_package.dart RUTA_EXTERNA.rpmx CONSULTA`. Prueba Android genérica: integration_test/extension_source_test.dart recibe SOURCE_PACKAGE_GZIP (JSON del paquete externo comprimido con gzip y codificado en base64) y SOURCE_QUERY mediante dart-define-from-file; se evita el límite de línea de comandos de Windows. Es una entrada de pruebas y no se incluye el paquete en la app normal. No introducir código ni fixtures específicos de un proveedor en el principal.
 
 
-## Desarrollo local 0.3.3
+## Novedades publicadas en 0.3.3
 
 playOutline es un icono de contorno que hereda tamaño y color del tema de navegación; requiere minAppVersion 0.3.3. La tarjeta de la fuente activa con acceso propio deja de duplicar Abrir fuente. ProgramSnapshot añade artists (lista de nombres separados por coma, sin duplicados por canción) y conserva artist original para compatibilidad. Las extensiones de filtro deben comparar contra nombres individuales; sus actualizaciones permanecen en el repositorio de extensiones.

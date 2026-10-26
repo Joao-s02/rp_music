@@ -86,3 +86,6 @@ Cierre local 0.3.2: tres paquetes normales compilados (universal/ARM64/Windows),
 
 
 Cierre local 0.3.3+12: reproductor renovado sin ecualizador y cinco correcciones implementadas; suite inicial 86, comprobaciones finales con nueva regresión de filtro guardado y análisis aprobados. Audio real Android con anterior/avance y revocación aprobado en primer plano; APK normal instalado/abierto y Windows iniciado. Universal/ARM64/Windows, guías y hashes definitivos en dist/0.3.3-local. Extensiones 0.2.1 de fuente y 0.1.1 de Biblioteca viva en repo separado, variantes locales sin publicar. No se publica esta versión ni se hace push; pruebas físicas pendientes. Ver [[29 Pruebas 0.3.2 y mejoras 0.3.3]].
+
+
+2026-10-26 — publicación confirmada: [v0.3.3-alpha.1](https://github.com/Joao-s02/rp_music/releases/tag/v0.3.3-alpha.1), app 0.3.3+12, tag 6107845. Android universal/ARM64, Windows, USO/PRUEBAS/CAMBIOS y hashes: siete adjuntos públicos verificados por tamaño y SHA-256. Fuente 0.2.1 y Biblioteca viva 0.1.1 publicadas en rp-music-extensions (641d970), paquetes remotos verificados y versiones anteriores conservadas en catálogo. Ya no es entrega solo local. Resultados, commits, hashes y límites en [[29 Pruebas 0.3.2 y mejoras 0.3.3]].

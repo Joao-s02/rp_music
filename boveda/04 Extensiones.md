@@ -88,3 +88,6 @@ Inicio de integración YouTube Music y entrevista específica: [[24 YouTube Musi
 
 
 2026-10-26: trabajo local 0.3.3+12 en [[29 Pruebas 0.3.2 y mejoras 0.3.3]]: nuevo reproductor según referencia sin ecualizador (reservado a próxima extensión), listas existentes desde álbum, artistas separados por comas, historial para Anterior y acceso de fuente integrado al tema sin botón duplicado. Extensiones modificadas solo en repositorio separado; no hay publicación autorizada de 0.3.3. Consultar verificación final antes de dar funciones por comprobadas.
+
+
+2026-10-26 — publicación confirmada: [v0.3.3-alpha.1](https://github.com/Joao-s02/rp_music/releases/tag/v0.3.3-alpha.1), app 0.3.3+12, tag 6107845. Android universal/ARM64, Windows, USO/PRUEBAS/CAMBIOS y hashes: siete adjuntos públicos verificados por tamaño y SHA-256. Fuente 0.2.1 y Biblioteca viva 0.1.1 publicadas en rp-music-extensions (641d970), paquetes remotos verificados y versiones anteriores conservadas en catálogo. Ya no es entrega solo local. Resultados, commits, hashes y límites en [[29 Pruebas 0.3.2 y mejoras 0.3.3]].
