@@ -101,3 +101,9 @@ Validación final del incremento 0.2.5: 46 pruebas aprobadas, análisis limpio y
 ## Publicación autorizada de 0.2.5 — 2026-10-25
 
 El usuario solicita actualizar también escritorio y subir la nueva release a GitHub. Se prepara v0.2.5-alpha.1 preliminar con APK universal/ARM64 y Windows x64, guías, ejemplo y SHA-256. Se autoriza por este pedido el envío de fuentes y publicación; confirmar resultados y adjuntos al terminar. Se preservan versiones anteriores.
+
+## Publicación confirmada de 0.2.5 — 2026-10-25
+
+[Release v0.2.5-alpha.1](https://github.com/Joao-s02/rp_music/releases/tag/v0.2.5-alpha.1) pública como preliminar; GitHub confirmó isDraft=false e isPrerelease=true. Etiqueta sobre 4e65a619a6ebed4b869cb2404f0eee221ae8690c y fuentes enviadas a main. Siete adjuntos en estado uploaded, verificados por tamaño y SHA-256 de GitHub contra dist/0.2.5: APK universal/ARM64, Windows x64, USO.md, PRUEBAS-0.2.5.md, descubrir.json y SHA256SUMS.txt. Windows incluye las mejoras compartidas y prueba nativa aprobada, incluido borrado real. La confirmación se registra después del commit etiquetado.
+
+La publicación conserva releases anteriores y no sustituye las pruebas físicas Android, instalación Tecno, actualización entre releases desde el instalador ni retesteo con los archivos originales de Windows.

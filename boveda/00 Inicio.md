@@ -47,4 +47,4 @@ Trabajo vigente: [[18 Pruebas 0.2.3 y correcciones 0.2.4]] — teclado/búsqueda
 
 Producción audiovisual: [[19 Trailer de RP Music]] — tráiler editable de 30 segundos en la carpeta hermana rp_music_trailer.
 
-Trabajo local posterior: [[20 Pruebas 0.2.4 y mejoras 0.2.5]] — informe móvil, reproductor completo, carátula en notificación, Ajustes y borrado confirmado.
+Versión vigente publicada: [[20 Pruebas 0.2.4 y mejoras 0.2.5]] — v0.2.5-alpha.1 para Android y Windows, reproductor completo, carátula en notificación, Ajustes y borrado confirmado; adjuntos verificados.

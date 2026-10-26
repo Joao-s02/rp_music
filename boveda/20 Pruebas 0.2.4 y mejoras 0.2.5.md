@@ -1,6 +1,6 @@
 ---
 tipo: pruebas-y-mejoras
-estado: implementacion-local
+estado: publicado-con-validacion-local
 actualizado: 2026-10-25
 ---
 # Pruebas 0.2.4 y mejoras 0.2.5
@@ -38,3 +38,9 @@ El usuario solicita actualizar también escritorio y subir la nueva release a Gi
 Windows release recompilado en 0.2.5+7. Prueba nativa con WAV sintéticos aprobada: cambios repetidos, volumen, bandeja y borrado real de una pista cargada tras detenerla, con limpieza de favoritos/listas/cola y conservación de los otros archivos. ZIP completo verificado con EXE, motor, backend, data, fuentes, icono, guías y ejemplo, sin integration_test.
 
 Dist/0.2.5 contiene APK universal de 57 067 540 bytes, APK ARM64 de 21 340 769 bytes y ZIP Windows de 14 210 778 bytes. Ambos APK 0.2.5+7, firma v2 válida del mismo certificado que 0.2.4, recursos multimedia presentes y alineación ZIP 16 KB aprobada. Universal ARM32/ARM64/x64; variante solo ARM64. Guías de uso/pruebas renovadas y SHA256SUMS generado. La validación física de Android y el recorrido público de actualización quedan pendientes.
+
+## Publicación confirmada de 0.2.5 — 2026-10-25
+
+[Release v0.2.5-alpha.1](https://github.com/Joao-s02/rp_music/releases/tag/v0.2.5-alpha.1) pública como preliminar; GitHub confirmó isDraft=false e isPrerelease=true. Etiqueta sobre 4e65a619a6ebed4b869cb2404f0eee221ae8690c y fuentes enviadas a main. Siete adjuntos en estado uploaded, verificados por tamaño y SHA-256 de GitHub contra dist/0.2.5: APK universal/ARM64, Windows x64, USO.md, PRUEBAS-0.2.5.md, descubrir.json y SHA256SUMS.txt. Windows incluye las mejoras compartidas y prueba nativa aprobada, incluido borrado real. La confirmación se registra después del commit etiquetado.
+
+La publicación conserva releases anteriores y no sustituye las pruebas físicas Android, instalación Tecno, actualización entre releases desde el instalador ni retesteo con los archivos originales de Windows.
