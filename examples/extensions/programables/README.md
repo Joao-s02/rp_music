@@ -1,6 +1,6 @@
 # Primeros programas de RP Music — API 2
 
-Requieren RP Music 0.3.0+9 o superior (API 2). La release 0.2.6 solo admite API 1.
+Biblioteca viva y Pulso nocturno requieren RP Music 0.3.0+9 o superior, ahora publicado. YouTube Music conserva su requisito separado de 0.3.1 Android.
 
 - **Biblioteca viva**: filtros ejecutados por código Dart, resultados, listas manuales/automáticas y preferencias propias. Carátulas propias/mosaico se eligen desde Listas en la app.
 - **Pulso nocturno**: nivel avanzado, disposición de controles antes de carátula y aleatorio que busca otro artista.
@@ -10,3 +10,6 @@ Instalables desde Extensiones → Explorar repositorio → Consultar, usando htt
 Fuentes `.dart` y paquetes `.rpmx` se conservan juntos. Para regenerar: `python tools/empaquetar_extension.py examples/extensions/programables/biblioteca-viva.rpmx`.
 
 Contrato, límites y pruebas en [SDK API 2](../../../docs/EXTENSIONES-API-2.md).
+
+
+- **YouTube Music experimental (0.1.0)**: requiere anfitrión **0.3.1+ Android**, capacidad source y permiso network.youtube además de reproducción. Busca canciones y reproduce audio sin cuenta mediante el adaptador del anfitrión. Código youtube_music.dart y paquete youtube-music.rpmx. Listas/favoritos/historial de la fuente y Windows pendientes; no incluir como asset de producción.

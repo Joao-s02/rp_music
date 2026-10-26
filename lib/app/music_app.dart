@@ -7,6 +7,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 
 import '../domain/track.dart';
+import '../sources/youtube_music_api.dart';
 import '../domain/track_sort.dart';
 import '../extensions/program_library_view.dart';
 import '../extensions/program_manager_view.dart';
@@ -930,7 +931,7 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
     if (name != null) await library.addPlaylist(name);
   }
 
-  Widget extensionView() => ProgramManagerView(library: library);
+  Widget extensionView() => ProgramManagerView(library: library, audio: audio);
 
   Future<void> deleteTrack(Track track) async {
     final confirmed = await showDialog<bool>(
@@ -1283,7 +1284,9 @@ class _PlayerPanelState extends State<PlayerPanel> {
                     ),
                     IconButton(
                       tooltip: 'Favorito',
-                      onPressed: track == null
+                      onPressed:
+                          track == null ||
+                              track.id.startsWith('rpmusic-youtube:')
                           ? null
                           : () => library.toggleFavorite(track.id),
                       icon: Icon(
@@ -1641,7 +1644,9 @@ class _ArtworkState extends State<Artwork> {
   }
 
   void load() {
-    image = widget.id == null ? null : widget.library.files.artwork(widget.id!);
+    image = widget.id == null || YoutubeMusicApi.identity(widget.id!) != null
+        ? null
+        : widget.library.files.artwork(widget.id!);
   }
 
   @override
@@ -1650,21 +1655,36 @@ class _ArtworkState extends State<Artwork> {
     height: widget.size,
     child: ClipRRect(
       borderRadius: BorderRadius.circular(8),
-      child: FutureBuilder(
-        future: image,
-        builder: (context, snapshot) => snapshot.data == null
-            ? const ColoredBox(
-                color: Color(0xff272a32),
-                child: Icon(Icons.album_outlined),
-              )
-            : Image.memory(
-                snapshot.data!,
-                fit: BoxFit.cover,
-                cacheWidth: widget.size > 100 ? 600 : 128,
-                errorBuilder: (_, error, stack) =>
-                    const Icon(Icons.album_outlined),
-              ),
-      ),
+      child:
+          YoutubeMusicApi.identity(widget.id ?? '') != null &&
+              widget.library.programs?.allowed(
+                    YoutubeMusicApi.identity(widget.id!)![1],
+                    'network.youtube',
+                  ) ==
+                  true
+          ? Image.network(
+              YoutubeMusicApi.artwork(YoutubeMusicApi.identity(widget.id!)![2])
+                  .toString(),
+              fit: BoxFit.cover,
+              cacheWidth: widget.size > 100 ? 600 : 128,
+              errorBuilder: (_, error, stack) =>
+                  const Icon(Icons.album_outlined),
+            )
+          : FutureBuilder(
+              future: image,
+              builder: (context, snapshot) => snapshot.data == null
+                  ? const ColoredBox(
+                      color: Color(0xff272a32),
+                      child: Icon(Icons.album_outlined),
+                    )
+                  : Image.memory(
+                      snapshot.data!,
+                      fit: BoxFit.cover,
+                      cacheWidth: widget.size > 100 ? 600 : 128,
+                      errorBuilder: (_, error, stack) =>
+                          const Icon(Icons.album_outlined),
+                    ),
+            ),
     ),
   );
 }

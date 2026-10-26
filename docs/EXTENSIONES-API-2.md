@@ -85,3 +85,12 @@ Fuentes del prototipo: [dart_eval](https://pub.dev/packages/dart_eval), [API Run
 ```
 
 Máximo 100 entradas y 128 KB de índice/paquete. Rutas relativas sin `..`, ni URL externas. id, name, version y description deben coincidir exactamente con el paquete. Hash calculado sobre bytes exactos; usar `*.rpmx -text` en .gitattributes para evitar alteración al publicar. Al actualizar: regenerar paquete, incrementar versión, actualizar índice y hash en el mismo commit. Instalación y actualización requieren elección y revisión de permisos. No se promete autenticidad de autor mediante SHA-256. Los paquetes ya no son assets de producción; los ejemplos locales siguen disponibles para pruebas y desarrollo.
+
+
+## Capacidad source y network.youtube · anfitrión 0.3.1+
+
+Primera fuente online, solo Android. Permisos requeridos `network.youtube` y `playback.control`; capacidad `source`. El programa recibe `event: source` y `query` (sin metadatos privados si no tiene library.read). Devuelve `{ "provider": "youtube-music", "query": "texto" }`. El anfitrión valida ambos campos, ejecuta una búsqueda acotada de canciones y resuelve únicamente audio HTTPS de la fuente elegida. No es HTTP genérico ni importación de dependencias dentro del intérprete.
+
+Instalación, dueño de source y permisos se comprueban antes/después de operaciones; desactivar/cambiar fuente/revocar detiene la reproducción y descarta respuestas pendientes. Identidad `rpmusic-youtube:<extension>:<videoId>` separada de una URL temporal, sin acceso de borrado al archivo musical. API 2 anterior permanece válida; los anfitriones 0.3.0 rechazan source/network.youtube como capacidades desconocidas. Instalar este paquete solo en 0.3.1+ Android.
+
+Los modelos iniciales no agregan estas pistas a la biblioteca local ni ofrecen aún listas/favoritos/historial online. Ejemplo de código y paquete: `examples/extensions/programables/youtube_music.dart` y `youtube-music.rpmx`.
