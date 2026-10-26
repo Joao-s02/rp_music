@@ -61,7 +61,13 @@ class SourceSpec {
       }
       label = nav['label'] as String;
       icon = nav['icon'] as String? ?? 'cloud';
-      if (!['cloud', 'music', 'playBadge', 'headphones'].contains(icon)) {
+      if (![
+        'cloud',
+        'music',
+        'playBadge',
+        'playOutline',
+        'headphones',
+      ].contains(icon)) {
         throw const FormatException('Icono no compatible.');
       }
       final hex = nav['color'];

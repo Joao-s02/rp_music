@@ -8,7 +8,7 @@ import 'package:rp_music/updates/update_controller.dart';
 import 'package:rp_music/data/local_store.dart';
 
 Map<String, dynamic> fixture({
-  String tag = 'v0.3.3-alpha.1',
+  String tag = 'v0.3.4-alpha.1',
   bool preview = true,
   String? digest,
   int size = 4,
@@ -172,7 +172,7 @@ void main() {
         arm64: true,
         previews: true,
         android: true,
-        skipped: 'v0.3.3-alpha.1',
+        skipped: 'v0.3.4-alpha.1',
       ),
       isNull,
     );

@@ -369,7 +369,10 @@ class _ProgramManagerViewState extends State<ProgramManagerView> {
                     Wrap(
                       spacing: 8,
                       children: [
-                        if (item.package.slots.contains('source'))
+                        if (item.package.slots.contains('source') &&
+                            (item.package.sourceSpec?.navigationLabel == null ||
+                                manager.owner('source')?.package.id !=
+                                    item.package.id))
                           TextButton.icon(
                             icon: const Icon(Icons.travel_explore),
                             label: Text(

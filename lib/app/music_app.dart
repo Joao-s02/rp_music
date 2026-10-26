@@ -1,4 +1,5 @@
 import 'scrolling_title.dart';
+import 'expanded_player.dart';
 import 'album_detail_view.dart';
 
 import 'dart:async';
@@ -523,27 +524,9 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
         library: library,
         onBack: () => setState(() => group = null),
         menu: albumTrackMenu,
-        onSave: () async {
-          final name = await showDialog<String>(
-            context: context,
-            builder: (_) => const _PlaylistDialog(),
-          );
-          if (name == null) return;
-          try {
-            await library.createPlaylistWithTracks(
-              name,
-              filtered
-                  .where((t) => groupKey(t) == group)
-                  .map((t) => t.id)
-                  .toList(),
-            );
-          } on FormatException catch (e) {
-            if (mounted) {
-              ScaffoldMessenger.of(context)
-                  .showSnackBar(SnackBar(content: Text(e.message.toString())));
-            }
-          }
-        },
+        onSave: () => addAlbumToPlaylist(
+          filtered.where((t) => groupKey(t) == group).toList(),
+        ),
       );
     }
     return Column(
@@ -633,6 +616,84 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
     );
   }
 
+  Future<void> addAlbumToPlaylist(List<Track> album) async {
+    final ids = album.map((t) => t.id).toList();
+    final names =
+        library.playlists.keys
+            .where((name) => !library.automaticPlaylist(name))
+            .toList()
+          ..sort();
+    (String?, bool)? target;
+    if (names.isNotEmpty) {
+      target = await showModalBottomSheet<(String?, bool)>(
+        context: context,
+        showDragHandle: true,
+        builder: (context) => SafeArea(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.sizeOf(context).height * 0.65,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Text(
+                    'Añadir álbum a una lista',
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                ),
+                Flexible(
+                  child: ListView(
+                    shrinkWrap: true,
+                    children: [
+                      for (final name in names)
+                        ListTile(
+                          leading: const Icon(Icons.playlist_add),
+                          title: Text(name),
+                          onTap: () => Navigator.pop(context, (name, false)),
+                        ),
+                    ],
+                  ),
+                ),
+                ListTile(
+                  leading: const Icon(Icons.add),
+                  title: const Text('Crear nueva lista'),
+                  onTap: () => Navigator.pop(context, (null, true)),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+      if (target == null || !mounted) return;
+    } else {
+      target = (null, true);
+    }
+    try {
+      if (target.$2) {
+        final name = await showDialog<String>(
+          context: context,
+          builder: (_) => const _PlaylistDialog(),
+        );
+        if (name == null) return;
+        await library.createPlaylistWithTracks(name, ids);
+      } else {
+        await library.addTracksToPlaylist(target.$1!, ids);
+      }
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Álbum añadido a la lista')),
+        );
+      }
+    } on FormatException catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(error.message.toString())));
+      }
+    }
+  }
+
   Widget albumTrackMenu(Track track) => track.sourceId != null
       ? const SizedBox(width: 8)
       : PopupMenuButton<String>(
@@ -683,7 +744,13 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
           ),
           Expanded(
             child: trackList(
-              tracks.where((t) => groupKey(t) == group).toList(),
+              tracks
+                  .where(
+                    (t) => view == 2
+                        ? t.artists.contains(group)
+                        : groupKey(t) == group,
+                  )
+                  .toList(),
             ),
           ),
         ],
@@ -691,7 +758,9 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
     }
     final groups = <String, List<Track>>{};
     for (final track in tracks) {
-      groups.putIfAbsent(groupKey(track), () => []).add(track);
+      for (final key in view == 2 ? track.artists : [groupKey(track)]) {
+        groups.putIfAbsent(key, () => []).add(track);
+      }
     }
     final keys = groups.keys.toList()
       ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
@@ -1315,21 +1384,46 @@ class _PlayerPanelState extends State<PlayerPanel> {
       fullscreenDialog: true,
       builder: (context) => Scaffold(
         appBar: AppBar(
-          title: const Text('Ahora suena'),
+          title: Row(
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Image.asset(
+                  'assets/branding/rp-music-variant-a.png',
+                  width: 32,
+                  height: 32,
+                ),
+              ),
+              const SizedBox(width: 12),
+              const Expanded(
+                child: Text(
+                  'Ahora suena',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
           leading: IconButton(
             tooltip: 'Cerrar reproductor',
             onPressed: () => Navigator.pop(context),
-            icon: const Icon(Icons.keyboard_arrow_down),
+            icon: const Icon(Icons.arrow_back),
           ),
         ),
-        body: SingleChildScrollView(
-          padding: const EdgeInsets.all(20),
-          child: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 520),
-              child: library.programs?.owner('player') != null
-                  ? ProgramPlayerView(audio: audio, library: library)
-                  : PlayerPanel(audio: audio, library: library, expanded: true),
+        body: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(20),
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 520),
+                child: library.programs?.owner('player') != null
+                    ? ProgramPlayerView(audio: audio, library: library)
+                    : PlayerPanel(
+                        audio: audio,
+                        library: library,
+                        expanded: true,
+                      ),
+              ),
             ),
           ),
         ),
@@ -1342,6 +1436,13 @@ class _PlayerPanelState extends State<PlayerPanel> {
     stream: audio.mediaItem,
     builder: (context, item) {
       final track = item.data;
+      if (widget.expanded) {
+        return ExpandedPlayer(
+          audio: audio,
+          library: library,
+          artworkFirst: widget.artworkFirst,
+        );
+      }
       final desktop = MediaQuery.sizeOf(context).width >= 850;
       if (!desktop && !widget.expanded) {
         return Material(

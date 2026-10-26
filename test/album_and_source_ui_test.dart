@@ -92,7 +92,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(audio.tracks.length, 2);
       expect(audio.shuffle, isFalse);
-      await tester.tap(find.byTooltip('Guardar álbum como lista'));
+      await tester.tap(find.byTooltip('Añadir álbum a una lista'));
       expect(saved, isTrue);
       await tester.ensureVisible(find.byKey(const ValueKey('album-queue')));
       await tester.tap(find.byKey(const ValueKey('album-queue')));

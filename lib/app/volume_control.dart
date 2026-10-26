@@ -4,7 +4,13 @@ import '../playback/music_handler.dart';
 import 'library_controller.dart';
 
 class VolumeControl extends StatefulWidget {
-  const VolumeControl({super.key, required this.audio, required this.library});
+  const VolumeControl({
+    super.key,
+    required this.audio,
+    required this.library,
+    this.showPercentage = false,
+  });
+  final bool showPercentage;
   final MusicHandler audio;
   final LibraryController library;
   @override
@@ -23,6 +29,9 @@ class _VolumeControlState extends State<VolumeControl> {
         children: [
           IconButton(
             tooltip: volume == 0 ? 'Activar sonido' : 'Silenciar',
+            color: widget.showPercentage
+                ? Theme.of(context).colorScheme.primary
+                : null,
             icon: Icon(volume == 0 ? Icons.volume_off : Icons.volume_up),
             onPressed: () {
               if (volume > 0) _lastAudible = volume;
@@ -41,6 +50,18 @@ class _VolumeControlState extends State<VolumeControl> {
               onChangeEnd: widget.library.setVolume,
             ),
           ),
+          if (widget.showPercentage)
+            SizedBox(
+              width: 56,
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.centerRight,
+                child: Text(
+                  '${(volume * 100).round()}%',
+                  textAlign: TextAlign.end,
+                ),
+              ),
+            ),
         ],
       );
     },
