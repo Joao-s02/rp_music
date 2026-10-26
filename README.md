@@ -2,7 +2,7 @@
 
 Reproductor de música local construido en Flutter para Android y Windows. Escucha tus archivos sin conexión y sin cuentas, con biblioteca, favoritos y listas de reproducción.
 
-**Versión: [0.2.6-alpha.1](https://github.com/Joao-s02/rp_music/releases/tag/v0.2.6-alpha.1)** (aplicación `0.2.6+8`). Sigue en desarrollo: las funciones disponibles y los pendientes se detallan a continuación. Consulta la [guía de pruebas de 0.2.6](docs/PRUEBAS-0.2.6.md).
+**Versión publicada: [0.2.6-alpha.1](https://github.com/Joao-s02/rp_music/releases/tag/v0.2.6-alpha.1)** (aplicación `0.2.6+8`). Sigue en desarrollo: las funciones disponibles y los pendientes se detallan a continuación. Consulta la [guía de pruebas de 0.2.6](docs/PRUEBAS-0.2.6.md).
 
 ## Novedades de 0.2.6
 

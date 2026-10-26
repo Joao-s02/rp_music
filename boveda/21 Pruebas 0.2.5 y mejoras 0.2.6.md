@@ -1,6 +1,6 @@
 ---
 tipo: pruebas-y-mejoras
-estado: implementado-con-validacion-local
+estado: publicado-con-validacion-local
 actualizado: 2026-10-25
 ---
 # Pruebas 0.2.5 y mejoras 0.2.6
@@ -55,3 +55,7 @@ Relaciones: [[20 Pruebas 0.2.4 y mejoras 0.2.5]], [[17 Actualizaciones opcionale
 ## Publicación 0.2.6 autorizada — 2026-10-25
 
 El usuario solicita publicar 0.2.6 antes de comenzar la implementación programable de extensiones. Se prepara v0.2.6-alpha.1 con APK universal/ARM64, Windows x64, guías, ejemplo y hashes. Fuentes de 0.2.6 y requisitos de la entrevista se incluyen; el código nuevo de extensiones será un incremento posterior separado. Confirmar publicación/adjuntos al terminar.
+
+## Publicación 0.2.6 confirmada — 2026-10-25
+
+[Release v0.2.6-alpha.1](https://github.com/Joao-s02/rp_music/releases/tag/v0.2.6-alpha.1) pública como preliminar, isDraft=false/isPrerelease=true. Etiqueta sobre 2aa8648d7fe274e5b177ec773456613d6c52215f; fuentes enviadas a main. Siete adjuntos uploaded y verificados por tamaño/digest SHA-256 de GitHub: APK universal/ARM64, Windows, guías, ejemplo y hashes. Las guías se adaptaron para distribución y se reempaquetó el ZIP conservando binarios. No se alteraron releases anteriores. La publicación no completa las pruebas físicas/instalador pendientes. Implementación programable de extensiones autorizada a continuación como trabajo posterior.

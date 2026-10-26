@@ -49,4 +49,4 @@ Producción audiovisual: [[19 Trailer de RP Music]] — tráiler editable de 30 
 
 Versión vigente publicada: [[20 Pruebas 0.2.4 y mejoras 0.2.5]] — v0.2.5-alpha.1 para Android y Windows, reproductor completo, carátula en notificación, Ajustes y borrado confirmado; adjuntos verificados.
 
-Trabajo local: [[21 Pruebas 0.2.5 y mejoras 0.2.6]] — ventana de actualización, escritura guiada, widget Android y orden. Extensiones: [[22 Extensiones - alcance del primer sistema]] — entrevista confirmada; runtime pendiente.
+Versión vigente publicada: [[21 Pruebas 0.2.5 y mejoras 0.2.6]] — ventana de actualización, escritura guiada, widget Android y orden. Extensiones: [[22 Extensiones - alcance del primer sistema]] — entrevista confirmada; runtime pendiente.
