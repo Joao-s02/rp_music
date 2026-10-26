@@ -117,3 +117,6 @@ Compilaciones previas conservadas; no se publica release principal ni ZIP Window
 
 
 2026-10-26: usuario valida 0.3.1 (búsqueda/audio rápidos, sin bugs ni lag observados) y autoriza nueva release. Diseño reportado queda para próxima versión. Comunicación pública: soporte de extensiones para fuentes de música en la nube, con adaptador inicial Android; no prometer cualquier proveedor ni ocultar límites. Se publica el mismo APK validado; Windows mantiene 0.3.0. Seguimiento en [[26 Release 0.3.1]].
+
+
+Publicación vigente confirmada: 0.3.1-alpha.1 Android, con cinco adjuntos y README remoto verificados. Mismo APK validado por el usuario; diseño pendiente para siguiente versión. Windows mantiene 0.3.0. Ver [[26 Release 0.3.1]].
