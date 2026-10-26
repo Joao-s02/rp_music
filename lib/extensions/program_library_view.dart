@@ -188,8 +188,11 @@ class _ProgramLibraryViewState extends State<ProgramLibraryView> {
   }
 
   Widget select(String field, String label, Iterable<String> source) {
-    final values = source.toSet().toList()..sort();
     final value = filters[field] as String;
+    final values = {
+      ...source.where((item) => item.isNotEmpty),
+      if (value.isNotEmpty) value,
+    }.toList()..sort();
     return DropdownButtonFormField<String>(
       initialValue: values.contains(value) ? value : '',
       key: ValueKey('$field:$value:${values.length}'),
@@ -245,7 +248,7 @@ class _ProgramLibraryViewState extends State<ProgramLibraryView> {
                     select(
                       'artist',
                       'Artista',
-                      library.tracks.map((track) => track.artist),
+                      library.tracks.expand((track) => track.artists),
                     ),
                     const SizedBox(height: 12),
                     select(

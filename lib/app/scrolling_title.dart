@@ -2,9 +2,15 @@ import 'package:flutter/material.dart';
 
 /// Scroll only overflowing titles, respecting the system's reduced motion setting.
 class ScrollingTitle extends StatefulWidget {
-  const ScrollingTitle({super.key, required this.text, this.style});
+  const ScrollingTitle({
+    super.key,
+    required this.text,
+    this.style,
+    this.textAlign = TextAlign.center,
+  });
   final String text;
   final TextStyle? style;
+  final TextAlign textAlign;
   @override
   State<ScrollingTitle> createState() => _ScrollingTitleState();
 }
@@ -57,7 +63,7 @@ class _ScrollingTitleState extends State<ScrollingTitle>
           style: widget.style,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          textAlign: TextAlign.center,
+          textAlign: widget.textAlign,
         );
       }
       return Semantics(

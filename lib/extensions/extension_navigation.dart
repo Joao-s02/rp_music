@@ -52,6 +52,7 @@ class ExtensionNavigationIcon extends StatelessWidget {
       );
     }
     return Icon(switch (entry.icon) {
+      'playOutline' => Icons.smart_display_outlined,
       'music' => Icons.music_note_outlined,
       'headphones' => Icons.headphones_outlined,
       _ => Icons.cloud_outlined,

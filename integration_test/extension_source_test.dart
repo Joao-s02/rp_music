@@ -14,6 +14,20 @@ import 'package:rp_music/playback/playback_config.dart';
 import 'package:rp_music/sources/extension_source_broker.dart';
 import 'package:rp_music/sources/extension_source_service.dart';
 
+Future<void> waitForPlayback(MusicHandler audio, Duration minimum) async {
+  final deadline = DateTime.now().add(const Duration(seconds: 25));
+  while (DateTime.now().isBefore(deadline) &&
+      (!audio.player.playing || audio.player.position <= minimum)) {
+    await Future<void>.delayed(const Duration(milliseconds: 250));
+  }
+  expect(audio.player.playing, isTrue);
+  expect(
+    audio.player.position,
+    greaterThan(minimum),
+    reason: 'El audio debe avanzar tras la carga inicial.',
+  );
+}
+
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
   testWidgets('fuente externa instalada, audio y retirada del permiso', (
@@ -53,9 +67,7 @@ void main() {
         );
         expect(tracks.length, greaterThanOrEqualTo(2));
         await audio.select(tracks, 0);
-        await Future<void>.delayed(const Duration(seconds: 5));
-        expect(audio.player.playing, isTrue);
-        expect(audio.player.position, greaterThan(const Duration(seconds: 2)));
+        await waitForPlayback(audio, const Duration(seconds: 2));
         expect(
           audio.mediaItem.value!.extras!['sourceName'],
           package.sourceSpec!.name,
@@ -64,10 +76,17 @@ void main() {
         expect(audio.player.playing, isFalse);
         await audio.seek(const Duration(seconds: 10));
         unawaited(audio.play());
-        await Future<void>.delayed(const Duration(seconds: 4));
-        expect(audio.player.position, greaterThan(const Duration(seconds: 10)));
+        await waitForPlayback(audio, const Duration(seconds: 10));
         await audio.skipToNext();
-        await Future<void>.delayed(const Duration(seconds: 5));
+        await waitForPlayback(audio, const Duration(seconds: 2));
+        expect(audio.index, 1);
+        expect(audio.player.playing, isTrue);
+        await audio.skipToPrevious();
+        await waitForPlayback(audio, const Duration(seconds: 2));
+        expect(audio.index, 0);
+        expect(audio.player.playing, isTrue);
+        await audio.skipToNext();
+        await waitForPlayback(audio, const Duration(seconds: 2));
         expect(audio.index, 1);
         expect(audio.player.playing, isTrue);
         debugPrint('RP_SOURCE_BACKGROUND_READY');

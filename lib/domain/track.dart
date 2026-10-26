@@ -23,6 +23,37 @@ class Track {
   final int modifiedMs;
   final bool metadataLoaded;
   final String? sourceId, sourceName, artwork;
+  List<String> get artists {
+    final seen = <String>{};
+    final names = artist
+        .split(',')
+        .map((name) => name.trim())
+        .where((name) => name.isNotEmpty && seen.add(name.toLowerCase()))
+        .toList();
+    return names.isEmpty ? ['Artista desconocido'] : names;
+  }
+
+  String get format {
+    if (sourceId != null) return 'En línea';
+    String path = id;
+    try {
+      path = Uri.decodeComponent(id);
+    } catch (_) {}
+    final extension = path.split('.').last.toUpperCase();
+    return [
+          'FLAC',
+          'MP3',
+          'M4A',
+          'MP4',
+          'WAV',
+          'OPUS',
+          'OGG',
+          'AAC',
+        ].contains(extension)
+        ? extension
+        : 'Audio';
+  }
+
   factory Track.fromJson(Map<String, dynamic> json) => Track(
     id: json['id'] as String,
     title: json['title'] as String,

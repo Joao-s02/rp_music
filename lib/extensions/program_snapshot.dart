@@ -13,6 +13,7 @@ class ProgramSnapshot {
         'id': id,
         'title': track.title,
         'artist': track.artist,
+        'artists': track.artists,
         'album': track.album,
         'folder': track.folder,
         'durationMs': track.durationMs,

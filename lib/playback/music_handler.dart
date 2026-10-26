@@ -39,6 +39,8 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
   onlineSourceLoader;
   bool Function(Track)? onlineAllowed;
   bool _online(Track track) => track.sourceId != null;
+  final List<String> _previousTracks = [], _forwardTracks = [];
+  String? _loadedTrackId;
   bool shuffle = false;
   bool repeat = false;
   MusicHandler({
@@ -175,9 +177,19 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
     int selected, {
     bool autoplay = true,
     Duration initialPosition = Duration.zero,
+    bool recordHistory = true,
   }) {
     if (_shuttingDown) return Future.value();
     if (selected < 0 || selected >= source.length) return Future.value();
+    final sameQueue =
+        source.length == tracks.length &&
+        Iterable<int>.generate(source.length)
+            .every((i) => source[i].id == tracks[i].id);
+    if (!sameQueue) {
+      _previousTracks.clear();
+      _forwardTracks.clear();
+      _loadedTrackId = null;
+    }
     tracks = List.unmodifiable(source);
     index = selected;
     final track = tracks[index];
@@ -226,6 +238,14 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
           initialPosition: initialPosition,
         );
         if (generation == _generation && !_shuttingDown) {
+          if (recordHistory &&
+              _loadedTrackId != null &&
+              _loadedTrackId != track.id) {
+            _previousTracks.add(_loadedTrackId!);
+            if (_previousTracks.length > 300) _previousTracks.removeAt(0);
+            _forwardTracks.clear();
+          }
+          _loadedTrackId = track.id;
           _loading = false;
           if (duration != null) {
             mediaItem.add(mediaItem.value!.copyWith(duration: duration));
@@ -242,7 +262,7 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
           recordEvent('Error al cargar pista: índice=$index');
           errors.add(
             _online(track)
-                ? 'No se pudo reproducir «${track.title}». Revisa la conexión y los permisos; YouTube puede rechazar esta canción.'
+                ? 'No se pudo reproducir «${track.title}». Revisa la conexión y los permisos; el servicio puede rechazar esta canción.'
                 : 'No se pudo abrir «${track.title}». Comprueba el archivo y su formato.',
           );
         }
@@ -267,6 +287,9 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
   }
 
   Future<void> removeTrack(String id) async {
+    _previousTracks.removeWhere((value) => value == id);
+    _forwardTracks.removeWhere((value) => value == id);
+    if (_loadedTrackId == id) _loadedTrackId = null;
     final current = mediaItem.value?.id;
     final remaining = tracks.where((t) => t.id != id).toList();
     if (current == id) {
@@ -366,6 +389,8 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
       'positionMs': (position ?? player.position).inMilliseconds,
       'shuffle': shuffle,
       'repeat': repeat,
+      'previous': List<String>.of(_previousTracks),
+      'forward': List<String>.of(_forwardTracks),
     };
     try {
       await sessionStore!.save(snapshot);
@@ -397,7 +422,23 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
         selected,
         autoplay: false,
         initialPosition: Duration(milliseconds: position),
+        recordHistory: false,
       );
+      final available = queue.map((t) => t.id).toSet();
+      for (final pair in [
+        (saved['previous'], _previousTracks),
+        (saved['forward'], _forwardTracks),
+      ]) {
+        if (pair.$1 is List) {
+          pair.$2.addAll(
+            (pair.$1 as List)
+                .whereType<String>()
+                .where(available.contains)
+                .take(300),
+          );
+        }
+      }
+      await saveSession();
     } catch (_) {
       errors.add('No se pudo recuperar la última sesión.');
     }
@@ -421,6 +462,14 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
   @override
   Future<void> skipToNext() async {
     if (tracks.isEmpty) return;
+    while (_forwardTracks.isNotEmpty) {
+      final id = _forwardTracks.removeLast();
+      final target = tracks.indexWhere((t) => t.id == id);
+      if (target < 0) continue;
+      if (_loadedTrackId != null) _previousTracks.add(_loadedTrackId!);
+      await select(tracks, target, recordHistory: false);
+      return;
+    }
     final generation = _generation;
     int? custom;
     if (shuffle && chooseNext != null) {
@@ -445,11 +494,19 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
   @override
   Future<void> skipToPrevious() async {
     if (tracks.isEmpty) return;
-    if (player.position.inSeconds > 3) {
-      await seek(Duration.zero);
+    while (_previousTracks.isNotEmpty) {
+      final id = _previousTracks.removeLast();
+      final target = tracks.indexWhere((t) => t.id == id);
+      if (target < 0) continue;
+      if (_loadedTrackId != null) _forwardTracks.add(_loadedTrackId!);
+      await select(tracks, target, recordHistory: false);
       return;
     }
-    await select(tracks, (index - 1 + tracks.length) % tracks.length);
+    await select(
+      tracks,
+      (index - 1 + tracks.length) % tracks.length,
+      recordHistory: false,
+    );
   }
 
   Future<void> setAppVolume(double value) =>

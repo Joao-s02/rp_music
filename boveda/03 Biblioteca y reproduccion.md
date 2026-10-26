@@ -66,3 +66,6 @@ Orden por título/artista/álbum/duración/modificación/tamaño/archivo, con di
 ## Trabajo local de extensiones 0.3.0
 
 Implementados prototipo de filtros por programa, listas automáticas y carátulas propias/mosaico, con reglas inactivas al desactivar proveedor y datos conservados. Política de aleatorio y disposición de reproductor aportadas por segundo programa avanzado. No son parte de la release 0.2.6; ver [[23 Extensiones programables - primer prototipo]].
+
+
+2026-10-26: trabajo local 0.3.3+12 en [[29 Pruebas 0.3.2 y mejoras 0.3.3]]: nuevo reproductor según referencia sin ecualizador (reservado a próxima extensión), listas existentes desde álbum, artistas separados por comas, historial para Anterior y acceso de fuente integrado al tema sin botón duplicado. Extensiones modificadas solo en repositorio separado; no hay publicación autorizada de 0.3.3. Consultar verificación final antes de dar funciones por comprobadas.

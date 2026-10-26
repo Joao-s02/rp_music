@@ -204,7 +204,7 @@ class _AlbumDetailViewState extends State<AlbumDetailView> {
                         ),
                         IconButton.filledTonal(
                           onPressed: widget.onSave,
-                          tooltip: 'Guardar álbum como lista',
+                          tooltip: 'Añadir álbum a una lista',
                           icon: const Icon(Icons.playlist_add),
                         ),
                       ],

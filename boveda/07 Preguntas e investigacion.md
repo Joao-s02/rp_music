@@ -77,3 +77,6 @@ Trabajo vigente 2026-10-26: [[24 YouTube Music - definicion e investigacion]] �
 
 
 2026-10-26: la separación del proveedor se comprueba parcialmente en el desarrollo 0.3.2: programa externo interpretado realiza búsqueda/resolución mediante HTTP genérico acotado; HTTP y prueba nativa Android aprobados. Ya no requiere cliente específico en el anfitrión para esa fuente. No resuelve Windows, cuentas ni aislamiento duro del motor; ver [[28 Pruebas 0.3.1 y mejoras 0.3.2]].
+
+
+2026-10-26: nuevo informe 0.3.2 y referencia de reproductor en [[29 Pruebas 0.3.2 y mejoras 0.3.3]]. Confirmado que ecualizador se reserva a próxima extensión, no al núcleo. Se implementan artistas por coma sin reescritura de etiquetas y navegación histórica anterior/avance; referencias a letras/temporizador/salida no son funciones implementadas por aparecer en el diseño. Validaciones automatizadas/nativas y límites en esa nota.

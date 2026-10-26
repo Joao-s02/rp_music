@@ -347,6 +347,21 @@ class LibraryController extends ChangeNotifier {
     await persist();
   }
 
+  Future<int> addTracksToPlaylist(String name, Iterable<String> ids) async {
+    if (!playlists.containsKey(name) || automaticPlaylist(name)) {
+      throw const FormatException('Elige una lista manual existente.');
+    }
+    final available = tracks.map((t) => t.id).toSet();
+    final before = playlists[name]!.length;
+    playlists[name] = {
+      ...playlists[name]!,
+      ...ids.where(available.contains),
+    }.toList();
+    await persist();
+    notifyListeners();
+    return playlists[name]!.length - before;
+  }
+
   Future<void> addToPlaylist(String name, String id) async {
     if (automaticPlaylist(name)) return;
     final list = playlists[name];

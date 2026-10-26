@@ -2,7 +2,19 @@
 
 Reproductor de música local construido en Flutter para Android y Windows. Escucha tus archivos sin conexión y sin cuentas, con biblioteca, favoritos y listas de reproducción.
 
-**Versión publicada 0.3.2-alpha.1 para Android y Windows:** [descargas y adjuntos](https://github.com/Joao-s02/rp_music/releases/tag/v0.3.2-alpha.1) · [Guía de uso](docs/USO-0.3.2.md) · [Pruebas](docs/PRUEBAS-0.3.2.md) · [Cambios](docs/CAMBIOS-0.3.2.md).
+**Versión 0.3.3-alpha.1 para Android y Windows:** [descargas y adjuntos](https://github.com/Joao-s02/rp_music/releases/tag/v0.3.3-alpha.1) · [Guía de uso](docs/USO-0.3.3.md) · [Pruebas](docs/PRUEBAS-0.3.3.md) · [Cambios](docs/CAMBIOS-0.3.3.md).
+
+## Novedades de 0.3.3
+
+- Reproductor expandido inspirado en la nueva referencia: carátula grande, título deslizante, favorito, datos reales, progreso, volumen y controles con cola. El ecualizador queda reservado a una extensión futura.
+- Añadir un álbum a una lista existente o crear una nueva, conservando contenido y sin duplicados.
+- Anterior recorre el historial de canciones; Siguiente recupera el avance visitado antes de volver al aleatorio. Historial local restaurable.
+- Artistas separados por comas aparecen en sus propios grupos, conservando la etiqueta original.
+- Acceso de fuente con icono de contorno adaptado al tema; se retira el enlace de apertura duplicado del gestor cuando ya aporta navegación.
+
+Aplicación 0.3.3+12. Distribución conjunta de Android universal/global, Android ARM64 y Windows x64 portable completo, con guías y hashes. Suite completa inicial de 86 pruebas aprobada, regresión adicional del filtro guardado comprobada y análisis sin incidencias. Recorrido nativo Android aprobado (audio real, anterior/avance y revocación, en primer plano); APK normal instalado/abierto, firma compatible y ZIP/arranque Windows verificados. Retesteo físico y escucha larga pendientes.
+
+Actualiza las extensiones desde [su repositorio](https://github.com/Joao-s02/rp-music-extensions) mediante **Extensiones → Explorar repositorio**, o importa sus archivos compatibles: fuente 0.2.1 para el icono integrado al tema y Biblioteca viva 0.1.1 para filtrar artistas colaboradores. Requieren RP Music 0.3.3; el catálogo conserva las versiones para clientes anteriores. Los paquetes se distribuyen exclusivamente en ese repositorio y no se incluyen en APK/ZIP ni en los adjuntos de la app. La fuente inicial sigue priorizando Android; Windows recibe las mejoras locales y visuales. [Resultados y límites](boveda/29%20Pruebas%200.3.2%20y%20mejoras%200.3.3.md).
 
 ## Novedades de 0.3.2
 
