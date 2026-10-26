@@ -1,6 +1,6 @@
 # Extensiones programables — API 2 / SDK experimental 0.1
 
-Motor publicado desde 0.3.0; contrato de fuentes/navegación actualizado en el desarrollo local 0.3.2+11. La API 1 declarativa continúa funcionando. No se incluyen extensiones instaladas en la app.
+Motor publicado desde 0.3.0; contrato de fuentes/navegación publicado en 0.3.2+11. La API 1 declarativa continúa funcionando. No se incluyen extensiones instaladas en la app.
 
 ## Instalar y probar
 
@@ -91,7 +91,7 @@ Máximo 100 entradas y 128 KB de índice/paquete. Rutas relativas sin `..`, ni U
 
 La fuente inicial network.youtube dependía de un cliente específico del anfitrión. En 0.3.2 se migra al paquete externo y al contrato HTTP genérico siguiente; requiere actualizar la extensión y revisar permisos. El material histórico se conserva en legacy/host-0.3.1 del repositorio de extensiones.
 
-## Fuentes y navegación · RP Music 0.3.2 local
+## Fuentes y navegación · RP Music 0.3.2
 
 Las implementaciones y sus pruebas particulares pertenecen al [repositorio de extensiones](https://github.com/Joao-s02/rp-music-extensions). El anfitrión proporciona contratos genéricos; no incorpora parsers de proveedores. Los ejemplos heredados de biblioteca/reproductor del principal siguen pendientes de migración.
 
