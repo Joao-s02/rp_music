@@ -16,7 +16,7 @@ import 'platform/android_notifications.dart';
 import 'platform/desktop_lifecycle.dart';
 import 'updates/update_controller.dart';
 import 'extensions/program_controller.dart';
-import 'sources/youtube_source_broker.dart';
+import 'sources/extension_source_broker.dart';
 import 'extensions/program_coordinator.dart';
 
 Future<void> main() async {
@@ -92,7 +92,7 @@ Future<void> main() async {
           'Se inició en modo base por un registro de extensiones dañado.';
     }
     controller.attachPrograms(programs);
-    if (Platform.isAndroid) YoutubeSourceBroker(programs, handler);
+    ExtensionSourceBroker(programs, handler);
     ProgramCoordinator(controller, programs, handler);
     controller.notifyProgramsReady();
     await handler.setAppVolume(controller.volume);

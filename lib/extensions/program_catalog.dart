@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:crypto/crypto.dart';
 
 import 'program_package.dart';
+import '../app/app_version.dart';
 
 class CatalogEntry {
   CatalogEntry(
@@ -13,9 +14,11 @@ class CatalogEntry {
     this.version,
     this.description,
     this.path,
-    this.digest,
-  );
+    this.digest, {
+    this.minAppVersion = '0.3.0',
+  });
   final String id, name, version, description, path, digest;
+  final String minAppVersion;
 
   bool offersUpdate(String installedVersion) {
     List<int>? numbers(String value) {
@@ -138,7 +141,12 @@ class ProgramCatalog {
     return parse(repo, revision, data);
   }
 
-  static ProgramCatalog parse(String repo, String branch, dynamic data) {
+  static ProgramCatalog parse(
+    String repo,
+    String branch,
+    dynamic data, {
+    String hostVersion = appVersion,
+  }) {
     if (data is! Map ||
         data['schemaVersion'] != 1 ||
         data['extensions'] is! List ||
@@ -147,8 +155,27 @@ class ProgramCatalog {
     }
     final entries = <CatalogEntry>[];
     final ids = <String>{};
-    for (final row in data['extensions']) {
-      if (row is! Map) throw const FormatException('Entrada inválida.');
+    for (final original in data['extensions']) {
+      if (original is! Map) throw const FormatException('Entrada inválida.');
+      Map row = original;
+      final variants = original['versions'] ?? [];
+      if (variants is! List || variants.length > 8) {
+        throw const FormatException('Variantes inválidas.');
+      }
+      for (final candidate in variants) {
+        if (candidate is! Map ||
+            candidate['id'] != original['id'] ||
+            candidate['version'] is! String ||
+            candidate['minAppVersion'] is! String) {
+          throw const FormatException('Variante inválida.');
+        }
+        if (versionAtLeast(hostVersion, candidate['minAppVersion']) &&
+            versionAtLeast(candidate['version'], row['version'] as String)) {
+          row = candidate;
+        }
+      }
+      final minimum = row['minAppVersion'] ?? '0.3.0';
+      if (minimum is! String || !versionAtLeast(hostVersion, minimum)) continue;
       String field(String key, int max) {
         final value = row[key];
         if (value is! String || value.isEmpty || value.length > max) {
@@ -161,7 +188,7 @@ class ProgramCatalog {
       final path = field('path', 180);
       final hash = field('sha256', 64);
       if (!ids.add(id) ||
-          !RegExp(r'^[a-zA-Z0-9_/-]+[.]rpmx$').hasMatch(path) ||
+          !RegExp(r'^[a-zA-Z0-9_./-]+[.]rpmx$').hasMatch(path) ||
           path.startsWith('/') ||
           path.split('/').any((p) => p.isEmpty || p == '.' || p == '..') ||
           !RegExp(r'^[a-f0-9]{64}$').hasMatch(hash)) {
@@ -175,6 +202,7 @@ class ProgramCatalog {
           field('description', 500),
           path,
           hash,
+          minAppVersion: minimum,
         ),
       );
     }

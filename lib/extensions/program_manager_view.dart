@@ -5,7 +5,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
 import 'program_catalog.dart';
-import '../sources/youtube_source_view.dart';
+import '../sources/extension_source_view.dart';
 import '../playback/music_handler.dart';
 
 import '../app/library_controller.dart';
@@ -61,6 +61,8 @@ class _ProgramManagerViewState extends State<ProgramManagerView> {
               ),
               const SizedBox(height: 8),
               Text(package.description),
+              if (package.sourceSpec != null)
+                Text('Dominios: ${package.sourceSpec!.domains.join(", ")}'),
               if (package.advanced)
                 const Text(
                   'Puede sustituir funciones base; no obtiene acceso general al sistema ni a tus archivos.',
@@ -371,15 +373,23 @@ class _ProgramManagerViewState extends State<ProgramManagerView> {
                           TextButton.icon(
                             icon: const Icon(Icons.travel_explore),
                             label: Text(
-                              !Platform.isAndroid
-                                  ? 'Fuente disponible en Android'
+                              item.package.sourceSpec?.platforms.contains(
+                                        Platform.operatingSystem,
+                                      ) !=
+                                      true
+                                  ? (item.package.sourceSpec == null
+                                        ? 'Actualizar extensión de fuente'
+                                        : 'Fuente no disponible en esta plataforma')
                                   : manager.owner('source')?.package.id ==
                                         item.package.id
-                                  ? 'Abrir YouTube Music'
+                                  ? 'Abrir ${item.package.sourceSpec?.name ?? 'fuente'}'
                                   : 'Elegir como fuente',
                             ),
                             onPressed:
-                                !Platform.isAndroid ||
+                                item.package.sourceSpec?.platforms.contains(
+                                          Platform.operatingSystem,
+                                        ) !=
+                                        true ||
                                     !item.enabled ||
                                     !item.authorized ||
                                     widget.audio == null ||
@@ -397,7 +407,7 @@ class _ProgramManagerViewState extends State<ProgramManagerView> {
                                     if (!mounted) return;
                                     await Navigator.of(context).push(
                                       MaterialPageRoute<void>(
-                                        builder: (_) => YoutubeSourceView(
+                                        builder: (_) => ExtensionSourceView(
                                           programs: manager,
                                           extensionId: item.package.id,
                                           audio: widget.audio!,

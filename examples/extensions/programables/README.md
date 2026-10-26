@@ -13,3 +13,6 @@ Contrato, límites y pruebas en [SDK API 2](../../../docs/EXTENSIONES-API-2.md).
 
 
 - **YouTube Music experimental (0.1.0)**: requiere anfitrión **0.3.1+ Android**, capacidad source y permiso network.youtube además de reproducción. Busca canciones y reproduce audio sin cuenta mediante el adaptador del anfitrión. Código youtube_music.dart y paquete youtube-music.rpmx. Listas/favoritos/historial de la fuente y Windows pendientes; no incluir como asset de producción.
+
+
+Fuentes de música: su implementación y paquetes se mantienen exclusivamente en https://github.com/Joao-s02/rp-music-extensions . El material específico de la fuente inicial se migró allí en el desarrollo 0.3.2. Estos prototipos heredados de biblioteca/reproductor aún están pendientes de migración; no añadir extensiones nuevas a esta carpeta.

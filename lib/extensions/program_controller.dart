@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 
 import '../data/local_store.dart';
+import '../app/app_version.dart';
 import 'program_package.dart';
 import 'program_runtime.dart';
 
@@ -94,6 +95,11 @@ class ProgramController extends ChangeNotifier {
     Set<String> grants, {
     bool enable = true,
   }) async {
+    if (!versionAtLeast(appVersion, package.minAppVersion)) {
+      throw FormatException(
+        'Requiere RP Music ${package.minAppVersion} o posterior.',
+      );
+    }
     if (busy) {
       throw const FormatException('Espera a que termine la extensión activa.');
     }
@@ -249,10 +255,12 @@ class ProgramController extends ChangeNotifier {
       return result;
     } catch (error) {
       item.failures++;
-      item.error = error.toString().substring(
-        0,
-        error.toString().length.clamp(0, 700),
-      );
+      item.error = event == 'source'
+          ? 'La fuente no pudo procesar la respuesta. Revisa su compatibilidad.'
+          : error.toString().substring(
+              0,
+              error.toString().length.clamp(0, 700),
+            );
       message = 'Falló ${item.package.name}. Se conserva la base.';
       if (item.failures >= 3) item.enabled = false;
       return null;

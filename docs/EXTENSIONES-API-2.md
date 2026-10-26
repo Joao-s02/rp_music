@@ -1,10 +1,10 @@
 # Extensiones programables — API 2 / SDK experimental 0.1
 
-Disponible en el trabajo local 0.3.0+9. La release publicada 0.2.6 no contiene este motor. La API 1 (`descubrir.json`) continúa funcionando.
+Motor publicado desde 0.3.0; contrato de fuentes/navegación actualizado en el desarrollo local 0.3.2+11. La API 1 declarativa continúa funcionando. No se incluyen extensiones instaladas en la app.
 
-## Probar sin preparar archivos
+## Instalar y probar
 
-En la compilación 0.3.0, abre Extensiones y pulsa **Instalar Biblioteca viva**. Revisa sus permisos, marca los que aceptes y pulsa Aceptar y activar. Biblioteca mostrará la pantalla aportada por el paquete. Abre Filtros combinados, cambia artista/álbum/carpeta/duración/favoritos y usa Reproducir resultados, Guardar lista o Crear lista automática. La búsqueda de la cabecera se incorpora al filtro.
+Abre Extensiones → Explorar repositorio e introduce https://github.com/Joao-s02/rp-music-extensions ; consulta el catálogo y elige **Biblioteca viva**. También puedes importar su archivo .rpmx. Revisa sus permisos, marca los que aceptes y pulsa Aceptar y activar. Biblioteca mostrará la pantalla aportada por el paquete. Abre Filtros combinados, cambia artista/álbum/carpeta/duración/favoritos y usa Reproducir resultados, Guardar lista o Crear lista automática. La búsqueda de la cabecera se incorpora al filtro.
 
 En Listas, abre la lista y pulsa Cambiar carátula: puedes elegir una imagen propia (hasta 8 MB, normalizada a PNG de 512×512 en datos privados de la app) o el mosaico automático de hasta cuatro canciones. Las listas automáticas se recalculan cuando cambia el catálogo o los favoritos. Si desactivas su extensión, mantienen definición, carátula y última composición; no siguen ejecutándose y se identifican como inactivas.
 
@@ -31,7 +31,7 @@ Campos:
 | capabilities | library, player, shuffle y/o lists. |
 | source | Código Dart de hasta 64 KB UTF-8. |
 
-Sustituir player/shuffle requiere level=advanced y behavior.override además de los permisos de reproducción. El nivel avanzado no concede acceso general al sistema. Una actualización de paquete exige importación y revisión explícita; si no compila se conserva la versión anterior. No hay actualización silenciosa ni catálogo remoto. Máximo inicial de 16 programas instalados.
+Sustituir player/shuffle requiere level=advanced y behavior.override además de los permisos de reproducción. El nivel avanzado no concede acceso general al sistema. Una actualización de paquete exige importación y revisión explícita; si no compila se conserva la versión anterior. No hay actualización silenciosa. El catálogo remoto permite elegir cada descarga. Máximo inicial de 16 programas instalados.
 
 ## Permisos disponibles
 
@@ -41,7 +41,7 @@ Sustituir player/shuffle requiere level=advanced y behavior.override además de 
 - `storage.private`: recibir y devolver preferencias JSON propias de hasta 64 KB.
 - `behavior.override`: reemplazar las funciones avanzadas declaradas y elegidas por el usuario.
 
-Internet, modificación de archivos musicales, procesos, canales de plataforma y código nativo **no están expuestos** en este SDK. Un paquete que pida un permiso desconocido se rechaza; no se muestra un permiso sin efecto. Incorporarlos requiere contratos nuevos, pruebas y consentimiento separado.
+La modificación de archivos musicales, procesos, canales de plataforma y código nativo **no están expuestos**. Desde 0.3.2 hay HTTP acotado para fuentes con consentimiento explícito. Un paquete que pida un permiso desconocido se rechaza; no se muestra un permiso sin efecto. Incorporarlos requiere contratos nuevos, pruebas y consentimiento separado.
 
 ## Función Dart
 
@@ -59,10 +59,10 @@ Entrada de player: título/artista/álbum actuales y estado de reproducción. Sa
 
 ## Preparar un paquete propio
 
-Edita el `.dart` del ejemplo y regenera su envoltorio:
+Desarrolla la fuente en el repositorio de extensiones y regenera su envoltorio allí; el empaquetador genérico del anfitrión acepta una ruta externa:
 
 ```powershell
-python tools/empaquetar_extension.py examples/extensions/programables/biblioteca-viva.rpmx
+python tools/empaquetar_extension.py RUTA_DEL_REPOSITORIO_DE_EXTENSIONES/biblioteca-viva.rpmx
 ```
 
 El archivo de fuente correspondiente usa guiones bajos (`biblioteca_viva.dart`). Editar la fuente sin regenerar el paquete no cambia el archivo instalable. Los archivos generados se comprueban contra su fuente normalizando saltos de línea Windows/Linux.
@@ -87,10 +87,20 @@ Fuentes del prototipo: [dart_eval](https://pub.dev/packages/dart_eval), [API Run
 Máximo 100 entradas y 128 KB de índice/paquete. Rutas relativas sin `..`, ni URL externas. id, name, version y description deben coincidir exactamente con el paquete. Hash calculado sobre bytes exactos; usar `*.rpmx -text` en .gitattributes para evitar alteración al publicar. Al actualizar: regenerar paquete, incrementar versión, actualizar índice y hash en el mismo commit. Instalación y actualización requieren elección y revisión de permisos. No se promete autenticidad de autor mediante SHA-256. Los paquetes ya no son assets de producción; los ejemplos locales siguen disponibles para pruebas y desarrollo.
 
 
-## Capacidad source y network.youtube · anfitrión 0.3.1+
+## Antecedente 0.3.1
 
-Primera fuente online, solo Android. Permisos requeridos `network.youtube` y `playback.control`; capacidad `source`. El programa recibe `event: source` y `query` (sin metadatos privados si no tiene library.read). Devuelve `{ "provider": "youtube-music", "query": "texto" }`. El anfitrión valida ambos campos, ejecuta una búsqueda acotada de canciones y resuelve únicamente audio HTTPS de la fuente elegida. No es HTTP genérico ni importación de dependencias dentro del intérprete.
+La fuente inicial network.youtube dependía de un cliente específico del anfitrión. En 0.3.2 se migra al paquete externo y al contrato HTTP genérico siguiente; requiere actualizar la extensión y revisar permisos. El material histórico se conserva en legacy/host-0.3.1 del repositorio de extensiones.
 
-Instalación, dueño de source y permisos se comprueban antes/después de operaciones; desactivar/cambiar fuente/revocar detiene la reproducción y descarta respuestas pendientes. Identidad `rpmusic-youtube:<extension>:<videoId>` separada de una URL temporal, sin acceso de borrado al archivo musical. API 2 anterior permanece válida; los anfitriones 0.3.0 rechazan source/network.youtube como capacidades desconocidas. Instalar este paquete solo en 0.3.1+ Android.
+## Fuentes y navegación · RP Music 0.3.2 local
 
-Los modelos iniciales no agregan estas pistas a la biblioteca local ni ofrecen aún listas/favoritos/historial online. Ejemplo de código y paquete: `examples/extensions/programables/youtube_music.dart` y `youtube-music.rpmx`.
+Las implementaciones y sus pruebas particulares pertenecen al [repositorio de extensiones](https://github.com/Joao-s02/rp-music-extensions). El anfitrión proporciona contratos genéricos; no incorpora parsers de proveedores. Los ejemplos heredados de biblioteca/reproductor del principal siguen pendientes de migración.
+
+El manifiesto admite `minAppVersion`, `sourceConfig` y los permisos `network.http`, `playback.control`, `navigation.add`. `sourceConfig` contiene `name`, `domains` (1–8 dominios HTTPS; comodín `*.dominio` opcional), `platforms` (android/windows) y `navigation` opcional con `label`, `icon` (cloud/music/playBadge/headphones), `color` (#RRGGBB). La navegación se muestra para la fuente elegida y autorizada; desaparece al desactivarla. Es un componente visual definido por contrato, no Flutter arbitrario. Se revisan dominios y permisos antes de instalar.
+
+En `event=source`, la entrada contiene `operation=search|resolve`, `stage=start`, `date` UTC YYYYMMDD, `context` y `query` o `id` opaco. El programa puede devolver `{request:{url,method,headers,body},next,context}`. El anfitrión realiza GET/POST HTTPS solo a dominios autorizados, sin seguir redirecciones; vuelve a ejecutar con stage=next y response={status,body,cookies}. No usa sesiones del navegador. Máximo cuatro rondas, contexto 64 KB, cuerpo JSON 64 KB, respuesta HTTP 1.5 MiB y plazo 25 s por petición. Cabeceras sensibles como Authorization/Host se rechazan. La red pertenece a un único flujo en memoria, no se guardan cookies ni URLs firmadas en preferencias. Los errores del intérprete de fuente no registran el contenido recibido.
+
+Resultado de búsqueda: `{tracks:[{id,title,artist,album?,artwork?,durationMs?}]}`, máximo 50. IDs opacos hasta 200 caracteres alfanuméricos/._-; audio y carátula requieren dominios declarados. Resultado de resolve: `{url}` HTTPS temporal. El nombre del servicio se publica en metadatos del reproductor. Cambiar versión, propietario o permisos descarta respuestas pendientes; revocar detiene el audio. Las pistas remotas no son archivos borrables del dispositivo.
+
+El catálogo schemaVersion=1 admite `versions` por entrada con metadatos completos y minAppVersion. 0.3.2 selecciona la variante compatible más nueva; clientes anteriores siguen leyendo la entrada base. El paquete antiguo de fuente network.youtube requiere actualización y no se ejecuta con el nuevo transporte. Los programas de biblioteca/reproductor anteriores conservan sus contratos.
+
+Prueba HTTP independiente: `dart run tools/verify_source_package.dart RUTA_EXTERNA.rpmx CONSULTA`. Prueba Android genérica: integration_test/extension_source_test.dart recibe SOURCE_PACKAGE_GZIP (JSON del paquete externo comprimido con gzip y codificado en base64) y SOURCE_QUERY mediante dart-define-from-file; se evita el límite de línea de comandos de Windows. Es una entrada de pruebas y no se incluye el paquete en la app normal. No introducir código ni fixtures específicos de un proveedor en el principal.
