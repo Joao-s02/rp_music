@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 const programPermissions = {
+  'network.youtube': 'Buscar y reproducir desde YouTube Music (internet)',
   'library.read': 'Leer metadatos de la biblioteca y favoritos',
   'playback.control': 'Controlar la reproducción',
   'playlists.manage': 'Crear y actualizar listas de la app',
@@ -8,6 +9,7 @@ const programPermissions = {
   'behavior.override': 'Sustituir funciones base (nivel avanzado)',
 };
 const programSlots = {
+  'source': 'Fuente musical en línea',
   'library': 'Biblioteca',
   'player': 'Reproductor ampliado',
   'shuffle': 'Aleatorio',
@@ -91,6 +93,13 @@ class ProgramPackage {
     if ((slots.contains('player') || slots.contains('shuffle')) &&
         !permissions.contains('playback.control')) {
       throw const FormatException('Esta capacidad requiere playback.control.');
+    }
+    if (slots.contains('source') &&
+        (!permissions.contains('network.youtube') ||
+            !permissions.contains('playback.control'))) {
+      throw const FormatException(
+        'Una fuente requiere network.youtube y playback.control.',
+      );
     }
     return ProgramPackage(
       id,

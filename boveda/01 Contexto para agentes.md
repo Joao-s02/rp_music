@@ -50,8 +50,16 @@ Trabajo vigente publicado: [[20 Pruebas 0.2.4 y mejoras 0.2.5]]. Informe del usu
 
 Tras pruebas de 0.2.5, consultar [[21 Pruebas 0.2.5 y mejoras 0.2.6]] antes de continuar con actualizador, permisos, widget y orden en 0.2.6 local. Antes del sistema programable leer [[22 Extensiones - alcance del primer sistema]]: alcance aceptado de biblioteca/listas/carátulas, varias activas, permisos y recuperación; todavía no es implementación del runtime.
 
+El usuario autorizó implementar después de publicar 0.2.6. Trabajo local actual: [[23 Extensiones programables - primer prototipo]]. Leer sus límites: dart_eval, contratos UI limitados, permisos y recuperación, sin aislamiento duro de memoria ni SDK completo. API 1 conservada; 0.3.0 no está publicada.
+
+
+Trabajo vigente 2026-10-26: [[24 YouTube Music - definicion e investigacion]] — el usuario aceptó priorizar Android y la primera entrega de búsqueda/reproducción sin cuenta. 0.3.1+10 local añade fuente Android y paquete externo; 77 pruebas y recorrido nativo instalado aprobados, con límites documentados. Windows/listas/favoritos/historial de la fuente pendientes. No repetir elección de vía no oficial ni prioridad de plataforma. Última release pública de la app: 0.2.6.
+
 
 2026-10-26: usuario autoriza publicar 0.3.0 mientras prueba 0.3.1. Preparación separada y alcance en [[25 Release 0.3.0]]; no incluir YouTube ni modificar la copia de pruebas 0.3.1.
 
 
 Publicación vigente confirmada: v0.3.0-alpha.1, Android universal/ARM64 y Windows, siete adjuntos verificados. Fuente y cierre en [[25 Release 0.3.0]]. 0.3.1 permanece en pruebas separadas; no está en esta release.
+
+
+2026-10-26: usuario valida 0.3.1 (búsqueda/audio rápidos, sin bugs ni lag observados) y autoriza nueva release. Diseño reportado queda para próxima versión. Comunicación pública: soporte de extensiones para fuentes de música en la nube, con adaptador inicial Android; no prometer cualquier proveedor ni ocultar límites. Se publica el mismo APK validado; Windows mantiene 0.3.0. Seguimiento en [[26 Release 0.3.1]].

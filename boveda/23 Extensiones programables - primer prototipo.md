@@ -86,4 +86,7 @@ Cierre 2026-10-26: repositorio de extensiones público confirmado, main d7d99045
 - ac47f4fd08b73b1a52aa0bd289e7f220a0f54cfbd4d57e5b2442d8cbe6ee1e44  RP-Music-0.3.0-catalogo-windows-x64.zip
 
 
-Publicación posterior: [[25 Release 0.3.0]]. Los límites y resultados anteriores se conservan como antecedentes; el estado final de la release se registra en esa nota.
+2026-10-26: usuario confirma descarga/instalación y permisos del catálogo. Código local ahora muestra Instalada para id presente con versión igual o superior (incluye desactivadas); solo una versión remota superior ofrece Actualizar. Tres pruebas del catálogo aprobadas. Este cambio todavía no está en los APK/ZIP anteriores. Se inicia entrevista/investigación de YouTube Music; conexión no implementada, alcance pendiente de respuestas. Ver boveda/24 YouTube Music - definicion e investigacion.md.
+
+
+Trabajo vigente 2026-10-26: [[24 YouTube Music - definicion e investigacion]] — el usuario aceptó priorizar Android y la primera entrega de búsqueda/reproducción sin cuenta. 0.3.1+10 local añade fuente Android y paquete externo; 77 pruebas y recorrido nativo instalado aprobados, con límites documentados. Windows/listas/favoritos/historial de la fuente pendientes. No repetir elección de vía no oficial ni prioridad de plataforma. Última release pública de la app: 0.2.6.

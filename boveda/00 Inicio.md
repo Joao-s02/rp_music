@@ -51,8 +51,16 @@ Versión vigente publicada: [[20 Pruebas 0.2.4 y mejoras 0.2.5]] — v0.2.5-alph
 
 Versión vigente publicada: [[21 Pruebas 0.2.5 y mejoras 0.2.6]] — ventana de actualización, escritura guiada, widget Android y orden. Extensiones: [[22 Extensiones - alcance del primer sistema]] — entrevista confirmada; runtime pendiente.
 
+Implementación local posterior a la release: [[23 Extensiones programables - primer prototipo]] — 0.3.0+9 experimental, motor Dart, Biblioteca viva y Pulso nocturno.
+
+
+Trabajo vigente 2026-10-26: [[24 YouTube Music - definicion e investigacion]] — el usuario aceptó priorizar Android y la primera entrega de búsqueda/reproducción sin cuenta. 0.3.1+10 local añade fuente Android y paquete externo; 77 pruebas y recorrido nativo instalado aprobados, con límites documentados. Windows/listas/favoritos/historial de la fuente pendientes. No repetir elección de vía no oficial ni prioridad de plataforma. Última release pública de la app: 0.2.6.
+
 
 2026-10-26: usuario autoriza publicar 0.3.0 mientras prueba 0.3.1. Preparación separada y alcance en [[25 Release 0.3.0]]; no incluir YouTube ni modificar la copia de pruebas 0.3.1.
 
 
 Publicación vigente confirmada: v0.3.0-alpha.1, Android universal/ARM64 y Windows, siete adjuntos verificados. Fuente y cierre en [[25 Release 0.3.0]]. 0.3.1 permanece en pruebas separadas; no está en esta release.
+
+
+2026-10-26: usuario valida 0.3.1 (búsqueda/audio rápidos, sin bugs ni lag observados) y autoriza nueva release. Diseño reportado queda para próxima versión. Comunicación pública: soporte de extensiones para fuentes de música en la nube, con adaptador inicial Android; no prometer cualquier proveedor ni ocultar límites. Se publica el mismo APK validado; Windows mantiene 0.3.0. Seguimiento en [[26 Release 0.3.1]].

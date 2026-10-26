@@ -1,7 +1,7 @@
 ---
 tipo: pendientes
 estado: abierto
-actualizado: 2026-10-24
+actualizado: 2026-10-26
 ---
 # Preguntas e investigacion
 
@@ -9,7 +9,7 @@ actualizado: 2026-10-24
 
 | Tema | Qué resolver | Estado |
 | --- | --- | --- |
-| Extensiones ejecutables | Runtime, lenguaje, paquete e instalación en Android y Windows; prueba de UI y lógica. | Sin investigar ni elegir. |
+| Extensiones ejecutables | Runtime, lenguaje, paquete e instalación en Android y Windows; prueba de UI y lógica. | Prototipo local dart_eval/API 2; alcance, validación y límites en [[23 Extensiones programables - primer prototipo]]. |
 | Audio | Motor y backends, formatos/códecs, gapless, fundido y futura conexión de ecualizador. | Backend inicial elegido y compilado; validación física y funciones avanzadas pendientes. |
 | Almacenamiento | Acceso persistente a una raíz y sus subcarpetas en ambas plataformas; unidades extraíbles y permisos. | SAF Android y ruta Windows implementados; falta validación en dispositivos y unidades extraíbles. |
 | Servicios | Capacidades oficiales actuales de catálogo y reproducción de YouTube Music y Spotify. | Pendiente; no prometer viabilidad. |
@@ -62,5 +62,15 @@ El usuario confirma que ya aparecen los controles de notificación; el informe n
 
 Resueltos para la primera entrega: ejemplo de biblioteca, varias extensiones, conflictos elegidos por el usuario, instalación por archivo, permisos normales separados, recuperación y conservación de datos; carátulas propias/mosaico y listas automáticas. Falta elegir runtime, lenguaje, formato, límites y contratos; ver [[22 Extensiones - alcance del primer sistema]]. SAF no se puede ampliar a escritura silenciosamente: 0.2.6 solicita autorización de la misma carpeta al borrar. MediaStore.createDeleteRequest es alternativa investigada, sin implementar; ver [[21 Pruebas 0.2.5 y mejoras 0.2.6]].
 
+## Prototipo 0.3.0
 
-Publicación 0.3.0: motor API 2 experimental, permisos, varias activas, conflictos, reglas y recuperación implementados; catálogo GitHub y estado Instalada/Actualizar incluidos. No implica SDK visual completo, acceso de red a programas ni aislamiento duro de memoria. Detalles vigentes: [[23 Extensiones programables - primer prototipo]] y [[25 Release 0.3.0]].
+Elección técnica provisional de dart_eval para lógica en isolates y UI mediante contratos limitados. Permisos, reglas y recuperación implementados como prototipo; faltan aislamiento duro de memoria, red, comunicación entre paquetes y componentes arbitrarios. Ver [[23 Extensiones programables - primer prototipo]].
+
+
+2026-10-26: requisitos de YouTube Music confirmados: solo audio dentro de RP Music, segundo plano/pantalla apagada, Android y Windows, sin cuenta, listas/favoritos/historial locales y búsqueda/exploración. Se investigan fuentes primarias oficiales y alternativas no oficiales; elección de vía pendiente de respuesta. No hay streaming remoto implementado ni comprobado. Detalles en boveda/24 YouTube Music - definicion e investigacion.md.
+
+
+Trabajo vigente 2026-10-26: [[24 YouTube Music - definicion e investigacion]] — el usuario aceptó priorizar Android y la primera entrega de búsqueda/reproducción sin cuenta. 0.3.1+10 local añade fuente Android y paquete externo; 77 pruebas y recorrido nativo instalado aprobados, con límites documentados. Windows/listas/favoritos/historial de la fuente pendientes. No repetir elección de vía no oficial ni prioridad de plataforma. Última release pública de la app: 0.2.6.
+
+
+2026-10-26: usuario valida 0.3.1 (búsqueda/audio rápidos, sin bugs ni lag observados) y autoriza nueva release. Diseño reportado queda para próxima versión. Comunicación pública: soporte de extensiones para fuentes de música en la nube, con adaptador inicial Android; no prometer cualquier proveedor ni ocultar límites. Se publica el mismo APK validado; Windows mantiene 0.3.0. Seguimiento en [[26 Release 0.3.1]].

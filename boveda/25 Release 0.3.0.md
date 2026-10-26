@@ -29,3 +29,6 @@ Adjuntos preparados en dist/0.3.0-release:
 v0.3.0-alpha.1 publicada como prerelease el 2026-10-26. URL: https://github.com/Joao-s02/rp_music/releases/tag/v0.3.0-alpha.1 . Código etiquetado: f7b143ac1f9a81137f0fee2be5646e5b945a71f1. Borrador desactivado, siete adjuntos remotos comprobados uno a uno con tamaño y SHA-256 iguales a los archivos locales. La app 0.3.1 y su integración YouTube siguen fuera de esta release.
 
 Se publican los nuevos binarios de dist/0.3.0-release, no los viejos de dist/0.3.0-catalogo: los nuevos incorporan estado Instalada/Actualizar. Se conservan todos los paquetes anteriores. La fuente publicada no incluye dependencias ni adaptador de YouTube de 0.3.1. El working tree local se mantiene en 0.3.1 para continuar sus pruebas.
+
+
+Sincronización local final: main apunta a 475eb97 (confirmación documental); tag de código f7b143a. Actualizado solo HEAD/índice, con índice previamente vacío. Verificación SHA-256 confirma que 44 archivos protegidos de 0.3.1 —código, configuración, APK/paquete y PNG previo— permanecen idénticos. La copia de desarrollo continúa en 0.3.1 con cambios sin publicar.

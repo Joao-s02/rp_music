@@ -2,20 +2,26 @@
 
 Reproductor de música local construido en Flutter para Android y Windows. Escucha tus archivos sin conexión y sin cuentas, con biblioteca, favoritos y listas de reproducción.
 
-**Versión publicada: [0.3.0-alpha.1](https://github.com/Joao-s02/rp_music/releases/tag/v0.3.0-alpha.1)** (aplicación `0.3.0+9`). Versión de prueba para Android y Windows; las releases anteriores se conservan.
+**Versión publicada Android: [0.3.1-alpha.1](https://github.com/Joao-s02/rp_music/releases/tag/v0.3.1-alpha.1)** (aplicación `0.3.1+10`). [Windows continúa en 0.3.0-alpha.1](https://github.com/Joao-s02/rp_music/releases/tag/v0.3.0-alpha.1). [Guía de uso](docs/USO-0.3.1.md).
 
-## Novedades de 0.3.0 · extensiones experimentales
+## Novedades de 0.3.1 · extensiones para música en la nube
 
-- Programas Dart API 2 instalables desde archivo o catálogo de repositorio GitHub, con permisos explícitos, selección de funciones y modo seguro. API 1 sigue disponible.
-- **Biblioteca viva:** filtros combinados, listas manuales/automáticas y carátulas propias o mosaico. Desactivar conserva listas y carátulas.
-- **Pulso nocturno:** disposición del reproductor y aleatorio que prefiere cambiar de artista.
-- Catálogo con verificación SHA-256, metadatos y revisión fija; muestra Descargar/Instalada/Actualizar según versión guardada. Los paquetes no vienen embebidos ni se activan al instalar la app.
+RP Music incorpora en Android el primer soporte experimental para **extensiones que añaden fuentes de música en la nube**, con un adaptador inicial para catálogos como YT. La fuente se habilita instalando un paquete compatible y aceptando sus permisos.
 
-[Repositorio de extensiones](https://github.com/Joao-s02/rp-music-extensions). En la app: **Extensiones → Explorar repositorio → Consultar → elegir extensión → revisar permisos**. También admite importar `.rpmx`. No hay actualizaciones silenciosas ni firma de autor.
+- Búsqueda de canciones y reproducción de audio en línea mediante una extensión, sin cuenta en esta primera entrega.
+- Cola, pausa, avance, cambio de pista, carátula y reproducción en segundo plano con pantalla apagada, usando los controles de RP Music.
+- Permisos separados para acceder al servicio y controlar el audio; desactivar la extensión detiene su reproducción y descarta resultados pendientes.
+- Se mantienen Biblioteca viva, Pulso nocturno, listas/carátulas locales, varias extensiones activas y modo seguro. El catálogo indica Descargar, Instalada o Actualizar.
 
-**YouTube Music no está incluido en 0.3.0**: su paquete requiere Android y el anfitrión experimental 0.3.1, que sigue en pruebas separadas. En esta release los programas no reciben acceso genérico a internet ni escritura de música. El SDK inicial limita los componentes visuales y los isolates no constituyen cuota dura de memoria; instala código/repositorios de confianza.
+Repositorio: [rp-music-extensions](https://github.com/Joao-s02/rp-music-extensions). **Extensiones → Explorar repositorio → Consultar → elegir un paquete compatible → revisar permisos → abrir su fuente**. También permite importar `.rpmx`. Los paquetes se distribuyen por separado y no se activan al instalar el APK.
 
-Validación: análisis limpio, 68 pruebas aprobadas y regresión nativa Windows aprobada; ver [registro de publicación](boveda/25%20Release%200.3.0.md). [Guía de uso](docs/USO-0.3.0.md) · [Guía de pruebas](docs/PRUEBAS-0.3.0.md) · [Contrato API 2](docs/EXTENSIONES-API-2.md). Pendientes: pruebas físicas y sesiones prolongadas, métricas y ampliación del SDK.
+Este es un adaptador inicial; otros servicios requieren extensiones y adaptadores compatibles. La biblioteca local conserva su funcionamiento sin conexión. Windows mantiene la 0.3.0 y la nueva capacidad de fuentes en línea está disponible en Android.
+
+**Validación:** el usuario confirmó resultados de búsqueda y audio rápidos, sin bugs ni lag observados durante su prueba, y calificó la velocidad del buscador con 10/10. Es una evaluación de uso, no una medición formal ni una garantía para todos los dispositivos. Se conservan 77 pruebas automatizadas aprobadas, análisis limpio y verificaciones nativas en emulador de reproducción, controles, cambios de pista y revocación de permisos. Se publica el mismo APK validado por el usuario.
+
+**Pendiente:** ajustes de diseño reportados, previstos para la siguiente versión; listas, favoritos e historial de fuentes en línea, navegación completa por artistas/álbumes, cuentas, soporte Windows y sesiones prolongadas con distintas redes. El motor de extensiones sigue siendo experimental, con componentes visuales limitados y sin cuota dura de memoria; usa paquetes de confianza.
+
+[Contrato API 2](docs/EXTENSIONES-API-2.md) · [Ejemplos](examples/extensions/programables/README.md) · [Validaciones y límites de la release](boveda/26%20Release%200.3.1.md).
 
 ## Novedades de 0.2.6
 
@@ -93,7 +99,7 @@ En la aplicación, elegir una carpeta de música. En Android se usa el selector 
 
 Los datos nuevos se guardan en el directorio de soporte de la aplicación, dentro de `v2`, con un respaldo del guardado anterior. Se conservan los datos de 0.2.0; no se migran los de la antigua alfa 0.1. El escaneo nunca modifica los archivos musicales. Eliminar del dispositivo borra un archivo únicamente tras confirmarlo. La sesión se guarda por separado en `session.json`, también con respaldo.
 
-## Probar la extensión de ejemplo
+## Probar el ejemplo declarativo (API 1)
 
 1. En Extensiones, pulsar Importar extensión.
 2. Elegir `examples/extensions/descubrir.json` (copiarlo al dispositivo si se prueba Android).
@@ -122,7 +128,7 @@ Para 0.2.5 se aprobaron 46 pruebas automatizadas, el análisis estático y la pr
 
 ## Pendiente
 
-Letras, edición de etiquetas, cola editable, fundidos, gapless, controles multimedia del sistema Windows, mediciones de rendimiento y recursos por extensión, ampliar el SDK visual/de red, firmas de autor y completar integraciones con servicios. El prototipo local ya incluye un primer runtime, permisos, catálogo y fuente Android; todavía requieren validación y mejoras. Web no está soportada por este incremento.
+Letras, edición de etiquetas, cola editable, fundidos, gapless, controles multimedia del sistema Windows, mediciones de rendimiento y recursos por extensión, ampliar el SDK visual/de red, firmas de autor y completar integraciones con servicios. La versión actual incluye un primer runtime, permisos, catálogo y soporte Android para fuentes mediante extensiones; siguen pendientes ampliaciones y validaciones. Web no está soportada por este incremento.
 
 Falta repetir reproducción prolongada con pantalla apagada y controles en Galaxy A34 Android 16/Poco X6, completar una actualización entre dos releases públicas desde el instalador y comprobar los datos conservados. Siguen pendientes el rechazo de instalación en Tecno Android 16 y la confirmación del comportamiento de cierre en Windows por el usuario. Las pruebas en emulador no sustituyen estas verificaciones.
 

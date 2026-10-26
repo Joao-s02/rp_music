@@ -5,6 +5,8 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
 import 'program_catalog.dart';
+import '../sources/youtube_source_view.dart';
+import '../playback/music_handler.dart';
 
 import '../app/library_controller.dart';
 import '../domain/extension_manifest.dart';
@@ -12,8 +14,9 @@ import 'program_controller.dart';
 import 'program_package.dart';
 
 class ProgramManagerView extends StatefulWidget {
-  const ProgramManagerView({super.key, required this.library});
+  const ProgramManagerView({super.key, required this.library, this.audio});
   final LibraryController library;
+  final MusicHandler? audio;
   @override
   State<ProgramManagerView> createState() => _ProgramManagerViewState();
 }
@@ -364,6 +367,46 @@ class _ProgramManagerViewState extends State<ProgramManagerView> {
                     Wrap(
                       spacing: 8,
                       children: [
+                        if (item.package.slots.contains('source'))
+                          TextButton.icon(
+                            icon: const Icon(Icons.travel_explore),
+                            label: Text(
+                              !Platform.isAndroid
+                                  ? 'Fuente disponible en Android'
+                                  : manager.owner('source')?.package.id ==
+                                        item.package.id
+                                  ? 'Abrir YouTube Music'
+                                  : 'Elegir como fuente',
+                            ),
+                            onPressed:
+                                !Platform.isAndroid ||
+                                    !item.enabled ||
+                                    !item.authorized ||
+                                    widget.audio == null ||
+                                    manager.busy
+                                ? null
+                                : () async {
+                                    if (manager.owner('source')?.package.id !=
+                                        item.package.id) {
+                                      await manager.choose(
+                                        'source',
+                                        item.package.id,
+                                      );
+                                      return;
+                                    }
+                                    if (!mounted) return;
+                                    await Navigator.of(context).push(
+                                      MaterialPageRoute<void>(
+                                        builder: (_) => YoutubeSourceView(
+                                          programs: manager,
+                                          extensionId: item.package.id,
+                                          audio: widget.audio!,
+                                          library: library,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                          ),
                         TextButton.icon(
                           onPressed: manager.busy
                               ? null

@@ -35,6 +35,10 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
   List<Track> tracks = [];
   int index = -1;
   Future<int?> Function(List<Track>, int)? chooseNext;
+  Future<({AudioSource source, Uri? artwork})> Function(Track)?
+  onlineSourceLoader;
+  bool Function(Track)? onlineAllowed;
+  bool _online(Track track) => track.id.startsWith('rpmusic-youtube:');
   bool shuffle = false;
   bool repeat = false;
   MusicHandler({
@@ -191,14 +195,30 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
         queue.add(nextQueue);
       }
       mediaItem.add(_mediaItem(track));
-      unawaited(_loadArtwork(track, generation));
+      if (!_online(track)) unawaited(_loadArtwork(track, generation));
       try {
+        ({AudioSource source, Uri? artwork})? online;
+        if (_online(track)) {
+          if (onlineSourceLoader == null ||
+              onlineAllowed?.call(track) != true) {
+            throw StateError('Online source unavailable');
+          }
+          online = await onlineSourceLoader!(track);
+          if (generation != _generation || _shuttingDown) return;
+          if (onlineAllowed?.call(track) != true) {
+            throw StateError('Permission revoked');
+          }
+          if (online.artwork != null) {
+            mediaItem.add(_mediaItem(track).copyWith(artUri: online.artwork));
+          }
+        }
         final duration = await player.setAudioSource(
-          AudioSource.uri(
-            track.id.startsWith('content://')
-                ? Uri.parse(track.id)
-                : Uri.file(track.id),
-          ),
+          online?.source ??
+              AudioSource.uri(
+                track.id.startsWith('content://')
+                    ? Uri.parse(track.id)
+                    : Uri.file(track.id),
+              ),
           initialPosition: initialPosition,
         );
         if (generation == _generation && !_shuttingDown) {
@@ -217,7 +237,9 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
           await player.stop();
           recordEvent('Error al cargar pista: índice=$index');
           errors.add(
-            'No se pudo abrir «${track.title}». Comprueba el archivo y su formato.',
+            _online(track)
+                ? 'No se pudo reproducir «${track.title}». Revisa la conexión y los permisos; YouTube puede rechazar esta canción.'
+                : 'No se pudo abrir «${track.title}». Comprueba el archivo y su formato.',
           );
         }
       }
@@ -282,6 +304,10 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
     if (_shuttingDown) return;
     if (index < 0) await onEmptyPlay?.call();
     if (_shuttingDown || index < 0) return;
+    if (_online(tracks[index]) && onlineAllowed?.call(tracks[index]) != true) {
+      errors.add('La fuente está desactivada o sin permiso.');
+      return;
+    }
     _playIntent = true;
     if (_loading) return;
     try {
@@ -305,6 +331,12 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
 
   @override
   Future<void> seek(Duration position) async {
+    if (index >= 0 &&
+        index < tracks.length &&
+        _online(tracks[index]) &&
+        onlineAllowed?.call(tracks[index]) != true) {
+      return;
+    }
     await player.seek(position);
     if (sessionStore != null) {
       _seekCheckpoint?.cancel();

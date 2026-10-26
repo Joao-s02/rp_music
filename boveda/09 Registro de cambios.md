@@ -237,8 +237,59 @@ El usuario solicita publicar 0.2.6 antes de comenzar la implementación programa
 
 [Release v0.2.6-alpha.1](https://github.com/Joao-s02/rp_music/releases/tag/v0.2.6-alpha.1) pública como preliminar, isDraft=false/isPrerelease=true. Etiqueta sobre 2aa8648d7fe274e5b177ec773456613d6c52215f; fuentes enviadas a main. Siete adjuntos uploaded y verificados por tamaño/digest SHA-256 de GitHub: APK universal/ARM64, Windows, guías, ejemplo y hashes. Las guías se adaptaron para distribución y se reempaquetó el ZIP conservando binarios. No se alteraron releases anteriores. La publicación no completa las pruebas físicas/instalador pendientes. Implementación programable de extensiones autorizada a continuación como trabajo posterior.
 
+## 2026-10-25 — Inicio real del sistema programable
+
+Tras publicar 0.2.6 se implementa 0.3.0+9 local con dart_eval 0.8.5, paquetes API 2, imports puros revisados, ejecución con tiempo limitado, permisos normales/avanzados, varias activas, conflictos y recuperación. Biblioteca viva aporta filtros y listas automáticas; Pulso nocturno, disposición de reproductor y aleatorio. Carátulas propias/mosaico y conservación de datos integradas. Elección técnica, pruebas y límites en [[23 Extensiones programables - primer prototipo]]. No se anuncia como libertad completa de Flutter ni como motor seguro para código hostil; no se publica ni envía este incremento.
+
+Cierre local 0.3.0+9: 65 pruebas aprobadas, análisis limpio, UI móvil/escritorio, regresión nativa Windows y sondas release del intérprete en Windows/Android aprobadas. Aplicaciones normales reconstruidas y verificadas; paquetes y guías en dist/0.3.0-local. No se enviaron estos cambios ni se publicó 0.3.0. Resultados, tamaños, hashes y límites en [[23 Extensiones programables - primer prototipo]].
+
+
+2026-10-26: autorizado, creado y publicado repositorio público separado rp-music-extensions; catálogo por enlace integrado localmente, permisos antes de instalar y ejemplos retirados del bundle de producción. Ver alcance, verificaciones y límites en [[23 Extensiones programables - primer prototipo]]. La app no se publicó en esta tarea.
+
+
+Cierre 2026-10-26: repositorio de extensiones público confirmado, main d7d99045340e9d8ad6780f9608a69b0e75012f29. Once pruebas de catálogo/sistema/UI aprobadas; dos UI repetidas tras ajustar diálogo, aprobadas. Análisis final limpio. Builds normales release Android y Windows completados. APK con firma anterior verificada; APK y ZIP Windows sin paquetes de ejemplo ni integration_test. Nuevos archivos locales en dist/0.3.0-catalogo, con USO.md y SHA256SUMS.txt; los artefactos previos se conservan y no incluyen el explorador. No se publicó ni se envió el incremento de la app, ni se afirma una nueva prueba física/AOT de instalación por catálogo.
+
+
+2026-10-26: usuario confirma descarga/instalación y permisos del catálogo. Código local ahora muestra Instalada para id presente con versión igual o superior (incluye desactivadas); solo una versión remota superior ofrece Actualizar. Tres pruebas del catálogo aprobadas. Este cambio todavía no está en los APK/ZIP anteriores. Se inicia entrevista/investigación de YouTube Music; conexión no implementada, alcance pendiente de respuestas. Ver boveda/24 YouTube Music - definicion e investigacion.md.
+
+
+2026-10-26: requisitos de YouTube Music confirmados: solo audio dentro de RP Music, segundo plano/pantalla apagada, Android y Windows, sin cuenta, listas/favoritos/historial locales y búsqueda/exploración. Se investigan fuentes primarias oficiales y alternativas no oficiales; elección de vía pendiente de respuesta. No hay streaming remoto implementado ni comprobado. Detalles en boveda/24 YouTube Music - definicion e investigacion.md.
+
+
+YouTube Music: el usuario aceptó la vía no oficial experimental. Se inicia sonda nativa separada de reproducción; metadatos y primeros bytes HTTP comprobados, reproducción todavía pendiente. La app normal no tiene aún una extensión YouTube conectada. Ver boveda/24 YouTube Music - definicion e investigacion.md. No distribuir binarios de la entrada tools/youtube_audio_probe.dart.
+
+
+## Cierre de la primera investigación — resultado parcial
+
+La sonda Windows con búfer secuencial recibió 1048576 bytes antes de 403; `ok=false`, dos lecturas nativas. Variante previa con renovación del manifiesto también falló. No se demostró reproducción estable en Windows. No elegir aún estos transportes como arquitectura final ni empaquetar un .rpmx que prometa funcionar en ambas plataformas.
+
+Comprobado: Android emulador AOT pudo cargar/reproducir/pausar/seek mediante rangos y continuó informando reproducción tras HOME/SLEEP; hubo regresión posterior de posición, estabilidad pendiente. Windows sigue fallando; fuente/contenido único de demostración, sin prueba física ni catálogo musical amplio. No hay búsqueda YouTube Music implementada, playlists remotas, favoritos/historial remoto o permisos de red expuestos al SDK. El siguiente paso técnico pendiente es encontrar un transporte/cliente que mantenga reproducción estable en ambas plataformas y repetir el ensayo; el usuario ya autorizó la vía no oficial, no necesita repetirse esa pregunta.
+
+Artefactos de sondas permanecen en build, NO son la app normal. No se publicaron en GitHub ni sustituyeron archivos entregados en dist/0.3.0-catalogo. Antes de empaquetar otra aplicación normal reconstruir lib/main.dart con `flutter build windows --release` y `flutter build apk --release` completos; los registros integration_test pueden quedar de pruebas si se usa --no-pub. Los intentos de sonda Android con --no-pub fallaron por registro residual; el build completo corrigió ese problema.
+
+Pruebas: suite completa final 73 aprobadas, incluyendo comparación de versiones instalada/remota, transporte por rangos, renovación simulada ante 403, búfer secuencial compartido y límites RAM. Una aserción inicial del búfer esperaba descarga completa antes de que sus lectores hubieran terminado el último tramo; se corrigió solicitando el tramo final, sin ocultar errores reales de transporte. Pruebas unitarias no implican éxito de YouTube: son validaciones locales del adaptador.
+
+No hay extensión YouTube Music lista para instalar ni nueva release. Los ejemplos Biblioteca viva/Pulso nocturno y la biblioteca local no usan las dependencias de desarrollo añadidas para esta prueba. El catálogo Instalada/Actualizar sigue siendo un cambio local posterior a los paquetes distribuidos.
+
+
+2026-10-26: el usuario prioriza Android. Implementada localmente 0.3.1+10 con adaptador YouTube Music sin cuenta, búsqueda de canciones, paquete externo, permiso network.youtube y capacidad source. Se cambió el cliente no oficial tras investigar #386; recepción completa de audio y sonda Android release continua aprobadas, recorrido nativo instalado en depuración aprobado. Suite: 77 pruebas. Límites y pendientes en [[24 YouTube Music - definicion e investigacion]]. Windows/listas/favoritos/historial de la fuente se posponen. No es publicación de la app.
+
+
+Cierre de empaquetado Android 0.3.1: APK normal y paquete externos verificados, extensión publicada en repositorio separado ae10a9c y descarga por catálogo comprobada. App no publicada. Ver [[24 YouTube Music - definicion e investigacion]].
+
+
+Cierre verificado: APK final normal instalado en emulador, package com.example.rp_music versionName 0.3.1/versionCode 10, arranque de MainActivity correcto y sin registros de crash. El primer intento de instalación quedó con sesión pendiente y un segundo informó paquete duplicado; se inició en frío el emulador de esta tarea y la instalación normal se completó. No se atribuye ese bloqueo del instalador al código de reproducción ni a teléfonos físicos. Permiso de notificaciones concedido únicamente en emulador para completar el arranque; en teléfonos lo solicita la aplicación.
+
+Compilaciones previas conservadas; no se publica release principal ni ZIP Windows en esta fase. APK normal final de 70362924 bytes. Se cierra el emulador propio al terminar. Siguiente validación: teléfono físico del usuario con consulta del catálogo, aceptación de permisos y reproducción de sus búsquedas. No se requieren contraseñas/cookies para esta entrega.
+
 
 2026-10-26: usuario autoriza publicar 0.3.0 mientras prueba 0.3.1. Preparación separada y alcance en [[25 Release 0.3.0]]; no incluir YouTube ni modificar la copia de pruebas 0.3.1.
 
 
 Publicación vigente confirmada: v0.3.0-alpha.1, Android universal/ARM64 y Windows, siete adjuntos verificados. Fuente y cierre en [[25 Release 0.3.0]]. 0.3.1 permanece en pruebas separadas; no está en esta release.
+
+
+Sincronización local final: main apunta a 475eb97 (confirmación documental); tag de código f7b143a. Actualizado solo HEAD/índice, con índice previamente vacío. Verificación SHA-256 confirma que 44 archivos protegidos de 0.3.1 —código, configuración, APK/paquete y PNG previo— permanecen idénticos. La copia de desarrollo continúa en 0.3.1 con cambios sin publicar.
+
+
+2026-10-26: usuario valida 0.3.1 (búsqueda/audio rápidos, sin bugs ni lag observados) y autoriza nueva release. Diseño reportado queda para próxima versión. Comunicación pública: soporte de extensiones para fuentes de música en la nube, con adaptador inicial Android; no prometer cualquier proveedor ni ocultar límites. Se publica el mismo APK validado; Windows mantiene 0.3.0. Seguimiento en [[26 Release 0.3.1]].

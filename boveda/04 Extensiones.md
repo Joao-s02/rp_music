@@ -1,7 +1,7 @@
 ---
 tipo: requisitos
 estado: confirmado-con-investigacion-pendiente
-actualizado: 2026-10-24
+actualizado: 2026-10-26
 ---
 # Extensiones
 
@@ -40,7 +40,7 @@ Las cuentas necesarias se reservan para las extensiones que las requieran; no se
 
 ## Investigación necesaria
 
-Flutter no determina por sí solo el mecanismo de extensiones. Antes de elegirlo, comparar ejecución de lógica, representación de pantallas, permisos, acceso al audio, interoperabilidad, versiones y distribución. No hay runtime, SDK ni formato de paquete aprobados.
+Flutter no determina por sí solo el mecanismo de extensiones. Antes de elegirlo, comparar ejecución de lógica, representación de pantallas, permisos, acceso al audio, interoperabilidad, versiones y distribución. La entrevista no eligió un runtime. El prototipo posterior selecciona provisionalmente dart_eval y API 2 como decisión técnica del agente; ver [[23 Extensiones programables - primer prototipo]].
 
 La viabilidad de Spotify y YouTube Music debe comprobarse con documentación oficial actual sobre catálogo, autenticación y reproducción. No se ha investigado ni prometido acceso a streams, disponibilidad de APIs ni compatibilidad con Play Store. El ecualizador también debe validar cómo se conecta al motor de audio.
 
@@ -48,11 +48,22 @@ La primera prueba será una extensión pequeña que cambie una pantalla y añada
 
 ## Avance de implementación
 
-Existe una prueba declarativa JSON con dos presentaciones de biblioteca, color de acento y acción aleatoria predefinida. Se instala sin recompilar y permite elegir una presentación activa. No ejecuta programas ni permite pantallas arbitrarias; el runtime completo sigue abierto. Ver [[11 Reconstruccion - primera base]].
+Antecedente API 1: prueba declarativa JSON con dos presentaciones de biblioteca, color de acento y acción aleatoria predefinida. Se instala sin recompilar y permite elegir una presentación activa. No ejecuta programas ni permite pantallas arbitrarias; el runtime completo sigue abierto. Ver [[11 Reconstruccion - primera base]].
 
 ## Alcance confirmado posterior a 0.2.5
 
-La primera extensión será biblioteca con filtros y acciones, carátulas propias/mosaico y listas automáticas. Varias activas con selección de conflictos, permisos separados, instalación por archivo y recuperación aceptados. Las creará el agente. Sustituciones avanzadas deseadas: reproductor, aleatorio y listas. Requisitos, conservación de datos y propuestas de contrato en [[22 Extensiones - alcance del primer sistema]]. Ningún runtime/SDK programable está implementado todavía.
+La primera extensión será biblioteca con filtros y acciones, carátulas propias/mosaico y listas automáticas. Varias activas con selección de conflictos, permisos separados, instalación por archivo y recuperación aceptados. Las creará el agente. Sustituciones avanzadas deseadas: reproductor, aleatorio y listas. Requisitos, conservación de datos y propuestas de contrato en [[22 Extensiones - alcance del primer sistema]]. Ese estado correspondía a 0.2.6; el trabajo posterior [[23 Extensiones programables - primer prototipo]] ya incorpora lógica Dart real y un SDK inicial limitado.
+
+El prototipo 0.3.0 añade API 2 con Biblioteca viva y Pulso nocturno, permisos, varias activas, selección de funciones, reglas/carátulas y recuperación. Su alcance real y limitaciones de memoria/UI/red están en [[23 Extensiones programables - primer prototipo]]; no equivale al sistema completo de la visión.
 
 
-Publicación 0.3.0: motor API 2 experimental, permisos, varias activas, conflictos, reglas y recuperación implementados; catálogo GitHub y estado Instalada/Actualizar incluidos. No implica SDK visual completo, acceso de red a programas ni aislamiento duro de memoria. Detalles vigentes: [[23 Extensiones programables - primer prototipo]] y [[25 Release 0.3.0]].
+2026-10-26: autorizado, creado y publicado repositorio público separado rp-music-extensions; catálogo por enlace integrado localmente, permisos antes de instalar y ejemplos retirados del bundle de producción. Ver alcance, verificaciones y límites en [[23 Extensiones programables - primer prototipo]]. La app no se publicó en esta tarea.
+
+
+Inicio de integración YouTube Music y entrevista específica: [[24 YouTube Music - definicion e investigacion]]. No hay conexión implementada aún.
+
+
+2026-10-26: el usuario prioriza Android. Implementada localmente 0.3.1+10 con adaptador YouTube Music sin cuenta, búsqueda de canciones, paquete externo, permiso network.youtube y capacidad source. Se cambió el cliente no oficial tras investigar #386; recepción completa de audio y sonda Android release continua aprobadas, recorrido nativo instalado en depuración aprobado. Suite: 77 pruebas. Límites y pendientes en [[24 YouTube Music - definicion e investigacion]]. Windows/listas/favoritos/historial de la fuente se posponen. No es publicación de la app.
+
+
+2026-10-26: usuario valida 0.3.1 (búsqueda/audio rápidos, sin bugs ni lag observados) y autoriza nueva release. Diseño reportado queda para próxima versión. Comunicación pública: soporte de extensiones para fuentes de música en la nube, con adaptador inicial Android; no prometer cualquier proveedor ni ocultar límites. Se publica el mismo APK validado; Windows mantiene 0.3.0. Seguimiento en [[26 Release 0.3.1]].

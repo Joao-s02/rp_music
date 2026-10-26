@@ -122,8 +122,32 @@ El usuario solicita publicar 0.2.6 antes de comenzar la implementación programa
 
 [Release v0.2.6-alpha.1](https://github.com/Joao-s02/rp_music/releases/tag/v0.2.6-alpha.1) pública como preliminar, isDraft=false/isPrerelease=true. Etiqueta sobre 2aa8648d7fe274e5b177ec773456613d6c52215f; fuentes enviadas a main. Siete adjuntos uploaded y verificados por tamaño/digest SHA-256 de GitHub: APK universal/ARM64, Windows, guías, ejemplo y hashes. Las guías se adaptaron para distribución y se reempaquetó el ZIP conservando binarios. No se alteraron releases anteriores. La publicación no completa las pruebas físicas/instalador pendientes. Implementación programable de extensiones autorizada a continuación como trabajo posterior.
 
+## Prototipo programable local 0.3.0+9
+
+Código con motor/programas API 2 y dos ejemplos reales. La release actual permanece v0.2.6-alpha.1, sin este código. Pruebas de intérprete/sistema/UI y sonda Windows release documentadas en [[23 Extensiones programables - primer prototipo]]; consultar cierre de validación antes de distribuir.
+
+Cierre local 0.3.0+9: 65 pruebas aprobadas, análisis limpio, UI móvil/escritorio, regresión nativa Windows y sondas release del intérprete en Windows/Android aprobadas. Aplicaciones normales reconstruidas y verificadas; paquetes y guías en dist/0.3.0-local. No se enviaron estos cambios ni se publicó 0.3.0. Resultados, tamaños, hashes y límites en [[23 Extensiones programables - primer prototipo]].
+
+
+2026-10-26: autorizado, creado y publicado repositorio público separado rp-music-extensions; catálogo por enlace integrado localmente, permisos antes de instalar y ejemplos retirados del bundle de producción. Ver alcance, verificaciones y límites en [[23 Extensiones programables - primer prototipo]]. La app no se publicó en esta tarea.
+
+
+2026-10-26: usuario confirma descarga/instalación y permisos del catálogo. Código local ahora muestra Instalada para id presente con versión igual o superior (incluye desactivadas); solo una versión remota superior ofrece Actualizar. Tres pruebas del catálogo aprobadas. Este cambio todavía no está en los APK/ZIP anteriores. Se inicia entrevista/investigación de YouTube Music; conexión no implementada, alcance pendiente de respuestas. Ver boveda/24 YouTube Music - definicion e investigacion.md.
+
+
+Resultado de investigación YouTube (2026-10-26): reproducción inicial/pausa/seek comprobadas en emulador Android, continuidad con HOME/SLEEP observada con anomalía posterior de posición. Windows sigue recibiendo 403; **extensión YouTube no lista**. Suite completa: 73 pruebas aprobadas, que no equivalen a validación del servicio remoto. Sondas en tools/youtube_* y resultados/límites en boveda/24 YouTube Music - definicion e investigacion.md. Build outputs actuales son sondas; reconstruir lib/main.dart antes de distribuir. APK/ZIP previos en dist conservados.
+
+
+2026-10-26: el usuario prioriza Android. Implementada localmente 0.3.1+10 con adaptador YouTube Music sin cuenta, búsqueda de canciones, paquete externo, permiso network.youtube y capacidad source. Se cambió el cliente no oficial tras investigar #386; recepción completa de audio y sonda Android release continua aprobadas, recorrido nativo instalado en depuración aprobado. Suite: 77 pruebas. Límites y pendientes en [[24 YouTube Music - definicion e investigacion]]. Windows/listas/favoritos/historial de la fuente se posponen. No es publicación de la app.
+
+
+0.3.1 Android final: APK normal instalado y arranque correcto en emulador, firmado y sin sondas; extensión publicada en catálogo ae10a9c y hash verificado. Archivos en dist/0.3.1-android-test. Aplicación principal sin push/release. Ver [[24 YouTube Music - definicion e investigacion]].
+
 
 2026-10-26: usuario autoriza publicar 0.3.0 mientras prueba 0.3.1. Preparación separada y alcance en [[25 Release 0.3.0]]; no incluir YouTube ni modificar la copia de pruebas 0.3.1.
 
 
 Publicación vigente confirmada: v0.3.0-alpha.1, Android universal/ARM64 y Windows, siete adjuntos verificados. Fuente y cierre en [[25 Release 0.3.0]]. 0.3.1 permanece en pruebas separadas; no está en esta release.
+
+
+2026-10-26: usuario valida 0.3.1 (búsqueda/audio rápidos, sin bugs ni lag observados) y autoriza nueva release. Diseño reportado queda para próxima versión. Comunicación pública: soporte de extensiones para fuentes de música en la nube, con adaptador inicial Android; no prometer cualquier proveedor ni ocultar límites. Se publica el mismo APK validado; Windows mantiene 0.3.0. Seguimiento en [[26 Release 0.3.1]].
