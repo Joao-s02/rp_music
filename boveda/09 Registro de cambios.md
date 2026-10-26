@@ -206,3 +206,13 @@ Integración del tráiler publicada: 026c87e enviado a main; README remoto confi
 ## README vigente y mantenimiento obligatorio — 2026-10-25
 
 El usuario detectó que la descripción seguía en 0.2.2 y pidió actualizarla, además de exigir mantenimiento en cada actualización. README alineado con 0.2.4+6/v0.2.4-alpha.1: descarga ARM64/universal/Windows, instalación manual inicial, novedades 0.2.3/0.2.4, listas completas, diagnóstico, actualizador, 42 pruebas documentadas y límites de validación física. Tráiler conservado. Regla principal incorporada en [[01 Contexto para agentes]]: revisión completa en cada actualización, diferenciando publicado/local e implementación/propuestas; no autoriza publicaciones por sí misma. Verificación de enlaces locales y diff antes de publicar; no se recompila Flutter por ser documentación.
+
+## 2026-10-25 — Informe móvil 0.2.4 y mejoras locales 0.2.5
+
+El usuario confirma notificaciones visibles y solicita cuatro mejoras. Se implementan reproductor a pantalla completa con título animado, carátula de sesión e iconos vectoriales, Ajustes con tarjetas/botones y borrado irreversible confirmado con limpieza de referencias solo tras éxito. Android requiere escritura SAF; puede ser necesario reelegir carpeta. Se conserva 0.2.4 publicada y trabajo previo de la bóveda/tráiler. Motivos, comprobaciones y pendientes en [[20 Pruebas 0.2.4 y mejoras 0.2.5]]. Sin publicación ni push.
+
+Cierre 0.2.5 local: análisis limpio, 46 pruebas aprobadas, APK release 0.2.5+7 compilado y recursos multimedia verificados. Capturas móvil/escritorio actualizadas. Digest y tamaño en [[20 Pruebas 0.2.4 y mejoras 0.2.5]]. Pendientes: teléfono físico, permisos SAF/SD y Windows nativo.
+
+## Publicación autorizada de 0.2.5 — 2026-10-25
+
+El usuario solicita actualizar también escritorio y subir la nueva release a GitHub. Se prepara v0.2.5-alpha.1 preliminar con APK universal/ARM64 y Windows x64, guías, ejemplo y SHA-256. Se autoriza por este pedido el envío de fuentes y publicación; confirmar resultados y adjuntos al terminar. Se preservan versiones anteriores.

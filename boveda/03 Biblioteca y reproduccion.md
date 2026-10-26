@@ -54,3 +54,7 @@ El usuario pidió eliminar listas completas. Implementado con confirmación y pe
 ## Correcciones locales 0.2.4
 
 Búsqueda móvil expandible desde lupa con foco estable al aparecer teclado; biblioteca vacía adaptada a nueva referencia. Servicio Android conserva foreground en pausa/transiciones, libera wake lock de CPU en pausa y foreground al detener. Diagnóstico copiable/exportable/importable y registro acotado. La reproducción prolongada en Galaxy A34 Android 16/Poco sigue pendiente de retesteo físico; pruebas y parche de dependencia en [[18 Pruebas 0.2.3 y correcciones 0.2.4]].
+
+## Mejoras solicitadas tras probar 0.2.4
+
+Confirmado: título largo animado en una línea y reproductor a pantalla completa; carátula e iconos simples en notificaciones; Ajustes agrupados y acciones con botones; eliminación de archivo desde tres puntos con confirmación. Implementación local, límites y verificaciones en [[20 Pruebas 0.2.4 y mejoras 0.2.5]]. El informe del usuario confirma que los controles de notificación ya aparecen en 0.2.4 móvil.

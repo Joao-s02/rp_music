@@ -46,3 +46,5 @@ Nueva investigación: [[17 Actualizaciones opcionales desde la app]] — investi
 Trabajo vigente: [[18 Pruebas 0.2.3 y correcciones 0.2.4]] — teclado/búsqueda, servicio de audio, logs y actualizador opcional; v0.2.4-alpha.1 publicada y adjuntos verificados.
 
 Producción audiovisual: [[19 Trailer de RP Music]] — tráiler editable de 30 segundos en la carpeta hermana rp_music_trailer.
+
+Trabajo local posterior: [[20 Pruebas 0.2.4 y mejoras 0.2.5]] — informe móvil, reproductor completo, carátula en notificación, Ajustes y borrado confirmado.

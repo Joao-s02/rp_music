@@ -53,3 +53,7 @@ El informe físico sigue negativo en Galaxy A34 y Poco X6, incluido ARM64 y perm
 ## Actualizador opcional
 
 Viabilidad documental evaluada en [[17 Actualizaciones opcionales desde la app]]. GitHub releases puede servir como fuente pública; latest excluye nuestras prereleases. Android permite solicitar instalación, con firma compatible y gestión de consentimiento del sistema. La propuesta fue aprobada e implementada posteriormente en 0.2.4: consulta diaria configurable, canales, descarga/verificación Android y enlace Windows. Firma de distribución estable y recorrido entre releases públicas siguen pendientes; ver [[18 Pruebas 0.2.3 y correcciones 0.2.4]].
+
+## Informe móvil posterior a 0.2.4
+
+El usuario confirma que ya aparecen los controles de notificación; el informe negativo anterior se conserva como antecedente. Se añade carátula e iconos simplificados en sesión Android; falta verificar su presentación física. Borrado de archivos mediante SAF implementado con permiso de escritura y confirmación, sujeto al proveedor; comprobar permiso antiguo de solo lectura y SD. Ver [[20 Pruebas 0.2.4 y mejoras 0.2.5]].

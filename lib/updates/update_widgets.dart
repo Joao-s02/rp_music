@@ -66,7 +66,7 @@ class UpdateSettings extends StatelessWidget {
               value: updates.previews,
               onChanged: updates.downloading ? null : updates.setPreviews,
             ),
-            TextButton.icon(
+            FilledButton.tonalIcon(
               onPressed: updates.checking || updates.downloading
                   ? null
                   : () => updates.check(manual: true),

@@ -19,6 +19,7 @@ class LibraryController extends ChangeNotifier {
   String? root;
   bool loading = true;
   bool scanning = false;
+  bool deleting = false;
   int scanProcessed = 0;
   int scanTotal = 0;
   bool choosing = false;
@@ -86,7 +87,7 @@ class LibraryController extends ChangeNotifier {
   }
 
   Future<void> chooseRoot() async {
-    if (scanning || choosing) return;
+    if (scanning || choosing || deleting) return;
     choosing = true;
     notifyListeners();
     try {
@@ -102,7 +103,7 @@ class LibraryController extends ChangeNotifier {
 
   Future<void> refresh([String? selectedRoot]) async {
     final candidate = selectedRoot ?? root;
-    if (candidate == null || scanning) return;
+    if (candidate == null || scanning || deleting) return;
     scanning = true;
     message = null;
     scanProcessed = 0;
@@ -157,6 +158,37 @@ class LibraryController extends ChangeNotifier {
           'No se pudo leer la carpeta. Se conserva la biblioteca anterior.';
     } finally {
       scanning = false;
+      notifyListeners();
+    }
+  }
+
+  Future<bool> deleteTrack(
+    Track track, {
+    Future<void> Function()? beforeDelete,
+  }) async {
+    if (scanning ||
+        choosing ||
+        deleting ||
+        !tracks.any((t) => t.id == track.id)) {
+      return false;
+    }
+    deleting = true;
+    notifyListeners();
+    try {
+      await beforeDelete?.call();
+      await files.delete(track.id);
+      tracks = tracks.where((t) => t.id != track.id).toList();
+      favorites.remove(track.id);
+      for (final list in playlists.values) {
+        list.removeWhere((id) => id == track.id);
+      }
+      await persist();
+      return true;
+    } catch (_) {
+      message = 'No se pudo eliminar el archivo. Comprueba el permiso de escritura; en Android vuelve a elegir la carpeta desde Ajustes.';
+      return false;
+    } finally {
+      deleting = false;
       notifyListeners();
     }
   }

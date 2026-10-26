@@ -2,7 +2,16 @@
 
 Reproductor de música local construido en Flutter para Android y Windows. Escucha tus archivos sin conexión y sin cuentas, con biblioteca, favoritos y listas de reproducción.
 
-**Versión publicada: [0.2.4-alpha.1](https://github.com/Joao-s02/rp_music/releases/tag/v0.2.4-alpha.1)** (aplicación `0.2.4+6`). Sigue en desarrollo: las funciones disponibles y los pendientes se detallan a continuación. Consulta la [guía de pruebas de 0.2.4](docs/PRUEBAS-0.2.4.md).
+**Versión: [0.2.5-alpha.1](https://github.com/Joao-s02/rp_music/releases/tag/v0.2.5-alpha.1)** (aplicación `0.2.5+7`). Sigue en desarrollo: las funciones disponibles y los pendientes se detallan a continuación. Consulta la [guía de pruebas de 0.2.5](docs/PRUEBAS-0.2.5.md).
+
+## Novedades de 0.2.5
+
+- Reproductor ampliado a pantalla completa y títulos largos en una línea con desplazamiento horizontal; respeta reducir animaciones.
+- Carátula incrustada de la pista en la sesión multimedia Android e iconos simples. La apariencia final depende de Android y del fabricante; pendiente comprobarla en teléfono físico.
+- Ajustes divididos en secciones, con botones e iconos para las acciones.
+- Eliminar del dispositivo desde los tres puntos de cada canción, con confirmación. Borra el archivo y limpia sus referencias solo si tiene éxito. En Android puede ser necesario volver a elegir la carpeta para otorgar escritura; no todos los proveedores permiten borrar.
+
+Versión `0.2.5+7` para Android y Windows: análisis estático limpio y 46 pruebas aprobadas. Windows recibe reproductor ampliado, título animado, Ajustes agrupados y eliminación confirmada de archivos. Las notificaciones multimedia del sistema se aplican a Android. Los paquetes de 0.2.4 se conservan. Consulta la [guía de pruebas de 0.2.5](docs/PRUEBAS-0.2.5.md). Ver [seguimiento de pruebas](boveda/20%20Pruebas%200.2.4%20y%20mejoras%200.2.5.md).
 
 ## Tráiler
 
@@ -60,7 +69,7 @@ flutter run -d ID_DEL_DISPOSITIVO
 
 En la aplicación, elegir una carpeta de música. En Android se usa el selector del sistema y se conserva el permiso de lectura. En Windows se usa una ruta local. Los cambios de archivos se incorporan con Actualizar. Al volver a abrir se muestra el catálogo guardado sin escanear automáticamente.
 
-Los datos nuevos se guardan en el directorio de soporte de la aplicación, dentro de `v2`, con un respaldo del guardado anterior. Se conservan los datos de 0.2.0; no se migran los de la antigua alfa 0.1. El escaneo nunca modifica los archivos musicales. La sesión se guarda por separado en `session.json`, también con respaldo.
+Los datos nuevos se guardan en el directorio de soporte de la aplicación, dentro de `v2`, con un respaldo del guardado anterior. Se conservan los datos de 0.2.0; no se migran los de la antigua alfa 0.1. El escaneo nunca modifica los archivos musicales. Eliminar del dispositivo borra un archivo únicamente tras confirmarlo. La sesión se guarda por separado en `session.json`, también con respaldo.
 
 ## Probar la extensión de ejemplo
 
@@ -85,9 +94,9 @@ flutter build windows --debug
 
 Windows requiere Visual Studio con herramientas C++ y soporte para enlaces de complementos. Lo habitual es habilitar el modo de desarrollador. En esta máquina se pudo compilar con junctions locales dentro de `windows/flutter/ephemeral/.plugin_symlinks`; estos archivos temporales no se versionan. Se usa `just_audio_windows_plus 0.5.5`, con C++20, en reemplazo del backend anterior.
 
-Las pruebas verifican biblioteca, guardados, progreso/caché, cambios de raíz, listas, extensiones, restauración, carreras al cambiar pistas, teclado y navegación móvil/escritorio. La prueba nativa Windows con WAV silenciosos generados se ejecuta con `flutter test integration_test/windows_playback_test.dart -d windows`. Ejecutarla antes de compilar paquetes de distribución, sin otras compilaciones nativas en paralelo. No comprueba todos los formatos ni reproduce necesariamente el crash de la PC del usuario.
+Las pruebas verifican biblioteca, guardados, progreso/caché, cambios de raíz, listas, extensiones, restauración, carreras al cambiar pistas, teclado y navegación móvil/escritorio. La prueba nativa Windows con WAV silenciosos generados (incluye borrado real de una pista cargada) se ejecuta con `flutter test integration_test/windows_playback_test.dart -d windows`. Ejecutarla antes de compilar paquetes de distribución, sin otras compilaciones nativas en paralelo. No comprueba todos los formatos ni reproduce necesariamente el crash de la PC del usuario.
 
-Para 0.2.4 se aprobaron 42 pruebas automatizadas y el análisis estático. En emulador Android API 37 se verificaron cambios automáticos en segundo plano, pausa/reanudación y liberación al detener; también se probaron el foco del buscador y las validaciones nativas del actualizador. El alcance y las pruebas físicas pendientes están en la [guía de 0.2.4](docs/PRUEBAS-0.2.4.md).
+Para 0.2.5 se aprobaron 46 pruebas automatizadas, el análisis estático y la prueba nativa Windows de reproducción, volumen, bandeja y borrado. APK universal/ARM64 y Windows release compilados; firma compatible, recursos multimedia y alineación de APK comprobados. Como antecedente, en 0.2.4: En emulador Android API 37 se verificaron cambios automáticos en segundo plano, pausa/reanudación y liberación al detener; también se probaron el foco del buscador y las validaciones nativas del actualizador. El alcance y las pruebas físicas pendientes están en la [guía de 0.2.4](docs/PRUEBAS-0.2.4.md).
 
 ## Pendiente
 

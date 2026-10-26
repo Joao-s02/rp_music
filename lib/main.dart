@@ -26,6 +26,7 @@ Future<void> main() async {
     final handler = Platform.isAndroid
         ? await AudioService.init(
             builder: () => MusicHandler(
+              artworkLoader: controller.files.notificationArtwork,
               sessionStore: LocalStore(
                 Directory('${directory.path}/v2'),
                 baseName: 'session',

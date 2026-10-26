@@ -91,3 +91,13 @@ Pista audiovisual vigente: pulse-dark-trap.wav, dirección oscura/épica solicit
 ## README alineado con 0.2.4 — 2026-10-25
 
 Se actualiza presentación pública para 0.2.4+6/v0.2.4-alpha.1 con novedades, instalación, diagnóstico/actualizador y límites de pruebas existentes. No cambia implementación ni se repiten pruebas de Flutter. El requisito de mantener README en cada actualización se conserva en [[01 Contexto para agentes]].
+
+## Mejoras locales tras pruebas móviles 0.2.4 — 2026-10-25
+
+Código local 0.2.5+7 con reproductor completo, título animado, carátula de sesión Android, iconos simples, Ajustes agrupados y eliminación real confirmada de archivos. Ver [[20 Pruebas 0.2.4 y mejoras 0.2.5]] para validación y límites. Última publicación: v0.2.4-alpha.1.
+
+Validación final del incremento 0.2.5: 46 pruebas aprobadas, análisis limpio y APK release 0.2.5+7 local compilado; comprobación de iconos del APK aprobada. No hay nueva release publicada ni paquete Windows recompilado.
+
+## Publicación autorizada de 0.2.5 — 2026-10-25
+
+El usuario solicita actualizar también escritorio y subir la nueva release a GitHub. Se prepara v0.2.5-alpha.1 preliminar con APK universal/ARM64 y Windows x64, guías, ejemplo y SHA-256. Se autoriza por este pedido el envío de fuentes y publicación; confirmar resultados y adjuntos al terminar. Se preservan versiones anteriores.
