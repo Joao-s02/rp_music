@@ -1,30 +1,152 @@
 import 'package:flutter/material.dart';
 
 import 'update_controller.dart';
+import '../app/app_version.dart';
 
-class UpdateNotice extends StatelessWidget {
-  const UpdateNotice({super.key, required this.updates, required this.onOpen});
-  final UpdateController updates;
-  final VoidCallback onOpen;
-  @override
-  Widget build(BuildContext context) => ListenableBuilder(
+Future<void> showUpdateDialog(
+  BuildContext context,
+  UpdateController updates,
+  Future<void> Function() beforeInstall,
+) => showDialog<void>(
+  context: context,
+  builder: (context) => ListenableBuilder(
     listenable: updates,
-    builder: (context, _) => updates.available == null
-        ? const SizedBox.shrink()
-        : MaterialBanner(
-            content: Text('Nueva versión: ${updates.available!.tag}'),
-            actions: [
-              TextButton(
-                onPressed: onOpen,
-                child: const Text('Ver actualización'),
+    builder: (context, _) => AlertDialog(
+      icon: const Icon(Icons.system_update_outlined),
+      title: const Text('Actualización disponible'),
+      scrollable: true,
+      content: SizedBox(
+        width: 420,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text('Versión actual: $appVersion'),
+            Text(
+              'Nueva versión: ${updates.available?.tag ?? ''}',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            if (updates.available case final release?) ...[
+              Text(
+                '${(release.size / (1024 * 1024)).toStringAsFixed(1)} MB · ${updates.android ? 'Android' : 'Windows'}',
               ),
-              TextButton(
-                onPressed: updates.downloading ? null : updates.skip,
-                child: const Text('Omitir'),
+              const SizedBox(height: 12),
+              ExpansionTile(
+                title: const Text('Novedades'),
+                tilePadding: EdgeInsets.zero,
+                children: [SelectableText(release.notes)],
               ),
             ],
+            if (updates.downloading) ...[
+              const SizedBox(height: 16),
+              LinearProgressIndicator(value: updates.progress),
+              Text('Descargando ${(updates.progress * 100).round()} %'),
+              TextButton(
+                onPressed: updates.cancelDownload,
+                child: const Text('Cancelar descarga'),
+              ),
+            ],
+            if (updates.message != null)
+              Padding(
+                padding: const EdgeInsets.only(top: 12),
+                child: Text(updates.message!),
+              ),
+            const SizedBox(height: 12),
+            Text(
+              updates.android
+                  ? 'La descarga se realiza aquí. Android te pedirá confirmar la instalación.'
+                  : 'El ZIP se descarga aquí. Después deberás extraerlo y cerrar la versión anterior desde la bandeja.',
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: updates.installing ? null : () => Navigator.pop(context),
+          child: const Text('Actualizar después'),
+        ),
+        if (!updates.downloading)
+          FilledButton.icon(
+            onPressed: updates.installing
+                ? null
+                : () async {
+                    if (updates.downloaded == null) {
+                      await updates.download();
+                    } else if (updates.android) {
+                      await beforeInstall();
+                      await updates.install();
+                    } else {
+                      await updates.revealDownload();
+                    }
+                  },
+            icon: Icon(
+              updates.downloaded == null
+                  ? Icons.download
+                  : updates.android
+                  ? Icons.install_mobile
+                  : Icons.folder_open,
+            ),
+            label: Text(
+              updates.downloaded == null
+                  ? 'Actualizar · descargar'
+                  : updates.android
+                  ? 'Instalar actualización'
+                  : 'Mostrar ZIP descargado',
+            ),
           ),
-  );
+      ],
+    ),
+  ),
+);
+
+/// Presents one centered offer per successful check; postponing does not skip a version.
+class UpdateNotice extends StatefulWidget {
+  const UpdateNotice({
+    super.key,
+    required this.updates,
+    required this.beforeInstall,
+  });
+  final UpdateController updates;
+  final Future<void> Function() beforeInstall;
+  @override
+  State<UpdateNotice> createState() => _UpdateNoticeState();
+}
+
+class _UpdateNoticeState extends State<UpdateNotice> {
+  int shown = -1;
+  bool open = false;
+  @override
+  void initState() {
+    super.initState();
+    widget.updates.addListener(offer);
+    offer();
+  }
+
+  void offer() {
+    if (!mounted ||
+        open ||
+        widget.updates.available == null ||
+        shown == widget.updates.noticeSerial) {
+      return;
+    }
+    shown = widget.updates.noticeSerial;
+    open = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted) return;
+      await showUpdateDialog(context, widget.updates, widget.beforeInstall);
+      open = false;
+    });
+    WidgetsBinding.instance.scheduleFrame();
+  }
+
+  @override
+  void dispose() {
+    widget.updates.removeListener(offer);
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => const SizedBox.shrink();
 }
 
 class UpdateSettings extends StatelessWidget {
@@ -78,6 +200,12 @@ class UpdateSettings extends StatelessWidget {
             if (updates.message != null) Text(updates.message!),
             if (updates.available case final release?) ...[
               const Divider(),
+              OutlinedButton.icon(
+                onPressed: () =>
+                    showUpdateDialog(context, updates, beforeInstall),
+                icon: const Icon(Icons.system_update),
+                label: const Text('Ver actualización'),
+              ),
               Text(release.tag, style: Theme.of(context).textTheme.titleMedium),
               Text(
                 '${(release.size / (1024 * 1024)).toStringAsFixed(1)} MB · ${updates.android ? 'Android' : 'Windows'}',
@@ -98,23 +226,25 @@ class UpdateSettings extends StatelessWidget {
                   onPressed: updates.installing
                       ? null
                       : () async {
-                          await beforeInstall();
-                          await updates.install();
+                          if (updates.android) {
+                            await beforeInstall();
+                            await updates.install();
+                          } else {
+                            await updates.revealDownload();
+                          }
                         },
                   icon: const Icon(Icons.install_mobile),
-                  label: const Text('Instalar actualización'),
+                  label: Text(
+                    updates.android
+                        ? 'Instalar actualización'
+                        : 'Mostrar ZIP descargado',
+                  ),
                 )
               else
                 FilledButton.icon(
-                  onPressed: updates.android
-                      ? updates.download
-                      : updates.openRelease,
+                  onPressed: updates.download,
                   icon: const Icon(Icons.download),
-                  label: Text(
-                    updates.android
-                        ? 'Descargar actualización'
-                        : 'Abrir descarga de Windows',
-                  ),
+                  label: Text('Descargar actualización'),
                 ),
               if (updates.android)
                 const Padding(

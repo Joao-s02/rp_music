@@ -8,7 +8,7 @@ import 'package:rp_music/updates/update_controller.dart';
 import 'package:rp_music/data/local_store.dart';
 
 Map<String, dynamic> fixture({
-  String tag = 'v0.2.6-alpha.1',
+  String tag = 'v0.2.7-alpha.1',
   bool preview = true,
   String? digest,
   int size = 4,
@@ -103,7 +103,7 @@ class FakeClient implements HttpClient {
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
-class FakePlatform implements UpdatePlatform {
+class FakePlatform extends UpdatePlatform {
   FakePlatform(this.directory);
   final Directory directory;
   bool installerAllowed = true;
@@ -172,7 +172,7 @@ void main() {
         arm64: true,
         previews: true,
         android: true,
-        skipped: 'v0.2.6-alpha.1',
+        skipped: 'v0.2.7-alpha.1',
       ),
       isNull,
     );

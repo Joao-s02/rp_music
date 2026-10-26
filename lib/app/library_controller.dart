@@ -8,6 +8,7 @@ import '../data/local_store.dart';
 import '../data/music_files.dart';
 import '../domain/extension_manifest.dart';
 import '../domain/track.dart';
+import '../domain/track_sort.dart';
 
 class LibraryController extends ChangeNotifier {
   LibraryController(this.store, this.files);
@@ -23,6 +24,10 @@ class LibraryController extends ChangeNotifier {
   int scanProcessed = 0;
   int scanTotal = 0;
   bool choosing = false;
+  TrackSort sort = TrackSort.title;
+  bool ascending = true;
+  List<Track> ordered(Iterable<Track> source) =>
+      sortTracks(source, sort, ascending);
   bool dark = true;
   bool closeToTray = true;
   double volume = 1;
@@ -54,6 +59,12 @@ class LibraryController extends ChangeNotifier {
             )
             .toList();
         activeExtensionId = json['activeExtension'] as String?;
+        sort =
+            TrackSort.values
+                .where((value) => value.name == json['sort'])
+                .firstOrNull ??
+            TrackSort.title;
+        ascending = json['ascending'] as bool? ?? true;
         dark = json['dark'] as bool? ?? true;
         closeToTray = json['closeToTray'] as bool? ?? true;
         volume = ((json['volume'] as num?)?.toDouble() ?? 1).clamp(0.0, 1.0);
@@ -74,6 +85,8 @@ class LibraryController extends ChangeNotifier {
       'playlists': playlists.map((k, v) => MapEntry(k, List<String>.of(v))),
       'extensions': extensions.map((e) => e.toJson()).toList(),
       'activeExtension': activeExtensionId,
+      'sort': sort.name,
+      'ascending': ascending,
       'dark': dark,
       'closeToTray': closeToTray,
       'volume': volume,
@@ -175,6 +188,10 @@ class LibraryController extends ChangeNotifier {
     deleting = true;
     notifyListeners();
     try {
+      if (root != null && !await files.ensureWritable(root!)) {
+        message = 'No se concedió escritura. No se eliminó ningún archivo.';
+        return false;
+      }
       await beforeDelete?.call();
       await files.delete(track.id);
       tracks = tracks.where((t) => t.id != track.id).toList();
@@ -189,6 +206,33 @@ class LibraryController extends ChangeNotifier {
       return false;
     } finally {
       deleting = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> setSort(TrackSort value) async {
+    sort = value;
+    notifyListeners();
+    await persist();
+  }
+
+  Future<void> toggleSortDirection() async {
+    ascending = !ascending;
+    notifyListeners();
+    await persist();
+  }
+
+  Future<void> requestWriteAccess() async {
+    if (root == null || choosing || scanning || deleting) return;
+    choosing = true;
+    notifyListeners();
+    try {
+      final granted = await files.ensureWritable(root!);
+      message = granted ? 'Acceso de escritura autorizado para esta carpeta.' : 'No se concedió escritura. Puedes seguir escuchando sin borrar archivos.';
+    } catch (_) {
+      message = 'El proveedor no permitió autorizar escritura en esta carpeta.';
+    } finally {
+      choosing = false;
       notifyListeners();
     }
   }

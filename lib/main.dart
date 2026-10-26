@@ -3,6 +3,7 @@ import 'dart:async';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 
 import 'app/library_controller.dart';
@@ -23,10 +24,22 @@ Future<void> main() async {
       LocalStore(Directory('${directory.path}/v2')),
       MusicFiles(),
     );
-    final handler = Platform.isAndroid
+    final playbackReady = Completer<void>();
+    late final MusicHandler handler;
+    handler = Platform.isAndroid
         ? await AudioService.init(
             builder: () => MusicHandler(
               artworkLoader: controller.files.notificationArtwork,
+              onEmptyPlay: () async {
+                await playbackReady.future;
+                if (handler.index < 0 && controller.tracks.isNotEmpty) {
+                  await handler.select(
+                    controller.ordered(controller.tracks),
+                    0,
+                    autoplay: false,
+                  );
+                }
+              },
               sessionStore: LocalStore(
                 Directory('${directory.path}/v2'),
                 baseName: 'session',
@@ -70,6 +83,17 @@ Future<void> main() async {
       ).initialize();
     }
     await handler.restoreSession(controller.tracks);
+    playbackReady.complete();
+    if (Platform.isAndroid) {
+      try {
+        await const MethodChannel('rp_music/system')
+            .invokeMethod<void>('connectWidget');
+      } on PlatformException catch (_) {
+        /* A launcher can still connect directly to the media service. */
+      } on MissingPluginException catch (_) {
+        /* Headless startup has no activity channel. */
+      }
+    }
   } catch (_) {
     runApp(
       const MaterialApp(

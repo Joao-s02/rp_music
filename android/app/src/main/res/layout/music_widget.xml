@@ -1,0 +1,10 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="horizontal" android:gravity="center_vertical" android:padding="12dp" android:background="@drawable/widget_background">
+<ImageView android:id="@+id/widget_cover" android:layout_width="64dp" android:layout_height="64dp" android:src="@mipmap/ic_launcher" android:scaleType="centerCrop" android:contentDescription="Abrir RP Music"/>
+<LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginStart="12dp">
+<TextView android:id="@+id/widget_title" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Elige tu música" android:textColor="#E1E2EC" android:textSize="16sp" android:textStyle="bold" android:maxLines="1" android:ellipsize="end"/>
+<TextView android:id="@+id/widget_artist" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="RP Music · biblioteca local" android:textColor="#BACAC7" android:textSize="12sp" android:maxLines="1" android:ellipsize="end"/>
+<LinearLayout android:layout_width="match_parent" android:layout_height="48dp" android:orientation="horizontal" android:gravity="center">
+<ImageButton android:id="@+id/widget_previous" android:layout_width="48dp" android:layout_height="48dp" android:src="@drawable/rp_previous" android:background="@android:color/transparent" android:contentDescription="Anterior"/>
+<ImageButton android:id="@+id/widget_toggle" android:layout_width="48dp" android:layout_height="48dp" android:src="@drawable/rp_play" android:tint="#47EFE0" android:background="@android:color/transparent" android:contentDescription="Reproducir"/>
+<ImageButton android:id="@+id/widget_next" android:layout_width="48dp" android:layout_height="48dp" android:src="@drawable/rp_next" android:background="@android:color/transparent" android:contentDescription="Siguiente"/>
+</LinearLayout></LinearLayout></LinearLayout>

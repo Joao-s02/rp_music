@@ -96,6 +96,11 @@ class MusicFiles {
     }
   }
 
+  Future<bool> ensureWritable(String root) async =>
+      !Platform.isAndroid ||
+      (await _channel.invokeMethod<bool>('ensureWritable', {'root': root}) ??
+          false);
+
   Future<void> delete(String id) async {
     if (Platform.isAndroid) {
       await _channel.invokeMethod<void>('deleteTrack', {'id': id});
