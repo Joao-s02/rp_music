@@ -37,7 +37,7 @@ class SourceSpec {
         name.length > 60 ||
         domains is! List ||
         domains.isEmpty ||
-        domains.length > 8 ||
+        domains.length > 12 ||
         platforms is! List ||
         platforms.isEmpty ||
         platforms.any((p) => !['android', 'windows'].contains(p))) {

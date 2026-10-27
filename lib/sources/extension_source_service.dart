@@ -22,12 +22,15 @@ class ExtensionSourceService {
   final ProgramController programs;
   final SourceTransport transport;
   final String platform;
-  bool available(String id) {
-    final p = programs.owner('source')?.package;
+  bool available(String id, {bool localLyrics = false}) {
+    final p = programs.owner(localLyrics ? 'lyrics' : 'source')?.package;
     return p?.id == id &&
         p?.sourceSpec?.platforms.contains(platform) == true &&
         programs.allowed(id, 'network.http') &&
-        programs.allowed(id, 'playback.control');
+        (localLyrics
+            ? programs.allowed(id, 'lyrics.cache') &&
+                  programs.allowed(id, 'library.read')
+            : programs.allowed(id, 'playback.control'));
   }
 
   static String trackId(String extension, String id) =>
@@ -36,10 +39,16 @@ class ExtensionSourceService {
   Future<Map<String, dynamic>> invoke(
     String id,
     String operation,
-    Map<String, dynamic> input,
-  ) async {
+    Map<String, dynamic> input, {
+    bool localLyrics = false,
+  }) async {
+    if (localLyrics && operation != 'lyrics') {
+      throw const FormatException(
+        'Operación incompatible con proveedor de letras.',
+      );
+    }
     final package = programs.installed[id]?.package;
-    if (package == null || !available(id)) {
+    if (package == null || !available(id, localLyrics: localLyrics)) {
       throw const FormatException(
         'Actualiza y activa una extensión de fuente compatible.',
       );
@@ -47,28 +56,33 @@ class ExtensionSourceService {
     var stage = 'start';
     Map<String, dynamic> context = {};
     Map<String, dynamic>? response;
-    for (var step = 0; step < 4; step++) {
-      if (!available(id) || programs.installed[id]?.package != package) {
+    for (var step = 0; step < (operation == 'metadata' ? 8 : 4); step++) {
+      if (!available(id, localLyrics: localLyrics) ||
+          programs.installed[id]?.package != package) {
         throw const FormatException('Fuente desactivada o modificada.');
       }
       final deadline = DateTime.now().add(const Duration(seconds: 3));
       while (programs.busy && DateTime.now().isBefore(deadline)) {
         await Future<void>.delayed(const Duration(milliseconds: 20));
       }
-      final data = await programs.invoke(id, 'source', {
-        ...input,
-        'operation': operation,
-        'stage': stage,
-        'context': context,
-        'response': ?response,
-        'date': DateTime.now()
-            .toUtc()
-            .toIso8601String()
-            .substring(0, 10)
-            .replaceAll('-', ''),
-      });
+      final data = await programs.invoke(
+        id,
+        localLyrics ? 'lyrics' : 'source',
+        {
+          ...input,
+          'operation': operation,
+          'stage': stage,
+          'context': context,
+          'response': ?response,
+          'date': DateTime.now()
+              .toUtc()
+              .toIso8601String()
+              .substring(0, 10)
+              .replaceAll('-', ''),
+        },
+      );
       if (data == null ||
-          !available(id) ||
+          !available(id, localLyrics: localLyrics) ||
           programs.installed[id]?.package != package) {
         throw const FormatException(
           'La fuente no respondió o fue desactivada.',
@@ -95,10 +109,24 @@ class ExtensionSourceService {
         throw const FormatException('Contexto de red demasiado grande.');
       }
       stage = data['next'] as String;
-      response = await transport(
-        Map<String, dynamic>.from(data['request'] as Map),
-        package,
-      );
+      final request = Map<String, dynamic>.from(data['request'] as Map);
+      try {
+        response = await transport(request, package);
+        if (operation == 'metadata' &&
+            [429, 503].contains(response['status'])) {
+          await Future<void>.delayed(const Duration(milliseconds: 1200));
+          if (!available(id, localLyrics: localLyrics) ||
+              programs.installed[id]?.package != package) {
+            throw const FormatException('Fuente desactivada o modificada.');
+          }
+          response = await transport(request, package);
+        }
+      } catch (_) {
+        if (operation != 'metadata') rethrow;
+        // Let the package return the metadata/lyrics already obtained. Never
+        // fabricate a successful response or erase an earlier stage's result.
+        response = {'status': 0, 'body': ''};
+      }
     }
     throw const FormatException('La fuente excedió su límite de peticiones.');
   }

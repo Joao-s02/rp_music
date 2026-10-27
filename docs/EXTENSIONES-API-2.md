@@ -117,3 +117,17 @@ playOutline es un icono de contorno que hereda tamaño y color del tema de naveg
 - sourceConfig admite description (máximo 400 caracteres), searchLabel (máximo 80). Se conservan valores predeterminados de paquetes anteriores.
 - navigation.add muestra cada fuente activada/autorizada compatible. Fuente elegida sigue siendo única: abrir otra requiere Usar esta fuente; no altera automáticamente el propietario.
 - Paquetes nuevos requieren minAppVersion 0.3.4, exclusivamente en rp-music-extensions. Spotify preview no simula audio completo ni sincronización de fragmentos.
+
+## Contratos de 0.3.5
+
+La sección 0.3.4 anterior conserva su fase de preparación; esa app se publicó posteriormente. Las novedades siguientes requieren minAppVersion 0.3.5 y no están en sus binarios.
+
+- Nueva capacidad `lyrics`, con propietario independiente de `source`. Requiere `library.read`, `network.http`, `lyrics.cache` y `sourceConfig` con nombre, dominios y plataformas; no requiere permiso de reproducción ni navegación. No añadir `navigation` a proveedores que solo tengan `lyrics`.
+- El anfitrión entrega `event=lyrics`, `operation=lyrics`, `title`, `artist`, `album`, `durationMs`, y las mismas etapas/contexto/respuestas HTTP del transporte existente. No entrega rutas de archivos locales. Resultado: `syncedLyrics` y/o `plainLyrics`, hasta 256 KiB UTF-8; `instrumental=true` sin texto identifica un instrumental. El texto recuperado se guarda en soporte privado del anfitrión, no en el archivo musical ni en los 64 KiB de estado privado del programa.
+- Seleccionar canción inicia lectura incrustada y caché; solo si faltan se consulta el proveedor autorizado. Ausencias se recuerdan 24 h y fallos 5 min. Cambiar permisos/versión/propietario descarta respuestas pendientes antes de persistir. Reintento manual desde Letras. No hay barrido de biblioteca completo.
+- `source/metadata` recibe ID opaco remoto, título, artista, álbum y duración. Devuelve `tags` con `title`, `artist`, `album`, `albumArtist`, `date`, `genre`, `trackNumber`, `trackTotal`, `discNumber`, `discTotal` opcionales; también letras, `artwork` HTTPS y `complete` booleano. Máximo ocho etapas; HTTP 429/503 se reintenta una vez. Un fallo de transporte se entrega como `response={status:0,body:""}` para permitir devolver datos parciales. `source/lyrics`, búsqueda y resolución conservan cuatro etapas.
+- Peticiones admiten `delayMs` entero 0–2000; se aplica antes de abrir conexión. Cada proveedor debe respetar sus límites. `sourceConfig.domains` admite hasta doce dominios, con las mismas reglas HTTPS y comodines; ampliarlos exige revisión del paquete.
+- Portada para descargas: solo JPEG/PNG detectados por bytes, hasta 5 MiB/25 s; hasta tres redirecciones, verificando cada destino. Permisos/versión/propietario se comprueban antes y después de preparar el archivo. No se concede acceso a rutas arbitrarias.
+- Etiquetado del nuevo MP4/M4A en memoria: incluye portada y letra, conserva los bytes/posiciones del audio y no recodifica. Otro contenedor o un error de etiquetas conserva el audio original con aviso. No es un editor de originales locales ni garantiza todos los campos.
+
+La implementación específica de cualquier proveedor y sus pruebas permanecen exclusivamente en rp-music-extensions. Guía de uso local: [0.3.5](USO-0.3.5-local.md).

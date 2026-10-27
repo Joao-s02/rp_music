@@ -18,6 +18,7 @@ import 'updates/update_controller.dart';
 import 'extensions/program_controller.dart';
 import 'sources/extension_source_broker.dart';
 import 'extensions/program_coordinator.dart';
+import 'lyrics/lyrics_controller.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -92,6 +93,8 @@ Future<void> main() async {
           'Se inició en modo base por un registro de extensiones dañado.';
     }
     controller.attachPrograms(programs);
+    controller.lyrics = LyricsController(directory, controller.files, programs)
+      ..follow(handler);
     ExtensionSourceBroker(programs, handler);
     ProgramCoordinator(controller, programs, handler);
     controller.notifyProgramsReady();

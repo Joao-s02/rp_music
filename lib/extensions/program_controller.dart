@@ -255,7 +255,7 @@ class ProgramController extends ChangeNotifier {
       return result;
     } catch (error) {
       item.failures++;
-      item.error = event == 'source'
+      item.error = event == 'source' || event == 'lyrics'
           ? 'La fuente no pudo procesar la respuesta. Revisa su compatibilidad.'
           : error.toString().substring(
               0,

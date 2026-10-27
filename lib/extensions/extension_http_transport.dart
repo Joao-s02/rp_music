@@ -14,6 +14,11 @@ class ExtensionHttpTransport {
     if (uri == null || package.sourceSpec?.permits(uri) != true) {
       throw const FormatException('Dominio no autorizado.');
     }
+    final delay = request['delayMs'] ?? 0;
+    if (delay is! int || delay < 0 || delay > 2000) {
+      throw const FormatException('Espera de petición inválida.');
+    }
+    if (delay > 0) await Future<void>.delayed(Duration(milliseconds: delay));
     final method = request['method'] ?? 'GET';
     if (!['GET', 'POST'].contains(method)) {
       throw const FormatException('Método no admitido.');
