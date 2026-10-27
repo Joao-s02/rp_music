@@ -1,6 +1,6 @@
 ---
 tipo: seguimiento
-estado: implementacion-local-con-integraciones-pendientes
+estado: publicada-con-limites-experimentales
 actualizado: 2026-10-27
 ---
 # Pruebas 0.3.3 y mejoras 0.3.4
@@ -88,3 +88,11 @@ Siete adjuntos definitivos preparados en dist/0.3.4-release; SHA256SUMS cubre lo
 | PRUEBAS-0.3.4.md | 3725 | a969d484dbc168f67f2c59fc03585d02348b896dea587f9257759e1153055e5b |
 | CAMBIOS-0.3.4.md | 2625 | c2a830bcb125eb795eb0dbdac7a36547185bd0aad327454a324ff7f589ad0ac2 |
 | SHA256SUMS.txt | 528 | b9de4c681ff08f5e3ddc0baea25ac45a62ffecc27670993470062b8dc3a3ea4c |
+
+## Publicación confirmada — v0.3.4-alpha.1
+
+2026-10-27: publicada como prerelease en https://github.com/Joao-s02/rp_music/releases/tag/v0.3.4-alpha.1 . Aplicación 0.3.4+13, tag/código d873ae3ada998fcefc89b4a5f98cd298f9db6204. Extensiones publicadas exclusivamente en rp-music-extensions, commit 833044ab11a2d03a4fd82134822246fc52149aed.
+
+Antes de publicar se verificó el borrador por ID de release (el endpoint por tag aún devuelve 404 en esa etapa): siete archivos, tamaños/digests SHA-256 idénticos a los locales y revisión de código correcta. Después de publicar: API pública sin autenticación confirmó prerelease visible, siete adjuntos, tamaños/digests correctos y tag al commit esperado. SHA256SUMS descargado públicamente idéntico byte a byte al local. Los archivos públicos son los de la tabla definitiva anterior.
+
+No se modifican los límites por publicar: YouTube Windows sigue fallando en reproducción nativa y permanece como candidato manual fuera del catálogo; Spotify solo fragmentos por enlace sin cuenta y letras planas. No hubo instalación/arranque Android ni prueba nueva de exportación por selector o escucha física. La prueba de arranque Windows no acredita audio remoto. Commits documentales posteriores confirman publicación y no cambian los binarios del tag.

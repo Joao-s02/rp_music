@@ -1,13 +1,13 @@
 ---
 tipo: arquitectura-observada
-estado: implementada-hasta-0.3.3-con-limites
+estado: implementada-hasta-0.3.4-con-limites
 actualizado: 2026-10-26
 ---
 # Arquitectura vigente
 
 ## Alcance y criterio
 
-Mapa de la implementación observada en el código de 0.3.3, no propuesta de reconstrucción ni elección irreversible de paquetes. Estado de distribución/verificación en [[10 Estado del repositorio]]. El alfa y arquitectura-reproductor-flutter.md son antecedentes; [[11 Reconstruccion - primera base]] explica el inicio de esta implementación.
+Mapa de la implementación observada en el código de 0.3.4, no propuesta de reconstrucción ni elección irreversible de paquetes. Estado de distribución/verificación en [[10 Estado del repositorio]]. El alfa y arquitectura-reproductor-flutter.md son antecedentes; [[11 Reconstruccion - primera base]] explica el inicio de esta implementación.
 
 ## Componentes y responsabilidades
 
@@ -82,6 +82,6 @@ App, versión de paquete y apiVersion son números distintos. pubspec.yaml y app
 
 Separación y deuda heredada: [[04 Extensiones]]. Políticas de release: [[27 Publicacion de releases - contenido obligatorio]]. Benchmarks/aislamiento/funciones aún no implementadas: [[07 Preguntas e investigacion]]. Este trabajo documental no cambia módulos, permisos, binarios ni el esquema de datos.
 
-## Evolución local 0.3.4
+## Evolución 0.3.4
 
 [[32 Pruebas 0.3.3 y mejoras 0.3.4]]: Lyrics interpreta LRC; LyricsView presenta posición real y guarda copia privada por ID. El núcleo no contiene clientes LRCLIB/Spotify/YouTube; source/lyrics usa el transporte de extensiones existente. SourceDownload exporta audio resuelto con storage.download y selector. Navegación lista todas las fuentes autorizadas/plataforma, conservando propietario único y elección explícita. No se cambia el esquema de biblioteca/sesión.

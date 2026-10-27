@@ -51,6 +51,6 @@ Pendientes: Windows de esa fuente, cuentas, listas/favoritos/historial online, a
 
 Antecedentes: [[22 Extensiones - alcance del primer sistema]], [[23 Extensiones programables - primer prototipo]], [[28 Pruebas 0.3.1 y mejoras 0.3.2]], [[29 Pruebas 0.3.2 y mejoras 0.3.3]].
 
-## Preparación local 0.3.4
+## Entrega 0.3.4
 
-[[32 Pruebas 0.3.3 y mejoras 0.3.4]]: variantes YouTube separadas Android/Windows y Spotify de vistas previas públicas sin cuenta, exclusivamente en previews del repositorio externo. No equivalen a catálogo actualizado ni a Spotify completo. Núcleo añade storage.download, operación genérica de letras y múltiples accesos de fuente con elección explícita de propietario. Publicación 0.3.3 permanece intacta.
+[[32 Pruebas 0.3.3 y mejoras 0.3.4]]: variantes YouTube separadas Android/Windows y Spotify de vistas previas públicas sin cuenta, exclusivamente en el repositorio externo. Android y Spotify vista previa están publicados en catálogo; Windows es candidato manual. No equivalen a Spotify completo. Núcleo añade storage.download, operación genérica de letras y múltiples accesos de fuente con elección explícita de propietario. Publicación de app 0.3.4 y hashes externos confirmados en la nota; variantes anteriores conservadas.

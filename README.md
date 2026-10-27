@@ -40,7 +40,7 @@ Código específico, paquetes, recursos y pruebas de extensiones se desarrollan 
 
 ## Verificación y pendientes
 
-0.3.4: suite completa de **97 pruebas aprobadas** y análisis sin incidencias. Reproductor verificado sin desplazamiento de controles en cuatro tamaños; letras en pantalla con avance/retroceso/seek y cambio de canción. Windows normal release compilado. Empaquetado Android y verificaciones finales de publicación en la [nota de versión](boveda/32%20Pruebas%200.3.3%20y%20mejoras%200.3.4.md).
+0.3.4: suite completa de **97 pruebas aprobadas** y análisis sin incidencias. Reproductor verificado sin desplazamiento de controles en cuatro tamaños; letras en pantalla con avance/retroceso/seek y cambio de canción. Android universal/ARM64 con firma, ABI y versión verificados; Windows normal compilado/iniciado y ZIP íntegro. Siete adjuntos y hashes públicos confirmados. Verificaciones de publicación en la [nota de versión](boveda/32%20Pruebas%200.3.3%20y%20mejoras%200.3.4.md).
 
 Fuente YouTube Windows no supera la prueba nativa. Spotify solo vista previa pública; no hay nueva reproducción nativa aprobada de esos paquetes. Guardado real con selector, nuevos paquetes Android/Spotify, escucha física y segundo plano prolongado requieren retesteo. No convertir pruebas de bytes en pruebas de reproducción.
 

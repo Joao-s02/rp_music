@@ -1,11 +1,11 @@
 ---
 tipo: indice
 estado: vigente
-actualizado: 2026-10-26
+actualizado: 2026-10-27
 ---
 # RP Music — red de conocimiento
 
-La bóveda conserva decisiones y evidencia para continuar el proyecto. Referencia publicada: **0.3.3-alpha.1**, aplicación **0.3.3+12**, Android y Windows. Estado actual y comprobaciones: [[10 Estado del repositorio]].
+La bóveda conserva decisiones y evidencia para continuar el proyecto. Referencia publicada: **0.3.4-alpha.1**, aplicación **0.3.4+13**, Android y Windows. Estado actual y comprobaciones: [[10 Estado del repositorio]].
 
 ## Empezar aquí
 
@@ -25,11 +25,11 @@ La bóveda conserva decisiones y evidencia para continuar el proyecto. Referenci
 | Preguntas todavía abiertas | [[07 Preguntas e investigacion]] |
 | Marca, tema y referencias | [[15 Identidad visual e icono]] |
 | Publicaciones | [[27 Publicacion de releases - contenido obligatorio]] |
-| Última entrega y sus pruebas | [[29 Pruebas 0.3.2 y mejoras 0.3.3]] |
+| Última entrega y sus pruebas | [[32 Pruebas 0.3.3 y mejoras 0.3.4]] |
 
 Guías para usar, compilar y programar: [Índice de documentación](../docs/README.md). Presentación pública: [README del proyecto](../README.md).
 
-Seguimiento local posterior: [[32 Pruebas 0.3.3 y mejoras 0.3.4]] (sin publicación).
+Última publicación y límites experimentales: [[32 Pruebas 0.3.3 y mejoras 0.3.4]].
 
 ## Historial y fuentes
 

@@ -1,20 +1,18 @@
 ---
 tipo: estado-actual
-estado: publicado-con-pendientes-fisicos
-actualizado: 2026-10-26
+estado: publicado-con-limites-experimentales
+actualizado: 2026-10-27
 ---
 # Estado del repositorio
 
 ## Referencia publicada
 
-**0.3.3-alpha.1**, aplicación **0.3.3+12**, Android universal/ARM64 y Windows x64. [Release pública](https://github.com/Joao-s02/rp_music/releases/tag/v0.3.3-alpha.1).
+**0.3.4-alpha.1**, aplicación **0.3.4+13**, Android universal/ARM64 y Windows x64. [Release pública](https://github.com/Joao-s02/rp_music/releases/tag/v0.3.4-alpha.1).
 
-- Tag/código: `610784501ca54409a8857e2d25785dad69164249`.
-- Extensiones con esta entrega: commit `641d970b1501ce64eccf601e664a18135a2846be` de rp-music-extensions.
-- Commits posteriores registran confirmaciones documentales; no cambian binarios del tag.
-- Siete adjuntos verificados públicamente por tamaño/SHA-256: dos APK, ZIP Windows, USO, PRUEBAS, CAMBIOS y SHA256SUMS.
-
-Evidencia, hashes y etapas: [[29 Pruebas 0.3.2 y mejoras 0.3.3]]. Los antiguos estados acumulativos se conservaron en [[30 Archivo de navegacion y estado]].
+- Tag/código: d873ae3ada998fcefc89b4a5f98cd298f9db6204.
+- Extensiones: 833044ab11a2d03a4fd82134822246fc52149aed de rp-music-extensions, exclusivamente en ese repositorio.
+- Siete adjuntos públicos verificados por tamaño/SHA-256: dos APK, ZIP Windows completo, USO, PRUEBAS, CAMBIOS y SHA256SUMS. Manifiesto descargado públicamente idéntico al local.
+- Evidencia, hashes, preparación y fallos conservados en [[32 Pruebas 0.3.3 y mejoras 0.3.4]]. La entrega anterior permanece en [[29 Pruebas 0.3.2 y mejoras 0.3.3]]; antiguos estados acumulativos en [[30 Archivo de navegacion y estado]].
 
 ## Capacidades actuales
 
@@ -22,50 +20,37 @@ Evidencia, hashes y etapas: [[29 Pruebas 0.3.2 y mejoras 0.3.3]]. Los antiguos e
 | --- | --- |
 | Biblioteca local | Raíz/subcarpetas, caché, escaneo manual/progresivo, búsqueda, álbumes/artistas/carpetas y orden. |
 | Audio | Cola de selección, controles, volumen, aleatorio/repetición, historial anterior/avance local y restauración sin autoplay. |
-| Listas | Manuales, favoritos, carátula propia/mosaico, añadir álbum a existentes/crear; automáticas mediante extensión. |
-| Archivos | Borrado confirmado con escritura cuando corresponde. Lectura de metadatos; no editor de etiquetas. |
-| Interfaz | Marca A, Inter/Plus Jakarta Sans, temas, navegación adaptable, álbum y reproductor renovados sin ecualizador. |
-| Android | Sesión/notificación, carátula/controles, permisos y widget. Límites físicos según cada versión. |
-| Windows | Audio local, volumen y bandeja/salida configurables. Fuente inicial no habilitada allí; no dar controles del sistema por validados por la bandeja. |
-| Actualizaciones | Consulta opcional/manual o diaria y canales, descarga/verificación; Android solicita instalador y Windows extrae ZIP manualmente. |
-| Extensiones | API 1 y API 2 experimental, permisos, propietarios, recuperación, catálogo/compatibilidad y HTTP/UI/navegación acotados. |
+| Listas y archivos | Manuales/favoritos, carátulas, añadir álbumes; automáticas por extensión; borrado confirmado, metadatos de lectura. |
+| Reproductor | Carátula/espacios adaptables y controles principales fijos fuera del desplazamiento, incluso con disposición de extensión. |
+| Letras | Importación UTF-8 LRC/TXT, copia privada por canción, sincronización por línea/seguimiento/seek y consulta opcional mediante extensión. No extracción incrustada ni sincronización por palabra. |
+| Android | Sesión/notificación, carátula/controles, permisos y widget; retesteo físico de esta versión pendiente. |
+| Windows | Audio local, volumen y bandeja/salida. Fuente YouTube Windows candidata con ensayos nativos fallidos; no declararla compatible funcional. |
+| Descargas | Exportación manual por fuente con storage.download, selector, límite 64 MiB/3 min y transporte acotado. Guardado real mediante selector pendiente de validación en dispositivo. |
+| Actualizaciones | Consulta opcional/manual/diaria y canales, descarga/verificación; Android solicita instalador, Windows extrae ZIP manualmente. |
+| Extensiones | API 1/2 experimental, permisos, recuperación, catálogo compatible y múltiples destinos; una fuente elegida con acción explícita. |
 
 Comportamiento en [[03 Biblioteca y reproduccion]], contratos/paquetes en [[04 Extensiones]], módulos en [[31 Arquitectura vigente]].
 
 ## Extensiones para esta app
 
-Fuente 0.2.1 (Android), Biblioteca viva 0.1.1 y Pulso nocturno 0.1.0. Exclusivamente en [rp-music-extensions](https://github.com/Joao-s02/rp-music-extensions); ninguna viene instalada ni adjunta a la release. Catálogo con variantes anteriores. Material heredado de biblioteca/reproductor en ejemplos/pruebas del principal pendiente de migración; no desarrollar nuevas extensiones aquí.
+Catálogo: YouTube Android 0.3.0 (letras/descarga), Spotify · vistas previas 0.1.0 (Android/Windows, solo fragmentos por enlace), Biblioteca viva 0.1.1 y Pulso nocturno 0.1.0. Paquetes nuevos requieren anfitrión 0.3.4. Variantes 0.3.1/0.3.2/0.3.3 conservadas.
 
-## Verificación registrada de 0.3.3
+YouTube Windows 0.3.0 es candidato manual fuera del catálogo recomendado; sus pruebas nativas fallaron. Spotify no aporta canciones completas ni búsqueda por nombre, y sus letras no se sincronizan con el fragmento. No hay nueva prueba nativa aprobada de estos paquetes. Ninguna extensión viene instalada, dentro del APK/ZIP ni adjunta a la release principal.
+
+## Verificación registrada de 0.3.4
 
 | Comprobación | Resultado y alcance |
 | --- | --- |
-| Suite completa inicial | 86 pruebas aprobadas. |
-| 11 casos finales seleccionados | Aprobados; incluyen una regresión nueva de filtro guardado y casos ya contados. No son 97 casos distintos ni una suite completa nueva de ese tamaño. |
-| Análisis final | Sin incidencias. |
-| Audio Android | Búsqueda, dos canciones, pausa/seek, anterior/avance y revocación en emulador API 37, en primer plano. Primer intento con espera fija fallido conservado en la nota de versión. |
-| Instaladores normales | Universal instalado/abierto; APK con versión/ABI/firma verificados. Windows compilado y arranque de prueba; ZIP íntegro con dependencias. |
-| Publicación | Tag, acceso público, siete archivos/hashes y paquetes externos remotos confirmados. |
-
-El usuario validó rapidez/segundo plano de fuentes en versiones anteriores. No convertirlo en prueba física de 0.3.3 ni el ensayo de primer plano en uno nuevo de pantalla apagada.
+| Suite completa | 97 pruebas aprobadas; las repeticiones seleccionadas no se suman como casos nuevos. |
+| Análisis | Sin incidencias. |
+| UI/letras | Controles visibles en cuatro tamaños, capturas 360/1280 inspeccionadas; caché/resaltado/seek/cambio de canción LRC comprobados. |
+| Paquetes/red | Intérprete real y bytes de audio; no confundir con escucha nativa. Catálogo público y nuevos paquetes externos comparados. |
+| Android normal | Universal/ARM64 compilados; versión/código 0.3.4/13, ABI y firmas correctos, certificado compatible con 0.3.3. Sin dispositivo conectado para instalar/abrir. |
+| Windows normal | Release 0.3.4+13 compilada; proceso activo tras 5 s y ZIP de 20 archivos íntegro, sin sonda ni paquetes de extensión. |
+| Publicación | Borrador y API pública verificados: siete archivos, tamaños/digests SHA-256 correctos, tag y manifiesto descargado confirmados. |
 
 ## Pendientes activos
 
-Retesteo físico/escucha larga, actualización entre releases con datos conservados, validación amplia de formatos/redes/SAF/SD/launcher y Windows. Fuente Windows/cuentas/listas/favoritos/historial online; letras/edición de etiquetas/gapless/fundido/cola editable; ecualizador como extensión; aislamiento/métricas/firmas del SDK y licencia del proyecto. Investigaciones en [[07 Preguntas e investigacion]].
+YouTube Windows funcional, Spotify completo y búsqueda por nombre sin cuenta; exportación real con selector, nuevos paquetes Android/Spotify y escucha física/segundo plano prolongado. También actualización entre releases conservando datos, formatos/redes/SAF/SD/launcher, cuentas/listas/favoritos/historial online, edición de etiquetas/gapless/fundido/cola editable, ecualizador como extensión y aislamiento/métricas/firmas del SDK/licencia. [[07 Preguntas e investigacion]].
 
-## Mantenimiento
-
-Bóveda: decisiones/evidencia. Código: implementación observada. README y docs: guías de entrada. dist: copias locales de pruebas/distribución, no versiones actuales adicionales. No publicar cambios documentales ni nuevos binarios sin autorización correspondiente.
-
-Actualizar este resumen y la nota temática tras entregas. Dejar preparación, commits y pruebas detalladas en la nota de versión y [[09 Registro de cambios]], sin volver a acumular estados contradictorios aquí.
-
-
-## Mantenimiento documental posterior a la release
-
-Consolidación local del 2026-10-26 solicitada por el usuario: índice y contexto depurados, decisiones actuales separadas de historia, documentación técnica consolidada en [[31 Arquitectura vigente]] y antecedentes de esta nota preservados en [[30 Archivo de navegacion y estado]]. Solo Markdown; sin cambios de código/binarios, nueva versión ni nueva verificación funcional. La publicación registrada sigue siendo 0.3.3; esta limpieza documental todavía no se ha enviado a GitHub. Registro del trabajo en [[09 Registro de cambios]].
-
-## Preparación local 0.3.4 — 2026-10-27
-
-Código local 0.3.4+13 en desarrollo a partir del test 0.3.3: reproductor con controles fijos, letras LRC/TXT/consulta opcional por extensión, exportación de audio con permiso y fuentes externas separadas. Spotify limitado a vistas previas por enlace público. Evidencia, fallos corregidos y pendientes en [[32 Pruebas 0.3.3 y mejoras 0.3.4]]. No publicado; referencia pública sigue siendo 0.3.3.
-
-Verificación final de preparación 0.3.4: 97 pruebas aprobadas, análisis sin incidencias y compilación normal Windows release 0.3.4+13. Fuente Windows continúa fallando en ensayo nativo; Spotify solo vista previa por enlace. Exportación mediante selector/Android y APK nuevos pendientes. Esta evidencia no cambia la referencia publicada 0.3.3.
+La consolidación documental previa se incluyó con la publicación autorizada; notas históricas conservan sus fechas y evidencia. No convertir antecedentes de dispositivos/versiones anteriores en pruebas físicas de 0.3.4. Publicación posterior siempre requiere autorización; requisitos en [[27 Publicacion de releases - contenido obligatorio]].
