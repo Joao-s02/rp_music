@@ -103,11 +103,11 @@ class _ExtensionSourceViewState extends State<ExtensionSourceView> {
     setState(() => downloading = track.id);
     try {
       final saved = await SourceDownload.save(track, service);
-      if (mounted && saved) {
+      if (mounted && saved.saved) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+          SnackBar(
             content: Text(
-              'Canción guardada. Actualiza la biblioteca si elegiste su carpeta.',
+              saved.notice ?? 'Canción guardada con etiquetas. Actualiza la biblioteca si elegiste su carpeta.',
             ),
           ),
         );

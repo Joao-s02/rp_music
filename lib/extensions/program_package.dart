@@ -15,9 +15,12 @@ bool versionAtLeast(String actual, String minimum) {
 }
 
 const programPermissions = {
-  'storage.download': 'Guardar audio de esta fuente mediante el selector de archivos',
+  'lyrics.cache':
+      'Buscar letras automáticamente y guardarlas solo dentro de la app',
+  'storage.download':
+      'Guardar audio de esta fuente mediante el selector de archivos',
   'network.youtube': 'Permiso de fuente heredado (requiere actualizar)',
-  'network.http': 'Conectarse a los dominios declarados de la fuente',
+  'network.http': 'Conectarse a los dominios declarados de la extensión',
   'navigation.add': 'Añadir un acceso en la navegación de la app',
   'library.read': 'Leer metadatos de la biblioteca y favoritos',
   'playback.control': 'Controlar la reproducción',
@@ -26,6 +29,7 @@ const programPermissions = {
   'behavior.override': 'Sustituir funciones base (nivel avanzado)',
 };
 const programSlots = {
+  'lyrics': 'Letras de canciones locales',
   'source': 'Fuente musical en línea',
   'library': 'Biblioteca',
   'player': 'Reproductor ampliado',
@@ -127,12 +131,27 @@ class ProgramPackage {
         ? null
         : SourceSpec.parse(json['sourceConfig']);
     if (spec != null &&
-        (!slots.contains('source') || !permissions.contains('network.http'))) {
+        ((!slots.contains('source') && !slots.contains('lyrics')) ||
+            !permissions.contains('network.http'))) {
       throw const FormatException('La fuente necesita network.http.');
     }
+    if (slots.contains('lyrics') &&
+        (spec == null ||
+            !permissions.containsAll({
+              'library.read',
+              'network.http',
+              'lyrics.cache',
+            }))) {
+      throw const FormatException(
+        'Las letras requieren configuración de red, library.read y lyrics.cache.',
+      );
+    }
     if (spec?.navigationLabel != null &&
-        !permissions.contains('navigation.add')) {
-      throw const FormatException('La navegación requiere navigation.add.');
+        (!slots.contains('source') ||
+            !permissions.contains('navigation.add'))) {
+      throw const FormatException(
+        'La navegación requiere una fuente y navigation.add.',
+      );
     }
     final minimum = json['minAppVersion'] ?? '0.3.0';
     if (minimum is! String || !RegExp(r'^\d+\.\d+\.\d+$').hasMatch(minimum)) {

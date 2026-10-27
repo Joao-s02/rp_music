@@ -1,7 +1,7 @@
 ---
 tipo: requisitos-y-contratos
 estado: vigente-con-limites-experimentales
-actualizado: 2026-10-26
+actualizado: 2026-10-27
 ---
 # Extensiones
 
@@ -47,7 +47,13 @@ Catálogo fija revisión Git, comprueba SHA-256 y muestra Descargar/Instalada/Ac
 
 Vía no oficial experimental y prioridad Android aceptadas para primera fuente: solo audio, sin vídeo visible ni cuenta. Búsqueda/reproducción publicadas, no solo investigadas. Prueba física positiva de 0.3.1 y segundo plano se conservan como antecedentes en [[24 YouTube Music - definicion e investigacion]]. Ahora la fuente reside en su paquete, con transporte genérico del anfitrión.
 
-Pendientes: Windows de esa fuente, cuentas, listas/favoritos/historial online, artistas/álbumes completos, ecualizador, Spotify, interoperabilidad y aislamiento más fuerte. Ecualizador es próxima extensión deseada, sin especificación ni DSP implementados. Play Store/condiciones de distribución requieren investigación específica vigente, no se promete compatibilidad.
+Pendientes: Windows de esa fuente, cuentas, listas/favoritos/historial online, artistas/álbumes completos, ecualizador, interoperabilidad y aislamiento más fuerte. Ecualizador es próxima extensión deseada, sin especificación ni DSP implementados. Spotify cancelado por el usuario el 2026-10-27; su paquete publicado es antecedente y aún no se retiró del catálogo. Play Store cancelada; las condiciones de servicios externos requieren investigación específica vigente.
+
+El 2026-10-27 el usuario confirma reproducción satisfactoria de YouTube Android y solicita priorizar metadatos completos en descargas, mediante otro servicio o complemento si hace falta. Investigación y preguntas en [[33 Metadatos de descargas YouTube]]; ninguna nueva extensión implementada todavía.
+
+Alcance posterior confirmado: enriquecer automáticamente nuevas descargas YouTube con letras incrustadas y corregir búsqueda de letras que falla en las canciones probadas por el usuario. Extensión aparte para buscar automáticamente letras faltantes en biblioteca local. Reconocer letras ya incrustadas corresponde a la base. Guardar resultados de esa búsqueda en archivos locales existentes o solo en caché queda por definir. [[33 Metadatos de descargas YouTube]].
+
+Implementación local posterior 0.3.5: el usuario elige **solo caché privada**, sin editar música local. Nueva capacidad lyrics/permiso lyrics.cache y proveedor independiente de source. Candidatos externos YouTube Android 0.4.0 y Letras locales 0.1.0, minAppVersion 0.3.5. Catálogo local sin Spotify, todavía sin publicar; paquetes históricos conservados. Evidencia y límites en [[33 Metadatos de descargas YouTube]].
 
 Antecedentes: [[22 Extensiones - alcance del primer sistema]], [[23 Extensiones programables - primer prototipo]], [[28 Pruebas 0.3.1 y mejoras 0.3.2]], [[29 Pruebas 0.3.2 y mejoras 0.3.3]].
 

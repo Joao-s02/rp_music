@@ -31,6 +31,8 @@ Guías para usar, compilar y programar: [Índice de documentación](../docs/READ
 
 Última publicación y límites experimentales: [[32 Pruebas 0.3.3 y mejoras 0.3.4]].
 
+Trabajo local posterior 0.3.5: [[33 Metadatos de descargas YouTube]] — letras incrustadas, búsqueda automática y nuevas descargas etiquetadas; no publicado.
+
 ## Historial y fuentes
 
 - [[09 Registro de cambios]] — cronología; no sustituye el estado actual.

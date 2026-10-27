@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 
 import '../domain/track.dart';
 import 'library_scanner.dart';
+import 'embedded_lyrics.dart';
 export 'library_scanner.dart';
 
 const _channel = MethodChannel('rp_music/library');
@@ -27,6 +28,30 @@ void _scanWorker((String, List<Track>, SendPort) request) {
 }
 
 class MusicFiles {
+  /// Reads tags only. Android grants are used to create a bounded private copy;
+  /// the original document is never opened for writing.
+  Future<String?> embeddedLyrics(String id) async {
+    if (id.startsWith('rpmusic-source:')) return null;
+    String? temporary;
+    try {
+      final path = Platform.isAndroid
+          ? temporary = await _channel.invokeMethod<String>('lyricsFile', {
+              'id': id,
+            })
+          : id;
+      if (path == null) return null;
+      return await Isolate.run(() => EmbeddedLyrics.read(File(path)));
+    } finally {
+      if (temporary != null) {
+        try {
+          await File(temporary).delete();
+        } catch (_) {
+          /* Private cache. */
+        }
+      }
+    }
+  }
+
   Future<String?> chooseRoot() => Platform.isAndroid
       ? _channel.invokeMethod<String>('chooseRoot')
       : FilePicker.getDirectoryPath(

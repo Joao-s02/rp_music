@@ -8,6 +8,7 @@ import 'package:crypto/crypto.dart';
 
 import '../domain/lyrics.dart';
 import '../playback/music_handler.dart';
+import '../lyrics/lyrics_controller.dart';
 
 class LyricsView extends StatefulWidget {
   const LyricsView({
@@ -15,15 +16,34 @@ class LyricsView extends StatefulWidget {
     required this.audio,
     this.fetchLyrics,
     this.directory,
+    this.controller,
   });
   final MusicHandler audio;
   final Future<String> Function()? fetchLyrics;
   final Future<Directory> Function()? directory;
+  final LyricsController? controller;
   @override
   State<LyricsView> createState() => _LyricsViewState();
 }
 
 class _LyricsViewState extends State<LyricsView> {
+  @override
+  void initState() {
+    super.initState();
+    widget.controller?.addListener(refresh);
+  }
+
+  void refresh() {
+    if (!mounted || trackId == null) return;
+    final controller = widget.controller!;
+    final value = controller.values[trackId];
+    setState(() {
+      error = controller.errors[trackId];
+      fetching = controller.pending.containsKey(trackId);
+    });
+    if (!identical(value, lyrics)) setLyrics(value);
+  }
+
   Lyrics? lyrics;
   String? trackId, error;
   int generation = 0, active = -2;
@@ -38,6 +58,13 @@ class _LyricsViewState extends State<LyricsView> {
   Future<void> load(String id) async {
     final current = ++generation;
     try {
+      final controller = widget.controller;
+      if (controller != null) {
+        final track = widget.audio.tracks.where((t) => t.id == id).firstOrNull;
+        if (track != null) await controller.ensure(track);
+        if (mounted && current == generation) refresh();
+        return;
+      }
       final target = await file(id);
       final text = await target.exists() ? await target.readAsString() : '';
       if (!mounted || current != generation) return;
@@ -84,6 +111,12 @@ class _LyricsViewState extends State<LyricsView> {
       if (text.trim().isEmpty) {
         throw const FormatException('El archivo está vacío.');
       }
+      if (!mounted || current != generation) return;
+      if (widget.controller != null) {
+        await widget.controller!.save(id, text);
+        if (mounted && current == generation) setLyrics(value);
+        return;
+      }
       final target = await file(id);
       await target.parent.create(recursive: true);
       await target.writeAsString(text, flush: true);
@@ -103,6 +136,14 @@ class _LyricsViewState extends State<LyricsView> {
 
   bool fetching = false;
   Future<void> fetch() async {
+    final controller = widget.controller;
+    if (controller != null) {
+      final track = widget.audio.tracks
+          .where((t) => t.id == trackId)
+          .firstOrNull;
+      if (track != null) await controller.ensure(track, forceNetwork: true);
+      return;
+    }
     final callback = widget.fetchLyrics;
     final id = trackId;
     if (callback == null || id == null || fetching) return;
@@ -139,6 +180,7 @@ class _LyricsViewState extends State<LyricsView> {
 
   @override
   void dispose() {
+    widget.controller?.removeListener(refresh);
     generation++;
     scroll.dispose();
     super.dispose();
@@ -157,13 +199,21 @@ class _LyricsViewState extends State<LyricsView> {
         error = null;
         active = -2;
         generation++;
-        if (trackId != null) load(trackId!);
+        if (trackId != null) {
+          Future.microtask(() {
+            if (mounted) load(trackId!);
+          });
+        }
       }
       return Scaffold(
         appBar: AppBar(
           title: const Text('Letras'),
           actions: [
-            if (widget.fetchLyrics != null)
+            if (widget.fetchLyrics != null ||
+                widget.controller != null &&
+                    widget.audio.tracks.any(
+                      (t) => t.id == item?.id && widget.controller!.canFetch(t),
+                    ))
               IconButton(
                 tooltip: 'Buscar letra en línea',
                 onPressed: fetching ? null : fetch,
@@ -195,7 +245,7 @@ class _LyricsViewState extends State<LyricsView> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               const Text(
-                                'Importa un archivo LRC para seguir la canción en tiempo real. Los archivos TXT se muestran sin sincronización.',
+                                'Se muestran las letras incrustadas o guardadas en la app. También puedes importar LRC sincronizado o TXT. Una extensión de letras puede buscar las que falten automáticamente.',
                               ),
                               const SizedBox(height: 16),
                               FilledButton.icon(

@@ -1,7 +1,7 @@
 ---
 tipo: requisitos
 estado: vigente
-actualizado: 2026-10-26
+actualizado: 2026-10-27
 ---
 # Vision y decisiones
 
@@ -14,7 +14,7 @@ Reproductor local sencillo y fluido, personalizable por una comunidad mediante e
 | Tecnología | Flutter/Dart. Paquetes concretos son decisiones técnicas provisionales: [[31 Arquitectura vigente]]. |
 | Base | Archivos de una raíz del dispositivo, uso musical sin cuenta y sin conexión. |
 | Red opcional | Actualizaciones configurables y extensiones de fuentes en línea. |
-| Distribución | Repositorios públicos; universal/ARM64/Windows con guías/hashes según [[27 Publicacion de releases - contenido obligatorio]]. |
+| Distribución | Distribución oficial exclusivamente en el repositorio GitHub del usuario; Play Store cancelada por decisión expresa el 2026-10-27. Universal/ARM64/Windows con guías/hashes según [[27 Publicacion de releases - contenido obligatorio]]. |
 | Licencia | Deseo de código abierto confirmado; licencia del proyecto sin elegir. No hay LICENSE en la raíz al revisar esta consolidación; se conservan licencias de recursos y dependencias. |
 | Personalización | Instalar sin recompilar la app, con consentimiento para permisos/actualizaciones. Reiniciar es aceptable; no implica carga arbitraria de código nativo. |
 | Rendimiento | Fluidez de biblioteca/audio; sin presupuestos numéricos acordados. |

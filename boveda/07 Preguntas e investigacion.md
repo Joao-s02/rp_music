@@ -1,7 +1,7 @@
 ---
 tipo: pendientes-y-resoluciones
 estado: vigente
-actualizado: 2026-10-26
+actualizado: 2026-10-27
 ---
 # Preguntas e investigacion
 
@@ -12,11 +12,11 @@ actualizado: 2026-10-26
 | Ecualizador | Próxima extensión deseada: requisitos, puntos de integración audio/DSP, compatibilidad y pruebas. No implementado ni añadido al núcleo. |
 | Fuente en línea | Windows, cuentas, listas/favoritos/historial online, artistas/álbumes completos, redes/regiones y escucha larga. |
 | SDK/confianza | Memoria/aislamiento, autoría/firmas, colaboración, componentes visuales amplios y métricas atribuibles. |
-| Audio avanzado | Gapless/fundido, cola editable, letras locales/sincronizadas y edición de metadatos con protección de sobrescritura. |
+| Audio avanzado | Gapless/fundido, cola editable y edición de metadatos con protección de sobrescritura. LRC/TXT por línea ya implementado en 0.3.4. Enriquecimiento de descargas en [[33 Metadatos de descargas YouTube]]. |
 | Plataformas/equipos | Retesteo físico actual, gestos/tres botones, SD/SAF, launcher/widget, actualización entre releases conservando datos y controles multimedia Windows. |
 | Rendimiento | Biblioteca/equipos reproducibles y presupuestos. [[05 Rendimiento]]. |
 | Producto futuro | Escaneo automático/observador, agrupación de compilaciones/etiquetas incompletas y personalización adicional. |
-| Distribución | Licencia del proyecto pendiente. Play Store y condiciones vigentes de servicios requieren investigación específica. Catálogo revisado obligatorio no aprobado. |
+| Distribución | Licencia del proyecto pendiente. Distribución oficial solo en GitHub; Play Store cancelada el 2026-10-27. Condiciones de servicios externos requieren investigación específica. Catálogo revisado obligatorio no aprobado. |
 
 Consultar documentación primaria vigente al realizar una investigación nueva; registrar fecha, fuente, conclusión y límites. Esta consolidación revisa notas/código y evidencia existentes, no realiza una nueva revisión de políticas externas.
 
@@ -39,8 +39,10 @@ Consultar documentación primaria vigente al realizar una investigación nueva; 
 
 ## Continuar investigando
 
+Prioridad confirmada 2026-10-27 implementada localmente en 0.3.5: lectura de letras incrustadas en la base; letras/metadatos automáticos en nuevas descargas M4A; buscador normalizado con alternativa; extensión de letras locales con caché privada sin editar música. Alcance/verificaciones y validación física todavía pendiente en [[33 Metadatos de descargas YouTube]]. No equivale a publicación, cobertura de toda canción ni a editor general de etiquetas.
+
 Elegir lo relacionado con la tarea y preguntar solo lo que la evidencia no resuelva. Diferenciar requisito, decisión técnica provisional, observación y propuesta. Tablas/etapas anteriores conservadas en versiones, [[09 Registro de cambios]] y [[30 Archivo de navegacion y estado]].
 
 ## Solicitud posterior a prueba 0.3.3
 
-[[32 Pruebas 0.3.3 y mejoras 0.3.4]]: iniciar letras sincronizadas y descargas YouTube pasa a implementación local. Spotify solicitado explícitamente sin cuenta/vía no oficial: vista previa pública comprobada, canciones completas y búsqueda anónima por nombre sin resolver; no pedir credenciales para este alcance. Verificar reproducción nativa Windows y exportación/selector en ambas plataformas.
+[[32 Pruebas 0.3.3 y mejoras 0.3.4]] conserva la implementación y publicación. El 2026-10-27 el usuario confirma reproducción YouTube Android satisfactoria y cancela Spotify tras comprobar fragmentos de unos 30 segundos: canciones completas/búsqueda Spotify dejan de ser pendientes activos. Retirada del catálogo aún no ejecutada. Nueva prioridad: [[33 Metadatos de descargas YouTube]]. Exportación real/selector y Windows siguen pendientes; el informe de reproducción no verifica esos flujos.

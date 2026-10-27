@@ -100,6 +100,37 @@ class MainActivity : AudioServiceActivity() {
         val channel = MethodChannel(engine.dartExecutor.binaryMessenger, "rp_music/library")
         channel.setMethodCallHandler { call, result ->
                 when (call.method) {
+                    "lyricsFile" -> worker.execute {
+                        var temporary: java.io.File? = null
+                        try {
+                            val uri = Uri.parse(call.argument<String>("id")!!)
+                            require(uri.scheme == "content")
+                            val directory = java.io.File(cacheDir, "lyrics_read").apply { mkdirs() }
+                            // Clean interrupted reads without deleting a current reader's file.
+                            directory.listFiles()?.filter { System.currentTimeMillis() - it.lastModified() > 3600000 }?.forEach { it.delete() }
+                            val copy = java.io.File.createTempFile("tags", ".audio", directory)
+                            temporary = copy
+                            val deadline = android.os.SystemClock.elapsedRealtime() + 30000
+                            contentResolver.openInputStream(uri)!!.use { input ->
+                                copy.outputStream().use { output ->
+                                    val buffer = ByteArray(65536)
+                                    var total = 0L
+                                    while (true) {
+                                        val count = input.read(buffer)
+                                        if (count < 0) break
+                                        total += count
+                                        check(total <= 256L * 1024 * 1024 && android.os.SystemClock.elapsedRealtime() < deadline)
+                                        output.write(buffer, 0, count)
+                                    }
+                                }
+                            }
+                            val path = copy.absolutePath
+                            runOnUiThread { result.success(path) }
+                        } catch (e: Exception) {
+                            temporary?.delete()
+                            runOnUiThread { result.error("lyrics", "No se pudieron leer las etiquetas del archivo", null) }
+                        }
+                    }
                     "ensureWritable" -> {
                         val root = Uri.parse(call.argument<String>("root")!!)
                         if (contentResolver.persistedUriPermissions.any { it.uri == root && it.isWritePermission }) result.success(true)

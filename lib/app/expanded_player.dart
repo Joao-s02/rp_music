@@ -354,6 +354,7 @@ class _ExpandedPlayerState extends State<ExpandedPlayer> {
                           MaterialPageRoute<void>(
                             builder: (_) => LyricsView(
                               audio: audio,
+                              controller: library.lyrics,
                               fetchLyrics:
                                   track?.sourceId != null &&
                                       library.programs != null

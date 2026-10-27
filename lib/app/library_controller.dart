@@ -10,6 +10,7 @@ import '../domain/extension_manifest.dart';
 import '../domain/track.dart';
 import '../domain/track_sort.dart';
 import '../extensions/program_controller.dart';
+import '../lyrics/lyrics_controller.dart';
 
 class LibraryController extends ChangeNotifier {
   LibraryController(this.store, this.files);
@@ -47,6 +48,7 @@ class LibraryController extends ChangeNotifier {
   Map<String, List<String>> playlists = {};
   Map<String, Map<String, dynamic>> playlistMeta = {};
   ProgramController? programs;
+  LyricsController? lyrics;
   VoidCallback? refreshPrograms;
   void notifyProgramsReady() => notifyListeners();
   void attachPrograms(ProgramController value) {
@@ -460,6 +462,7 @@ class LibraryController extends ChangeNotifier {
 
   @override
   void dispose() {
+    lyrics?.dispose();
     programs?.removeListener(notifyListeners);
     super.dispose();
   }
