@@ -39,7 +39,7 @@ Consultar documentación primaria vigente al realizar una investigación nueva; 
 
 ## Continuar investigando
 
-Prioridad confirmada 2026-10-27 implementada localmente en 0.3.5: lectura de letras incrustadas en la base; letras/metadatos automáticos en nuevas descargas M4A; buscador normalizado con alternativa; extensión de letras locales con caché privada sin editar música. Alcance/verificaciones y validación física todavía pendiente en [[33 Metadatos de descargas YouTube]]. No equivale a publicación, cobertura de toda canción ni a editor general de etiquetas.
+Prioridad confirmada 2026-10-27 publicada en 0.3.5: lectura de letras incrustadas en la base; letras/metadatos automáticos en nuevas descargas M4A; buscador normalizado con alternativa; extensión de letras locales con caché privada sin editar música. Alcance/verificaciones y validación física todavía pendiente en [[33 Metadatos de descargas YouTube]]. La publicación no equivale a cobertura de toda canción ni a editor general de etiquetas.
 
 Elegir lo relacionado con la tarea y preguntar solo lo que la evidencia no resuelva. Diferenciar requisito, decisión técnica provisional, observación y propuesta. Tablas/etapas anteriores conservadas en versiones, [[09 Registro de cambios]] y [[30 Archivo de navegacion y estado]].
 

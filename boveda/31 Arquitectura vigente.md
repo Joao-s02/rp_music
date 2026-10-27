@@ -1,13 +1,13 @@
 ---
 tipo: arquitectura-observada
-estado: publicada-0.3.4-y-evolucion-local-0.3.5
+estado: publicada-0.3.5-con-limites
 actualizado: 2026-10-27
 ---
 # Arquitectura vigente
 
 ## Alcance y criterio
 
-Mapa de la implementación observada en el código de 0.3.4, no propuesta de reconstrucción ni elección irreversible de paquetes. Estado de distribución/verificación en [[10 Estado del repositorio]]. El alfa y arquitectura-reproductor-flutter.md son antecedentes; [[11 Reconstruccion - primera base]] explica el inicio de esta implementación.
+Mapa de la implementación observada en el código de 0.3.5, no propuesta de reconstrucción ni elección irreversible de paquetes. Estado de distribución/verificación en [[10 Estado del repositorio]]. El alfa y arquitectura-reproductor-flutter.md son antecedentes; [[11 Reconstruccion - primera base]] explica el inicio de esta implementación.
 
 ## Componentes y responsabilidades
 
@@ -86,6 +86,6 @@ Separación y deuda heredada: [[04 Extensiones]]. Políticas de release: [[27 Pu
 
 [[32 Pruebas 0.3.3 y mejoras 0.3.4]]: Lyrics interpreta LRC; LyricsView presenta posición real y guarda copia privada por ID. El núcleo no contiene clientes LRCLIB/Spotify/YouTube; source/lyrics usa el transporte de extensiones existente. SourceDownload exporta audio resuelto con storage.download y selector. Navegación lista todas las fuentes autorizadas/plataforma, conservando propietario único y elección explícita. No se cambia el esquema de biblioteca/sesión.
 
-## Evolución local 0.3.5
+## Evolución 0.3.5
 
 [[33 Metadatos de descargas YouTube]]: LyricsController sigue selección de MusicHandler y coordina EmbeddedLyrics/MusicFiles, caché privada y proveedor elegido en capacidad lyrics. Lectura de documentos SAF con copia privada temporal acotada en Android; rutas directas/isolate en Windows. Letras locales recuperadas no se escriben en la música. DownloadEnrichment consume source/metadata y DownloadTags añade etiquetas genéricas MP4 sin recodificar. Proveedores de búsqueda/metadatos permanecen en el checkout independiente rp-music-extensions. No se modifica el esquema de biblioteca/sesión; nuevas copias de letras y su huella se guardan en soporte privado. Contratos y límites nuevos en API 2 y nota temática. La validación local no equivale a publicación ni a prueba física Android.

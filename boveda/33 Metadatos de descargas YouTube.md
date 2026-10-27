@@ -1,6 +1,6 @@
 ---
 tipo: requisitos-implementacion-y-verificacion
-estado: implementacion-local-verificada-con-limites
+estado: publicado-con-limites-experimentales
 actualizado: 2026-10-27
 ---
 # Metadatos de descargas YouTube
@@ -98,3 +98,11 @@ Siete adjuntos preparados en dist/0.3.5-release; hashes calculados tras cerrar g
 | USO.md | 4172 | d02c57bd5d04a7c1fd4d43b38b8dcf61bde2b43da749dbf19cb3736e9164f62e |
 
 Extensiones publicadas antes de la app: commit d0a007ef5bbc4f8fb22ed340c57fa7ddab2f5ee4 en rp-music-extensions. Consulta real del catálogo público desde ProgramCatalog 0.3.5 verificó SHA-256/metadatos de Biblioteca viva 0.1.1, Pulso nocturno 0.1.0, YouTube Android 0.4.0 y Letras locales 0.1.0. Spotify no está en el catálogo, paquetes históricos intactos. La app se prepara como borrador a continuación; no confundir esta publicación de extensiones con la release de la app.
+
+## Publicación confirmada — v0.3.5-alpha.1
+
+2026-10-27: publicada como prerelease en https://github.com/Joao-s02/rp_music/releases/tag/v0.3.5-alpha.1. Release ID 425965469, app 0.3.5+14, tag/código a7c9e11bcaf90c2fe0868d395a2d3d132169d4bf. Extensiones publicadas exclusivamente en rp-music-extensions (código d0a007ef5bbc4f8fb22ed340c57fa7ddab2f5ee4).
+
+Antes de publicar: borrador autenticado con siete adjuntos uploaded y tamaños/digests SHA-256 iguales a los locales; target_commitish exacto. Después: API pública sin autenticación confirma prerelease visible con los siete adjuntos; tag apunta al código esperado y SHA256SUMS descargado públicamente coincide byte a byte. Archivos definitivos son los de la tabla anterior. Commits documentales posteriores confirman la publicación y no cambian los binarios del tag.
+
+No cambian los límites al publicar: sin prueba física Android con archivos/selector del usuario ni garantía de letras/metadatos completos o estabilidad de servicios; YouTube Windows conserva fallos conocidos. Ya no es entrega solo local. README, entrada de documentación y estado vigente actualizados, conservando fases históricas.

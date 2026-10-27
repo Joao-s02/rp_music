@@ -7,56 +7,48 @@ actualizado: 2026-10-27
 
 ## Referencia publicada
 
-**0.3.4-alpha.1**, aplicación **0.3.4+13**, Android universal/ARM64 y Windows x64. [Release pública](https://github.com/Joao-s02/rp_music/releases/tag/v0.3.4-alpha.1).
+**0.3.5-alpha.1**, aplicación **0.3.5+14**, Android universal/ARM64 y Windows x64. [Release pública](https://github.com/Joao-s02/rp_music/releases/tag/v0.3.5-alpha.1).
 
-- Tag/código: d873ae3ada998fcefc89b4a5f98cd298f9db6204.
-- Extensiones: 833044ab11a2d03a4fd82134822246fc52149aed de rp-music-extensions, exclusivamente en ese repositorio.
-- Siete adjuntos públicos verificados por tamaño/SHA-256: dos APK, ZIP Windows completo, USO, PRUEBAS, CAMBIOS y SHA256SUMS. Manifiesto descargado públicamente idéntico al local.
-- Evidencia, hashes, preparación y fallos conservados en [[32 Pruebas 0.3.3 y mejoras 0.3.4]]. La entrega anterior permanece en [[29 Pruebas 0.3.2 y mejoras 0.3.3]]; antiguos estados acumulativos en [[30 Archivo de navegacion y estado]].
+- Tag/código: a7c9e11bcaf90c2fe0868d395a2d3d132169d4bf.
+- Extensiones: d0a007ef5bbc4f8fb22ed340c57fa7ddab2f5ee4 de rp-music-extensions. Código/paquetes específicos exclusivamente allí; commits documentales posteriores no cambian binarios.
+- Siete adjuntos públicos verificados por tamaño/SHA-256: dos APK, ZIP Windows completo, USO, PRUEBAS, CAMBIOS y SHA256SUMS. Manifiesto descargado sin autenticación idéntico al local; tag confirmado al commit esperado.
+- Evidencia, hashes y fases locales en [[33 Metadatos de descargas YouTube]]. Anterior: [[32 Pruebas 0.3.3 y mejoras 0.3.4]]; navegación histórica en [[30 Archivo de navegacion y estado]].
 
 ## Capacidades actuales
-
-**Trabajo local posterior: 0.3.5+14**, aún sin publicar. Implementa lectura de letras incrustadas, búsqueda automática con caché privada por proveedor y etiquetas/letras/portada en nuevas descargas M4A. Candidatos de extensiones y evidencia en [[33 Metadatos de descargas YouTube]]. La tabla siguiente describe la referencia publicada 0.3.4, no sustituida por estos cambios.
 
 | Área | Estado |
 | --- | --- |
 | Biblioteca local | Raíz/subcarpetas, caché, escaneo manual/progresivo, búsqueda, álbumes/artistas/carpetas y orden. |
-| Audio | Cola de selección, controles, volumen, aleatorio/repetición, historial anterior/avance local y restauración sin autoplay. |
-| Listas y archivos | Manuales/favoritos, carátulas, añadir álbumes; automáticas por extensión; borrado confirmado, metadatos de lectura. |
-| Reproductor | Carátula/espacios adaptables y controles principales fijos fuera del desplazamiento, incluso con disposición de extensión. |
-| Letras | Importación UTF-8 LRC/TXT, copia privada por canción, sincronización por línea/seguimiento/seek y consulta opcional mediante extensión. No extracción incrustada ni sincronización por palabra. |
-| Android | Sesión/notificación, carátula/controles, permisos y widget; retesteo físico de esta versión pendiente. |
-| Windows | Audio local, volumen y bandeja/salida. Fuente YouTube Windows candidata con ensayos nativos fallidos; no declararla compatible funcional. |
-| Descargas | Exportación manual por fuente con storage.download, selector, límite 64 MiB/3 min y transporte acotado. Guardado real mediante selector pendiente de validación en dispositivo. |
-| Actualizaciones | Consulta opcional/manual/diaria y canales, descarga/verificación; Android solicita instalador, Windows extrae ZIP manualmente. |
-| Extensiones | API 1/2 experimental, permisos, recuperación, catálogo compatible y múltiples destinos; una fuente elegida con acción explícita. |
+| Audio | Cola de selección, controles/volumen, aleatorio/repetición, anterior/avance histórico y restauración sin autoplay. |
+| Listas/archivos | Manuales/favoritos/carátulas/añadir álbumes; automáticas por extensión; borrado confirmado y metadatos de lectura. |
+| Reproductor | Carátula/espacios adaptables y controles principales fijos; disposición de extensión por contrato. |
+| Letras base | Lee incrustadas en formatos compatibles; SYLT en milisegundos añadido; importación LRC/TXT y sincronización por línea/seek. Límites concretos en nota 33. |
+| Letras automáticas | Extensión autorizada busca al seleccionar canción sin incrustadas/caché. Resultados privados, sin modificar música local. No es barrido masivo. |
+| Descargas | Nuevas M4A compatibles con etiquetas, portada y letras disponibles sin recodificar. Selector, permiso storage.download y audio hasta 64 MiB/3 min. Datos parciales/errores con aviso. |
+| Android | Sesión/notificación/carátula/controles, permisos y widget. Lectura SAF con copia temporal privada acotada; retesteo físico actual pendiente. |
+| Windows | Audio local, volumen y bandeja/salida. YouTube Windows no supera pruebas nativas previas; no declararlo funcional. |
+| Actualizaciones | Consulta opcional/manual/diaria, canales y descarga/verificación. Android usa instalador; Windows extrae ZIP manualmente. |
+| Extensiones | API 1/2 experimental, permisos, recuperación, catálogo y destinos múltiples. Proveedor lyrics independiente de source. |
 
-Comportamiento en [[03 Biblioteca y reproduccion]], contratos/paquetes en [[04 Extensiones]], módulos en [[31 Arquitectura vigente]].
+Contratos en [[04 Extensiones]], comportamiento en [[03 Biblioteca y reproduccion]], módulos en [[31 Arquitectura vigente]].
 
-## Extensiones para esta app
+## Extensiones para esta versión
 
-Catálogo: YouTube Android 0.3.0 (letras/descarga), Spotify · vistas previas 0.1.0 (Android/Windows, solo fragmentos por enlace), Biblioteca viva 0.1.1 y Pulso nocturno 0.1.0. Paquetes nuevos requieren anfitrión 0.3.4. Variantes 0.3.1/0.3.2/0.3.3 conservadas.
+Catálogo público: YouTube Android 0.4.0, Letras locales 0.1.0, Biblioteca viva 0.1.1 y Pulso nocturno 0.1.0. Los dos nuevos paquetes requieren app 0.3.5 y revisar permisos/dominios. Variantes anteriores conservadas. Spotify cancelado/retirado del catálogo; archivos históricos no borrados y una instalación previa no se elimina automáticamente.
 
-YouTube Windows 0.3.0 es candidato manual fuera del catálogo recomendado; sus pruebas nativas fallaron. Spotify no aporta canciones completas ni búsqueda por nombre, y sus letras no se sincronizan con el fragmento. No hay nueva prueba nativa aprobada de estos paquetes. Ninguna extensión viene instalada, dentro del APK/ZIP ni adjunta a la release principal.
+YouTube Windows 0.3.0 sigue como candidato manual fuera del catálogo recomendado, con fallos nativos conocidos. Ninguna extensión viene dentro del APK/ZIP ni adjunta a la release de la app.
 
-## Verificación registrada de 0.3.4
+## Verificaciones registradas
 
-| Comprobación | Resultado y alcance |
-| --- | --- |
-| Suite completa | 97 pruebas aprobadas; las repeticiones seleccionadas no se suman como casos nuevos. |
-| Análisis | Sin incidencias. |
-| UI/letras | Controles visibles en cuatro tamaños, capturas 360/1280 inspeccionadas; caché/resaltado/seek/cambio de canción LRC comprobados. |
-| Paquetes/red | Intérprete real y bytes de audio; no confundir con escucha nativa. Catálogo público y nuevos paquetes externos comparados. |
-| Android normal | Universal/ARM64 compilados; versión/código 0.3.4/13, ABI y firmas correctos, certificado compatible con 0.3.3. Sin dispositivo conectado para instalar/abrir. |
-| Windows normal | Release 0.3.4+13 compilada; proceso activo tras 5 s y ZIP de 20 archivos íntegro, sin sonda ni paquetes de extensión. |
-| Publicación | Borrador y API pública verificados: siete archivos, tamaños/digests SHA-256 correctos, tag y manifiesto descargado confirmados. |
+- Suite 106 aprobadas, análisis sin incidencias. Prueba optativa de red aprobada por separado; no se suman repeticiones.
+- Tres casos del usuario desde resultados reales YouTube/duración real obtuvieron letras sincronizadas. Prueba completa con paquete real incrustó letras/portada/álbum en audio sintético, con original intacto.
+- Lector y reproducción nativa Windows de M4A etiquetado aprobados; ffprobe/ffmpeg comprobaron etiquetas/duración/decodificación.
+- APK universal/ARM64 normales, versión/código 0.3.5/14, firma v2/certificado compatible y ABIs correctos. Sin dispositivo conectado para instalación/escucha física de esta versión.
+- Windows normal 0.3.5+14 recompilado tras las pruebas; ZIP de 22 archivos íntegro con guías, sin paquetes de extensión ni sonda.
+- Publicación: borrador verificado antes de publicar, API pública/adjuntos/tag y manifiesto descargado confirmados después. Artefactos finales en dist/0.3.5-release.
 
-## Pendientes activos
+## Pendientes y límites activos
 
-YouTube Windows funcional; exportación real con selector y escucha prolongada/segundo plano con alcance explícito. El 2026-10-27 el usuario confirma que YouTube Android reproduce bien; no se infiere de ello validación de exportación ni todos los equipos. Spotify cancelado: no continuar audio completo/búsqueda; su retirada del catálogo publicado aún no se ejecutó. Nueva prioridad de investigación: [[33 Metadatos de descargas YouTube]]. También actualización entre releases conservando datos, formatos/redes/SAF/SD/launcher, cuentas/listas/favoritos/historial online, edición de etiquetas/gapless/fundido/cola editable, ecualizador como extensión y aislamiento/métricas/firmas del SDK/licencia. Distribución oficial solo en GitHub, Play Store cancelada. [[07 Preguntas e investigacion]].
+Prueba física Android con archivos personales, selector SAF/exportación real, permisos, SD/launcher/widget y escucha prolongada; actualización entre releases conservando datos; cobertura de formatos/redes/regiones. Letras/metadatos pueden faltar o corresponder a versiones distintas; servicios con 503/timeouts observados. No se promete toda canción ni etiqueta.
 
-La consolidación documental previa se incluyó con la publicación autorizada; notas históricas conservan sus fechas y evidencia. No convertir antecedentes de dispositivos/versiones anteriores en pruebas físicas de 0.3.4. Publicación posterior siempre requiere autorización; requisitos en [[27 Publicacion de releases - contenido obligatorio]].
-
-## Cierre verificado del trabajo local 0.3.5
-
-106 pruebas aprobadas y análisis sin incidencias; prueba de red optativa aparte aprobada. Tres canciones aportadas por el usuario recuperan letras sincronizadas desde resultados reales YouTube. Prueba completa de enriquecimiento incrusta letras/portada/álbum en audio sintético, con original intacto. Lectura y reproducción nativa Windows aprobadas. APK universal y Windows normales recompilados tras el arreglo final, versión 0.3.5+14; firma/código/ABI Android y versión Windows comprobados. Archivos locales y límites en [[33 Metadatos de descargas YouTube]]. Sin dispositivo Android conectado, sin publicación y sin cambios al catálogo remoto. La referencia publicada al inicio de esta nota sigue siendo 0.3.4.
+YouTube Windows funcional; cuentas/listas/favoritos/historial online; edición general de etiquetas, cola editable, gapless/fundido, ecualizador como extensión; aislamiento/métricas/firmas del SDK y licencia concreta. Spotify y Play Store dejan de ser objetivos. Distribución oficial exclusivamente GitHub. [[07 Preguntas e investigacion]]. Publicaciones futuras requieren autorización y [[27 Publicacion de releases - contenido obligatorio]].
