@@ -1411,11 +1411,11 @@ class _PlayerPanelState extends State<PlayerPanel> {
           ),
         ),
         body: SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(20),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
             child: Center(
               child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 520),
+                constraints: const BoxConstraints(maxWidth: 720),
                 child: library.programs?.owner('player') != null
                     ? ProgramPlayerView(audio: audio, library: library)
                     : PlayerPanel(
@@ -1811,30 +1811,39 @@ class _ProgramPlayerViewState extends State<ProgramPlayerView> {
         final data = widget.library.programs!.owner('player') == null
             ? null
             : snapshot.data;
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (snapshot.connectionState != ConnectionState.done)
-              const LinearProgressIndicator(),
-            if (data != null)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: Text(
-                  data['title'] as String,
-                  style: Theme.of(context).textTheme.headlineMedium,
-                ),
-              ),
-            PlayerPanel(
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            final panel = PlayerPanel(
               audio: widget.audio,
               library: widget.library,
               expanded: true,
               artworkFirst: data?['layout'] != 'controlsFirst',
-            ),
-            TextButton(
-              onPressed: () => widget.library.programs!.choose('player', null),
-              child: const Text('Volver al reproductor base'),
-            ),
-          ],
+            );
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (snapshot.connectionState != ConnectionState.done)
+                  const LinearProgressIndicator(),
+                if (data != null)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: Text(
+                      data['title'] as String,
+                      style: Theme.of(context).textTheme.headlineMedium,
+                    ),
+                  ),
+                if (constraints.hasBoundedHeight)
+                  Expanded(child: panel)
+                else
+                  panel,
+                TextButton(
+                  onPressed: () =>
+                      widget.library.programs!.choose('player', null),
+                  child: const Text('Volver al reproductor base'),
+                ),
+              ],
+            );
+          },
         );
       },
     ),

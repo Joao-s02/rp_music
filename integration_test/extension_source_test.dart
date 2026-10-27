@@ -49,11 +49,19 @@ void main() {
         'rp_source_probe_',
       );
       final programs = ProgramController(LocalStore(directory));
-      final audio = await AudioService.init(
-        builder: MusicHandler.new,
-        config: playbackServiceConfig,
-      );
+      final audio = Platform.isAndroid
+          ? await AudioService.init(
+              builder: MusicHandler.new,
+              config: playbackServiceConfig,
+            )
+          : MusicHandler();
       await audio.configureSession();
+      final errors = audio.errors.stream.listen(
+        (message) => debugPrint('RP_SOURCE_ERROR: $message'),
+      );
+      final nativeErrors = audio.player.errorStream.listen(
+        (error) => debugPrint('RP_SOURCE_NATIVE_ERROR: ${error.code}'),
+      );
       final broker = ExtensionSourceBroker(programs, audio);
       try {
         await programs.install(package, package.permissions);
@@ -65,6 +73,31 @@ void main() {
           ),
           package.id,
         );
+        const titleMatch = String.fromEnvironment('SOURCE_TITLE_MATCH');
+        if (titleMatch.isNotEmpty) {
+          tracks.removeWhere(
+            (t) => !t.title.toLowerCase().contains(titleMatch.toLowerCase()),
+          );
+        }
+        expect(tracks, isNotEmpty);
+        const secondQuery = String.fromEnvironment('SOURCE_SECOND_QUERY');
+        if (secondQuery.isNotEmpty) {
+          final secondResults = await service.search(secondQuery, package.id);
+          expect(secondResults, isNotEmpty);
+          tracks.removeRange(1, tracks.length);
+          const secondTitle = String.fromEnvironment(
+            'SOURCE_SECOND_TITLE_MATCH',
+          );
+          tracks.add(
+            secondTitle.isEmpty
+                ? secondResults.first
+                : secondResults.firstWhere(
+                    (t) => t.title.toLowerCase().contains(
+                      secondTitle.toLowerCase(),
+                    ),
+                  ),
+          );
+        }
         expect(tracks.length, greaterThanOrEqualTo(2));
         await audio.select(tracks, 0);
         await waitForPlayback(audio, const Duration(seconds: 2));
@@ -106,6 +139,8 @@ void main() {
       } finally {
         broker.dispose();
         programs.dispose();
+        await errors.cancel();
+        await nativeErrors.cancel();
         await audio.close();
       }
     });

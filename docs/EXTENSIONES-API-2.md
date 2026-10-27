@@ -1,6 +1,6 @@
 # Extensiones programables — API 2 / SDK experimental 0.1
 
-Motor publicado desde 0.3.0; contrato de fuentes/navegación publicado en 0.3.2+11. La API 1 declarativa continúa funcionando. No se incluyen extensiones instaladas en la app.
+Motor publicado desde 0.3.0; fuentes/navegación genéricas desde 0.3.2+11, ampliadas en 0.3.3+12. [Índice de documentación](README.md). La API 1 declarativa continúa funcionando. No se incluyen extensiones instaladas en la app.
 
 ## Instalar y probar
 
@@ -49,7 +49,7 @@ La entrada es `String run(String request)`. Recibe y devuelve JSON. Solo se perm
 
 Usar tipos genéricos explícitos: `Map<String, dynamic>` y `List<dynamic>`. El intérprete no implementa todo Dart. Los ejemplos usan conversiones y operaciones comprobadas; un código válido en Dart puede necesitar adaptación a dart_eval.
 
-Entrada de library/lists: `event`, `tracks` y `filters`. Cada canción incluye id, title, artist, album, folder relativa, durationMs, size, modifiedMs y favorite. Los IDs son SHA-256 opacos y se resuelven solo dentro de la selección autorizada; devolver IDs ajenos o duplicados se rechaza. No usar los IDs como rutas.
+Entrada de library/lists: `event`, `tracks` y `filters`. Desde 0.3.3, cada pista añade artists (nombres individuales por coma), conservando artist original. Cada canción incluye id, title, artist, album, folder relativa, durationMs, size, modifiedMs y favorite. Los IDs son SHA-256 opacos y se resuelven solo dentro de la selección autorizada; devolver IDs ajenos o duplicados se rechaza. No usar los IDs como rutas.
 
 Salida de library/lists: objeto con `ids`. Library también requiere title (hasta 120 caracteres) y admite description (hasta 500), layout=list/cards. Una salida `state` opcional persiste datos propios solo con storage.private.
 
@@ -65,18 +65,18 @@ Desarrolla la fuente en el repositorio de extensiones y regenera su envoltorio a
 python tools/empaquetar_extension.py RUTA_DEL_REPOSITORIO_DE_EXTENSIONES/biblioteca-viva.rpmx
 ```
 
-El archivo de fuente correspondiente usa guiones bajos (`biblioteca_viva.dart`). Editar la fuente sin regenerar el paquete no cambia el archivo instalable. Los archivos generados se comprueban contra su fuente normalizando saltos de línea Windows/Linux.
+El empaquetador genérico espera la fuente en la misma carpeta que el envoltorio, usando guiones bajos (`biblioteca_viva.dart`); para la estructura sources/packages/previews del repositorio de extensiones seguir su procedimiento y verificar coherencia fuente/paquete. No copiar esas fuentes al principal. Editar la fuente sin regenerar el paquete no cambia el archivo instalable. Los archivos generados se comprueban contra su fuente normalizando saltos de línea Windows/Linux.
 
 ## Límites comprobables y pendientes
 
 Compilación y ejecución ocurren en isolates externos a la interfaz. Compilar tiene un límite de 12 segundos; cada ejecución, 2 segundos; superar el plazo mata el isolate. Entrada JSON hasta 4 MB, respuesta hasta 512 KB UTF-8, estado propio hasta 64 KB, bytecode hasta 4 MB por programa y caché LRU de ocho versiones. Se serializan las llamadas del anfitrión para limitar trabajo concurrente; la política de audio conserva una alternativa base cuando el motor está ocupado.
 
-Estos límites acotan entradas/salidas y tiempo, **no son una cuota dura de memoria ni aislamiento de proceso/OS**. No se presenta como ejecución segura de código deliberadamente hostil ni como SDK completo listo para un catálogo abierto. Falta fortalecer esa frontera, añadir APIs de red/colaboración, contratos visuales más amplios y mediciones de RAM/batería/latencia. La pantalla muestra duración de la llamada y fallos; no inventa atribución de RAM o CPU por extensión.
+Estos límites acotan entradas/salidas y tiempo, **no son una cuota dura de memoria ni aislamiento de proceso/OS**. No se presenta como ejecución segura de código deliberadamente hostil ni como SDK completo listo para un catálogo abierto. Falta fortalecer esa frontera, ampliar autenticación/APIs de red y colaboración, contratos visuales más amplios y mediciones de RAM/batería/latencia. La pantalla muestra duración de la llamada y fallos; no inventa atribución de RAM o CPU por extensión.
 
 Fuentes del prototipo: [dart_eval](https://pub.dev/packages/dart_eval), [API Runtime](https://pub.dev/documentation/dart_eval/latest/dart_eval/Runtime-class.html). Su uso se eligió como decisión técnica provisional para lógica portable en Dart; no implica soporte de todo Flutter ni de todo Dart.
 
 
-## Catálogo GitHub (prototipo local posterior)
+## Catálogo GitHub y compatibilidad (publicado)
 
 `https://github.com/autor/repositorio` público, con `catalog.json` en la raíz de su rama predeterminada. Ejemplo publicado: https://github.com/Joao-s02/rp-music-extensions . Cada consulta fija el commit y utiliza esa revisión también para descargar.
 
@@ -109,3 +109,11 @@ Prueba HTTP independiente: `dart run tools/verify_source_package.dart RUTA_EXTER
 ## Novedades publicadas en 0.3.3
 
 playOutline es un icono de contorno que hereda tamaño y color del tema de navegación; requiere minAppVersion 0.3.3. La tarjeta de la fuente activa con acceso propio deja de duplicar Abrir fuente. ProgramSnapshot añade artists (lista de nombres separados por coma, sin duplicados por canción) y conserva artist original para compatibilidad. Las extensiones de filtro deben comparar contra nombres individuales; sus actualizaciones permanecen en el repositorio de extensiones.
+
+## Preparación local 0.3.4 (sin publicar)
+
+- Permiso storage.download permite exportar audio resuelto por una fuente mediante selector, máximo 64 MiB y tres minutos. No habilita acceso a rutas arbitrarias ni escritura desde el programa. Requiere revisión de permisos al importar el nuevo paquete.
+- Operación source/lyrics recibe title, artist, album, durationMs y devuelve syncedLyrics (LRC) y/o plainLyrics (texto), hasta 256 KiB. El programa conserva responsabilidad por su proveedor y dominios. Consultas solo al pulsar el botón de nube; letras guardadas por ID de canción.
+- sourceConfig admite description (máximo 400 caracteres), searchLabel (máximo 80). Se conservan valores predeterminados de paquetes anteriores.
+- navigation.add muestra cada fuente activada/autorizada compatible. Fuente elegida sigue siendo única: abrir otra requiere Usar esta fuente; no altera automáticamente el propietario.
+- Paquetes nuevos requieren minAppVersion 0.3.4, exclusivamente en rp-music-extensions. Spotify preview no simula audio completo ni sincronización de fragmentos.

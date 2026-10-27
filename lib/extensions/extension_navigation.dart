@@ -12,23 +12,26 @@ List<ExtensionDestination> extensionDestinations(
   ProgramController? programs,
   String platform,
 ) {
-  final source = programs?.owner('source');
-  final spec = source?.package.sourceSpec;
-  if (source == null ||
-      spec?.navigationLabel == null ||
-      !spec!.platforms.contains(platform) ||
-      programs?.allowed(source.package.id, 'navigation.add') != true ||
-      programs?.allowed(source.package.id, 'network.http') != true) {
-    return [];
+  if (programs == null) return [];
+  final entries = <ExtensionDestination>[];
+  for (final source in programs.installed.values) {
+    final spec = source.package.sourceSpec;
+    if (spec?.navigationLabel == null ||
+        !spec!.platforms.contains(platform) ||
+        programs.allowed(source.package.id, 'navigation.add') != true ||
+        programs.allowed(source.package.id, 'network.http') != true) {
+      continue;
+    }
+    entries.add(
+      ExtensionDestination(
+        source.package.id,
+        spec.navigationLabel!,
+        spec.icon,
+        spec.color,
+      ),
+    );
   }
-  return [
-    ExtensionDestination(
-      source.package.id,
-      spec.navigationLabel!,
-      spec.icon,
-      spec.color,
-    ),
-  ];
+  return entries;
 }
 
 class ExtensionNavigationIcon extends StatelessWidget {

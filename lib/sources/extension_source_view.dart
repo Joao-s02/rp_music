@@ -6,6 +6,7 @@ import '../domain/track.dart';
 import '../extensions/program_controller.dart';
 import '../playback/music_handler.dart';
 import 'extension_source_service.dart';
+import 'source_download.dart';
 
 class ExtensionSourceView extends StatefulWidget {
   const ExtensionSourceView({
@@ -33,6 +34,7 @@ class _ExtensionSourceViewState extends State<ExtensionSourceView> {
       widget.service ?? ExtensionSourceService(widget.programs);
   List<Track> results = [];
   bool searching = false;
+  String? downloading;
   String? error;
   int generation = 0;
   bool get allowed => service.available(widget.extensionId);
@@ -96,6 +98,37 @@ class _ExtensionSourceViewState extends State<ExtensionSourceView> {
     }
   }
 
+  Future<void> download(Track track) async {
+    if (downloading != null) return;
+    setState(() => downloading = track.id);
+    try {
+      final saved = await SourceDownload.save(track, service);
+      if (mounted && saved) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Canción guardada. Actualiza la biblioteca si elegiste su carpeta.',
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              e is FormatException
+                  ? e.message.toString()
+                  : 'No se pudo guardar la canción.',
+            ),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => downloading = null);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final name =
@@ -113,9 +146,40 @@ class _ExtensionSourceViewState extends State<ExtensionSourceView> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              if (widget.embedded)
+                Row(
+                  children: [
+                    Icon(
+                      Icons.library_music_outlined,
+                      color: Color(
+                        widget
+                                .programs
+                                .installed[widget.extensionId]
+                                ?.package
+                                .sourceSpec
+                                ?.color ??
+                            0xff47efe0,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        name,
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
+                    ),
+                  ],
+                ),
+              const SizedBox(height: 12),
               if (MediaQuery.viewInsetsOf(context).bottom == 0)
-                const Text(
-                  'Canciones · sin cuenta. Reproducción en línea; requiere conexión. Algunas canciones pueden no estar disponibles.',
+                Text(
+                  widget
+                          .programs
+                          .installed[widget.extensionId]
+                          ?.package
+                          .sourceSpec
+                          ?.description ??
+                      '',
                 ),
               const SizedBox(height: 12),
               TextField(
@@ -125,7 +189,14 @@ class _ExtensionSourceViewState extends State<ExtensionSourceView> {
                 textInputAction: TextInputAction.search,
                 onSubmitted: (_) => search(),
                 decoration: InputDecoration(
-                  labelText: 'Buscar canciones',
+                  labelText:
+                      widget
+                          .programs
+                          .installed[widget.extensionId]
+                          ?.package
+                          .sourceSpec
+                          ?.searchLabel ??
+                      'Buscar canciones',
                   suffixIcon: IconButton(
                     tooltip: 'Buscar',
                     onPressed: allowed && !searching ? search : null,
@@ -134,8 +205,16 @@ class _ExtensionSourceViewState extends State<ExtensionSourceView> {
                 ),
               ),
               if (!allowed)
-                const Text(
-                  'Activa esta extensión y elígela como fuente en Extensiones.',
+                FilledButton(
+                  onPressed:
+                      widget.programs.allowed(
+                        widget.extensionId,
+                        'network.http',
+                      )
+                      ? () =>
+                            widget.programs.choose('source', widget.extensionId)
+                      : null,
+                  child: const Text('Usar esta fuente'),
                 ),
               if (searching) const LinearProgressIndicator(),
               if (error != null)
@@ -167,7 +246,29 @@ class _ExtensionSourceViewState extends State<ExtensionSourceView> {
                         overflow: TextOverflow.ellipsis,
                       ),
                       leading: Artwork(id: track.id, library: widget.library),
-                      trailing: const Icon(Icons.play_arrow_rounded),
+                      trailing:
+                          widget.programs.allowed(
+                            widget.extensionId,
+                            'storage.download',
+                          )
+                          ? IconButton(
+                              tooltip: downloading == track.id
+                                  ? 'Descargando…'
+                                  : 'Descargar canción',
+                              onPressed: downloading != null || !allowed
+                                  ? null
+                                  : () => download(track),
+                              icon: downloading == track.id
+                                  ? const SizedBox(
+                                      width: 22,
+                                      height: 22,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                      ),
+                                    )
+                                  : const Icon(Icons.download_outlined),
+                            )
+                          : const Icon(Icons.play_arrow_rounded),
                       onTap: allowed
                           ? () => widget.audio.select(results, index)
                           : null,
