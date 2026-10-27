@@ -1,6 +1,6 @@
 # RP Music 0.3.5 — cambios locales
 
-> Antecedente de preparación local. Para la entrega en publicación consultar [la guía 0.3.5](USO-0.3.5.md).
+> Antecedente de preparación local. Para la entrega publicada consultar [la guía 0.3.5](USO-0.3.5.md).
 
 Esta compilación todavía no está publicada. La release pública continúa en 0.3.4. Conserva tus datos instalando Android encima de la versión anterior, sin desinstalar; Windows necesita su carpeta completa. No elimines el soporte privado de la app.
 

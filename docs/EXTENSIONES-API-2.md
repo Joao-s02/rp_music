@@ -130,4 +130,4 @@ La sección 0.3.4 anterior conserva su fase de preparación; esa app se publicó
 - Portada para descargas: solo JPEG/PNG detectados por bytes, hasta 5 MiB/25 s; hasta tres redirecciones, verificando cada destino. Permisos/versión/propietario se comprueban antes y después de preparar el archivo. No se concede acceso a rutas arbitrarias.
 - Etiquetado del nuevo MP4/M4A en memoria: incluye portada y letra, conserva los bytes/posiciones del audio y no recodifica. Otro contenedor o un error de etiquetas conserva el audio original con aviso. No es un editor de originales locales ni garantiza todos los campos.
 
-La implementación específica de cualquier proveedor y sus pruebas permanecen exclusivamente en rp-music-extensions. Guía de uso local: [0.3.5](USO-0.3.5-local.md).
+La implementación específica de cualquier proveedor y sus pruebas permanecen exclusivamente en rp-music-extensions. Guía de uso: [0.3.5](USO-0.3.5.md).
