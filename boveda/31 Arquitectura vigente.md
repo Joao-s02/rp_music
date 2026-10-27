@@ -1,0 +1,87 @@
+---
+tipo: arquitectura-observada
+estado: implementada-hasta-0.3.3-con-limites
+actualizado: 2026-10-26
+---
+# Arquitectura vigente
+
+## Alcance y criterio
+
+Mapa de la implementación observada en el código de 0.3.3, no propuesta de reconstrucción ni elección irreversible de paquetes. Estado de distribución/verificación en [[10 Estado del repositorio]]. El alfa y arquitectura-reproductor-flutter.md son antecedentes; [[11 Reconstruccion - primera base]] explica el inicio de esta implementación.
+
+## Componentes y responsabilidades
+
+| Componente | Responsabilidad | Código |
+| --- | --- | --- |
+| Arranque | Configura almacenamiento, audio/sesión, notificaciones, actualizador y programas; conecta plataforma y restaura sesión sin autoplay. | [main.dart](../lib/main.dart) |
+| Biblioteca | Estado observable con ChangeNotifier: raíz, catálogo/caché, favoritos/listas, preferencias y operaciones de archivo. | [LibraryController](../lib/app/library_controller.dart) |
+| Interfaz | Pantallas Material, tema, navegación adaptable, álbum, reproductor expandido y carátulas/listas. | [MusicApp](../lib/app/music_app.dart), [tema](../lib/app/music_theme.dart), [álbum](../lib/app/album_detail_view.dart), [reproductor](../lib/app/expanded_player.dart) |
+| Modelos | Track, artistas derivados por coma, formato conocido y orden, sin edición de etiquetas del archivo. | [Track](../lib/domain/track.dart), [orden](../lib/domain/track_sort.dart) |
+| Archivos | Selección/escaneo/metadatos/borrado; Android delega a canal nativo y Windows usa rutas/lector Dart en trabajo separado. | [MusicFiles](../lib/data/music_files.dart), [scanner](../lib/data/library_scanner.dart), [scanner Android](../android/app/src/main/kotlin/com/example/rp_music/LibraryScanner.kt) |
+| Persistencia | JSON en soporte de app, escrituras serializadas, temporal/archivo anterior y recuperación desde respaldo. | [LocalStore](../lib/data/local_store.dart) |
+| Audio | MusicHandler: cola, comandos, estado multimedia, carga/errores/generaciones, historial y sesión. just_audio/audio_session y AudioService en Android. | [MusicHandler](../lib/playback/music_handler.dart), [configuración](../lib/playback/playback_config.dart) |
+| Programas | Registro/permisos/propietarios/recuperación, compilación y ejecución Dart aisladas de UI, contratos JSON. | [controlador](../lib/extensions/program_controller.dart), [runtime](../lib/extensions/program_runtime.dart), [paquete](../lib/extensions/program_package.dart) |
+| Coordinación | Snapshots autorizados, reglas de listas automáticas y política avanzada de siguiente pista. | [coordinador](../lib/extensions/program_coordinator.dart), [snapshot](../lib/extensions/program_snapshot.dart) |
+| Fuentes | Flujo de programa/HTTP genérico, validación de resultados y resolución; broker conecta el audio al reproductor. | [servicio](../lib/sources/extension_source_service.dart), [HTTP](../lib/extensions/extension_http_transport.dart), [broker](../lib/sources/extension_source_broker.dart) |
+| Plataforma | Widget/notificación Android, cierre/bandeja Windows y diagnóstico multimedia. | [plataforma](../lib/platform/desktop_lifecycle.dart), [widget Android](../android/app/src/main/kotlin/com/example/rp_music/MusicWidget.kt) |
+| Actualizador | Consulta GitHub, versiones/canales, descarga/hash y consentimiento de instalación; ZIP manual en Windows. | [actualizador](../lib/updates/update_controller.dart) |
+
+```mermaid
+flowchart TD
+    App[Arranque y pantallas] --> Lib[Biblioteca]
+    App --> Audio[MusicHandler]
+    App --> Ext[Registro y permisos]
+    Lib --> Store[JSON local y respaldo]
+    Audio --> Store
+    Ext --> Store
+    Ext --> Runtime[Programa Dart y contrato JSON]
+    Runtime --> Source[Transporte HTTP de fuente]
+    Source --> Audio
+    Audio --> Native[Motor y controles de plataforma]
+```
+
+El programa no dibuja Flutter arbitrario: el anfitrión interpreta su salida y presenta componentes permitidos. Los contratos visuales son más limitados que la visión final.
+
+## Flujo local
+
+Al abrir se carga catálogo guardado; no se lanza un escaneo nuevo automático. Elegir raíz/Actualizar inicia descubrimiento y lectura progresivos con caché. El controlador mantiene una copia estable hasta terminar: error conserva la anterior. El escaneo no reescribe archivos; eliminar audio es otra operación confirmada, con escritura SAF cuando hace falta.
+
+Seleccionar una canción forma la cola y carga el motor. Una generación identifica la selección vigente para descartar resultados tardíos. Tras cargas correctas se mantiene historial de anterior/avance; restaurar filtra IDs contra biblioteca disponible y no inicia reproducción. Ver [[03 Biblioteca y reproduccion]].
+
+## Persistencia
+
+| Ubicación relativa al soporte de app | Datos |
+| --- | --- |
+| v2/library.json | Raíz/catálogo, favoritos/listas/metadatos de listas, preferencias y API 1. El campo schema de esta biblioteca es 1; v2 es nombre de carpeta, no ese campo. |
+| v2/session.json | IDs de cola, pista/posición, aleatorio/repetición e historial anterior/avance. Restauración local, no biblioteca online completa. |
+| v2/updates.json | Preferencias/estado del actualizador. |
+| v2/playlist_covers | Imágenes propias normalizadas de listas; mosaico toma carátulas disponibles. |
+| v3/extensions.json | Paquetes API 2, permisos, habilitación, propietarios, datos privados autorizados y marcador de recuperación. |
+
+LocalStore conserva archivos backup y usa pending durante escritura. Las carpetas no deben borrarse al actualizar. No se migraron datos de la antigua alfa 0.1. Metadatos remotos se recuerdan en memoria; URLs firmadas no se usan como identidad ni se guardan como sesión. Guardar IDs de una cola no implica restaurar una fuente que no está en la biblioteca local.
+
+## Audio y plataformas
+
+Dependencias actuales en [pubspec](../pubspec.yaml): just_audio, audio_session, audio_service y backend Windows just_audio_windows_plus 0.5.5. audio_service 0.18.19 se resuelve a copia local mediante dependency_overrides; [parche](../third_party/audio_service/RP-MUSIC-PATCH.md) documenta dos ajustes Android. No sustituirla por Pub sin revisar y validar comportamiento.
+
+Android usa servicio multimedia y canales nativos de biblioteca/sistema. Windows usa su backend y canal de ciclo de vida para bandeja/salida. No inferir de esto DSP, DAC, SMTC completo o cualquier códec comprobado. Evidencia específica de cada entrega en las notas de pruebas.
+
+## Programas y fuentes
+
+ProgramController comprueba habilitación/permisos y propietario de función. Registra llamada en curso para recuperación y desactiva tras fallos repetidos. ProgramRuntime permite imports restringidos, compila/ejecuta en isolates y limita fuente a 64 KiB, compilación a 12 s, ejecución a 2 s, entrada a 4 MiB y salida a 512 KiB; caché de ocho programas. Esos límites no son aislamiento de proceso ni cuota dura de RAM.
+
+El SDK de biblioteca usa IDs opacos y metadatos autorizados; conserva artist y añade artists. Las reglas se ejecutan por programa y las listas automáticas se conservan inactivas al desactivar su extensión.
+
+Para source, el programa devuelve solicitudes y etapas; el anfitrión aplica HTTPS/dominios, GET/POST, sin redirecciones, cuerpos/respuestas/plazos acotados y máximo cuatro rondas. Resolución y resultado se validan antes/después de llamadas; revocar/cambiar propietario detiene esa fuente y descarta respuestas tardías. El broker entrega audio al MusicHandler, con nombre de fuente y carátula. La lógica específica de proveedor vive solo en su repositorio. Contrato detallado: [API 2](../docs/EXTENSIONES-API-2.md).
+
+navigation.add y sourceConfig aportan etiqueta/icono/color mediante componentes nativos del anfitrión. Se muestra el destino de la fuente elegida compatible con la plataforma. No es acceso para alterar código compilado.
+
+## Distribución, deuda y siguientes cambios
+
+App, versión de paquete y apiVersion son números distintos. pubspec.yaml y app_version.dart deben mantenerse juntos; paquetes declaran minAppVersion, y el catálogo elige variante compatible fijando revisión Git y verificando bytes. El hash no prueba autoría.
+
+Separación y deuda heredada: [[04 Extensiones]]. Políticas de release: [[27 Publicacion de releases - contenido obligatorio]]. Benchmarks/aislamiento/funciones aún no implementadas: [[07 Preguntas e investigacion]]. Este trabajo documental no cambia módulos, permisos, binarios ni el esquema de datos.
+
+## Evolución local 0.3.4
+
+[[32 Pruebas 0.3.3 y mejoras 0.3.4]]: Lyrics interpreta LRC; LyricsView presenta posición real y guarda copia privada por ID. El núcleo no contiene clientes LRCLIB/Spotify/YouTube; source/lyrics usa el transporte de extensiones existente. SourceDownload exporta audio resuelto con storage.download y selector. Navegación lista todas las fuentes autorizadas/plataforma, conservando propietario único y elección explícita. No se cambia el esquema de biblioteca/sesión.

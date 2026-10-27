@@ -6,6 +6,8 @@ import 'library_controller.dart';
 import 'music_app.dart' show Artwork;
 import 'scrolling_title.dart';
 import 'volume_control.dart';
+import 'lyrics_view.dart';
+import '../sources/extension_source_service.dart';
 
 class ExpandedPlayer extends StatefulWidget {
   const ExpandedPlayer({
@@ -161,18 +163,31 @@ class _ExpandedPlayerState extends State<ExpandedPlayer> {
             ],
           ),
         );
-        final artwork = Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(30),
-            border: Border.all(color: colors.primary.withValues(alpha: .18)),
-          ),
-          clipBehavior: Clip.antiAlias,
-          child: AspectRatio(
-            aspectRatio: 1,
-            child: Artwork(
-              id: item?.id,
-              library: library,
-              size: double.infinity,
+        final available =
+            MediaQuery.sizeOf(context).height -
+            MediaQuery.paddingOf(context).vertical -
+            kToolbarHeight -
+            32;
+        final compact = available < 780;
+        final artwork = Center(
+          child: SizedBox(
+            width: (available - 440).clamp(64.0, 360.0),
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(30),
+                border: Border.all(
+                  color: colors.primary.withValues(alpha: .18),
+                ),
+              ),
+              clipBehavior: Clip.antiAlias,
+              child: AspectRatio(
+                aspectRatio: 1,
+                child: Artwork(
+                  id: item?.id,
+                  library: library,
+                  size: double.infinity,
+                ),
+              ),
             ),
           ),
         );
@@ -181,7 +196,7 @@ class _ExpandedPlayerState extends State<ExpandedPlayer> {
           builder: (context, state) {
             final playing = state.data?.playing ?? audio.player.playing;
             return Padding(
-              padding: const EdgeInsets.symmetric(vertical: 24),
+              padding: EdgeInsets.symmetric(vertical: compact ? 8 : 16),
               child: Row(
                 children: [
                   Expanded(
@@ -218,8 +233,8 @@ class _ExpandedPlayerState extends State<ExpandedPlayer> {
                     child: IconButton.filled(
                       tooltip: playing ? 'Pausar' : 'Reproducir',
                       style: IconButton.styleFrom(
-                        minimumSize: const Size(92, 92),
-                        iconSize: 46,
+                        minimumSize: Size.square(compact ? 64 : 92),
+                        iconSize: compact ? 36 : 46,
                       ),
                       onPressed: item == null
                           ? null
@@ -256,7 +271,7 @@ class _ExpandedPlayerState extends State<ExpandedPlayer> {
             );
           },
         );
-        return Column(
+        final content = Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -275,9 +290,9 @@ class _ExpandedPlayerState extends State<ExpandedPlayer> {
                 ),
               ],
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: compact ? 8 : 20),
             if (widget.artworkFirst) artwork,
-            const SizedBox(height: 24),
+            SizedBox(height: compact ? 8 : 24),
             Row(
               children: [
                 Expanded(
@@ -313,7 +328,7 @@ class _ExpandedPlayerState extends State<ExpandedPlayer> {
               style: theme.textTheme.titleMedium?.copyWith(
                 color: colors.onSurfaceVariant,
               ),
-              maxLines: 2,
+              maxLines: compact ? 1 : 2,
               overflow: TextOverflow.ellipsis,
             ),
             const SizedBox(height: 16),
@@ -331,6 +346,69 @@ class _ExpandedPlayerState extends State<ExpandedPlayer> {
                   onPressed: () => details(item),
                 ),
                 ActionChip(
+                  avatar: const Icon(Icons.lyrics_outlined, size: 18),
+                  label: const Text('Letras'),
+                  onPressed: item == null
+                      ? null
+                      : () => Navigator.of(context).push(
+                          MaterialPageRoute<void>(
+                            builder: (_) => LyricsView(
+                              audio: audio,
+                              fetchLyrics:
+                                  track?.sourceId != null &&
+                                      library.programs != null
+                                  ? () async {
+                                      final selected = audio.tracks
+                                          .where(
+                                            (t) =>
+                                                t.id ==
+                                                audio.mediaItem.value?.id,
+                                          )
+                                          .firstOrNull;
+                                      if (selected?.sourceId == null) {
+                                        throw const FormatException(
+                                          'Esta canción no dispone de proveedor de letras en línea.',
+                                        );
+                                      }
+                                      final result =
+                                          await ExtensionSourceService(
+                                            library.programs!,
+                                          ).invoke(
+                                            selected!.sourceId!,
+                                            'lyrics',
+                                            {
+                                              'title': selected.title,
+                                              'artist': selected.artist,
+                                              'album': selected.album,
+                                              'durationMs':
+                                                  audio
+                                                      .mediaItem
+                                                      .value
+                                                      ?.duration
+                                                      ?.inMilliseconds ??
+                                                  selected.durationMs,
+                                            },
+                                          );
+                                      final synced = result['syncedLyrics'];
+                                      final text =
+                                          synced is String &&
+                                              synced.trim().isNotEmpty
+                                          ? synced
+                                          : result['plainLyrics'] ?? '';
+                                      if (text is! String ||
+                                          text.length > 262144) {
+                                        throw const FormatException(
+                                          'Respuesta de letras incompatible.',
+                                        );
+                                      }
+                                      return text;
+                                    }
+                                  : null,
+                            ),
+                          ),
+                        ),
+                ),
+                ActionChip(
                   avatar: Icon(
                     Icons.queue_music,
                     size: 18,
@@ -341,7 +419,7 @@ class _ExpandedPlayerState extends State<ExpandedPlayer> {
                 ),
               ],
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: compact ? 8 : 20),
             StreamBuilder(
               stream: audio.player.positionStream,
               builder: (context, position) => StreamBuilder(
@@ -396,63 +474,80 @@ class _ExpandedPlayerState extends State<ExpandedPlayer> {
             ),
             const SizedBox(height: 8),
             VolumeControl(audio: audio, library: library, showPercentage: true),
-            controls,
+
             if (!widget.artworkFirst) ...[artwork, const SizedBox(height: 24)],
-            Material(
-              color: colors.surfaceContainer,
-              borderRadius: BorderRadius.circular(24),
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        Icon(
-                          local
-                              ? Icons.headphones_outlined
-                              : Icons.cloud_outlined,
-                          color: colors.secondary,
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(source, style: theme.textTheme.titleSmall),
-                              const SizedBox(height: 3),
-                              Text(
-                                local
-                                    ? 'Tu música en el dispositivo'
-                                    : 'Fuente musical de extensión',
-                                style: theme.textTheme.bodySmall,
-                              ),
-                            ],
+            if (!compact)
+              Material(
+                color: colors.surfaceContainer,
+                borderRadius: BorderRadius.circular(24),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    children: [
+                      Row(
+                        children: [
+                          Icon(
+                            local
+                                ? Icons.headphones_outlined
+                                : Icons.cloud_outlined,
+                            color: colors.secondary,
                           ),
-                        ),
-                        IconButton(
-                          tooltip: 'Detener',
-                          onPressed: item == null ? null : audio.stop,
-                          icon: const Icon(Icons.stop_circle_outlined),
-                        ),
-                      ],
-                    ),
-                    const Divider(height: 24),
-                    ListTile(
-                      contentPadding: EdgeInsets.zero,
-                      leading: Icon(Icons.queue_music, color: colors.primary),
-                      title: const Text('Cola en curso'),
-                      subtitle: Text(
-                        '${audio.tracks.length} canciones${audio.shuffle ? ' · Aleatorio activo' : ''}',
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(source, style: theme.textTheme.titleSmall),
+                                const SizedBox(height: 3),
+                                Text(
+                                  local
+                                      ? 'Tu música en el dispositivo'
+                                      : 'Fuente musical de extensión',
+                                  style: theme.textTheme.bodySmall,
+                                ),
+                              ],
+                            ),
+                          ),
+                          IconButton(
+                            tooltip: 'Detener',
+                            onPressed: item == null ? null : audio.stop,
+                            icon: const Icon(Icons.stop_circle_outlined),
+                          ),
+                        ],
                       ),
-                      trailing: const Icon(Icons.chevron_right),
-                      onTap: item == null ? null : queue,
-                    ),
-                  ],
+                      const Divider(height: 24),
+                      ListTile(
+                        contentPadding: EdgeInsets.zero,
+                        leading: Icon(Icons.queue_music, color: colors.primary),
+                        title: const Text('Cola en curso'),
+                        subtitle: Text(
+                          '${audio.tracks.length} canciones${audio.shuffle ? ' · Aleatorio activo' : ''}',
+                        ),
+                        trailing: const Icon(Icons.chevron_right),
+                        onTap: item == null ? null : queue,
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 20),
+            SizedBox(height: compact ? 8 : 20),
           ],
+        );
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            if (!constraints.hasBoundedHeight) {
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [content, controls],
+              );
+            }
+            return Column(
+              children: [
+                Expanded(child: SingleChildScrollView(child: content)),
+                controls,
+              ],
+            );
+          },
         );
       },
     ),

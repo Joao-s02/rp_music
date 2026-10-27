@@ -5,6 +5,8 @@ actualizado: 2026-10-26
 ---
 # Registro de cambios
 
+> **Registro histórico:** cada entrada describe el contexto y la verificación de su momento. El estado vigente se consulta en [[10 Estado del repositorio]]; decisiones por tema desde [[00 Inicio]]. Las correcciones posteriores no convierten todas las afirmaciones antiguas en estado actual.
+
 ## 2026-10-25 — Corrección de selección del compilador Java
 
 - El usuario pidió resolver el bloqueo de compilación Android. Se añadió Eclipse Temurin JDK 17.0.20.1+1 en la carpeta `.jdks` del usuario, descargado desde la API oficial de Adoptium y con SHA-256 verificado: E53A79C3C3D86865BD7E787903884331068E71321714FFD44F145785AFFC7CB0.
@@ -334,3 +336,26 @@ Usuario autoriza release y actualizaciones de extensiones en su repositorio sepa
 
 
 2026-10-26 — publicación confirmada: [v0.3.3-alpha.1](https://github.com/Joao-s02/rp_music/releases/tag/v0.3.3-alpha.1), app 0.3.3+12, tag 6107845. Android universal/ARM64, Windows, USO/PRUEBAS/CAMBIOS y hashes: siete adjuntos públicos verificados por tamaño y SHA-256. Fuente 0.2.1 y Biblioteca viva 0.1.1 publicadas en rp-music-extensions (641d970), paquetes remotos verificados y versiones anteriores conservadas en catálogo. Ya no es entrega solo local. Resultados, commits, hashes y límites en [[29 Pruebas 0.3.2 y mejoras 0.3.3]].
+
+
+## 2026-10-26 — consolidación de la documentación
+
+El usuario solicita ordenar la documentación tras detectar estados antiguos mezclados con actuales. Se reorganizan [[00 Inicio]] y [[01 Contexto para agentes]], y [[10 Estado del repositorio]] queda como resumen único de implementación/distribución/verificación actual. Sus textos anteriores se conservan íntegros como citas en [[30 Archivo de navegacion y estado]], con hashes de conservación; no se borran decisiones ni Git.
+
+Se alinean notas temáticas 02–07 y la identidad 15 con código/evidencia hasta 0.3.3: tema/fuentes ya integrados, backend/JSON/runtime provisionales implementados, catálogo/recuperación publicados, prioridad Android de la fuente y preguntas realmente pendientes. Se corrige la falsa continuidad de estado local/no publicado en las entradas de incorporación. Notas de entrevista/versiones/proyecto quedan delimitadas como históricas, conservando sus resultados y fases.
+
+Nueva [[31 Arquitectura vigente]] basada en rutas del código y pubspec: responsabilidades, flujo, persistencia, fuente genérica, contratos y límites. README principal resumido para la versión actual, docs/README.md como índice y USO.md como entrada a la guía versionada; se corrigen referencias viejas de compilación y SDK. Los documentos de uso/pruebas/cambios versionados, binarios y releases permanecen intactos.
+
+Verificaciones documentales: enlaces Obsidian y rutas Markdown locales comprobados, hashes del traslado histórico coincidentes y alcance de cambios limitado a Markdown. No se ejecutaron pruebas ni builds Flutter: no se cambió implementación, datos, contratos ni versiones. No hay push/publicación de esta limpieza; queda local para revisión. Límites heredados del producto permanecen explícitos en [[07 Preguntas e investigacion]].
+
+## 2026-10-27 — Test 0.3.3 e implementación local 0.3.4
+
+Requisitos y trabajo en [[32 Pruebas 0.3.3 y mejoras 0.3.4]]: controles fijos/carátula adaptable, inicio de letras sincronizadas LRC/TXT, transporte genérico de letras, permiso/selector de descarga y accesos de fuentes. Paquetes solo en checkout externo: YouTube Android/Windows separados y Spotify con vistas previas públicas sin cuenta. Audio completo Spotify permanece sin resolver; no sustituirlo silenciosamente por otro servicio. Verificación de ruta en cuatro tamaños y red/audio de paquetes aprobada; verificaciones finales se anotan en la nota de tarea. Se conservan modificaciones documentales previas y catálogo/releases publicados; no commit/push/publicación.
+
+Cierre de verificaciones 0.3.4: 97 pruebas aprobadas y análisis limpio. Capturas 360/1280 inspeccionadas. Se descarta el búfer automático investigado para Windows: no resolvió los ensayos nativos; broker/motor se conservan sin ese cambio. Windows remoto y Spotify completo siguen pendientes explícitos. Pruebas de lectura de letras y fixture de versión futura corregidos; no se alteró la lógica del actualizador. Estado detallado en [[32 Pruebas 0.3.3 y mejoras 0.3.4]].
+
+Windows normal release recompilado tras sondas, versión 0.3.4+13 y registro sin integration_test comprobados. No se compilaron nuevos APK ni se publicaron artefactos. Capturas históricas 0.3.3 restauradas tras regeneración por suite; nuevas capturas 0.3.4 conservadas.
+
+## 2026-10-27 — Publicación 0.3.4 autorizada
+
+El usuario pide generar y subir la release 0.3.4. Se preparan los siete adjuntos obligatorios y las extensiones en el repositorio separado. Se mantienen los límites conocidos de Windows remoto y Spotify; no se anuncian como funciones completas. Catálogo compatible con 0.3.1/0.3.2/0.3.3 conservado y Spotify oculto a anfitriones anteriores mediante minAppVersion. Publicación y verificación final en [[32 Pruebas 0.3.3 y mejoras 0.3.4]].

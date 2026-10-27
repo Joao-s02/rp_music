@@ -5,87 +5,45 @@ actualizado: 2026-10-26
 ---
 # RP Music — red de conocimiento
 
-Identidad visual confirmada e icono elegido: [[15 Identidad visual e icono]].
+La bóveda conserva decisiones y evidencia para continuar el proyecto. Referencia publicada: **0.3.3-alpha.1**, aplicación **0.3.3+12**, Android y Windows. Estado actual y comprobaciones: [[10 Estado del repositorio]].
 
-Bóveda de Obsidian para conservar el contexto del reproductor y permitir que cualquier agente continúe el trabajo sin repetir la entrevista.
+## Empezar aquí
 
-**Antes de preparar una release:** consultar [[27 Publicacion de releases - contenido obligatorio]].
+1. [[01 Contexto para agentes]] — reglas y mantenimiento.
+2. [[10 Estado del repositorio]] — versión, capacidades, verificación y límites actuales.
+3. [[31 Arquitectura vigente]] — componentes que utiliza el código y sus relaciones.
+4. La nota temática de la tarea, antes de editar o proponer cambios.
 
-**Antes de crear o actualizar extensiones:** consultar la separación obligatoria de repositorios en [[04 Extensiones]].
+## Decisiones por tema
 
-## Recorrido recomendado
+| Tema | Nota principal |
+| --- | --- |
+| Propósito, plataformas y alcance | [[02 Vision y decisiones]] |
+| Biblioteca, listas, metadatos y reproducción | [[03 Biblioteca y reproduccion]] |
+| Extensiones, permisos y repositorios | [[04 Extensiones]] |
+| Fluidez y mediciones | [[05 Rendimiento]] |
+| Preguntas todavía abiertas | [[07 Preguntas e investigacion]] |
+| Marca, tema y referencias | [[15 Identidad visual e icono]] |
+| Publicaciones | [[27 Publicacion de releases - contenido obligatorio]] |
+| Última entrega y sus pruebas | [[29 Pruebas 0.3.2 y mejoras 0.3.3]] |
 
-1. [[01 Contexto para agentes]] — incorporación y reglas de mantenimiento.
-2. [[02 Vision y decisiones]] — propósito y requisitos confirmados.
-3. [[03 Biblioteca y reproduccion]] — experiencia local y funciones base.
-4. [[04 Extensiones]] — personalización, permisos e interoperabilidad.
-5. [[05 Rendimiento]] — prioridad de fluidez y validación pendiente.
-6. [[06 Primera version]] — entrega inicial y etapas propuestas.
-7. [[07 Preguntas e investigacion]] — decisiones abiertas y viabilidad técnica.
-8. [[08 Entrevista consolidada]] — respuestas y matices de origen.
-9. [[09 Registro de cambios]] — historial del contexto.
-10. [[10 Estado del repositorio]] — código alfa y situación comprobada.
-11. [[11 Reconstruccion - primera base]] — implementación inicial y sus límites.
-12. [[12 Release 0.2.0-alpha.1]] — distribución e instrucciones de instalación.
-13. [[13 Pruebas reales y correcciones 0.2.1]] — informe de dispositivos y correcciones posteriores.
-14. [[14 Pruebas 0.2.1 y correcciones 0.2.2]] — notificaciones, volumen, bandeja e instalación Tecno.
+Guías para usar, compilar y programar: [Índice de documentación](../docs/README.md). Presentación pública: [README del proyecto](../README.md).
 
-## Cómo abrirla
+Seguimiento local posterior: [[32 Pruebas 0.3.3 y mejoras 0.3.4]] (sin publicación).
 
-En Obsidian, elegir «Abrir carpeta como bóveda» y seleccionar la carpeta `boveda` de este repositorio. No se requieren complementos de Obsidian. La vista de grafo mostrará las relaciones entre las notas.
+## Historial y fuentes
+
+- [[09 Registro de cambios]] — cronología; no sustituye el estado actual.
+- [[08 Entrevista consolidada]], [[06 Primera version]] y [[11 Reconstruccion - primera base]] — entrevista, plan y base iniciales.
+- [[12 Release 0.2.0-alpha.1]], [[13 Pruebas reales y correcciones 0.2.1]], [[14 Pruebas 0.2.1 y correcciones 0.2.2]], [[16 Pruebas 0.2.2 y rediseno 0.2.3]], [[18 Pruebas 0.2.3 y correcciones 0.2.4]] — primeras entregas y correcciones.
+- [[17 Actualizaciones opcionales desde la app]], [[20 Pruebas 0.2.4 y mejoras 0.2.5]], [[21 Pruebas 0.2.5 y mejoras 0.2.6]] — evolución de actualizaciones, permisos, widget y orden.
+- [[22 Extensiones - alcance del primer sistema]], [[23 Extensiones programables - primer prototipo]], [[24 YouTube Music - definicion e investigacion]] — entrevistas e investigación de extensiones.
+- [[25 Release 0.3.0]], [[26 Release 0.3.1]], [[28 Pruebas 0.3.1 y mejoras 0.3.2]], [[29 Pruebas 0.3.2 y mejoras 0.3.3]] — publicaciones 0.3.x y evidencia por versión.
+- [[19 Trailer de RP Music]] — proyecto audiovisual separado.
+- [[30 Archivo de navegacion y estado]] — copias de los antiguos índices y estados acumulativos.
 
 ## Convenciones
 
-- **Confirmado:** expresado o aceptado por el usuario.
-- **Propuesta:** recomendación todavía no aprobada como decisión.
-- **Pendiente de investigación:** requiere documentación o pruebas.
-- **Comprobado:** observado o verificado; debe indicarse su alcance.
+**Confirmado** es una decisión del usuario. **Implementado/comprobado** exige código o evidencia con alcance indicado. **Propuesta/investigación pendiente** no equivale a implementación. Las notas de versión conservan fases locales y publicación posterior; sus tiempos verbales se leen dentro de esa versión.
 
-La fecha de una nota es la de su actualización, no necesariamente la fecha de la entrevista. La documentación describe intenciones salvo que indique explícitamente una implementación comprobada.
-
-Antecedente: [[16 Pruebas 0.2.2 y rediseno 0.2.3]] — informe Galaxy/Poco, notificaciones, eliminación de listas y adaptación del diseño Stitch.
-
-Nueva investigación: [[17 Actualizaciones opcionales desde la app]] — investigación inicial y mecanismo posteriormente implementado en 0.2.4.
-
-Trabajo vigente: [[18 Pruebas 0.2.3 y correcciones 0.2.4]] — teclado/búsqueda, servicio de audio, logs y actualizador opcional; v0.2.4-alpha.1 publicada y adjuntos verificados.
-
-Producción audiovisual: [[19 Trailer de RP Music]] — tráiler editable de 30 segundos en la carpeta hermana rp_music_trailer.
-
-Versión vigente publicada: [[20 Pruebas 0.2.4 y mejoras 0.2.5]] — v0.2.5-alpha.1 para Android y Windows, reproductor completo, carátula en notificación, Ajustes y borrado confirmado; adjuntos verificados.
-
-Versión vigente publicada: [[21 Pruebas 0.2.5 y mejoras 0.2.6]] — ventana de actualización, escritura guiada, widget Android y orden. Extensiones: [[22 Extensiones - alcance del primer sistema]] — entrevista confirmada; runtime pendiente.
-
-Implementación local posterior a la release: [[23 Extensiones programables - primer prototipo]] — 0.3.0+9 experimental, motor Dart, Biblioteca viva y Pulso nocturno.
-
-
-Trabajo vigente 2026-10-26: [[24 YouTube Music - definicion e investigacion]] — el usuario aceptó priorizar Android y la primera entrega de búsqueda/reproducción sin cuenta. 0.3.1+10 local añade fuente Android y paquete externo; 77 pruebas y recorrido nativo instalado aprobados, con límites documentados. Windows/listas/favoritos/historial de la fuente pendientes. No repetir elección de vía no oficial ni prioridad de plataforma. Última release pública de la app: 0.2.6.
-
-
-2026-10-26: usuario autoriza publicar 0.3.0 mientras prueba 0.3.1. Preparación separada y alcance en [[25 Release 0.3.0]]; no incluir YouTube ni modificar la copia de pruebas 0.3.1.
-
-
-Publicación vigente confirmada: v0.3.0-alpha.1, Android universal/ARM64 y Windows, siete adjuntos verificados. Fuente y cierre en [[25 Release 0.3.0]]. 0.3.1 permanece en pruebas separadas; no está en esta release.
-
-
-2026-10-26: usuario valida 0.3.1 (búsqueda/audio rápidos, sin bugs ni lag observados) y autoriza nueva release. Diseño reportado queda para próxima versión. Comunicación pública: soporte de extensiones para fuentes de música en la nube, con adaptador inicial Android; no prometer cualquier proveedor ni ocultar límites. Se publica el mismo APK validado; Windows mantiene 0.3.0. Seguimiento en [[26 Release 0.3.1]].
-
-
-Publicación vigente confirmada: 0.3.1-alpha.1 Android, con cinco adjuntos y README remoto verificados. Mismo APK validado por el usuario; diseño pendiente para siguiente versión. Windows mantiene 0.3.0. Ver [[26 Release 0.3.1]].
-
-
-2026-10-26: trabajo local vigente 0.3.2+11 en [[28 Pruebas 0.3.1 y mejoras 0.3.2]]: detalle de álbum, áreas seguras, nombre de fuente y navegación aportada por extensión. Se migra la lógica específica de la fuente al repositorio de extensiones; contrato HTTP genérico en la app y actualización de paquete requerida. Material previo de Biblioteca viva/Pulso aún pendiente de migración. No se publica 0.3.2 en esta tarea.
-
-
-Cierre local 0.3.2: tres paquetes normales compilados (universal/ARM64/Windows), guías y hashes en dist/0.3.2-local; APK universal instalado/abierto, firma compatible con 0.3.1 y Windows iniciado. Suite inicial 75 pruebas, comprobación adicional de navegación y prueba nativa Android aprobadas; análisis sin incidencias. Extensión 0.2.0 aparte, actualización con permisos requerida. No hay publicación ni push de estos cambios; probar por archivo local hasta publicar catálogo. Resultados, tamaños, hashes y límites en [[28 Pruebas 0.3.1 y mejoras 0.3.2]].
-
-
-2026-10-26 — publicación confirmada: [v0.3.2-alpha.1](https://github.com/Joao-s02/rp_music/releases/tag/v0.3.2-alpha.1), app 0.3.2+11, tag b8fd967. Android universal/ARM64, Windows, USO/PRUEBAS/CAMBIOS y hashes: siete adjuntos públicos verificados por tamaño y SHA-256. Extensión 0.2.0 y catálogo compatible publicados exclusivamente en rp-music-extensions (da3e455); paquete remoto verificado y versión 0.1.0 conservada para 0.3.1. Ya no es entrega solo local. Ver [[28 Pruebas 0.3.1 y mejoras 0.3.2]] para commits, hashes, pruebas y pendientes.
-
-
-2026-10-26: trabajo local 0.3.3+12 en [[29 Pruebas 0.3.2 y mejoras 0.3.3]]: nuevo reproductor según referencia sin ecualizador (reservado a próxima extensión), listas existentes desde álbum, artistas separados por comas, historial para Anterior y acceso de fuente integrado al tema sin botón duplicado. Extensiones modificadas solo en repositorio separado; no hay publicación autorizada de 0.3.3. Consultar verificación final antes de dar funciones por comprobadas.
-
-
-Cierre local 0.3.3+12: reproductor renovado sin ecualizador y cinco correcciones implementadas; suite inicial 86, comprobaciones finales con nueva regresión de filtro guardado y análisis aprobados. Audio real Android con anterior/avance y revocación aprobado en primer plano; APK normal instalado/abierto y Windows iniciado. Universal/ARM64/Windows, guías y hashes definitivos en dist/0.3.3-local. Extensiones 0.2.1 de fuente y 0.1.1 de Biblioteca viva en repo separado, variantes locales sin publicar. No se publica esta versión ni se hace push; pruebas físicas pendientes. Ver [[29 Pruebas 0.3.2 y mejoras 0.3.3]].
-
-
-2026-10-26 — publicación confirmada: [v0.3.3-alpha.1](https://github.com/Joao-s02/rp_music/releases/tag/v0.3.3-alpha.1), app 0.3.3+12, tag 6107845. Android universal/ARM64, Windows, USO/PRUEBAS/CAMBIOS y hashes: siete adjuntos públicos verificados por tamaño y SHA-256. Fuente 0.2.1 y Biblioteca viva 0.1.1 publicadas en rp-music-extensions (641d970), paquetes remotos verificados y versiones anteriores conservadas en catálogo. Ya no es entrega solo local. Resultados, commits, hashes y límites en [[29 Pruebas 0.3.2 y mejoras 0.3.3]].
+La fecha de actualización no cambia la de los hechos históricos. Abrir esta carpeta como bóveda de Obsidian; los enlaces como [[00 Inicio]] son relativos. No requieren complementos.

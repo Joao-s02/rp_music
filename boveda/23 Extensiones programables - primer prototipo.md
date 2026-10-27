@@ -1,9 +1,12 @@
 ---
 tipo: implementacion-e-investigacion
-estado: prototipo-local-validado-con-limites
+alcance: historico-de-version-o-proyecto
+estado: antecedente-del-prototipo-publicado-en-0.3.0
 actualizado: 2026-10-25
 ---
 # Extensiones programables - primer prototipo
+
+> **Alcance de esta nota:** conserva la entrevista, investigación o etapas de la versión/proyecto indicados. Expresiones «local», «vigente», «pendiente» o «sin publicar» se refieren a ese momento; leer la confirmación posterior dentro de la nota. Estado global actual en [[10 Estado del repositorio]] y decisiones temáticas desde [[00 Inicio]].
 
 ## Autorización y separación de entregas
 

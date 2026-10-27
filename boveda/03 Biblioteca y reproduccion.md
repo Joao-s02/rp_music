@@ -1,71 +1,44 @@
 ---
-tipo: requisitos
-estado: confirmado
-actualizado: 2026-10-24
+tipo: requisitos-y-estado
+estado: vigente
+actualizado: 2026-10-26
 ---
 # Biblioteca y reproduccion
 
-## Archivos y organización
+## Requisitos confirmados
 
-- El usuario selecciona **una sola carpeta raíz**. Puede contener subcarpetas organizadas libremente. No confundir varias ubicaciones posibles de almacenamiento con múltiples raíces simultáneas.
-- Biblioteca objetivo: cientos y miles de canciones.
-- Vistas base: canciones, álbumes, artistas y carpetas. La aclaración de la última ronda incorpora álbumes y artistas a la base.
-- Géneros y búsquedas o filtros más detallados se consideran ampliaciones para extensiones.
-- Formatos solicitados: MP3, FLAC, M4A, MP4, WAV y OPUS. Debe comprobarse reproducción de audio por plataforma y códec; MP4 es un contenedor y no implica un reproductor de vídeo.
+Una raíz seleccionada por el usuario con subcarpetas, cientos/miles de canciones y vistas de canciones/álbumes/artistas/carpetas. MP3, FLAC, M4A, MP4, WAV y OPUS solicitados; reconocer un archivo no garantiza cualquier códec en cualquier equipo. MP4 se usa como audio.
 
-## Funciones base confirmadas
+Biblioteca, búsqueda, favoritos, listas, carátulas, cola, aleatorio/repetición y controles habituales. Letras LRC/TXT incorporadas en 0.3.4 con sincronización por línea y copia privada; no extracción de letras incrustadas ni sincronización por palabra. Edición de etiquetas con elección archivo/biblioteca, gapless y fundido **siguen pendientes**.
 
-- Biblioteca, búsqueda, listas de reproducción y favoritos.
-- Cola, reproducción aleatoria y repetición.
-- Carátulas y edición de metadatos.
-- Reproducir, pausar, cambiar canción y navegar por su posición como controles habituales.
-- Letras integradas en archivos y letras en archivos externos; incluir soporte de letras sincronizadas cuando estén disponibles según la aceptación de esa pregunta.
-- Al editar metadatos, permitir elegir entre modificar el archivo musical o guardar el cambio solo en la biblioteca.
+## Implementado en 0.3.3
 
-## Reproducción e integración con el sistema
+| Área | Comportamiento actual |
+| --- | --- |
+| Carga/escaneo | Abre catálogo guardado; Actualizar biblioteca incorpora cambios con escaneo manual/progresivo y caché. No hay observador continuo ni escaneo nuevo automático al abrir. |
+| Acceso | SAF/permiso persistente Android, ruta elegida Windows. Un fallo de escaneo conserva la biblioteca estable anterior. |
+| Metadatos | Lectura de título/artista/álbum/duración y carátula disponible. Artistas por comas se agrupan individualmente, sin reescribir etiqueta ni reescanear caché. No hay editor. |
+| Orden | Título, artista, álbum, duración, modificación, tamaño y archivo, con dirección guardada. |
+| Listas | Manuales persistentes, disponibles/ausentes, carátula propia/mosaico; añadir álbum a existente o crear sin duplicar. Automáticas mediante extensión, inactivas al desactivar proveedor. |
+| Borrado | Quitar de lista no borra audio. Eliminar archivo confirma y pide escritura de la raíz cuando falta; depende del proveedor SAF. |
+| Reproducción | Cola de selección, pausa/posición/volumen/silencio, aleatorio y repetir canción. Anterior usa historial cargado; Siguiente recupera avance visitado antes de sortear. Sin historial, anterior secuencial de la cola. |
+| Restauración | Cola/pista/posición/recorrido local disponibles, sin autoplay; descarta ausentes. No equivale a historial/biblioteca online persistente. |
+| Interfaz | Álbum con pistas/cola; reproductor expandido con datos reales, carátula y título deslizante. Áreas seguras y reducir movimiento respetados. |
+| Android | Sesión/notificación/carátula/controles y widget conectado a la misma reproducción. |
+| Windows | Audio local, volumen y cierre a bandeja o salida. Bandeja no prueba por sí sola todos los controles multimedia del sistema. |
 
-El usuario aceptó el conjunto de funciones preguntado:
+## Fuera del núcleo y límites
 
-- Reproducción con pantalla apagada y en segundo plano.
-- Controles en notificaciones y pantalla de bloqueo de Android.
-- Teclas multimedia de Windows.
-- Recordar la cola y continuar desde donde se cerró.
-- Reproducción sin pausas entre canciones y fundido entre pistas.
-- En Windows, opción para cerrar la aplicación o mantener reproducción en la bandeja al cerrar la ventana.
+Fuentes en línea/cuentas son extensiones. Ecualizador y búsqueda de letras faltantes por internet también. Fuente inicial Android: búsqueda/audio; Windows de esa fuente, cuentas y listas/favoritos/historial online pendientes. [[04 Extensiones]].
 
-La prioridad y compatibilidad de gapless y fundido deben validarse; están dentro de la visión solicitada, pero no se ha definido que toda ella deba entregarse en el primer incremento. No se ha elegido si restaurar posición también debe iniciar reproducción automáticamente.
+Letras, edición de etiquetas, gapless/fundido y editor completo de cola no implementados. Selección avanzada de salida/DAC y temporizador tampoco se añadieron por la referencia visual. No fabricar año/género/datos de calidad que el modelo no conozca.
 
-## Fuera del núcleo
+## Evidencia y evolución
 
-- Ecualizador: extensión.
-- Buscar letras faltantes por internet: extensión.
-- Cuentas e integraciones de servicios: extensiones opcionales.
+Notificaciones/borrado: [[20 Pruebas 0.2.4 y mejoras 0.2.5]]. Escritura/widget/orden: [[21 Pruebas 0.2.5 y mejoras 0.2.6]]. Listas automáticas/carátulas: [[23 Extensiones programables - primer prototipo]]. Álbum/metadato de fuente: [[28 Pruebas 0.3.1 y mejoras 0.3.2]]. Reproductor/historial/artistas: [[29 Pruebas 0.3.2 y mejoras 0.3.3]].
 
-## Pendientes de comportamiento
+El usuario probó controles/fuente en versiones anteriores. Audio nativo 0.3.3 se verificó en primer plano; retesteo físico y pantalla apagada prolongada de esa versión pendientes. [[10 Estado del repositorio]], [[05 Rendimiento]].
 
-Frecuencia de escaneo, detección automática de cambios, biblioteca cacheada, agrupación de etiquetas incompletas y cambios de carpeta raíz todavía requieren decisión o propuesta explícita. Se sugirió mostrar lo guardado y actualizar en segundo plano, pero la respuesta confirmó la raíz única sin aprobar expresamente todo ese comportamiento.
+## Preparación local posterior a 0.3.3
 
-Relaciones: [[02 Vision y decisiones]], [[04 Extensiones]], [[05 Rendimiento]], [[07 Preguntas e investigacion]].
-
-## Actualización confirmada e implementación local — 2026-10-25
-
-El usuario pidió eliminar listas completas. Implementado con confirmación y persistencia, conservando archivos, favoritos, catálogo y otras listas; pruebas aprobadas. Rediseño e investigación de notificaciones posteriores a 0.2.2 en [[16 Pruebas 0.2.2 y rediseno 0.2.3]]. La comprobación en emulador no sustituye al retesteo físico.
-
-## Correcciones locales 0.2.4
-
-Búsqueda móvil expandible desde lupa con foco estable al aparecer teclado; biblioteca vacía adaptada a nueva referencia. Servicio Android conserva foreground en pausa/transiciones, libera wake lock de CPU en pausa y foreground al detener. Diagnóstico copiable/exportable/importable y registro acotado. La reproducción prolongada en Galaxy A34 Android 16/Poco sigue pendiente de retesteo físico; pruebas y parche de dependencia en [[18 Pruebas 0.2.3 y correcciones 0.2.4]].
-
-## Mejoras solicitadas tras probar 0.2.4
-
-Confirmado: título largo animado en una línea y reproductor a pantalla completa; carátula e iconos simples en notificaciones; Ajustes agrupados y acciones con botones; eliminación de archivo desde tres puntos con confirmación. Implementación local, límites y verificaciones en [[20 Pruebas 0.2.4 y mejoras 0.2.5]]. El informe del usuario confirma que los controles de notificación ya aparecen en 0.2.4 móvil.
-
-## Mejoras posteriores a 0.2.5
-
-Orden por título/artista/álbum/duración/modificación/tamaño/archivo, con dirección persistida; widget Android de inicio; escritura SAF solicitada en contexto al borrar. Estado y límites en [[21 Pruebas 0.2.5 y mejoras 0.2.6]]. Carátulas de listas y reglas automáticas aceptadas para la primera extensión programable, todavía no implementadas: [[22 Extensiones - alcance del primer sistema]].
-
-## Trabajo local de extensiones 0.3.0
-
-Implementados prototipo de filtros por programa, listas automáticas y carátulas propias/mosaico, con reglas inactivas al desactivar proveedor y datos conservados. Política de aleatorio y disposición de reproductor aportadas por segundo programa avanzado. No son parte de la release 0.2.6; ver [[23 Extensiones programables - primer prototipo]].
-
-
-2026-10-26: trabajo local 0.3.3+12 en [[29 Pruebas 0.3.2 y mejoras 0.3.3]]: nuevo reproductor según referencia sin ecualizador (reservado a próxima extensión), listas existentes desde álbum, artistas separados por comas, historial para Anterior y acceso de fuente integrado al tema sin botón duplicado. Extensiones modificadas solo en repositorio separado; no hay publicación autorizada de 0.3.3. Consultar verificación final antes de dar funciones por comprobadas.
+[[32 Pruebas 0.3.3 y mejoras 0.3.4]] incorpora controles fijos adaptables y primera implementación LRC/TXT persistente por canción; no publicada. Letras sincronizadas dejan de ser solo visión en el código local, con límites/verificaciones en esa nota. Edición de etiquetas/gapless/fundido siguen pendientes.

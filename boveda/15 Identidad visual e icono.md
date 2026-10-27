@@ -1,7 +1,7 @@
 ---
 tipo: identidad-visual
-estado: identidad-confirmada-icono-integrado
-actualizado: 2026-10-25
+estado: identidad-tema-y-fuentes-integrados
+actualizado: 2026-10-26
 ---
 # Identidad visual e icono
 
@@ -9,7 +9,11 @@ actualizado: 2026-10-25
 
 El usuario eligió explícitamente la **variante A** como nuevo icono de RP Music y pidió conservar la identidad visual basada en ella y en **Nocturnal Pulse**. Esta nota es la referencia vigente. El primer resultado y las variantes B/C se conservan como antecedentes; A deja de ser una propuesta.
 
-La identidad está confirmada como dirección de diseño. En este trabajo se integran iconos; **la interfaz Flutter no se ha rediseñado ni se han instalado las fuentes indicadas**. Las pautas de interfaz siguientes no son implementación comprobada.
+## Estado actual de integración
+
+Icono A integrado en recursos de plataforma. Tema Flutter cian/violeta y fuentes locales Inter/Plus Jakarta Sans integrados desde 0.2.3; álbumes renovados en 0.3.2 y reproductor expandido en 0.3.3. Fuentes de implementación: lib/app/music_theme.dart, lib/app/album_detail_view.dart, lib/app/expanded_player.dart y declaración de fuentes en pubspec.yaml.
+
+Las tablas siguientes conservan la referencia de diseño; no todos sus tamaños/efectos se aplican literalmente ni una función ilustrada equivale a implementación. El ecualizador queda reservado a una extensión, no está en el reproductor. Alcance y pruebas: [[16 Pruebas 0.2.2 y rediseno 0.2.3]], [[28 Pruebas 0.3.1 y mejoras 0.3.2]], [[29 Pruebas 0.3.2 y mejoras 0.3.3]].
 
 ## Fuentes conservadas
 
@@ -25,7 +29,7 @@ Conservar proporciones, separación y orden del maestro. No estirar ni añadir m
 
 ## Paleta y discrepancias del MD
 
-El MD contiene tokens YAML y ejemplos narrativos con valores distintos. Se conservan ambos. Como convención de esta integración, usar los **tokens para roles de tema** y los **acentos narrativos para la marca**. No afirmar que ya estén aplicados en Dart. El PNG generado presenta variaciones; estos hex son referencias de diseño, no una medición uniforme del recurso.
+El MD contiene tokens YAML y ejemplos narrativos con valores distintos. Se conservan ambos. Como convención de esta integración, usar los **tokens para roles de tema** y los **acentos narrativos para la marca**. Contrastar cada token con music_theme.dart: los roles principales ya se aplican; el documento conserva también alternativas no implementadas. El PNG generado presenta variaciones; estos hex son referencias de diseño, no una medición uniforme del recurso.
 
 | Rol | Referencia |
 | --- | --- |
@@ -80,16 +84,16 @@ Títulos con espaciado ligeramente cerrado; tiempos con cifras tabulares. Artist
 - Búsqueda de altura 48, foco cian con halo al 20 %. Chips seleccionados con fondo cian al 15 % y borde/texto cian; chips técnicos violetas.
 - Progreso/volumen: pista 4, tirador 12 y 16 al arrastrar. Arte de álbum cuadrado; desplazamiento al enfocar de referencia 2 en escritorio.
 
-Son pautas para futuros cambios, sujetas a accesibilidad y rendimiento, relacionadas con [[03 Biblioteca y reproduccion]] y [[04 Extensiones]]. No modifican por sí solas requisitos funcionales ni prueban que esos componentes existan.
+Son pautas de referencia, parcialmente aplicadas según el estado de integración anterior y sujetas a accesibilidad/rendimiento, relacionadas con [[03 Biblioteca y reproduccion]] y [[04 Extensiones]]. No modifican por sí solas requisitos funcionales ni prueban que esos componentes existan.
 
-## Integración local
+## Recursos de plataforma integrados
 
 - Android: lanzador PNG en cinco densidades (48/72/96/144/192) y recurso adaptativo API 26+ con fondo #10131A y margen de seguridad. Manifiesto ya referencia @mipmap/ic_launcher.
 - Windows: windows/runner/resources/app_icon.ico con tamaños 16/24/32/48/64/128/256. Ventana y bandeja reutilizan IDI_APP_ICON.
 - Web: favicon 32; iconos 192/512 normales y con margen para máscara. Nombre y colores de manifiesto alineados. No se declara soporte funcional web.
 - Regeneración: tools/generar_iconos.py con Pillow. Maestro A intacto. Icono monocromo de notificaciones Android conservado como recurso independiente, adecuado a su rol.
 
-## Verificación y pendientes
+## Verificación histórica de integración inicial y límites
 
 Dimensiones PNG y siete resoluciones ICO verificadas al generar. Recurso adaptativo revisado visualmente. Compilación Windows debug correcta con el nuevo ICO; compilación directa de todos los recursos Android con AAPT2 correcta (`build/icon-resource-check/resources.zip`). `git diff --check` sin errores.
 
@@ -97,13 +101,13 @@ Antecedente: la primera verificación APK quedó bloqueada porque el Java 17 act
 
 Guía: [Compilación y Java](../docs/COMPILACION.md). El flujo completo de Flutter regeneró el registro release sin integration_test; una invocación Gradle directa previa había encontrado ese registro generado para debug. No fue necesario modificar código de la app o de las dependencias.
 
-Falta revisar apariencia instalada en dispositivos y lanzadores reales. No se publicó una release ni se alteraron paquetes distribuidos.
+Ese trabajo inicial de iconos no publicó una release. Después se publicaron versiones con identidad/tema integrados; estado actual en [[10 Estado del repositorio]]. Mantener pendientes las comprobaciones físicas que no tengan evidencia, especialmente lanzadores y combinaciones de accesibilidad.
 
 Ver [[10 Estado del repositorio]] y [[09 Registro de cambios]].
 
 ## Aplicación posterior del tema — 2026-10-25
 
-La afirmación anterior de interfaz sin rediseñar describe la integración inicial de iconos. El usuario aportó posteriormente un ZIP de pantallas Stitch y pidió aplicar esa interfaz. Se implementan tema, fuentes locales y composición adaptable conservando A; alcance, verificaciones y diferencias funcionales en [[16 Pruebas 0.2.2 y rediseno 0.2.3]]. Las funciones ilustradas no equivalen a implementación.
+En la primera integración de iconos aún no se habían aplicado tema/fuentes; ese estado inicial quedó superado. El usuario aportó posteriormente un ZIP de pantallas Stitch y pidió aplicar esa interfaz. Se implementan tema, fuentes locales y composición adaptable conservando A; alcance, verificaciones y diferencias funcionales en [[16 Pruebas 0.2.2 y rediseno 0.2.3]]. Las funciones ilustradas no equivalen a implementación.
 
 ## Uso audiovisual animado — 2026-10-25
 

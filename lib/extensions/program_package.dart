@@ -15,6 +15,7 @@ bool versionAtLeast(String actual, String minimum) {
 }
 
 const programPermissions = {
+  'storage.download': 'Guardar audio de esta fuente mediante el selector de archivos',
   'network.youtube': 'Permiso de fuente heredado (requiere actualizar)',
   'network.http': 'Conectarse a los dominios declarados de la fuente',
   'navigation.add': 'Añadir un acceso en la navegación de la app',

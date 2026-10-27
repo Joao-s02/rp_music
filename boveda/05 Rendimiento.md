@@ -1,33 +1,30 @@
 ---
-tipo: requisitos-y-propuestas
-estado: pendiente-de-medicion
-actualizado: 2026-10-24
+tipo: requisitos-y-evidencia
+estado: pendiente-de-medicion-formal
+actualizado: 2026-10-26
 ---
 # Rendimiento
 
 ## Prioridad confirmada
 
-La interfaz debe sentirse fluida. El usuario considera especialmente molesto esperar muchos segundos a que aparezca la lista de música, sufrir bloqueos al reproducir o notar trabas al cambiar canciones. Biblioteca esperada: cientos y miles de archivos. La optimización estricta se concentra en la aplicación base; las extensiones pueden aumentar el consumo de manera visible y voluntaria.
+Fluidez al abrir biblioteca, reproducir y cambiar canciones, para cientos/miles de archivos. La base concentra optimización; extensiones pueden consumir más recursos voluntariamente. No hay presupuestos acordados de RAM, batería, arranque, latencia o fotogramas.
 
-No hay cifras acordadas de RAM, batería, tamaño, tiempo de arranque, latencia o fotogramas. Tampoco hay dispositivos de referencia elegidos.
+## Implementado para reducir bloqueos
 
-## Propuestas para validar, no arquitectura aprobada
+Catálogo persistente sin esperar escaneo nuevo, escaneo manual/progresivo con caché fuera del dibujo, listas/carátulas bajo demanda. Compilación/ejecución de programas en isolates con límites de tiempo/entrada/salida. Escrituras JSON serializadas con respaldo.
 
-- Guardar un índice local para mostrar la biblioteca sin esperar un escaneo completo.
-- Actualizar cambios de archivos fuera del trabajo que dibuja la interfaz.
-- Cargar listas y carátulas según lo visible; limitar sus cachés.
-- Medir por separado inicio, consulta de biblioteca, inicio de audio y cambio de pista.
-- Comparar la base sin extensiones con escenarios de extensiones activas.
-- Evitar que un escaneo o extensión interrumpa la reproducción.
+Actualizador fuera del arranque bloqueante y descargas por fragmentos. Diagnóstico multimedia acotado; parches foreground/wake lock de audio_service para pausas/transiciones/liberación. [[31 Arquitectura vigente]], [[18 Pruebas 0.2.3 y correcciones 0.2.4]]. Son medidas implementadas, no benchmarks ni garantía de batería universal.
 
-## Plan de evidencia pendiente
+## Evidencia disponible
 
-El usuario ya probó tres celulares y una PC: informó buena fluidez general, pero escaneo de uno a dos minutos en celulares. La corrección local incorpora descubrimiento progresivo, MediaStore cuando procede y huellas de archivos; todavía falta medir la mejora en esos equipos. Véase [[13 Pruebas reales y correcciones 0.2.1]].
+| Fuente | Resultado y alcance |
+| --- | --- |
+| Primeros informes físicos | Buena fluidez general, escaneo de 1–2 minutos en móviles; posteriores mejoras de carga informadas. Equipos/condiciones en [[13 Pruebas reales y correcciones 0.2.1]]. |
+| Usuario con 0.3.1 | Buscador 10/10, audio rápido y sin bugs/lag observados en su prueba. No es benchmark ni describe todos los temas/redes/equipos. [[26 Release 0.3.1]]. |
+| 0.3.3 nativo | Un ensayo no alcanzó el progreso esperado en espera fija inicial; segundo recorrido aprobado. Conservar ese resultado sin prometer latencia. [[29 Pruebas 0.3.2 y mejoras 0.3.3]]. |
 
-Elegir Android y Windows de referencia, una biblioteca reproducible y modo de compilación adecuado. Registrar hardware, cantidad y formatos de archivos, condiciones de caché, extensiones activas y resultados. Acordar presupuestos después de medir una primera prueba, sin inventar garantías.
+## Medición pendiente
 
-El panel de consumo por extensión es un requisito de [[04 Extensiones]]; su precisión depende del mecanismo elegido. Ver [[07 Preguntas e investigacion]] y [[06 Primera version]].
+Acordar biblioteca/equipos reproducibles, formatos/cantidad, caché fría/caliente, modo release, red y extensiones activas. Medir inicio/escaneo/primer audio/saltos/memoria/batería y comparar base sin extensiones con escenarios activos.
 
-## Ajustes 0.2.4
-
-La consulta de actualizaciones no bloquea el arranque, se limita automáticamente a una vez al día y la descarga escribe por fragmentos con espera de E/S. El registro multimedia está limitado a cien eventos. La prioridad foreground se conserva al pausar para evitar reinicios prohibidos, pero se libera el wake lock de CPU durante la pausa y todo el servicio al detener. Son ajustes implementados y probados en escenarios de [[18 Pruebas 0.2.3 y correcciones 0.2.4]], no mediciones de batería ni garantía de duración en teléfonos físicos.
+Hay equipos informados, pero no matriz de benchmark ni presupuestos aceptados. Panel de recursos por extensión pendiente; tiempo/fallos no equivalen a RAM/CPU/batería atribuida. No sumar pruebas repetidas como cobertura nueva. [[07 Preguntas e investigacion]].

@@ -1,9 +1,12 @@
 ---
 tipo: pruebas-y-mejoras
+alcance: historico-de-version-o-proyecto
 estado: publicado-con-validacion-local
 actualizado: 2026-10-25
 ---
 # Pruebas 0.2.4 y mejoras 0.2.5
+
+> **Alcance de esta nota:** conserva la entrevista, investigación o etapas de la versión/proyecto indicados. Expresiones «local», «vigente», «pendiente» o «sin publicar» se refieren a ese momento; leer la confirmación posterior dentro de la nota. Estado global actual en [[10 Estado del repositorio]] y decisiones temáticas desde [[00 Inicio]].
 
 ## Requisitos confirmados
 

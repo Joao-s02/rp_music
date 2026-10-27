@@ -1,6 +1,8 @@
 # YouTube Music — definición e investigación inicial
 
-Fecha: 2026-10-26. Estado actual: primera integración Android implementada localmente en 0.3.1+10, validada con límites; los resultados fallidos iniciales se conservan como antecedente.
+> **Alcance de esta nota:** conserva la entrevista, investigación o etapas de la versión/proyecto indicados. Expresiones «local», «vigente», «pendiente» o «sin publicar» se refieren a ese momento; leer la confirmación posterior dentro de la nota. Estado global actual en [[10 Estado del repositorio]] y decisiones temáticas desde [[00 Inicio]].
+
+Fecha: 2026-10-26. Alcance histórico: primera integración Android de 0.3.1+10, validada con límites; los resultados fallidos iniciales se conservan como antecedente.
 
 El usuario confirmó que el catálogo descarga, instala y solicita permisos correctamente en su prueba. Solicita estado Instalada para paquetes presentes y comenzar una extensión YouTube Music con preguntas para precisar alcance. Antecedente confirmado: buscar/explorar catálogo y reproducir dentro de RP Music, ver [[04 Extensiones]].
 

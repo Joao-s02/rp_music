@@ -1,5 +1,7 @@
 # Release 0.3.1-alpha.1
 
+> **Alcance de esta nota:** conserva la entrevista, investigación o etapas de la versión/proyecto indicados. Expresiones «local», «vigente», «pendiente» o «sin publicar» se refieren a ese momento; leer la confirmación posterior dentro de la nota. Estado global actual en [[10 Estado del repositorio]] y decisiones temáticas desde [[00 Inicio]].
+
 Fecha: 2026-10-26. Estado: publicada, README y adjuntos verificados.
 
 El usuario terminó la prueba de 0.3.1 y autorizó publicarla y actualizar README. Confirmó buscador 10/10, resultados y audio rápidos, reproducción sin bugs ni lag observados. No indicó modelo/Android exacto/red/duración. Solo reporta errores de diseño sin detalle reproducible y pide aplazarlos a la próxima versión; no se atribuyen correcciones de diseño a esta release.

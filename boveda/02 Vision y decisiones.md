@@ -1,47 +1,33 @@
 ---
 tipo: requisitos
-estado: confirmado
-actualizado: 2026-10-24
+estado: vigente
+actualizado: 2026-10-26
 ---
 # Vision y decisiones
 
-## Propósito
+## Propósito confirmado
 
-Crear un reproductor de música para una comunidad que pueda personalizarlo. Una aplicación base sencilla y de apariencia sencilla debe cubrir las funciones habituales; las extensiones permiten ampliar sus capacidades según los recursos y preferencias de cada usuario.
+Reproductor local sencillo y fluido, personalizable por una comunidad mediante extensiones. Android y Windows prioritarios; web opcional y no soportada por la entrega actual. La visión completa no equivale al alcance publicado.
 
-## Decisiones confirmadas
-
-| Área | Decisión |
+| Área | Decisión vigente |
 | --- | --- |
-| Tecnología principal | Flutter; el usuario conoce Dart y Flutter. |
-| Plataformas prioritarias | Android y Windows. |
-| Web | Opcional; no condiciona la primera entrega. |
-| Contenido base | Archivos musicales del dispositivo. |
-| Conectividad base | Uso musical completo sin internet y sin cuenta; comprobación opcional de actualizaciones planteada posteriormente, ver [[17 Actualizaciones opcionales desde la app]]. |
-| Público | Comunidad interesada en personalizar el reproductor. |
-| Licencia y distribución | Código abierto; publicación en Play Store deseada a futuro. Licencia concreta pendiente. |
-| Prioridad de optimización | Interfaz fluida al abrir biblioteca, reproducir y cambiar canciones. |
-| Extensiones | Instalables sin reinstalar ni recompilar toda la app; reiniciar tras instalar es aceptable. |
-| Actualizaciones de extensiones | Solo con aceptación del usuario. |
-| Código actual | El usuario quiere reemplazar la versión alfa y empezar de cero. |
-| Documentación | Crear primero una bóveda y mantenerla con todo contexto importante futuro. |
+| Tecnología | Flutter/Dart. Paquetes concretos son decisiones técnicas provisionales: [[31 Arquitectura vigente]]. |
+| Base | Archivos de una raíz del dispositivo, uso musical sin cuenta y sin conexión. |
+| Red opcional | Actualizaciones configurables y extensiones de fuentes en línea. |
+| Distribución | Repositorios públicos; universal/ARM64/Windows con guías/hashes según [[27 Publicacion de releases - contenido obligatorio]]. |
+| Licencia | Deseo de código abierto confirmado; licencia del proyecto sin elegir. No hay LICENSE en la raíz al revisar esta consolidación; se conservan licencias de recursos y dependencias. |
+| Personalización | Instalar sin recompilar la app, con consentimiento para permisos/actualizaciones. Reiniciar es aceptable; no implica carga arbitraria de código nativo. |
+| Rendimiento | Fluidez de biblioteca/audio; sin presupuestos numéricos acordados. |
+| Documentación | Bóveda mantenida y README revisado en cada actualización, con estado/evidencia separados del historial. |
 
-## Referencias visuales
+## Decisiones posteriores a la entrevista
 
-- Spotify: le gusta el reproductor, pero quiere más personalización.
-- Reproductor de Samsung: también le gusta, con la misma limitación de personalización.
-- Namida: aprecia la presentación de carátulas y la agrupación automática por álbum.
+La reconstrucción del alfa ya se ejecutó. La arquitectura provisional está implementada/publicada; no atribuir sus paquetes como elección del usuario en la entrevista. Antecedentes en [[11 Reconstruccion - primera base]] y [[09 Registro de cambios]].
 
-Estas referencias orientan la experiencia; no se ha aprobado una maqueta ni un diseño visual concreto.
+Se aprobaron actualizador opcional, permisos/recuperación de extensiones, varias activas y catálogo por repositorio. Se aceptó priorizar Android para la primera fuente experimental sin cuenta; no se abandonó Windows de la app. Ecualizador reservado a futura extensión, no al núcleo.
 
-## Límites de lo decidido
+## Dirección visual
 
-No están elegidos el motor de audio, gestor de estado, persistencia, runtime de extensiones, lenguaje de sus programas ni licencia. No hay metas numéricas de rendimiento aceptadas. Las integraciones con servicios son objetivos sujetos a investigación, no capacidades garantizadas.
+Spotify, Samsung y Namida fueron referencias de experiencia. Después se eligió icono A/Nocturnal Pulse y se entregaron diseños concretos para biblioteca, álbum y reproductor. Tema y tipografías ya integrados: [[15 Identidad visual e icono]]. Una función dibujada no pasa a estar implementada por aparecer en la referencia.
 
-Detalles: [[03 Biblioteca y reproduccion]], [[04 Extensiones]], [[05 Rendimiento]], [[07 Preguntas e investigacion]]. Origen: [[08 Entrevista consolidada]].
-
-## Actualizaciones opcionales — 2026-10-25
-
-El usuario plantea consultar versiones al inicio si hay internet y permitir descargar/actualizar desde la app. La reproducción local sigue sin depender de conexión. Viabilidad y flujo propuesto, todavía sin implementación, en [[17 Actualizaciones opcionales desde la app]]. Frecuencia, canal y activación predeterminada no están decididos.
-
-Actualización 0.2.4: el usuario aprobó implementar la consulta opcional de versiones y sus controles. El uso musical sigue completo sin conexión/cuentas; la consulta automática diaria puede desactivarse. Implementación y límites en [[18 Pruebas 0.2.3 y correcciones 0.2.4]].
+Capacidades actuales: [[10 Estado del repositorio]]. Requisitos de audio/biblioteca: [[03 Biblioteca y reproduccion]]. Extensiones: [[04 Extensiones]]. Preguntas abiertas: [[07 Preguntas e investigacion]]. Origen inicial: [[08 Entrevista consolidada]].

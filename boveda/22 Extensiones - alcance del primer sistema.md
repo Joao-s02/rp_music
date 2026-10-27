@@ -1,9 +1,12 @@
 ---
 tipo: requisitos-y-propuesta
+alcance: historico-de-version-o-proyecto
 estado: requisitos-confirmados-prototipo-posterior
 actualizado: 2026-10-25
 ---
 # Extensiones - alcance del primer sistema
+
+> **Alcance de esta nota:** conserva la entrevista, investigación o etapas de la versión/proyecto indicados. Expresiones «local», «vigente», «pendiente» o «sin publicar» se refieren a ese momento; leer la confirmación posterior dentro de la nota. Estado global actual en [[10 Estado del repositorio]] y decisiones temáticas desde [[00 Inicio]].
 
 Esta nota concreta la entrevista posterior a 0.2.5 sin elegir todavía un runtime ni afirmar que exista un sistema programable. Complementa [[04 Extensiones]]; no sustituye el objetivo de libertad visual/funcional de Android y Windows.
 

@@ -1,5 +1,7 @@
 # Release 0.3.0-alpha.1
 
+> **Alcance de esta nota:** conserva la entrevista, investigación o etapas de la versión/proyecto indicados. Expresiones «local», «vigente», «pendiente» o «sin publicar» se refieren a ese momento; leer la confirmación posterior dentro de la nota. Estado global actual en [[10 Estado del repositorio]] y decisiones temáticas desde [[00 Inicio]].
+
 Fecha: 2026-10-26. Estado: publicada y adjuntos verificados.
 
 El usuario autorizó publicar 0.3.0 mientras prueba 0.3.1. Se prepara una copia separada desde el último commit publicado más los cambios de extensiones API 2 y catálogo, excluyendo fuente/capacidad/permiso/dependencias/pruebas de YouTube de 0.3.1. La copia de trabajo 0.3.1 y sus APK/paquete se conservan.

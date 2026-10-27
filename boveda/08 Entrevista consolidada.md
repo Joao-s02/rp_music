@@ -1,9 +1,12 @@
 ---
 tipo: fuente
+alcance: fuente-historica
 estado: consolidado
 actualizado: 2026-10-24
 ---
 # Entrevista consolidada
+
+> **Fuente histórica de requisitos:** entrevista inicial, complementada por decisiones posteriores. No describe por sí sola la implementación actual; consultar [[02 Vision y decisiones]] y [[10 Estado del repositorio]].
 
 Resumen fiel de las tres rondas de respuestas disponibles en esta conversación. No es una transcripción literal. Las aclaraciones posteriores prevalecen sobre las primeras respuestas. Las fechas individuales de las respuestas no se presuponen.
 

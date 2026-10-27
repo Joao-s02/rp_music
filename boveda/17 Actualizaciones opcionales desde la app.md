@@ -1,9 +1,12 @@
 ---
 tipo: investigacion-y-propuesta
+alcance: historico-de-version-o-proyecto
 estado: implementado-con-limites
 actualizado: 2026-10-25
 ---
 # Actualizaciones opcionales desde la app
+
+> **Alcance de esta nota:** conserva la entrevista, investigación o etapas de la versión/proyecto indicados. Expresiones «local», «vigente», «pendiente» o «sin publicar» se refieren a ese momento; leer la confirmación posterior dentro de la nota. Estado global actual en [[10 Estado del repositorio]] y decisiones temáticas desde [[00 Inicio]].
 
 Estado vigente: el usuario aprobó e implementamos el mecanismo en 0.2.4, con alcance y evidencia en [[18 Pruebas 0.2.3 y correcciones 0.2.4]]. El texto siguiente conserva la investigación y propuesta anteriores a esa autorización.
 

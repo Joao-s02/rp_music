@@ -61,13 +61,24 @@ Future<void> main(List<String> args) async {
   final client = HttpClient();
   try {
     final request = await client.getUrl(uri);
-    request.headers.set('Range', 'bytes=0-65535');
+    final full = args.contains('--full');
+    request.headers.set('Range', full ? 'bytes=0-' : 'bytes=0-65535');
     final response = await request.close().timeout(const Duration(seconds: 15));
     var received = 0;
-    await for (final chunk in response) {
-      received += chunk.length;
-    }
-    if (response.statusCode != 206 || received != 65536) {
+    await (() async {
+      await for (final chunk in response) {
+        received += chunk.length;
+        if (received > 64 * 1024 * 1024) {
+          throw StateError('Audio exceeds 64 MiB');
+        }
+      }
+    })().timeout(const Duration(seconds: 60));
+    if ((!full && (response.statusCode != 206 || received != 65536)) ||
+        (full &&
+            (![200, 206].contains(response.statusCode) ||
+                received == 0 ||
+                (response.contentLength >= 0 &&
+                    received != response.contentLength)))) {
       throw StateError('No audio');
     }
     stdout.writeln('Audio verified: $received bytes');

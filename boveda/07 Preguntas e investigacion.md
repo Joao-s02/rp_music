@@ -1,82 +1,46 @@
 ---
-tipo: pendientes
-estado: abierto
+tipo: pendientes-y-resoluciones
+estado: vigente
 actualizado: 2026-10-26
 ---
 # Preguntas e investigacion
 
-## Antes de fijar la arquitectura
+## Pendientes abiertos
 
-| Tema | Qué resolver | Estado |
-| --- | --- | --- |
-| Extensiones ejecutables | Runtime, lenguaje, paquete e instalación en Android y Windows; prueba de UI y lógica. | Prototipo local dart_eval/API 2; alcance, validación y límites en [[23 Extensiones programables - primer prototipo]]. |
-| Audio | Motor y backends, formatos/códecs, gapless, fundido y futura conexión de ecualizador. | Backend inicial elegido y compilado; validación física y funciones avanzadas pendientes. |
-| Almacenamiento | Acceso persistente a una raíz y sus subcarpetas en ambas plataformas; unidades extraíbles y permisos. | SAF Android y ruta Windows implementados; falta validación en dispositivos y unidades extraíbles. |
-| Servicios | Capacidades oficiales actuales de catálogo y reproducción de YouTube Music y Spotify. | Pendiente; no prometer viabilidad. |
-| Play Store | Compatibilidad del modelo elegido de extensiones y su distribución con políticas vigentes. | Pendiente de revisión oficial. |
-| Aislamiento | Permisos de ambos niveles, fallos, límites y atribución de consumo. | Requisito general confirmado; diseño pendiente. |
+| Tema | Qué falta |
+| --- | --- |
+| Ecualizador | Próxima extensión deseada: requisitos, puntos de integración audio/DSP, compatibilidad y pruebas. No implementado ni añadido al núcleo. |
+| Fuente en línea | Windows, cuentas, listas/favoritos/historial online, artistas/álbumes completos, redes/regiones y escucha larga. |
+| SDK/confianza | Memoria/aislamiento, autoría/firmas, colaboración, componentes visuales amplios y métricas atribuibles. |
+| Audio avanzado | Gapless/fundido, cola editable, letras locales/sincronizadas y edición de metadatos con protección de sobrescritura. |
+| Plataformas/equipos | Retesteo físico actual, gestos/tres botones, SD/SAF, launcher/widget, actualización entre releases conservando datos y controles multimedia Windows. |
+| Rendimiento | Biblioteca/equipos reproducibles y presupuestos. [[05 Rendimiento]]. |
+| Producto futuro | Escaneo automático/observador, agrupación de compilaciones/etiquetas incompletas y personalización adicional. |
+| Distribución | Licencia del proyecto pendiente. Play Store y condiciones vigentes de servicios requieren investigación específica. Catálogo revisado obligatorio no aprobado. |
 
-Consultar fuentes oficiales actuales cuando se realice esta investigación y registrar enlaces, fecha, conclusión y límites. Esta bóveda no presenta dichas capacidades como verificadas.
+Consultar documentación primaria vigente al realizar una investigación nueva; registrar fecha, fuente, conclusión y límites. Esta consolidación revisa notas/código y evidencia existentes, no realiza una nueva revisión de políticas externas.
 
-## Preguntas de producto abiertas
+## Resuelto para la implementación actual
 
-Identidad base resuelta el 2026-10-25: variante A elegida e integrada en recursos; parámetros en [[15 Identidad visual e icono]]. Aplicación y validación del tema de interfaz aún pendientes.
+| Pregunta anterior | Resolución |
+| --- | --- |
+| ¿Reconstruir alfa? | Autorizado/ejecutado preservando Git/bóveda. [[11 Reconstruccion - primera base]]. |
+| ¿Motor/persistencia/runtime sin elegir? | Elección técnica provisional implementada: just_audio/audio_service, JSON y dart_eval/API 2. [[31 Arquitectura vigente]]. |
+| ¿Android o Windows primero? | App para ambos. Fuente inicial prioriza Android por aceptación posterior; Windows de esa fuente pendiente. [[04 Extensiones]]. |
+| ¿Identidad/tema/fuentes? | A confirmado y tema/fuentes integrados; álbum/reproductor rediseñados. [[15 Identidad visual e icono]]. |
+| ¿Catálogo/instalación? | Archivo y repositorio GitHub, permisos y actualización explícita. [[04 Extensiones]]. |
+| ¿Varias activas/conflictos/recuperación? | Aceptados e implementados con propietarios por función, base y fallos; límites del SDK conservados. |
+| ¿Restaurar con autoplay? | Implementación restaura local sin iniciar audio; no atribuirlo como respuesta original del usuario. [[03 Biblioteca y reproduccion]]. |
+| ¿Caché/escaneo? | Manual/progresivo; muestra caché al abrir. Puede cambiar su política futura, no falta elegir cómo funciona hoy. |
+| ¿Notificaciones ausentes? | Usuario confirmó controles visibles en 0.2.4. Informes negativos anteriores son antecedentes. [[20 Pruebas 0.2.4 y mejoras 0.2.5]]. |
+| ¿Actualizador solo propuesto? | Aprobado/implementado, ventana/descarga posteriores en 0.2.6. [[17 Actualizaciones opcionales desde la app]], [[21 Pruebas 0.2.5 y mejoras 0.2.6]]. |
+| ¿Sin fuente implementada? | Búsqueda/audio Android publicados, vía experimental aceptada. Cliente específico migrado al paquete en 0.3.2. No repetir entrevista ni reintroducirlo al núcleo. [[24 YouTube Music - definicion e investigacion]], [[28 Pruebas 0.3.1 y mejoras 0.3.2]]. |
+| ¿Primera release pendiente? | Ya publicada y sucedida por otras. Referencia actual en [[10 Estado del repositorio]]. |
 
-Bloqueo de compilación por Java resuelto en esta máquina: JDK 17 completo instalado/seleccionado y APK release compilado y con firma verificada. Pasos de configuración en docs/COMPILACION.md; antecedentes y evidencia en [[09 Registro de cambios]].
+## Continuar investigando
 
-- ¿Android y Windows se desarrollarán desde el inicio en paralelo o habrá una plataforma inicial? La respuesta autorizó reconstruir, pero no resolvió este punto.
-- ¿Qué dispositivos, versiones mínimas de sistemas y biblioteca de referencia se usarán?
-- ¿Actualizar automáticamente el índice al abrir, observar cambios continuamente o hacerlo manualmente?
-- ¿Qué ocurre al cambiar la raíz o perder acceso a archivos?
-- ¿Cómo agrupar álbumes cuando faltan etiquetas o hay compilaciones?
-- ¿Restaurar posición sin iniciar audio o reanudar automáticamente?
-- ¿Cómo evitar sobrescrituras inesperadas al editar metadatos? ¿Se desea respaldo?
-- ¿Qué opciones concretas de personalización básica se incluirán?
-- ¿Catálogo revisado, repositorios externos, paquetes firmados? ¿Quién administra la confianza?
-- ¿Modo de recuperación y desactivación de extensiones con fallos?
-- ¿Qué métricas mostrará el panel de consumo?
-- ¿Qué licencia de código abierto se elegirá y cuál será el nombre público definitivo?
-- ¿Qué funciones completas entrarán en el primer lanzamiento público?
+Elegir lo relacionado con la tarea y preguntar solo lo que la evidencia no resuelva. Diferenciar requisito, decisión técnica provisional, observación y propuesta. Tablas/etapas anteriores conservadas en versiones, [[09 Registro de cambios]] y [[30 Archivo de navegacion y estado]].
 
-No es necesario preguntar todo de una vez. Resolver primero lo que bloquee la siguiente tarea, proponiendo valores razonables y distinguiéndolos de decisiones aceptadas.
+## Solicitud posterior a prueba 0.3.3
 
-## Avance tras iniciar la reconstrucción
-
-[[11 Reconstruccion - primera base]] registra la elección provisional de audio/persistencia, acceso SAF Android y una prueba declarativa de personalización. La tabla anterior conserva las investigaciones completas pendientes; no interpretar el backend provisional como validación de gapless, ecualizador o todos los códecs. Se trabaja en ambas plataformas en este incremento. El escaneo actual es manual; falta validar con el usuario su comportamiento final.
-
-Relaciones: [[02 Vision y decisiones]], [[03 Biblioteca y reproduccion]], [[04 Extensiones]], [[05 Rendimiento]], [[06 Primera version]].
-
-## Notificaciones y rediseño posteriores a 0.2.2
-
-El informe físico sigue negativo en Galaxy A34 y Poco X6, incluido ARM64 y permiso concedido. Se detectaron iconos dinámicos ausentes del APK reducido y se corrigió su conservación. Sonda release con sesión/notificación real aprobada en emulador API 37; comparación causal posterior reprodujo el fallo CustomAction sin icono al recortar los recursos; detalle y validación final en [[16 Pruebas 0.2.2 y rediseno 0.2.3]]. La aplicación inicial del tema ya está implementada; no mantenerla como completamente pendiente ni inferir soporte de DSP/DAC/ecualizador desde el ZIP.
-
-## Actualizador opcional
-
-Viabilidad documental evaluada en [[17 Actualizaciones opcionales desde la app]]. GitHub releases puede servir como fuente pública; latest excluye nuestras prereleases. Android permite solicitar instalación, con firma compatible y gestión de consentimiento del sistema. La propuesta fue aprobada e implementada posteriormente en 0.2.4: consulta diaria configurable, canales, descarga/verificación Android y enlace Windows. Firma de distribución estable y recorrido entre releases públicas siguen pendientes; ver [[18 Pruebas 0.2.3 y correcciones 0.2.4]].
-
-## Informe móvil posterior a 0.2.4
-
-El usuario confirma que ya aparecen los controles de notificación; el informe negativo anterior se conserva como antecedente. Se añade carátula e iconos simplificados en sesión Android; falta verificar su presentación física. Borrado de archivos mediante SAF implementado con permiso de escritura y confirmación, sujeto al proveedor; comprobar permiso antiguo de solo lectura y SD. Ver [[20 Pruebas 0.2.4 y mejoras 0.2.5]].
-
-## Entrevista de extensiones y mejoras 0.2.6
-
-Resueltos para la primera entrega: ejemplo de biblioteca, varias extensiones, conflictos elegidos por el usuario, instalación por archivo, permisos normales separados, recuperación y conservación de datos; carátulas propias/mosaico y listas automáticas. Falta elegir runtime, lenguaje, formato, límites y contratos; ver [[22 Extensiones - alcance del primer sistema]]. SAF no se puede ampliar a escritura silenciosamente: 0.2.6 solicita autorización de la misma carpeta al borrar. MediaStore.createDeleteRequest es alternativa investigada, sin implementar; ver [[21 Pruebas 0.2.5 y mejoras 0.2.6]].
-
-## Prototipo 0.3.0
-
-Elección técnica provisional de dart_eval para lógica en isolates y UI mediante contratos limitados. Permisos, reglas y recuperación implementados como prototipo; faltan aislamiento duro de memoria, red, comunicación entre paquetes y componentes arbitrarios. Ver [[23 Extensiones programables - primer prototipo]].
-
-
-2026-10-26: requisitos de YouTube Music confirmados: solo audio dentro de RP Music, segundo plano/pantalla apagada, Android y Windows, sin cuenta, listas/favoritos/historial locales y búsqueda/exploración. Se investigan fuentes primarias oficiales y alternativas no oficiales; elección de vía pendiente de respuesta. No hay streaming remoto implementado ni comprobado. Detalles en boveda/24 YouTube Music - definicion e investigacion.md.
-
-
-Trabajo vigente 2026-10-26: [[24 YouTube Music - definicion e investigacion]] — el usuario aceptó priorizar Android y la primera entrega de búsqueda/reproducción sin cuenta. 0.3.1+10 local añade fuente Android y paquete externo; 77 pruebas y recorrido nativo instalado aprobados, con límites documentados. Windows/listas/favoritos/historial de la fuente pendientes. No repetir elección de vía no oficial ni prioridad de plataforma. Última release pública de la app: 0.2.6.
-
-
-2026-10-26: usuario valida 0.3.1 (búsqueda/audio rápidos, sin bugs ni lag observados) y autoriza nueva release. Diseño reportado queda para próxima versión. Comunicación pública: soporte de extensiones para fuentes de música en la nube, con adaptador inicial Android; no prometer cualquier proveedor ni ocultar límites. Se publica el mismo APK validado; Windows mantiene 0.3.0. Seguimiento en [[26 Release 0.3.1]].
-
-
-2026-10-26: la separación del proveedor se comprueba parcialmente en el desarrollo 0.3.2: programa externo interpretado realiza búsqueda/resolución mediante HTTP genérico acotado; HTTP y prueba nativa Android aprobados. Ya no requiere cliente específico en el anfitrión para esa fuente. No resuelve Windows, cuentas ni aislamiento duro del motor; ver [[28 Pruebas 0.3.1 y mejoras 0.3.2]].
-
-
-2026-10-26: nuevo informe 0.3.2 y referencia de reproductor en [[29 Pruebas 0.3.2 y mejoras 0.3.3]]. Confirmado que ecualizador se reserva a próxima extensión, no al núcleo. Se implementan artistas por coma sin reescritura de etiquetas y navegación histórica anterior/avance; referencias a letras/temporizador/salida no son funciones implementadas por aparecer en el diseño. Validaciones automatizadas/nativas y límites en esa nota.
+[[32 Pruebas 0.3.3 y mejoras 0.3.4]]: iniciar letras sincronizadas y descargas YouTube pasa a implementación local. Spotify solicitado explícitamente sin cuenta/vía no oficial: vista previa pública comprobada, canciones completas y búsqueda anónima por nombre sin resolver; no pedir credenciales para este alcance. Verificar reproducción nativa Windows y exportación/selector en ambas plataformas.

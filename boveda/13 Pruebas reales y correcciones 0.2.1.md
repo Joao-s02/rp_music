@@ -1,9 +1,12 @@
 ---
 tipo: pruebas-y-correcciones
+alcance: historico-de-version-o-proyecto
 estado: publicado-con-validacion-local
 actualizado: 2026-10-24
 ---
 # Pruebas reales y correcciones 0.2.1
+
+> **Alcance de esta nota:** conserva la entrevista, investigación o etapas de la versión/proyecto indicados. Expresiones «local», «vigente», «pendiente» o «sin publicar» se refieren a ese momento; leer la confirmación posterior dentro de la nota. Estado global actual en [[10 Estado del repositorio]] y decisiones temáticas desde [[00 Inicio]].
 
 ## Informe del usuario sobre 0.2.0-alpha.1
 
