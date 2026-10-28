@@ -1,13 +1,13 @@
 ---
 tipo: arquitectura-observada
-estado: publicada-0.3.5-con-limites
+estado: publicada-0.3.6-con-limites
 actualizado: 2026-10-27
 ---
 # Arquitectura vigente
 
 ## Alcance y criterio
 
-Mapa de la implementación observada en el código de 0.3.5, no propuesta de reconstrucción ni elección irreversible de paquetes. Estado de distribución/verificación en [[10 Estado del repositorio]]. El alfa y arquitectura-reproductor-flutter.md son antecedentes; [[11 Reconstruccion - primera base]] explica el inicio de esta implementación.
+Mapa de la implementación observada en el código de 0.3.6, no propuesta de reconstrucción ni elección irreversible de paquetes. Estado de distribución/verificación en [[10 Estado del repositorio]]. El alfa y arquitectura-reproductor-flutter.md son antecedentes; [[11 Reconstruccion - primera base]] explica el inicio de esta implementación.
 
 ## Componentes y responsabilidades
 
@@ -90,6 +90,6 @@ Separación y deuda heredada: [[04 Extensiones]]. Políticas de release: [[27 Pu
 
 [[33 Metadatos de descargas YouTube]]: LyricsController sigue selección de MusicHandler y coordina EmbeddedLyrics/MusicFiles, caché privada y proveedor elegido en capacidad lyrics. Lectura de documentos SAF con copia privada temporal acotada en Android; rutas directas/isolate en Windows. Letras locales recuperadas no se escriben en la música. DownloadEnrichment consume source/metadata y DownloadTags añade etiquetas genéricas MP4 sin recodificar. Proveedores de búsqueda/metadatos permanecen en el checkout independiente rp-music-extensions. No se modifica el esquema de biblioteca/sesión; nuevas copias de letras y su huella se guardan en soporte privado. Contratos y límites nuevos en API 2 y nota temática. La validación local no equivale a publicación ni a prueba física Android.
 
-## Corrección local 0.3.6 — contenedor fragmentado
+## Corrección 0.3.6 — contenedor fragmentado
 
-DownloadTags separa MP4 plano y fragmentado: el diseño de moov final de 0.3.5 es incompatible con fragmentos que requieren inicialización previa. La ruta corregida mantiene moov delante de sidx/moof y admite solo offsets relativos validados; otras variantes vuelven al audio original con aviso. Herramienta genérica de reparación a copia nueva, sin sobrescribir originales ni contener lógica del proveedor. Evidencia del archivo real y pruebas sintéticas en [[34 Descarga M4A no visible en biblioteca]]. No publicado todavía.
+DownloadTags separa MP4 plano y fragmentado: el diseño de moov final de 0.3.5 es incompatible con fragmentos que requieren inicialización previa. La ruta corregida mantiene moov delante de sidx/moof y admite solo offsets relativos validados; otras variantes vuelven al audio original con aviso. Herramienta genérica de reparación a copia nueva, sin sobrescribir originales ni contener lógica del proveedor. Evidencia del archivo real y pruebas sintéticas en [[34 Descarga M4A no visible en biblioteca]]. Publicado como 0.3.6-alpha.1; prueba física todavía pendiente.

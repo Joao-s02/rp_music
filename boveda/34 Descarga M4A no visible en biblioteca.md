@@ -1,6 +1,6 @@
 ---
 tipo: investigacion-de-incidencia
-estado: fallo-de-contenedor-confirmado-correccion-local
+estado: correccion-publicada-con-validacion-fisica-pendiente
 actualizado: 2026-10-27
 ---
 # Descarga M4A no visible en biblioteca
@@ -61,3 +61,11 @@ Cierre de compilación local: APK normal universal 0.3.6+15 compilado en release
 El usuario aclara que pide una nueva release con las versiones corregidas. Se prepara v0.3.6-alpha.1 / app 0.3.6+15, con universal, ARM64, Windows, guías y hashes. El intento de petición de issue se corrigió antes de actuar; no se crea issue. Extensiones sin cambios: el arreglo está en la app. No se distribuyen la canción reparada ni archivos privados. Confirmación de borrador y API pública pendiente hasta terminar.
 
 Preparación de publicación: ARM64 normal release aprobado (129.7 s), código 15/versionName 0.3.6, solo arm64-v8a; universal contiene arm64-v8a/armeabi-v7a/x86_64. Ambas firmas v2 válidas con certificado compatible con 0.3.5. Windows normal release 0.3.6+15 compilado (114.1 s), ProductVersion comprobado tras terminar. Se prepara ZIP completo con guías vigentes, sin entrada de integración ni música/extensiones. Documentos en docs/USO-0.3.6.md, PRUEBAS/CAMBIOS/RELEASE-0.3.6.md; siete adjuntos y hashes en dist/0.3.6-release. Confirmación pública aún pendiente en esta fase.
+
+## Publicación confirmada — v0.3.6-alpha.1
+
+2026-10-27: release preliminar pública https://github.com/Joao-s02/rp_music/releases/tag/v0.3.6-alpha.1. App 0.3.6+15, tag/código d0d894257e52f89f3c6edc80359bc737bf9bbf51, release ID 426240606. Siete adjuntos definitivos: universal, ARM64, Windows, USO, PRUEBAS, CAMBIOS y hashes.
+
+Borrador autenticado verificado antes de publicar por tamaños/digests SHA-256 y target_commitish. Después, API pública sin autenticación confirmó prerelease visible, siete adjuntos con mismos tamaños/hashes, tag al commit esperado y SHA256SUMS descargado idéntico al local. Commits documentales posteriores confirman publicación y no cambian binarios del tag.
+
+No se incluyen música privada ni la copia reparada en Git/release. Extensiones compatibles sin cambios. La publicación no acredita prueba física Android ni reparación automática de archivos anteriores; no se modificaron adjuntos de 0.3.5.

@@ -46,3 +46,5 @@ Elegir lo relacionado con la tarea y preguntar solo lo que la evidencia no resue
 ## Solicitud posterior a prueba 0.3.3
 
 [[32 Pruebas 0.3.3 y mejoras 0.3.4]] conserva la implementación y publicación. El 2026-10-27 el usuario confirma reproducción YouTube Android satisfactoria y cancela Spotify tras comprobar fragmentos de unos 30 segundos: canciones completas/búsqueda Spotify dejan de ser pendientes activos. Retirada del catálogo aún no ejecutada. Nueva prioridad: [[33 Metadatos de descargas YouTube]]. Exportación real/selector y Windows siguen pendientes; el informe de reproducción no verifica esos flujos.
+
+Incidencia M4A: fallo de contenedor de 0.3.5 confirmado con archivo aportado y corregido/publicado en 0.3.6. Falta validar en Android del usuario; no asumir resuelta visibilidad por decodificar en escritorio. [[34 Descarga M4A no visible en biblioteca]].

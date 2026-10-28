@@ -7,12 +7,12 @@ actualizado: 2026-10-27
 
 ## Referencia publicada
 
-**0.3.5-alpha.1**, aplicación **0.3.5+14**, Android universal/ARM64 y Windows x64. [Release pública](https://github.com/Joao-s02/rp_music/releases/tag/v0.3.5-alpha.1).
+**0.3.6-alpha.1**, aplicación **0.3.6+15**, Android universal/ARM64 y Windows x64. [Release pública](https://github.com/Joao-s02/rp_music/releases/tag/v0.3.6-alpha.1).
 
-- Tag/código: a7c9e11bcaf90c2fe0868d395a2d3d132169d4bf.
+- Tag/código: d0d894257e52f89f3c6edc80359bc737bf9bbf51.
 - Extensiones: d0a007ef5bbc4f8fb22ed340c57fa7ddab2f5ee4 de rp-music-extensions. Código/paquetes específicos exclusivamente allí; commits documentales posteriores no cambian binarios.
 - Siete adjuntos públicos verificados por tamaño/SHA-256: dos APK, ZIP Windows completo, USO, PRUEBAS, CAMBIOS y SHA256SUMS. Manifiesto descargado sin autenticación idéntico al local; tag confirmado al commit esperado.
-- Evidencia, hashes y fases locales en [[33 Metadatos de descargas YouTube]]. Anterior: [[32 Pruebas 0.3.3 y mejoras 0.3.4]]; navegación histórica en [[30 Archivo de navegacion y estado]].
+- Evidencia de corrección/publicación en [[34 Descarga M4A no visible en biblioteca]]. Funciones y entrega anterior en [[33 Metadatos de descargas YouTube]]; navegación histórica en [[30 Archivo de navegacion y estado]].
 
 ## Capacidades actuales
 
@@ -40,17 +40,19 @@ YouTube Windows 0.3.0 sigue como candidato manual fuera del catálogo recomendad
 
 ## Verificaciones registradas
 
-- Suite 106 aprobadas, análisis sin incidencias. Prueba optativa de red aprobada por separado; no se suman repeticiones.
-- Tres casos del usuario desde resultados reales YouTube/duración real obtuvieron letras sincronizadas. Prueba completa con paquete real incrustó letras/portada/álbum en audio sintético, con original intacto.
-- Lector y reproducción nativa Windows de M4A etiquetado aprobados; ffprobe/ffmpeg comprobaron etiquetas/duración/decodificación.
-- APK universal/ARM64 normales, versión/código 0.3.5/14, firma v2/certificado compatible y ABIs correctos. Sin dispositivo conectado para instalación/escucha física de esta versión.
-- Windows normal 0.3.5+14 recompilado tras las pruebas; ZIP de 22 archivos íntegro con guías, sin paquetes de extensión ni sonda.
-- Publicación: borrador verificado antes de publicar, API pública/adjuntos/tag y manifiesto descargado confirmados después. Artefactos finales en dist/0.3.5-release.
+- Suite 110 aprobadas, análisis de los cambios sin incidencias. Prueba de red optativa omitida; resultado positivo de 0.3.5 como antecedente, no prueba nueva.
+- Antecedente 0.3.5: tres casos del usuario desde resultados reales YouTube/duración real obtuvieron letras sincronizadas. Prueba completa con paquete real incrustó letras/portada/álbum en audio sintético, con original intacto.
+- Antecedente 0.3.5: lector y reproducción nativa Windows de M4A etiquetado aprobados; ffprobe/ffmpeg comprobaron etiquetas/duración/decodificación.
+- APK universal/ARM64 normales, versión/código 0.3.6/15, firma v2/certificado compatible y ABIs correctos. Sin dispositivo conectado para instalación/escucha física de esta versión.
+- Windows normal 0.3.6+15 recompilado tras las pruebas; ZIP de 22 archivos íntegro con guías, sin paquetes de extensión ni sonda.
+- Publicación: borrador verificado antes de publicar, API pública/adjuntos/tag y manifiesto descargado confirmados después. Artefactos finales en dist/0.3.6-release.
 
 ## Pendientes y límites activos
 
-Fallo posterior confirmado en 0.3.5: etiquetar MP4/M4A fragmentado desplaza la inicialización al final y produce archivos incompatibles. Corrección local 0.3.6+15 y copia del archivo aportado reparada, decodificada y encontrada por escáner de escritorio. 110 pruebas aprobadas y análisis limpio de cambios. Validación Android del usuario pendiente; no nueva publicación. [[34 Descarga M4A no visible en biblioteca]].
+Fallo posterior confirmado en 0.3.5: etiquetar MP4/M4A fragmentado desplaza la inicialización al final y produce archivos incompatibles. Corrección publicada 0.3.6+15 y copia del archivo aportado reparada, decodificada y encontrada por escáner de escritorio. 110 pruebas aprobadas y análisis limpio de cambios. Validación Android del usuario pendiente pese a publicar. [[34 Descarga M4A no visible en biblioteca]].
 
 Prueba física Android con archivos personales, selector SAF/exportación real, permisos, SD/launcher/widget y escucha prolongada; actualización entre releases conservando datos; cobertura de formatos/redes/regiones. Letras/metadatos pueden faltar o corresponder a versiones distintas; servicios con 503/timeouts observados. No se promete toda canción ni etiqueta.
 
 YouTube Windows funcional; cuentas/listas/favoritos/historial online; edición general de etiquetas, cola editable, gapless/fundido, ecualizador como extensión; aislamiento/métricas/firmas del SDK y licencia concreta. Spotify y Play Store dejan de ser objetivos. Distribución oficial exclusivamente GitHub. [[07 Preguntas e investigacion]]. Publicaciones futuras requieren autorización y [[27 Publicacion de releases - contenido obligatorio]].
+
+0.3.6 corrige moov al final en M4A fragmentados: inicialización previa y offsets relativos validados, sin recodificar. Copia del archivo aportado y fixture fragmentado decodificados por ffmpeg; escáner de escritorio encuentra la copia. No se reescriben archivos existentes al actualizar. No se ha confirmado directamente la visibilidad en el Android del usuario. [[34 Descarga M4A no visible en biblioteca]].

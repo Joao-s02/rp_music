@@ -411,3 +411,5 @@ Cierre local de la corrección M4A: APK universal normal 0.3.6+15 compilado (160
 ## 2026-10-27 — Publicación 0.3.6 autorizada
 
 Usuario solicita explícitamente la release con las versiones corregidas. Se prepara entrega completa universal/ARM64/Windows de 0.3.6+15, guías y hashes. Sin nuevos cambios funcionales tras la corrección y 110 pruebas; no se vuelve a presentar la prueba de red de 0.3.5 como nueva. La petición anterior de issue se aclaró antes de crear nada. No se adjunta música privada, solo binarios y documentos de la app. Extensiones actuales compatibles sin cambios. Evidencia y confirmación en [[34 Descarga M4A no visible en biblioteca]].
+
+Publicación 0.3.6 confirmada: https://github.com/Joao-s02/rp_music/releases/tag/v0.3.6-alpha.1, tag/código d0d894257e52f89f3c6edc80359bc737bf9bbf51, release ID 426240606. Siete adjuntos verificados en borrador y mediante API pública por tamaño/digest; tag y manifiesto descargado confirmados. README/Inicio/Estado/guías actualizados. Extensiones sin cambios y archivos privados excluidos. Límites de prueba física y archivos anteriores conservados en [[34 Descarga M4A no visible en biblioteca]].

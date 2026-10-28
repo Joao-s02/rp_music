@@ -5,7 +5,7 @@ actualizado: 2026-10-27
 ---
 # RP Music — red de conocimiento
 
-La bóveda conserva decisiones y evidencia para continuar el proyecto. Referencia publicada: **0.3.5-alpha.1**, aplicación **0.3.5+14**, Android y Windows. Estado actual y comprobaciones: [[10 Estado del repositorio]].
+La bóveda conserva decisiones y evidencia para continuar el proyecto. Referencia publicada: **0.3.6-alpha.1**, aplicación **0.3.6+15**, Android y Windows. Estado actual y comprobaciones: [[10 Estado del repositorio]].
 
 ## Empezar aquí
 
@@ -25,11 +25,11 @@ La bóveda conserva decisiones y evidencia para continuar el proyecto. Referenci
 | Preguntas todavía abiertas | [[07 Preguntas e investigacion]] |
 | Marca, tema y referencias | [[15 Identidad visual e icono]] |
 | Publicaciones | [[27 Publicacion de releases - contenido obligatorio]] |
-| Última entrega y sus pruebas | [[33 Metadatos de descargas YouTube]] |
+| Última entrega y sus pruebas | [[34 Descarga M4A no visible en biblioteca]] |
 
 Guías para usar, compilar y programar: [Índice de documentación](../docs/README.md). Presentación pública: [README del proyecto](../README.md).
 
-Última publicación y límites experimentales: [[33 Metadatos de descargas YouTube]].
+Última publicación y límites experimentales: [[34 Descarga M4A no visible en biblioteca]].
 
 0.3.5 publicada: [[33 Metadatos de descargas YouTube]] — letras incrustadas, búsqueda automática y nuevas descargas etiquetadas. Entrega anterior en [[32 Pruebas 0.3.3 y mejoras 0.3.4]].
 
