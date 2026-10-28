@@ -17,16 +17,23 @@ List<ExtensionDestination> extensionDestinations(
   for (final source in programs.installed.values) {
     if (source.package.engine == 'javascript' &&
         source.package.slots.contains('screen') &&
+        (source.package.sourceSpec == null ||
+            source.package.sourceSpec!.platforms.contains(platform)) &&
         programs.allowed(source.package.id, 'navigation.add')) {
       entries.add(
         ExtensionDestination(
           source.package.id,
-          'JS · ${source.package.name}'.substring(
-            0,
-            ('JS · ${source.package.name}').length.clamp(0, 14),
-          ),
-          'cloud',
-          0xff9c8dff,
+          (source.package.sourceSpec?.navigationLabel ??
+                  'JS · ${source.package.name}')
+              .substring(
+                0,
+                (source.package.sourceSpec?.navigationLabel ??
+                        'JS · ${source.package.name}')
+                    .length
+                    .clamp(0, 14),
+              ),
+          source.package.sourceSpec?.icon ?? 'cloud',
+          source.package.sourceSpec?.color ?? 0xff9c8dff,
         ),
       );
       continue;

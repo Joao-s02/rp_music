@@ -5,6 +5,16 @@ actualizado: 2026-10-26
 ---
 # Registro de cambios
 
+## Explorador musical y radio JavaScript — desarrollo local 2026-10-28
+
+Usuario autoriza ambas extensiones y capacidades necesarias. App local 0.3.9+18: HTTP genérico por etapas, audio remoto/permisos, cancelación/revocación; variantes específicas en repo externo, Dart previo preservado. Contratos/decisiones/pruebas/pendientes en [[37 Explorador y radio JavaScript]], estado en [[10 Estado del repositorio]], mapa en [[31 Arquitectura vigente]]. README/API 3 revisados. Sin push/publicación; cierre de pruebas/binarios pendiente al redactar.
+
+Cierre: suite138 aprobadas (130app+8ext)/una optativa omitida, análisis limpio. Navegación/URL de audio YouTube/lista100+100 y radio AAC nativa Windows con pausa/reanudación/revocación comprobadas. Recorrido iterativo y pila Windows acotada512KiB corrigen JSON anidado. APK normal0.3.9/código18/firma v2 compatible/tres ABI y Windows normal0.3.9+18/ZIP21 archivos íntegro, guía/hashes en dist/0.3.9-local. Sin rpmx en binarios. Sin dispositivo Android ni prueba nativa YouTube Windows. Catálogo/paquetes previos intactos, sin push/commit/publicación.
+
+## Confirmación de uso 0.3.8 y siguientes pasos propuestos — 2026-10-28
+
+El usuario confirma éxito de 0.3.8 y funcionamiento correcto de extensiones JavaScript, sin identificar plataforma/dispositivo/recorrido. Se actualizan [[10 Estado del repositorio]], README y [[36 Motor JavaScript paralelo]]. Se propone red genérica autorizada para API 3 y una extensión útil separada antes de cuentas/sincronización; no es decisión de implementación ni migración de YouTube. Verificación documental: contraste de versión en pubspec/README y notas vigentes; sin nueva prueba de ejecución ni consulta remota de publicación. No cambia código ni binarios.
+
 > **Registro histórico:** cada entrada describe el contexto y la verificación de su momento. El estado vigente se consulta en [[10 Estado del repositorio]]; decisiones por tema desde [[00 Inicio]]. Las correcciones posteriores no convierten todas las afirmaciones antiguas en estado actual.
 
 ## 2026-10-25 — Corrección de selección del compilador Java
@@ -453,3 +463,7 @@ Entrega local JavaScript terminada: APK universal normal0.3.8+17 regenerado tras
 ## Publicación 0.3.8 confirmada
 
 2026-10-28: release pública https://github.com/Joao-s02/rp_music/releases/tag/v0.3.8-alpha.1, app 0.3.8+17, tag/código d5452275e1023e6125feca130b884180f14b2a1e, release ID 426315233. Universal reutiliza binario normal final verificado; ARM64 release normal 165.0s, código17/versionName0.3.8 y firma v2 compatible. Windows normal ProductVersion0.3.8+17, ZIP completo con flutter_qjs_next_plugin.dll y guías. Siete adjuntos verificados en borrador por tamaños/digests SHA256 y target; después API pública confirmó publicación/prerelease, mismos siete tamaños/hashes, tag correcto y manifiesto descargado idéntico. Extensiones de código 9116d70e70a954618675d6d0e66b32cfb580d39f: catálogo de seis opciones verificado por cliente real; Laboratorio JS, YouTube estable y Explorador descargados y comparados byte a byte. Commits documentales posteriores no modifican binarios. Sin prueba física Android; SDK JS experimental sin Node/red/HTML libre. No se modifican releases anteriores.
+
+2026-10-28: usuario autoriza publicar la nueva release0.3.9. Se preparan universal/ARM64/Windows y guías/hashes; dos extensiones JS separadas en catálogo, paquetes anteriores preservados. Confirmación pública pendiente hasta verificar borrador y publicación.
+
+Catálogo publicado en commit externo 026aa38ff251b61ec341786b079a323399ff87a1: ocho opciones comprobadas con cliente real. Cinco paquetes (dos nuevos, YouTube estable/Explorador y Laboratorio) descargados de revisión fija y comparados byte a byte. ARM64 normal0.3.9/código18 compilado71.4s, solo arm64-v8a y firma v2 compatible verificados. Publicación de app todavía en preparación.

@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import '../app/library_controller.dart';
 import '../playback/music_handler.dart';
 import 'program_controller.dart';
 import 'program_snapshot.dart';
+import 'javascript_screen_service.dart';
 
 class JavascriptScreenView extends StatefulWidget {
   const JavascriptScreenView({
@@ -26,6 +29,8 @@ class _JavascriptScreenViewState extends State<JavascriptScreenView> {
   final fields = <String, String>{};
   bool busy = false;
   String? error;
+  int generation = 0;
+  int? audioGeneration;
   bool get enabled =>
       widget.programs.allowed(widget.extensionId, 'navigation.add');
   @override
@@ -39,6 +44,8 @@ class _JavascriptScreenViewState extends State<JavascriptScreenView> {
   void didUpdateWidget(covariant JavascriptScreenView old) {
     super.didUpdateWidget(old);
     if (old.extensionId != widget.extensionId) {
+      generation++;
+      busy = false;
       view = null;
       fields.clear();
       run();
@@ -53,6 +60,7 @@ class _JavascriptScreenViewState extends State<JavascriptScreenView> {
 
   @override
   void dispose() {
+    generation++;
     widget.programs.removeListener(changed);
     super.dispose();
   }
@@ -61,6 +69,7 @@ class _JavascriptScreenViewState extends State<JavascriptScreenView> {
     if (busy || !enabled) return;
     final installed = widget.programs.installed[widget.extensionId];
     final id = widget.extensionId;
+    final token = ++generation;
     final snapshot = ProgramSnapshot(
       widget.library.tracks.take(500).toList(),
       widget.library.favorites,
@@ -70,22 +79,29 @@ class _JavascriptScreenViewState extends State<JavascriptScreenView> {
       error = null;
     });
     try {
-      final result = await widget.programs.invoke(id, 'screen', {
+      final service = JavascriptScreenService(widget.programs);
+      final result = await service.run(id, {
         'action': action ?? 'open',
         'fields': Map<String, String>.of(fields),
         if (widget.programs.allowed(id, 'library.read'))
           'tracks': snapshot.rows,
-      });
+      }, active: () => mounted && token == generation);
       if (!mounted ||
           id != widget.extensionId ||
+          token != generation ||
           widget.programs.installed[id] != installed ||
           !enabled) {
         return;
       }
-      if (result == null) {
-        throw const FormatException(
-          'No se pudo abrir la pantalla. Revisa el estado de la extensión.',
-        );
+      if (result['playRemote'] != null) {
+        if (action == null || result['play'] != null) {
+          throw const FormatException(
+            'La reproducción requiere pulsar un botón.',
+          );
+        }
+        final track = service.remoteTrack(id, result['playRemote']);
+        audioGeneration = token;
+        await widget.audio.select([track], 0);
       }
       final play = result['play'];
       if (play != null) {
@@ -108,11 +124,14 @@ class _JavascriptScreenViewState extends State<JavascriptScreenView> {
         }
         await widget.audio.select([track], 0);
       }
-      if (mounted && enabled) {
-        setState(() => view = Map<String, dynamic>.from(result['view'] as Map));
+      if (mounted && enabled && token == generation) {
+        setState(() {
+          fields.clear();
+          view = Map<String, dynamic>.from(result['view'] as Map);
+        });
       }
     } catch (e) {
-      if (mounted) {
+      if (mounted && token == generation) {
         setState(
           () => error = e is FormatException
               ? e.message.toString()
@@ -120,7 +139,7 @@ class _JavascriptScreenViewState extends State<JavascriptScreenView> {
         );
       }
     } finally {
-      if (mounted) {
+      if (mounted && token == generation) {
         setState(() => busy = false);
       }
     }
@@ -170,8 +189,9 @@ class _JavascriptScreenViewState extends State<JavascriptScreenView> {
         return const Divider();
       case 'input':
         final id = text('id');
+        fields.putIfAbsent(id, () => text('value'));
         return TextFormField(
-          key: ValueKey('$path:$id'),
+          key: ValueKey('$path:$id:${text('value')}'),
           initialValue: fields[id] ?? text('value'),
           maxLength: 500,
           decoration: InputDecoration(labelText: text('label')),
@@ -199,6 +219,19 @@ class _JavascriptScreenViewState extends State<JavascriptScreenView> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           if (busy) const LinearProgressIndicator(),
+          if (busy)
+            TextButton(
+              onPressed: () => setState(() {
+                if (audioGeneration == generation) {
+                  unawaited(widget.audio.stop());
+                }
+                audioGeneration = null;
+                generation++;
+                busy = false;
+                error = 'Operación cancelada.';
+              }),
+              child: const Text('Cancelar'),
+            ),
           if (error != null) ...[
             Text(
               error!,

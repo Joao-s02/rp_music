@@ -5,6 +5,8 @@ actualizado: 2026-10-28
 ---
 # Extensiones
 
+2026-10-28: desarrollo local autorizado de Explorador musical/Radio por internet en JavaScript, HTTP por etapas y audio remoto. Paquetes solo en rp-music-extensions; motor genérico en app 0.3.9+18. No publicados ni migración de YouTube Dart. [[37 Explorador y radio JavaScript]].
+
 ## Visión y alcance confirmado
 
 Añadir funciones y personalizar pantallas sin recompilar la app. Se aceptaron varias activas, permisos separados, niveles normal/avanzado, elección de conflictos, recuperación, instalación por archivo y catálogo por repositorio. Actualizaciones con aceptación, no silenciosas.

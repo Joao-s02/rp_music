@@ -6,6 +6,7 @@ import '../domain/track.dart';
 import '../extensions/extension_http_transport.dart';
 import '../extensions/program_controller.dart';
 import '../extensions/program_package.dart';
+import '../extensions/javascript_screen_service.dart';
 
 typedef SourceTransport = Future<Map<String, dynamic>> Function(
   Map<String, dynamic> request,
@@ -23,6 +24,15 @@ class ExtensionSourceService {
   final SourceTransport transport;
   final String platform;
   bool available(String id, {bool localLyrics = false}) {
+    final screen = programs.installed[id]?.package;
+    if (!localLyrics &&
+        screen?.engine == 'javascript' &&
+        screen!.slots.contains('screen')) {
+      return screen.sourceSpec?.platforms.contains(platform) == true &&
+          programs.allowed(id, 'navigation.add') &&
+          programs.allowed(id, 'network.http') &&
+          programs.allowed(id, 'playback.control');
+    }
     final p = programs.owner(localLyrics ? 'lyrics' : 'source')?.package;
     return p?.id == id &&
         p?.sourceSpec?.platforms.contains(platform) == true &&
@@ -267,6 +277,27 @@ class ExtensionSourceService {
 
   Future<Uri> resolve(Track track) async {
     final id = track.sourceId;
+    if (id != null && track.id.startsWith('rpmusic-screen:$id:')) {
+      final uri = programs.screenAudio[track.id];
+      final package = programs.installed[id]?.package;
+      final revision = programs.authorizationRevision;
+      bool authorized() =>
+          available(id) &&
+          programs.installed[id]?.package == package &&
+          programs.authorizationRevision == revision;
+      if (uri == null || !authorized()) {
+        throw const FormatException(
+          'Audio remoto caducado o sin permiso. Vuelve a abrir la extensión.',
+        );
+      }
+      if (programs.allowed(id, 'network.stream')) {
+        return resolvePublicStream(uri, authorized);
+      }
+      if (package?.sourceSpec?.permits(uri) != true) {
+        throw const FormatException('Dominio de audio no autorizado.');
+      }
+      return uri;
+    }
     if (id == null || !track.id.startsWith('rpmusic-source:$id:')) {
       throw const FormatException('Identidad de fuente inválida.');
     }

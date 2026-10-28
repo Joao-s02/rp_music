@@ -5,6 +5,10 @@ actualizado: 2026-10-28
 ---
 # Estado del repositorio
 
+Desarrollo local **0.3.9+18**, sin publicar: JS con HTTP por etapas/audio remoto y candidatos Explorador musical/Radio por internet externos. 138 pruebas aprobadas/una optativa omitida, análisis limpio; navegación/resolución pública y radio nativa Windows aprobadas. APK universal/Windows normales con guía/hashes en dist/0.3.9-local. Android físico y audio nativo YouTube Windows pendientes; [[37 Explorador y radio JavaScript]]. Referencia pública siguiente conservada.
+
+2026-10-28: el usuario confirma que 0.3.8 fue un éxito y que las extensiones JavaScript funcionan correctamente. Dispositivo, plataforma y recorrido no especificados; confirmación de uso sin nueva prueba instrumentada. Propuesta posterior en [[36 Motor JavaScript paralelo]].
+
 ## Referencia publicada
 
 **0.3.8-alpha.1**, aplicación **0.3.8+17**, Android universal/ARM64 y Windows x64. [Release pública](https://github.com/Joao-s02/rp_music/releases/tag/v0.3.8-alpha.1).

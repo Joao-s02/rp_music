@@ -5,6 +5,8 @@ actualizado: 2026-10-28
 ---
 # Arquitectura vigente
 
+Desarrollo local posterior 0.3.9+18: JavascriptScreenService coordina HTTP fuera de QuickJS; ProgramController valida etapas/estado y conserva URLs solo en memoria. ExtensionSourceService/broker admite pantallas JS autorizadas sin cambiar propietario source. network.stream verifica servidores públicos de emisoras. Cancelación y revisión de autorización descartan respuestas tardías. Pruebas/límites: [[37 Explorador y radio JavaScript]]. El mapa publicado 0.3.8 siguiente se conserva como antecedente.
+
 ## Alcance y criterio
 
 Mapa de la implementación observada en el código de 0.3.8, no propuesta de reconstrucción ni elección irreversible de paquetes. Estado de distribución/verificación en [[10 Estado del repositorio]]. El alfa y arquitectura-reproductor-flutter.md son antecedentes; [[11 Reconstruccion - primera base]] explica el inicio de esta implementación.

@@ -5,6 +5,14 @@ actualizado: 2026-10-28
 ---
 # Motor JavaScript paralelo
 
+## Confirmación de uso y propuesta posterior — 2026-10-28
+
+Autorización posterior: el usuario solicita implementar Explorador musical/Radio por internet y ampliar el motor. La propuesta siguiente queda como antecedente; trabajo local y evidencia en [[37 Explorador y radio JavaScript]].
+
+El usuario informa que 0.3.8 fue un éxito y que las extensiones JavaScript funcionan correctamente. Es confirmación de uso del usuario; no especifica dispositivo, plataforma ni recorrido probado y no sustituye las pruebas físicas detalladas pendientes.
+
+Propuesta, todavía sin autorización de implementación: ampliar API 3 con transporte HTTP genérico sujeto a permisos/dominios/límites y revocación; después crear una extensión JavaScript útil y separada como prueba completa de red, estado y navegación. Mantener API 2 y los paquetes YouTube actuales mientras se valida esa ruta. Consolidar errores, cancelación y compatibilidad antes de ampliar componentes visuales según necesidades reales. Cuenta y sincronización son una fase posterior con viabilidad pendiente, no una consecuencia automática de habilitar red. Véanse [[04 Extensiones]] y [[35 Ampliacion de YouTube sin API oficial]].
+
 ## Alcance confirmado
 
 Usuario solicita prototipo JavaScript y extensión de prueba, preservando las extensiones YouTube actuales. Se conservan API 1 y API 2/Dart; ninguna migración automática. En la etapa inicial no estaba autorizada la publicación; autorización posterior y confirmación al final de esta nota. Antecedente [[04 Extensiones]], [[31 Arquitectura vigente]] y [[35 Ampliacion de YouTube sin API oficial]].
