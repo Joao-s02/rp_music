@@ -1,6 +1,6 @@
 ---
 tipo: requisitos-implementacion-y-verificacion
-estado: implementado-local-validado-con-pendientes
+estado: publicado-validado-con-pendientes
 actualizado: 2026-10-28
 ---
 # Gestos widgets albumes y descargas 0.3.11
@@ -78,3 +78,10 @@ El usuario solicita «sube la nueva release». Se completa ARM64, guías públic
 ## Entrega pública preparada
 
 ARM64 normal141.0s, versión0.3.11/código20, solo arm64-v8a y firma v2/certificado previo compatible. Universal conserva bytes normales ya verificados. ZIP público32 archivos íntegros, todas las DLL/data/licencias y tres guías, sin WinRT/rpmx. Siete adjuntos finales en dist/0.3.11-release. Catálogo externo publicado en 2dfeaf16985ba7299e9592261a83cf52ee8d4ea5: diez opciones con cliente real y veinte paquetes/variantes de revisión fija byte a byte/SHA256/metadatos correctos. No confundir esta publicación con prueba física Android.
+
+
+## Publicación confirmada — 2026-10-28
+
+0.3.11-alpha.1 publicada, app0.3.11+20. Android universal/ARM64 y Windows x64 completo con licencias/guías/hashes. ReleaseID 427162160; tag/código 34211ad4760368c1c76808fff67deb1a7579c441. Siete adjuntos verificados por tamaño/SHA256/target en borrador y públicamente, tag al commit correcto y manifiesto descargado idéntico. Extensiones 2dfeaf16985ba7299e9592261a83cf52ee8d4ea5: diez opciones verificadas con cliente real y veinte paquetes/variantes de revisión fija byte a byte. YouTube Android/Windows0.5.0 y Explorador Android/Windows0.2.0, minApp0.3.11; API2 y variantes anteriores conservadas.147 pruebas aprobadas/una optativa omitida, análisis limpio; seis canciones de álbum real con etiquetas/portada/numeración iguales y foto recuperada offline comprobadas. Android físico (widgets/launcher/SAF), escucha prolongada y latencia API3 Android pendientes. [[40 Gestos widgets albumes y descargas 0.3.11]].
+
+https://github.com/Joao-s02/rp_music/releases/tag/v0.3.11-alpha.1

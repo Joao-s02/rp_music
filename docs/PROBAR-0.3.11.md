@@ -1,6 +1,6 @@
-# Probar RP Music 0.3.11 — desarrollo local
+# Probar RP Music0.3.11
 
-Esta versión atiende los ocho puntos comunicados tras probar0.3.10. Instala Android encima de la anterior sin desinstalar; Windows debe extraerse completo en una carpeta nueva. Se conservan archivos musicales, biblioteca, listas y preferencias. Los paquetes locales se entregan con hashes al cerrar las verificaciones; la referencia publicada sigue siendo0.3.10.
+Release pública: https://github.com/Joao-s02/rp_music/releases/tag/v0.3.11-alpha.1 . [Guía vigente de instalación y catálogo](USO-0.3.11.md). La preparación y evidencia locales se conservan en [Resultados](RESULTADOS-0.3.11.md).
 
 ## Gestos y widgets Android
 
@@ -16,14 +16,14 @@ En YouTube Explorador, busca un álbum y ábrelo: se muestra su portada grande, 
 
 Las descargas no sobrescriben originales. Todos los archivos de un lote comparten álbum/artista de álbum/portada y numeración según el orden reunido; una pista fallida conserva su número para identificarla. Se incrustan los datos conocidos y letras disponibles, sin recodificar. No se inventan año, disco o álbum desconocido. Descarga dos canciones del mismo álbum y el álbum completo, actualiza biblioteca y comprueba que no se separen por una colaboración. La primera actualización relee una vez las etiquetas antiguas para incorporar artista del álbum, sin escribir en la música.
 
-## Extensiones candidatas y fotos de artistas
+## Extensiones y fotos de artistas
 
-Los nuevos paquetes están exclusivamente en rp-music-extensions/previews/0.3.11, fuera del APK/ZIP. Importa el de tu plataforma y revisa los permisos:
+En Extensiones → Explorar repositorio → https://github.com/Joao-s02/rp-music-extensions → Consultar, actualizar el paquete de tu plataforma y revisar permisos. Fuera de APK/ZIP/adjuntos:
 
 - YouTube Android0.5.0 / YouTube Windows0.5.0.
 - YouTube Explorador Android0.2.0 / Windows0.2.0.
 
-Requieren app0.3.11. Son actualizaciones de sus identidades existentes y conservan API2/Dart. El catálogo público no se modifica en esta etapa local. Elige la extensión compatible como Fuente.
+Requieren app0.3.11. Son actualizaciones de sus identidades existentes y conservan API2/Dart. El catálogo público conserva las variantes para apps anteriores. Elige la extensión compatible como Fuente.
 
 Las fotos requieren una de estas fuentes y aceptar library.read/consultas de red. Al abrir la app con conexión, la fuente busca retratos por nombre de artista; solo se aceptan coincidencias de identidad y dominios autorizados. Las imágenes se guardan en soporte privado de la app. Vuelve a abrir sin red: primero aparecen las fotos ya guardadas. Un artista sin coincidencia conserva el icono; no se reemplaza por una portada al azar. Las consultas son opcionales según la fuente/permisos y no modifican etiquetas locales. Caché acotada a64MiB; las imágenes más antiguas pueden eliminarse al alcanzar ese límite.
 

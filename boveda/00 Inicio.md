@@ -5,7 +5,7 @@ actualizado: 2026-10-28
 ---
 # RP Music — red de conocimiento
 
-La bóveda conserva decisiones y evidencia para continuar el proyecto. Referencia publicada: **0.3.10-alpha.1**, aplicación **0.3.10+19**, Android y Windows. Estado actual y comprobaciones: [[10 Estado del repositorio]].
+La bóveda conserva decisiones y evidencia para continuar el proyecto. Referencia publicada: **0.3.11-alpha.1**, aplicación **0.3.11+20**, Android y Windows. Estado actual y comprobaciones: [[10 Estado del repositorio]].
 
 ## Empezar aquí
 
@@ -25,12 +25,12 @@ La bóveda conserva decisiones y evidencia para continuar el proyecto. Referenci
 | Preguntas todavía abiertas | [[07 Preguntas e investigacion]] |
 | Marca, tema y referencias | [[15 Identidad visual e icono]] |
 | Publicaciones | [[27 Publicacion de releases - contenido obligatorio]] |
-| Última entrega y sus pruebas | [[39 Audio Windows M4A OPUS y YouTube]] |
+| Última entrega y sus pruebas | [[40 Gestos widgets albumes y descargas 0.3.11]] |
 | Corrección local de Windows y YouTube | [[39 Audio Windows M4A OPUS y YouTube]] |
 
 Guías para usar, compilar y programar: [Índice de documentación](../docs/README.md). Presentación pública: [README del proyecto](../README.md).
 
-Última publicación y límites experimentales: [[39 Audio Windows M4A OPUS y YouTube]].
+Última publicación y límites experimentales: [[40 Gestos widgets albumes y descargas 0.3.11]].
 
 0.3.5 publicada: [[33 Metadatos de descargas YouTube]] — letras incrustadas, búsqueda automática y nuevas descargas etiquetadas. Entrega anterior en [[32 Pruebas 0.3.3 y mejoras 0.3.4]].
 
@@ -52,4 +52,4 @@ Guías para usar, compilar y programar: [Índice de documentación](../docs/READ
 La fecha de actualización no cambia la de los hechos históricos. Abrir esta carpeta como bóveda de Obsidian; los enlaces como [[00 Inicio]] son relativos. No requieren complementos.
 
 
-Nueva versión en desarrollo: [[40 Gestos widgets albumes y descargas 0.3.11]]. Confirmación del usuario de0.3.10 conservada en [[39 Audio Windows M4A OPUS y YouTube]].
+Última versión publicada: [[40 Gestos widgets albumes y descargas 0.3.11]]. Confirmación del usuario de0.3.10 conservada en [[39 Audio Windows M4A OPUS y YouTube]].
