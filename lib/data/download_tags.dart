@@ -2,8 +2,9 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 /// Adds iTunes-compatible tags to a newly downloaded ISO-BMFF audio file.
-/// The old moov is replaced by equally sized free space and the tagged moov is
-/// appended. All media/fragment offsets remain unchanged; no audio is encoded.
+/// Flat files keep their media offsets using a trailing moov. Fragmented files
+/// keep their initialization before the fragments and require relative offsets.
+/// Audio is never re-encoded.
 class DownloadTags {
   static Uint8List mp4(
     Uint8List audio,
@@ -131,6 +132,9 @@ class DownloadTags {
         ),
       ]);
     }
+    if (top.any((b) => b.type == 'moof')) {
+      return _fragmented(top, moov, body);
+    }
     return _join([
       ...top.map(
         (b) => identical(b, moov)
@@ -139,6 +143,90 @@ class DownloadTags {
       ),
       _box('moov', body),
     ]);
+  }
+
+  static Uint8List _fragmented(List<_Box> top, _Box moov, Uint8List body) {
+    final firstFragment = top.indexWhere((b) => b.type == 'moof');
+    final original = top.indexOf(moov);
+    final firstIndex = top.indexWhere((b) => b.type == 'sidx');
+    // A trailing initialization is the broken layout emitted by 0.3.5. It can
+    // be repaired only when the relative-addressing checks below succeed.
+    if ((original > firstFragment && original != top.length - 1) ||
+        (original < firstFragment &&
+            firstIndex >= 0 &&
+            firstIndex < original) ||
+        top.any((b) => ['mfra', 'tfra'].contains(b.type)) ||
+        top.take(firstFragment).any((b) => b.type == 'mdat')) {
+      throw const FormatException('Índices de MP4 fragmentado no compatibles.');
+    }
+    void checkTables(Uint8List data, int depth) {
+      if (depth > 16) {
+        throw const FormatException('Contenedor demasiado profundo.');
+      }
+      for (final child in _boxes(data)) {
+        if (['stco', 'co64'].contains(child.type)) {
+          if (child.data.length < 8 ||
+              ByteData.sublistView(child.data).getUint32(4) != 0) {
+            throw const FormatException(
+              'Desplazamientos absolutos no compatibles.',
+            );
+          }
+        } else if ([
+          'trak',
+          'mdia',
+          'minf',
+          'stbl',
+          'mvex',
+        ].contains(child.type)) {
+          checkTables(child.data, depth + 1);
+        }
+      }
+    }
+
+    checkTables(moov.data, 0);
+    for (final fragment in top.where((b) => b.type == 'moof')) {
+      final tracks = _boxes(fragment.data)
+          .where((b) => b.type == 'traf')
+          .toList();
+      if (tracks.isEmpty) throw const FormatException('Fragmento sin pistas.');
+      for (final track in tracks) {
+        final children = _boxes(track.data);
+        final headers = children.where((b) => b.type == 'tfhd').toList();
+        if (headers.length != 1 ||
+            headers.single.data.length < 8 ||
+            children.any((b) => ['saio', 'senc'].contains(b.type))) {
+          throw const FormatException('Cabecera de fragmento no compatible.');
+        }
+        final flags =
+            ByteData.sublistView(headers.single.data).getUint32(0) & 0xffffff;
+        if (flags & 0x020000 == 0 || flags & 1 != 0) {
+          throw const FormatException(
+            'El fragmento no usa posiciones relativas.',
+          );
+        }
+        final runs = children.where((b) => b.type == 'trun').toList();
+        if (runs.isEmpty ||
+            runs.first.data.length < 12 ||
+            ByteData.sublistView(runs.first.data).getUint32(0) & 1 == 0) {
+          throw const FormatException(
+            'Fragmento sin posición de audio relativa.',
+          );
+        }
+      }
+    }
+    final insertion = original < firstFragment
+        ? original
+        : firstIndex >= 0 && firstIndex < firstFragment
+        ? firstIndex
+        : firstFragment;
+    final output = <Uint8List>[];
+    for (var i = 0; i < top.length; i++) {
+      if (i == insertion) output.add(_box('moov', body));
+      if (i != original) output.add(_explicitSize(top[i].raw));
+    }
+    // sidx and all moof/mdat pairs move together; their relative offsets and
+    // every media byte are unchanged. Absolute-offset variants fail closed.
+    return _join(output);
   }
 
   static Uint8List _explicitSize(Uint8List raw) {

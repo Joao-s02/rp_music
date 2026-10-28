@@ -49,6 +49,8 @@ YouTube Windows 0.3.0 sigue como candidato manual fuera del catálogo recomendad
 
 ## Pendientes y límites activos
 
+Fallo posterior confirmado en 0.3.5: etiquetar MP4/M4A fragmentado desplaza la inicialización al final y produce archivos incompatibles. Corrección local 0.3.6+15 y copia del archivo aportado reparada, decodificada y encontrada por escáner de escritorio. 110 pruebas aprobadas y análisis limpio de cambios. Validación Android del usuario pendiente; no nueva publicación. [[34 Descarga M4A no visible en biblioteca]].
+
 Prueba física Android con archivos personales, selector SAF/exportación real, permisos, SD/launcher/widget y escucha prolongada; actualización entre releases conservando datos; cobertura de formatos/redes/regiones. Letras/metadatos pueden faltar o corresponder a versiones distintas; servicios con 503/timeouts observados. No se promete toda canción ni etiqueta.
 
 YouTube Windows funcional; cuentas/listas/favoritos/historial online; edición general de etiquetas, cola editable, gapless/fundido, ecualizador como extensión; aislamiento/métricas/firmas del SDK y licencia concreta. Spotify y Play Store dejan de ser objetivos. Distribución oficial exclusivamente GitHub. [[07 Preguntas e investigacion]]. Publicaciones futuras requieren autorización y [[27 Publicacion de releases - contenido obligatorio]].

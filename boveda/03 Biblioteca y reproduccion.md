@@ -35,6 +35,8 @@ Importación de letras LRC/TXT implementada en 0.3.4; lectura de letras incrusta
 
 ## Evidencia y evolución
 
+Incidencia reportada tras 0.3.5: una descarga M4A se reproduce fuera pero no aparece en la biblioteca. Se confirmó archivo fragmentado incompatible por posición de su inicialización en el etiquetador 0.3.5. Corrección local 0.3.6 y copia reparada verificadas; prueba Android todavía pendiente. [[34 Descarga M4A no visible en biblioteca]].
+
 Notificaciones/borrado: [[20 Pruebas 0.2.4 y mejoras 0.2.5]]. Escritura/widget/orden: [[21 Pruebas 0.2.5 y mejoras 0.2.6]]. Listas automáticas/carátulas: [[23 Extensiones programables - primer prototipo]]. Álbum/metadato de fuente: [[28 Pruebas 0.3.1 y mejoras 0.3.2]]. Reproductor/historial/artistas: [[29 Pruebas 0.3.2 y mejoras 0.3.3]].
 
 El usuario probó controles/fuente en versiones anteriores. Audio nativo 0.3.3 se verificó en primer plano; retesteo físico y pantalla apagada prolongada de esa versión pendientes. [[10 Estado del repositorio]], [[05 Rendimiento]].
