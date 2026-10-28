@@ -76,3 +76,5 @@ El usuario no tiene proyecto Google Cloud ni cliente OAuth y solicita guía. Se 
 Trabajo local 0.3.7+16: variante YouTube Explorador 0.1.0 con ID independiente, sin alterar YouTube Android 0.4.0 ni catálogo. Navegación pública e importación persistente implementadas localmente; cuenta/sincronización pendientes. Contratos y evidencia en [[35 Ampliacion de YouTube sin API oficial]]. No publicado.
 
 0.3.7 publicada con Explorador 0.1.0 como opción independiente en catálogo. Estable 0.4.0 conserva bytes y sigue disponible; se elige propietario de Fuente. Ninguna se incluye en APK/ZIP. [[35 Ampliacion de YouTube sin API oficial]].
+
+Prototipo local 0.3.8+17: API 3/JavaScript en paralelo a Dart; pantallas por árbol genérico, estado/eventos y reproducción explícita autorizada. Laboratorio JS separado en repositorio de extensiones. Paquetes YouTube sin modificar. No publicado; verificación y límites en [[36 Motor JavaScript paralelo]].

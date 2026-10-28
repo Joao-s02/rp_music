@@ -439,3 +439,13 @@ Cierre local Explorador: suite final 114 aprobadas/una red optativa omitida; an�
 ## Publicación 0.3.7 confirmada
 
 Binarios normales: ARM64 122.4 s, Windows 98.5 s; ProductVersion 0.3.7+16 confirmado y ZIP de 22 archivos íntegro. APKs código16/versionName0.3.7 y firma v2 compatibles. 2026-10-28: release pública https://github.com/Joao-s02/rp_music/releases/tag/v0.3.7-alpha.1, app 0.3.7+16, tag/código df3c1ec6c184218778a01b96c63b1cc5f812ddbf, release ID 426269933. Siete adjuntos uploaded verificados por tamaño/SHA256 en borrador y API pública; tag al commit esperado y manifiesto descargado idéntico al local. Commit de extensiones 3cb1181eeaa8a8c303a5cf50a5bcdece077412be, catálogo/Explorador/estable comprobados remotamente; cinco entradas verificadas con cliente real. Commits documentales posteriores no cambian binarios del tag. Cuenta y sincronización siguen pendientes, Explorador Android sin prueba física nueva; no se modificaron releases anteriores.
+
+## Prototipo JavaScript paralelo — 2026-10-28
+
+Autorizado por usuario conservando YouTube estable/Explorador. API 3 pantalla/árbol genérico con estado y acciones; API 2/Dart conservada. Se descartó flutter_js tras detectar DLL sin control nativo de bucles; sustitución por flutter_qjs_next en verificación. Laboratorio JS solo en repo externo, sin publicar. Decisiones/límites y cierre en [[36 Motor JavaScript paralelo]].
+
+Cierre de verificación JavaScript:122 pruebas aprobadas (120host+2ext) y una red optativa omitida; análisis completo limpio. Motor definitivo interrumpe bucle en~1037ms; UI360px, estado, permisos y paquetes Dart reales aprobados. Windows0.3.8+17 normal y ZIP íntegro, paquetes YouTube/catalogo preservados. APK final en regeneración tras suite, sin dispositivo Android. Evidencia y límites en [[36 Motor JavaScript paralelo]].
+
+Entrega local JavaScript terminada: APK universal normal0.3.8+17 regenerado tras pruebas (124.0s), Windows normal/ZIP completo con DLL y guía, manifiesto SHA256. Extensión Laboratorio JS separada. 122pruebas finales aprobadas/una red optativa omitida; análisis limpio. Sin publicación ni dispositivo Android; hashes y límites en [[36 Motor JavaScript paralelo]].
+
+2026-10-28: usuario autoriza publicar release0.3.8. Se preparan universal/ARM64/Windows y guías/hashes; Laboratorio JS como opción separada en catálogo, previas intactas. Confirmación remota pendiente hasta finalizar.

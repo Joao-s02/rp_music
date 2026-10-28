@@ -14,6 +14,7 @@ import '../sources/extension_source_view.dart';
 import '../domain/track_sort.dart';
 import '../extensions/program_library_view.dart';
 import '../extensions/extension_navigation.dart';
+import '../extensions/javascript_screen_view.dart';
 import '../extensions/program_manager_view.dart';
 import 'playlist_cover.dart';
 import '../platform/home_widget.dart';
@@ -354,14 +355,27 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
                       ),
                     Expanded(
                       child: selectedContribution != null
-                          ? ExtensionSourceView(
-                              key: ValueKey(selectedContribution.id),
-                              programs: library.programs!,
-                              extensionId: selectedContribution.id,
-                              audio: audio,
-                              library: library,
-                              embedded: true,
-                            )
+                          ? library
+                                        .programs!
+                                        .installed[selectedContribution.id]
+                                        ?.package
+                                        .engine ==
+                                    'javascript'
+                                ? JavascriptScreenView(
+                                    key: ValueKey(selectedContribution.id),
+                                    programs: library.programs!,
+                                    extensionId: selectedContribution.id,
+                                    library: library,
+                                    audio: widget.audio,
+                                  )
+                                : ExtensionSourceView(
+                                    key: ValueKey(selectedContribution.id),
+                                    programs: library.programs!,
+                                    extensionId: selectedContribution.id,
+                                    audio: audio,
+                                    library: library,
+                                    embedded: true,
+                                  )
                           : switch (page) {
                               0 => libraryView(),
                               1 => trackList(

@@ -62,3 +62,5 @@ El usuario no tiene proyecto Google Cloud ni cliente OAuth y solicita guía. Se 
 2026-10-28: el usuario detiene la API oficial y la preparación Google Cloud; explorar ampliación no oficial de la extensión existente. Deseo de sincronización bidireccional y copias importadas independientes conservado, viabilidad pendiente. Investigación, fases propuestas y límites en [[35 Ampliacion de YouTube sin API oficial]]. No implementado.
 
 Primera fase publicada en 0.3.7: Explorador independiente, navegación pública e importación persistente. Siguiente pendiente: acceso por sesión y sincronización bidireccional; no API oficial ni Google Cloud. [[35 Ampliacion de YouTube sin API oficial]].
+
+2026-10-28: usuario solicita mayor autonomía visual de extensiones y autoriza prototipo JavaScript conservando Dart/YouTube. Árbol componible, pantallas/eventos propios en verificación local; no equivale todavía a HTML/CSS libre, Node.js ni motor completo. [[36 Motor JavaScript paralelo]].

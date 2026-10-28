@@ -2,9 +2,13 @@
 
 Reproductor Flutter para Android y Windows, ampliable mediante extensiones. Biblioteca local sin cuenta ni conexión; actualizaciones y consultas en línea opcionales.
 
-**Versión publicada: 0.3.7-alpha.1**, aplicación **0.3.7+16**. [Descargar Android universal, ARM64 y Windows](https://github.com/Joao-s02/rp_music/releases/tag/v0.3.7-alpha.1).
+**Versión 0.3.8-alpha.1 (en publicación)**, aplicación **0.3.8+17**. [Descargar Android universal, ARM64 y Windows](https://github.com/Joao-s02/rp_music/releases/tag/v0.3.8-alpha.1).
 
-[Guía vigente](docs/USO.md) · [Pruebas](docs/PRUEBAS-0.3.7.md) · [Cambios](docs/CAMBIOS-0.3.7.md) · [Documentación](docs/README.md)
+[Guía vigente](docs/USO.md) · [Pruebas](docs/PRUEBAS-0.3.8.md) · [Cambios](docs/CAMBIOS-0.3.8.md) · [Documentación](docs/README.md)
+
+## JavaScript y Dart en paralelo — 0.3.8
+
+Motor JavaScript/API 3 en paralelo a API 2/Dart. La extensión define páginas, formularios, botones y acciones mediante componentes nativos combinables; no necesita una pantalla Flutter específica por cada flujo. Laboratorio JS 0.1.0 se ofrece como opción independiente en el catálogo del repositorio de extensiones, fuera del APK/ZIP. Los paquetes YouTube estable y Explorador permanecen intactos y usan Dart. No es Node.js ni HTML/CSS libre; red, cuentas y sincronización siguen pendientes. [Contrato experimental](docs/EXTENSIONES-API-3.md) y [evidencia](boveda/36%20Motor%20JavaScript%20paralelo.md).
 
 ## Novedades de 0.3.7
 
@@ -36,19 +40,19 @@ Reconocer MP3/FLAC/M4A/MP4/WAV/OPUS no garantiza todos los códecs/etiquetas en 
 
 Android: instalar universal o ARM64 compatible encima de la anterior, sin desinstalar para conservar datos; firma actual de desarrollo. Windows: extraer todo el ZIP y abrir rp_music.exe junto con DLL y data. Elegir raíz musical y usar Actualizar biblioteca para incorporar cambios; abrir muestra caché sin reescaneo automático.
 
-Biblioteca/preferencias/sesión en soporte privado v2, programas en v3 y letras en lyrics; no borrar esas carpetas. No se migran datos de la antigua alfa 0.1. [Guía completa](docs/USO-0.3.7.md).
+Biblioteca/preferencias/sesión en soporte privado v2, programas en v3 y letras en lyrics; no borrar esas carpetas. No se migran datos de la antigua alfa 0.1. [Guía completa](docs/USO-0.3.8.md).
 
 ## Extensiones
 
 [Repositorio de extensiones](https://github.com/Joao-s02/rp-music-extensions): Extensiones → Explorar repositorio → Consultar → instalar/actualizar → revisar permisos. También importar .rpmx. No vienen instaladas ni dentro del APK/ZIP ni como adjuntos de releases de la app.
 
-Compatibles con 0.3.7: **YouTube Explorador 0.1.0** (Android experimental, independiente de la estable), **YouTube Android 0.4.0**, **Letras locales 0.1.0**, Biblioteca viva 0.1.1 y Pulso nocturno 0.1.0. Consultar el catálogo y actualizar YouTube para recibir la nueva lógica; Letras locales es un proveedor independiente de la fuente musical. Variantes para clientes anteriores conservadas. Spotify ya no se ofrece; una instalación previa puede eliminarse manualmente. YouTube Windows sigue como candidato manual con fallos nativos conocidos, fuera del catálogo recomendado.
+Compatibles con 0.3.8: **Laboratorio JS 0.1.0** (pantalla experimental independiente), **YouTube Explorador 0.1.0** (Android experimental, independiente de la estable), **YouTube Android 0.4.0**, **Letras locales 0.1.0**, Biblioteca viva 0.1.1 y Pulso nocturno 0.1.0. Consultar el catálogo y actualizar YouTube para recibir la nueva lógica; Letras locales es un proveedor independiente de la fuente musical. Variantes para clientes anteriores conservadas. Spotify ya no se ofrece; una instalación previa puede eliminarse manualmente. YouTube Windows sigue como candidato manual con fallos nativos conocidos, fuera del catálogo recomendado.
 
 Fuentes, lógica específica, paquetes y pruebas de proveedores pertenecen solo a ese repositorio. El principal contiene reproductor, motor/SDK y capacidades genéricas; prototipos heredados siguen como deuda de migración. [Contrato API 2](docs/EXTENSIONES-API-2.md).
 
 ## Verificación y pendientes
 
-**114 pruebas aprobadas**, análisis de cambios sin incidencias. Prueba de red optativa omitida en esta suite; su resultado positivo de 0.3.5 se conserva como antecedente. Como antecedentes de 0.3.5, los tres casos aportados por el usuario recuperaron letras sincronizadas desde resultados reales YouTube. Prueba completa con paquete real: letras/portada/álbum incrustados en copia de audio sintético, original intacto. Lectura y reproducción nativa Windows aprobadas; ffprobe/ffmpeg confirmaron etiquetas y audio decodificable. No se suman repeticiones como casos nuevos.
+**122 pruebas aprobadas (120 de app y 2 de extensión)**, análisis de cambios sin incidencias. Prueba de red optativa omitida en esta suite; su resultado positivo de 0.3.5 se conserva como antecedente. Como antecedentes de 0.3.5, los tres casos aportados por el usuario recuperaron letras sincronizadas desde resultados reales YouTube. Prueba completa con paquete real: letras/portada/álbum incrustados en copia de audio sintético, original intacto. Lectura y reproducción nativa Windows aprobadas; ffprobe/ffmpeg confirmaron etiquetas y audio decodificable. No se suman repeticiones como casos nuevos.
 
 El usuario confirma buen funcionamiento de 0.3.6 y se cierra la incidencia M4A según su informe. Continúan pendientes pruebas específicas documentadas de SD/SAF, permisos, widget y escucha prolongada en varios equipos. Metadatos/letras dependen de cobertura/red; no se garantizan todas las canciones/ediciones. No se declara resuelto YouTube Windows. Detalles: [corrección y confirmación](boveda/34%20Descarga%20M4A%20no%20visible%20en%20biblioteca.md).
 

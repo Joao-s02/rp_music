@@ -60,3 +60,5 @@ YouTube Windows funcional; cuentas/listas/favoritos/historial online; edición g
 Trabajo local 0.3.7+16: variante YouTube Explorador 0.1.0 con ID independiente, sin alterar YouTube Android 0.4.0 ni catálogo. Navegación pública e importación persistente implementadas localmente; cuenta/sincronización pendientes. Contratos y evidencia en [[35 Ampliacion de YouTube sin API oficial]]. No publicado.
 
 Entrega 0.3.7 publicada: navegación genérica de fuentes por entidades/páginas, importación persistente de copias independientes y variante Explorador separada de la estable. 114 pruebas aprobadas/una red optativa omitida; análisis limpio, UI 360px e intérprete/red pública aprobados. Cuenta/sincronización y prueba física pendientes. [[35 Ampliacion de YouTube sin API oficial]].
+
+Prototipo local 0.3.8+17: API 3/JavaScript en paralelo a Dart; pantallas por árbol genérico, estado/eventos y reproducción explícita autorizada. Laboratorio JS separado en repositorio de extensiones. Paquetes YouTube sin modificar. No publicado; verificación y límites en [[36 Motor JavaScript paralelo]].

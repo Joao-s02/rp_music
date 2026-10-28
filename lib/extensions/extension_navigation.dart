@@ -15,6 +15,22 @@ List<ExtensionDestination> extensionDestinations(
   if (programs == null) return [];
   final entries = <ExtensionDestination>[];
   for (final source in programs.installed.values) {
+    if (source.package.engine == 'javascript' &&
+        source.package.slots.contains('screen') &&
+        programs.allowed(source.package.id, 'navigation.add')) {
+      entries.add(
+        ExtensionDestination(
+          source.package.id,
+          'JS · ${source.package.name}'.substring(
+            0,
+            ('JS · ${source.package.name}').length.clamp(0, 14),
+          ),
+          'cloud',
+          0xff9c8dff,
+        ),
+      );
+      continue;
+    }
     final spec = source.package.sourceSpec;
     if (spec?.navigationLabel == null ||
         !spec!.platforms.contains(platform) ||

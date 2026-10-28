@@ -5,6 +5,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
 import 'program_catalog.dart';
+import 'javascript_screen_view.dart';
 import '../sources/extension_source_view.dart';
 import '../playback/music_handler.dart';
 
@@ -269,7 +270,7 @@ class _ProgramManagerViewState extends State<ProgramManagerView> {
       children: [
         Text('Extensiones', style: Theme.of(context).textTheme.headlineMedium),
         const Text(
-          'Instala programas Dart desde archivo, revisa sus permisos y elige quién controla cada función. Las extensiones JSON anteriores siguen disponibles.',
+          'Instala extensiones Dart o JavaScript desde archivo, revisa sus permisos y elige quién controla cada función. Las extensiones JSON anteriores siguen disponibles.',
         ),
         const SizedBox(height: 16),
         FilledButton.tonalIcon(
@@ -304,7 +305,7 @@ class _ProgramManagerViewState extends State<ProgramManagerView> {
             'Puedes activar varias. Si compiten por la misma función, elige aquí cuál usar.',
           ),
           for (final slot in programSlots.entries.where(
-            (slot) => slot.key != 'lists',
+            (slot) => slot.key != 'lists' && slot.key != 'screen',
           ))
             Padding(
               padding: const EdgeInsets.only(top: 12),
@@ -369,6 +370,30 @@ class _ProgramManagerViewState extends State<ProgramManagerView> {
                     Wrap(
                       spacing: 8,
                       children: [
+                        if (item.package.engine == 'javascript' &&
+                            widget.audio != null)
+                          TextButton.icon(
+                            onPressed: !item.enabled || !item.authorized
+                                ? null
+                                : () => Navigator.push(
+                                    context,
+                                    MaterialPageRoute<void>(
+                                      builder: (_) => Scaffold(
+                                        appBar: AppBar(
+                                          title: Text(item.package.name),
+                                        ),
+                                        body: JavascriptScreenView(
+                                          programs: manager,
+                                          extensionId: item.package.id,
+                                          library: library,
+                                          audio: widget.audio!,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                            icon: const Icon(Icons.open_in_new),
+                            label: const Text('Abrir pantalla'),
+                          ),
                         if (item.package.slots.contains('source') &&
                             (item.package.sourceSpec?.navigationLabel == null ||
                                 manager.owner('source')?.package.id !=
