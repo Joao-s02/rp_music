@@ -1,6 +1,6 @@
 ---
 tipo: investigacion-y-alcance
-estado: primera-fase-local-con-pruebas
+estado: publicada-con-validacion-fisica-pendiente
 actualizado: 2026-10-28
 ---
 # Ampliacion de YouTube sin API oficial
@@ -52,3 +52,7 @@ Suite final: 114 aprobadas y una prueba optativa de red omitida, sin sumar repet
 2026-10-28: usuario autoriza publicar nueva release 0.3.7. Se preparan tres binarios, guías y hashes; Explorador como entrada separada en repositorio de extensiones, estable intacta. Confirmación remota pendiente hasta terminar.
 
 Preparación 0.3.7: ARM64 release normal compilado en 122.4 s. Extensiones publicadas en 3cb1181, catálogo comprobado por el cliente real: cinco opciones verificadas por SHA/metadatos, Explorador 0.1.0 y estable 0.4.0 separadas. Catálogo previo preservado íntegro. Confirmación de app pública pendiente.
+
+## Publicación confirmada
+
+Binarios normales: ARM64 122.4 s, Windows 98.5 s; ProductVersion 0.3.7+16 confirmado y ZIP de 22 archivos íntegro. APKs código16/versionName0.3.7 y firma v2 compatibles. 2026-10-28: release pública https://github.com/Joao-s02/rp_music/releases/tag/v0.3.7-alpha.1, app 0.3.7+16, tag/código df3c1ec6c184218778a01b96c63b1cc5f812ddbf, release ID 426269933. Siete adjuntos uploaded verificados por tamaño/SHA256 en borrador y API pública; tag al commit esperado y manifiesto descargado idéntico al local. Commit de extensiones 3cb1181eeaa8a8c303a5cf50a5bcdece077412be, catálogo/Explorador/estable comprobados remotamente; cinco entradas verificadas con cliente real. Commits documentales posteriores no cambian binarios del tag. Cuenta y sincronización siguen pendientes, Explorador Android sin prueba física nueva; no se modificaron releases anteriores.

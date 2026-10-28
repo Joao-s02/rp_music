@@ -2,13 +2,13 @@
 
 Reproductor Flutter para Android y Windows, ampliable mediante extensiones. Biblioteca local sin cuenta ni conexión; actualizaciones y consultas en línea opcionales.
 
-**Versión 0.3.7-alpha.1 (en publicación)**, aplicación **0.3.7+16**. [Descargar Android universal, ARM64 y Windows](https://github.com/Joao-s02/rp_music/releases/tag/v0.3.7-alpha.1).
+**Versión publicada: 0.3.7-alpha.1**, aplicación **0.3.7+16**. [Descargar Android universal, ARM64 y Windows](https://github.com/Joao-s02/rp_music/releases/tag/v0.3.7-alpha.1).
 
 [Guía vigente](docs/USO.md) · [Pruebas](docs/PRUEBAS-0.3.7.md) · [Cambios](docs/CAMBIOS-0.3.7.md) · [Documentación](docs/README.md)
 
 ## Novedades de 0.3.7
 
-Variante independiente **YouTube Explorador 0.1.0**, desarrollada en el repositorio de extensiones conservando YouTube Android 0.4.0 intacta. El anfitrión incorpora navegación por canciones/artistas/álbumes/listas públicas, paginación e importación como copias locales persistentes. Ambas extensiones pueden instalarse y se elige cuál controla Fuente. Sin conexión de cuenta ni sincronización todavía; publicación autorizada en curso. [Alcance y verificaciones](boveda/35%20Ampliacion%20de%20YouTube%20sin%20API%20oficial.md).
+Variante independiente **YouTube Explorador 0.1.0**, desarrollada en el repositorio de extensiones conservando YouTube Android 0.4.0 intacta. El anfitrión incorpora navegación por canciones/artistas/álbumes/listas públicas, paginación e importación como copias locales persistentes. Ambas extensiones pueden instalarse y se elige cuál controla Fuente. Sin conexión de cuenta ni sincronización todavía; Publicada como opción experimental. [Alcance y verificaciones](boveda/35%20Ampliacion%20de%20YouTube%20sin%20API%20oficial.md).
 
 ## Corrección de 0.3.6
 

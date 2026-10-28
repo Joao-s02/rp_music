@@ -1,13 +1,13 @@
 ---
 tipo: arquitectura-observada
-estado: publicada-0.3.6-con-limites
-actualizado: 2026-10-27
+estado: publicada-0.3.7-con-limites
+actualizado: 2026-10-28
 ---
 # Arquitectura vigente
 
 ## Alcance y criterio
 
-Mapa de la implementación observada en el código de 0.3.6, no propuesta de reconstrucción ni elección irreversible de paquetes. Estado de distribución/verificación en [[10 Estado del repositorio]]. El alfa y arquitectura-reproductor-flutter.md son antecedentes; [[11 Reconstruccion - primera base]] explica el inicio de esta implementación.
+Mapa de la implementación observada en el código de 0.3.7, no propuesta de reconstrucción ni elección irreversible de paquetes. Estado de distribución/verificación en [[10 Estado del repositorio]]. El alfa y arquitectura-reproductor-flutter.md son antecedentes; [[11 Reconstruccion - primera base]] explica el inicio de esta implementación.
 
 ## Componentes y responsabilidades
 

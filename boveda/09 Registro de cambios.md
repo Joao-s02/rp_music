@@ -435,3 +435,7 @@ Cierre local Explorador: suite final 114 aprobadas/una red optativa omitida; an�
 Último sondeo paginado aprobado: lista pública larga de 100 pistas en primera página + 100 en continuación con el paquete definitivo; ID público del caso guardado en tests/explorer-live-list.json del repositorio externo. Siete comprobaciones sintéticas del paquete aprobadas.
 
 2026-10-28: usuario autoriza publicar nueva release 0.3.7. Se preparan tres binarios, guías y hashes; Explorador como entrada separada en repositorio de extensiones, estable intacta. Confirmación remota pendiente hasta terminar.
+
+## Publicación 0.3.7 confirmada
+
+Binarios normales: ARM64 122.4 s, Windows 98.5 s; ProductVersion 0.3.7+16 confirmado y ZIP de 22 archivos íntegro. APKs código16/versionName0.3.7 y firma v2 compatibles. 2026-10-28: release pública https://github.com/Joao-s02/rp_music/releases/tag/v0.3.7-alpha.1, app 0.3.7+16, tag/código df3c1ec6c184218778a01b96c63b1cc5f812ddbf, release ID 426269933. Siete adjuntos uploaded verificados por tamaño/SHA256 en borrador y API pública; tag al commit esperado y manifiesto descargado idéntico al local. Commit de extensiones 3cb1181eeaa8a8c303a5cf50a5bcdece077412be, catálogo/Explorador/estable comprobados remotamente; cinco entradas verificadas con cliente real. Commits documentales posteriores no cambian binarios del tag. Cuenta y sincronización siguen pendientes, Explorador Android sin prueba física nueva; no se modificaron releases anteriores.

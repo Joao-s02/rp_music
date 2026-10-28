@@ -1,7 +1,7 @@
 ---
 tipo: pendientes-y-resoluciones
 estado: vigente
-actualizado: 2026-10-27
+actualizado: 2026-10-28
 ---
 # Preguntas e investigacion
 
@@ -60,3 +60,5 @@ El usuario elige conectar Google y sincronizar cambios en ambos sentidos. Import
 El usuario no tiene proyecto Google Cloud ni cliente OAuth y solicita guía. Se inicia por crear proyecto, activar YouTube Data API v3 y configurar consentimiento externo en pruebas con su usuario. Tipo de cliente y conexión definitiva aún por validar para Android/Windows y capacidades Music; no usar flujo TV como sustituto automático de cliente móvil. API oficial soporta listas y valoraciones de vídeos; no se ha acreditado sincronización completa de biblioteca/historial Music. Documentación consultada: https://developers.google.com/youtube/data/guides/auth/installed-apps , https://developers.google.com/youtube/data/reference/rest/v3/playlists/list , https://developers.google.com/youtube/data/reference/rest/v3/videos/rate y https://ytmusicapi.readthedocs.io/en/stable/setup/oauth.html . Credenciales y sesiones fuera de Git/bóveda. Sin código de autenticación ni sincronización implementado todavía.
 
 2026-10-28: el usuario detiene la API oficial y la preparación Google Cloud; explorar ampliación no oficial de la extensión existente. Deseo de sincronización bidireccional y copias importadas independientes conservado, viabilidad pendiente. Investigación, fases propuestas y límites en [[35 Ampliacion de YouTube sin API oficial]]. No implementado.
+
+Primera fase publicada en 0.3.7: Explorador independiente, navegación pública e importación persistente. Siguiente pendiente: acceso por sesión y sincronización bidireccional; no API oficial ni Google Cloud. [[35 Ampliacion de YouTube sin API oficial]].
