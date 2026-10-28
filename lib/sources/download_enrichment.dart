@@ -7,6 +7,7 @@ import '../data/download_tags.dart';
 import '../domain/track.dart';
 import '../lyrics/lyrics_controller.dart';
 import 'extension_source_service.dart';
+import 'download_context.dart';
 
 class EnrichedDownload {
   EnrichedDownload(this.bytes, this.mime, this.title, this.notice);
@@ -20,53 +21,53 @@ class DownloadEnrichment {
     Track track,
     Uint8List bytes,
     String mime,
-    ExtensionSourceService service,
-  ) async {
+    ExtensionSourceService service, {
+    DownloadContext? albumContext,
+    bool Function()? cancelled,
+    Map<String, (Uint8List, String)>? coverCache,
+  }) async {
     final id = track.sourceId!;
     final package = service.programs.installed[id]!.package;
     bool allowed() =>
+        cancelled?.call() != true &&
         service.available(id) &&
         service.programs.installed[id]?.package == package &&
         service.programs.allowed(id, 'storage.download');
-    final tags = <String, dynamic>{
-      'title': track.title,
-      'artist': track.artist,
-    };
-    if (track.album != 'Sin álbum' && track.album.trim().isNotEmpty) {
-      tags['album'] = track.album;
-    }
-    String? image = track.artwork;
+    final tags = DownloadContext.merge(track, {}, albumContext);
+
+    String? image = albumContext?.artwork ?? track.artwork;
     var missing = false;
     try {
+      if (!allowed()) {
+        throw const FormatException('Descarga cancelada o sin permiso.');
+      }
       final result = await service.invoke(id, 'metadata', {
         'title': track.title,
         'artist': track.artist,
-        'album': track.album,
+        'album': albumContext?.album ?? track.album,
+        'albumLocked': albumContext != null,
         'durationMs': track.durationMs,
         'id': track.id.substring('rpmusic-source:$id:'.length),
       });
       if (result['tags'] is Map) {
         final raw = Map<String, dynamic>.from(result['tags'] as Map);
-        for (final key in [
-          'title',
-          'artist',
-          'album',
-          'albumArtist',
-          'date',
-          'genre',
-          'trackNumber',
-          'trackTotal',
-          'discNumber',
-          'discTotal',
-        ]) {
-          if (raw[key] != null) tags[key] = raw[key];
-        }
+        tags.addAll(DownloadContext.merge(track, raw, albumContext));
       }
       final lyrics = LyricsController.textFrom(result);
       if (lyrics.isNotEmpty) tags['lyrics'] = lyrics;
       missing = result['complete'] != true || lyrics.isEmpty;
-      if (result['artwork'] is String) image = result['artwork'] as String;
+      final returnedTags = result['tags'];
+      final matchingAlbum =
+          returnedTags is Map &&
+          DownloadContext.normalize('${returnedTags['album'] ?? ''}') ==
+              DownloadContext.normalize('${tags['album'] ?? ''}');
+      if (albumContext == null &&
+          matchingAlbum &&
+          result['artwork'] is String) {
+        image = result['artwork'] as String;
+      }
     } catch (_) {
+      if (!allowed()) rethrow;
       missing = true;
       // Compatibility with sources offering lyrics before metadata enrichment.
       try {
@@ -90,12 +91,18 @@ class DownloadEnrichment {
     String? coverMime;
     if (image != null) {
       try {
-        final result = await _cover(
-          Uri.parse(image),
-          (uri) => allowed() && package.sourceSpec!.permits(uri),
-        );
+        final result =
+            coverCache?[image] ??
+            await _cover(
+              Uri.parse(image),
+              (uri) => allowed() && package.sourceSpec!.permits(uri),
+            );
         cover = result.$1;
         coverMime = result.$2;
+        if (!package.sourceSpec!.permits(Uri.parse(image))) {
+          throw const FormatException('Portada no autorizada.');
+        }
+        coverCache?[image] = result;
       } catch (_) {
         missing = true;
       }

@@ -1,29 +1,10 @@
-# Documentación vigente 0.3.10
+# Documentación de RP Music0.3.11
 
-[Uso](USO-0.3.10.md) · [Cambios](CAMBIOS-0.3.10.md) · [Pruebas](PRUEBAS-0.3.10.md) · [Compilación](COMPILACION.md) · [API 2](EXTENSIONES-API-2.md) · [API 3](EXTENSIONES-API-3.md)
+[Instalación y uso](USO-0.3.11.md) · [Pruebas](PRUEBAS-0.3.11.md) · [Cambios](CAMBIOS-0.3.11.md) · [Notas de release](RELEASE-0.3.11.md)
 
-# Documentación de RP Music
+App0.3.11+20: gestos, widgets Android, listas/álbumes con portada grande, metadatos y descarga de álbum, retratos offline. [Evidencia y límites](../boveda/40%20Gestos%20widgets%20albumes%20y%20descargas%200.3.11.md). Android físico para launcher/widgets/SAF y escucha prolongada pendientes.
 
-Desarrollo local0.3.10+19: [probar audio Windows y YouTube](PROBAR-WINDOWS-0.3.10.md), [evidencia](../boveda/39%20Audio%20Windows%20M4A%20OPUS%20y%20YouTube.md). Sin nueva publicación; referencia pública siguiente conservada.
-
-Referencia publicada: **0.3.9-alpha.1 / 0.3.9+18**. Las guías versionadas describen esa entrega; notas anteriores conservan sus propios resultados y límites.
-
-## Para usar y probar
-
-- [Uso0.3.9](USO-0.3.9.md), [pruebas](PRUEBAS-0.3.9.md), [cambios](CAMBIOS-0.3.9.md) y [notas de release](RELEASE-0.3.9.md).
-
-- [Uso 0.3.8](USO-0.3.8.md), [pruebas](PRUEBAS-0.3.8.md) y [cambios](CAMBIOS-0.3.8.md).
-
-- [Uso 0.3.7](USO-0.3.7.md), [pruebas](PRUEBAS-0.3.7.md) y [cambios](CAMBIOS-0.3.7.md).
-
-- [Uso 0.3.6](USO-0.3.6.md), [pruebas](PRUEBAS-0.3.6.md) y [cambios](CAMBIOS-0.3.6.md).
-
-- [Uso 0.3.5](USO-0.3.5.md), [pruebas](PRUEBAS-0.3.5.md) y [cambios](CAMBIOS-0.3.5.md).
-
-- [Guía vigente](USO.md) → [Uso0.3.9](USO-0.3.9.md).
-- [Pruebas recomendadas0.3.9](PRUEBAS-0.3.9.md).
-- [Cambios0.3.9](CAMBIOS-0.3.9.md) y [notas de release](RELEASE-0.3.9.md).
-- [Descargas](https://github.com/Joao-s02/rp_music/releases/tag/v0.3.9-alpha.1): Android universal, ARM64 y Windows con guías/hashes.
+Antecedente0.3.10: [uso](USO-0.3.10.md), [pruebas](PRUEBAS-0.3.10.md), [cambios](CAMBIOS-0.3.10.md). Confirmación del usuario de audio/descarga YouTube Windows y M4A/OPUS registrada por separado.
 
 ## JavaScript experimental
 

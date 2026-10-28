@@ -4,12 +4,14 @@ import '../domain/track.dart';
 import 'extension_source_service.dart';
 import 'source_audio_transfer.dart';
 import 'download_enrichment.dart';
+import 'download_context.dart';
 
 class SourceDownload {
   static Future<({bool saved, String? notice})> save(
     Track track,
-    ExtensionSourceService service,
-  ) async {
+    ExtensionSourceService service, {
+    DownloadContext? albumContext,
+  }) async {
     final id = track.sourceId;
     final package = service.programs.installed[id]?.package;
     final bytes = await SourceAudioTransfer.receive(track, service);
@@ -18,6 +20,7 @@ class SourceDownload {
       bytes.$1,
       bytes.$2,
       service,
+      albumContext: albumContext,
     );
     if (id == null ||
         package == null ||

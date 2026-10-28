@@ -254,6 +254,19 @@ class ExtensionSourceService {
           row['id'] as String,
           row['kind'] as String,
           row['title'] as String,
+          artwork:
+              row['artwork'] is String &&
+                  programs.installed[id]!.package.sourceSpec!.permits(
+                    Uri.parse(row['artwork'] as String),
+                  )
+              ? row['artwork'] as String
+              : null,
+          artist: row['artist'] is String
+              ? (row['artist'] as String).substring(
+                  0,
+                  (row['artist'] as String).length.clamp(0, 200),
+                )
+              : null,
         ),
       );
     }
@@ -316,8 +329,15 @@ class ExtensionSourceService {
 }
 
 class SourceEntity {
-  const SourceEntity(this.id, this.kind, this.title);
+  const SourceEntity(
+    this.id,
+    this.kind,
+    this.title, {
+    this.artwork,
+    this.artist,
+  });
   final String id, kind, title;
+  final String? artwork, artist;
 }
 
 class SourcePage {

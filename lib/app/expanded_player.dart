@@ -6,6 +6,7 @@ import 'library_controller.dart';
 import 'music_app.dart' show Artwork;
 import 'scrolling_title.dart';
 import 'volume_control.dart';
+import 'track_swipe.dart';
 import 'lyrics_view.dart';
 import '../sources/extension_source_service.dart';
 
@@ -169,23 +170,26 @@ class _ExpandedPlayerState extends State<ExpandedPlayer> {
             kToolbarHeight -
             32;
         final compact = available < 780;
-        final artwork = Center(
-          child: SizedBox(
-            width: (available - 440).clamp(64.0, 360.0),
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(30),
-                border: Border.all(
-                  color: colors.primary.withValues(alpha: .18),
+        final artwork = TrackSwipe(
+          audio: audio,
+          child: Center(
+            child: SizedBox(
+              width: (available - 440).clamp(64.0, 360.0),
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(30),
+                  border: Border.all(
+                    color: colors.primary.withValues(alpha: .18),
+                  ),
                 ),
-              ),
-              clipBehavior: Clip.antiAlias,
-              child: AspectRatio(
-                aspectRatio: 1,
-                child: Artwork(
-                  id: item?.id,
-                  library: library,
-                  size: double.infinity,
+                clipBehavior: Clip.antiAlias,
+                child: AspectRatio(
+                  aspectRatio: 1,
+                  child: Artwork(
+                    id: item?.id,
+                    library: library,
+                    size: double.infinity,
+                  ),
                 ),
               ),
             ),

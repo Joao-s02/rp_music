@@ -54,6 +54,15 @@ class _AlbumDetailViewState extends State<AlbumDetailView> {
   @override
   Widget build(BuildContext context) {
     final tracks = widget.library.ordered(widget.tracks);
+    if (tracks.any((t) => t.trackNumber > 0)) {
+      tracks.sort((a, b) {
+        final disc = a.discNumber.compareTo(b.discNumber);
+        if (disc != 0) return disc;
+        return (a.trackNumber == 0 ? 65536 : a.trackNumber).compareTo(
+          b.trackNumber == 0 ? 65536 : b.trackNumber,
+        );
+      });
+    }
     if (tracks.isEmpty) {
       return Center(
         child: TextButton(
