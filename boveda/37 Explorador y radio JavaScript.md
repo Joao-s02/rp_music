@@ -1,13 +1,13 @@
 ---
 tipo: implementacion-experimental
-estado: implementacion-local-verificada-con-limites
+estado: publicado-con-limites-experimentales
 actualizado: 2026-10-28
 ---
 # Explorador y radio JavaScript
 
 ## Alcance confirmado
 
-Usuario autoriza desarrollar Explorador musical y Radio por internet, añadiendo capacidades necesarias al motor JS. App local 0.3.9+18; publicada sigue 0.3.8+17. Sin autorización de push/publicación. API 2 y paquetes previos conservados. Antecedente: [[36 Motor JavaScript paralelo]]; separación: [[04 Extensiones]].
+Usuario autoriza desarrollar Explorador musical y Radio por internet, añadiendo capacidades necesarias al motor JS. App local 0.3.9+18; publicada sigue 0.3.8+17. La etapa inicial no autorizaba push/publicación; autorización posterior y confirmación al final. API 2 y paquetes previos conservados. Antecedente: [[36 Motor JavaScript paralelo]]; separación: [[04 Extensiones]].
 
 ## Implementación local
 
@@ -54,3 +54,7 @@ Paquetes candidatos/hashes en repo externo/previews/js-music-0.1.0. YouTube esta
 2026-10-28: usuario autoriza publicar la nueva release0.3.9. Se preparan universal/ARM64/Windows y guías/hashes; dos extensiones JS separadas en catálogo, paquetes anteriores preservados. Confirmación pública pendiente hasta verificar borrador y publicación.
 
 Catálogo publicado en commit externo 026aa38ff251b61ec341786b079a323399ff87a1: ocho opciones comprobadas con cliente real. Cinco paquetes (dos nuevos, YouTube estable/Explorador y Laboratorio) descargados de revisión fija y comparados byte a byte. ARM64 normal0.3.9/código18 compilado71.4s, solo arm64-v8a y firma v2 compatible verificados. Publicación de app todavía en preparación.
+
+## Publicación 0.3.9 confirmada
+
+2026-10-28: release pública https://github.com/Joao-s02/rp_music/releases/tag/v0.3.9-alpha.1, app 0.3.9+18, tag/código 54bcb738f67cb34a2d50e5e3cecb863c45c04a91, release ID 426707453. Universal normal final reutilizado; ARM64 normal71.4s con versión/código18/firma v2 compatibles. Windows normal0.3.9+18, ZIP23 archivos con QuickJS y guías. Siete adjuntos comprobados en borrador por tamaño/digest SHA256 y target; API pública confirmó publicación/prerelease, mismos tamaños/hashes, tag correcto y manifiesto descargado idéntico. Extensiones de código 026aa38ff251b61ec341786b079a323399ff87a1, catálogo de ocho opciones verificado con cliente real; dos nuevas y YouTube estable/Explorador/Laboratorio descargados de revisión fija e idénticos. Suite138 aprobadas/una optativa omitida y análisis limpio; navegación/resolución y radio nativa Windows comprobadas. Android físico y audio nativo YouTube Windows pendientes. No se modifican releases anteriores. Commits documentales posteriores no cambian binarios del tag.

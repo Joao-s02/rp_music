@@ -66,3 +66,5 @@ Primera fase publicada en 0.3.7: Explorador independiente, navegación pública 
 2026-10-28: usuario solicita mayor autonomía visual de extensiones y autoriza prototipo JavaScript conservando Dart/YouTube. Árbol componible, pantallas/eventos propios en verificación local; no equivale todavía a HTML/CSS libre, Node.js ni motor completo. [[36 Motor JavaScript paralelo]].
 
 Primera API 3 visual publicada en 0.3.8, Dart preservado. Sigue pendiente ampliar componentes/servicios y validar Android; no equivale a SDK ilimitado ni a migración YouTube. [[36 Motor JavaScript paralelo]].
+
+API3 HTTP por etapas/audio remoto y dos extensiones publicadas en 0.3.9; no siguen como propuestas. Pendientes Android físico, escucha prolongada, audio YouTube Windows, cuentas/sincronización y aislamiento/firmas. [[37 Explorador y radio JavaScript]].

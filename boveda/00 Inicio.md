@@ -5,7 +5,7 @@ actualizado: 2026-10-28
 ---
 # RP Music — red de conocimiento
 
-La bóveda conserva decisiones y evidencia para continuar el proyecto. Referencia publicada: **0.3.8-alpha.1**, aplicación **0.3.8+17**, Android y Windows. Estado actual y comprobaciones: [[10 Estado del repositorio]].
+La bóveda conserva decisiones y evidencia para continuar el proyecto. Referencia publicada: **0.3.9-alpha.1**, aplicación **0.3.9+18**, Android y Windows. Estado actual y comprobaciones: [[10 Estado del repositorio]].
 
 ## Empezar aquí
 
@@ -25,12 +25,11 @@ La bóveda conserva decisiones y evidencia para continuar el proyecto. Referenci
 | Preguntas todavía abiertas | [[07 Preguntas e investigacion]] |
 | Marca, tema y referencias | [[15 Identidad visual e icono]] |
 | Publicaciones | [[27 Publicacion de releases - contenido obligatorio]] |
-| Última entrega y sus pruebas | [[36 Motor JavaScript paralelo]] |
-| Desarrollo local: explorador y radio JS | [[37 Explorador y radio JavaScript]] |
+| Última entrega y sus pruebas | [[37 Explorador y radio JavaScript]] |
 
 Guías para usar, compilar y programar: [Índice de documentación](../docs/README.md). Presentación pública: [README del proyecto](../README.md).
 
-Última publicación y límites experimentales: [[36 Motor JavaScript paralelo]].
+Última publicación y límites experimentales: [[37 Explorador y radio JavaScript]].
 
 0.3.5 publicada: [[33 Metadatos de descargas YouTube]] — letras incrustadas, búsqueda automática y nuevas descargas etiquetadas. Entrega anterior en [[32 Pruebas 0.3.3 y mejoras 0.3.4]].
 

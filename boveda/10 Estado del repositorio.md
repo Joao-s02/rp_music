@@ -5,18 +5,18 @@ actualizado: 2026-10-28
 ---
 # Estado del repositorio
 
-Desarrollo local **0.3.9+18**, sin publicar: JS con HTTP por etapas/audio remoto y candidatos Explorador musical/Radio por internet externos. 138 pruebas aprobadas/una optativa omitida, análisis limpio; navegación/resolución pública y radio nativa Windows aprobadas. APK universal/Windows normales con guía/hashes en dist/0.3.9-local. Android físico y audio nativo YouTube Windows pendientes; [[37 Explorador y radio JavaScript]]. Referencia pública siguiente conservada.
+0.3.9 publicada: HTTP/audio remoto JS y Explorador musical/Radio por internet independientes. Verificación y límites en [[37 Explorador y radio JavaScript]].
 
 2026-10-28: el usuario confirma que 0.3.8 fue un éxito y que las extensiones JavaScript funcionan correctamente. Dispositivo, plataforma y recorrido no especificados; confirmación de uso sin nueva prueba instrumentada. Propuesta posterior en [[36 Motor JavaScript paralelo]].
 
 ## Referencia publicada
 
-**0.3.8-alpha.1**, aplicación **0.3.8+17**, Android universal/ARM64 y Windows x64. [Release pública](https://github.com/Joao-s02/rp_music/releases/tag/v0.3.8-alpha.1).
+**0.3.9-alpha.1**, aplicación **0.3.9+18**, Android universal/ARM64 y Windows x64. [Release pública](https://github.com/Joao-s02/rp_music/releases/tag/v0.3.9-alpha.1).
 
-- Tag/código: d5452275e1023e6125feca130b884180f14b2a1e.
-- Extensiones: 9116d70e70a954618675d6d0e66b32cfb580d39f de rp-music-extensions. Código/paquetes específicos exclusivamente allí; commits documentales posteriores no cambian binarios.
-- Siete adjuntos públicos verificados por tamaño/SHA-256: dos APK, ZIP Windows completo, USO, PRUEBAS, CAMBIOS y SHA256SUMS. Manifiesto descargado sin autenticación idéntico al local; tag confirmado al commit esperado.
-- Evidencia de entrega actual en [[36 Motor JavaScript paralelo]]. Explorador en [[35 Ampliacion de YouTube sin API oficial]]. Corrección M4A anterior en [[34 Descarga M4A no visible en biblioteca]]; metadatos/letras en [[33 Metadatos de descargas YouTube]]; navegación histórica en [[30 Archivo de navegacion y estado]].
+- Tag/código: 54bcb738f67cb34a2d50e5e3cecb863c45c04a91.
+- Extensiones de código: 026aa38ff251b61ec341786b079a323399ff87a1 de rp-music-extensions. Ocho opciones verificadas con cliente real; cinco paquetes de revisión fija comparados byte a byte. Extensiones exclusivamente allí, fuera de APK/ZIP/adjuntos.
+- Siete adjuntos públicos verificados por tamaño/digest SHA256 y target en borrador y después de publicar. Tag al commit correcto y manifiesto público idéntico al local. Artefactos: dist/0.3.9-release.
+- Evidencia actual: [[37 Explorador y radio JavaScript]]. Antecedentes: [[36 Motor JavaScript paralelo]], [[35 Ampliacion de YouTube sin API oficial]], [[34 Descarga M4A no visible en biblioteca]] y [[33 Metadatos de descargas YouTube]].
 
 ## Capacidades actuales
 
@@ -32,24 +32,24 @@ Desarrollo local **0.3.9+18**, sin publicar: JS con HTTP por etapas/audio remoto
 | Android | Sesión/notificación/carátula/controles, permisos y widget. Lectura SAF con copia temporal privada acotada; retesteo físico actual pendiente. |
 | Windows | Audio local, volumen y bandeja/salida. YouTube Windows no supera pruebas nativas previas; no declararlo funcional. |
 | Actualizaciones | Consulta opcional/manual/diaria, canales y descarga/verificación. Android usa instalador; Windows extrae ZIP manualmente. |
-| Extensiones | API 1/2 experimental, permisos, recuperación, catálogo y destinos múltiples. Proveedor lyrics independiente de source. |
+| Extensiones | API1/2 conservadas y API3/JavaScript: pantallas, HTTP por etapas y audio remoto autorizados. Catálogo/permisos/recuperación; proveedor lyrics independiente. |
 
 Contratos en [[04 Extensiones]], comportamiento en [[03 Biblioteca y reproduccion]], módulos en [[31 Arquitectura vigente]].
 
 ## Extensiones para esta versión
 
-Catálogo público: Laboratorio JS 0.1.0 (API 3, app 0.3.8+), YouTube Explorador 0.1.0 (Android, requiere app 0.3.7), YouTube Android 0.4.0, Letras locales 0.1.0, Biblioteca viva 0.1.1 y Pulso nocturno 0.1.0. Los dos nuevos paquetes requieren app 0.3.5 y revisar permisos/dominios. Variantes anteriores conservadas. Spotify cancelado/retirado del catálogo; archivos históricos no borrados y una instalación previa no se elimina automáticamente.
+Catálogo público: Explorador musical 0.1.0 y Radio por internet 0.1.0 (API3, app 0.3.9+), Laboratorio JS 0.1.0 (API 3, app 0.3.8+), YouTube Explorador 0.1.0 (Android, requiere app 0.3.7), YouTube Android 0.4.0, Letras locales 0.1.0, Biblioteca viva 0.1.1 y Pulso nocturno 0.1.0. Los dos nuevos paquetes requieren app 0.3.5 y revisar permisos/dominios. Variantes anteriores conservadas. Spotify cancelado/retirado del catálogo; archivos históricos no borrados y una instalación previa no se elimina automáticamente.
 
 YouTube Windows 0.3.0 sigue como candidato manual fuera del catálogo recomendado, con fallos nativos conocidos. Ninguna extensión viene dentro del APK/ZIP ni adjunta a la release de la app.
 
 ## Verificaciones registradas
 
-- Suite final 122 aprobadas (120app +2ext), análisis de los cambios sin incidencias. Prueba de red optativa omitida; resultado positivo de 0.3.5 como antecedente, no prueba nueva.
+- Suite final138 aprobadas (130app+8ext), análisis sin incidencias. Navegación/resolución y lista100+100 públicas; radio AAC nativa Windows/pausa/reanudación/revocación aprobadas. Prueba de red optativa omitida; resultado positivo de 0.3.5 como antecedente, no prueba nueva.
 - Antecedente 0.3.5: tres casos del usuario desde resultados reales YouTube/duración real obtuvieron letras sincronizadas. Prueba completa con paquete real incrustó letras/portada/álbum en audio sintético, con original intacto.
 - Antecedente 0.3.5: lector y reproducción nativa Windows de M4A etiquetado aprobados; ffprobe/ffmpeg comprobaron etiquetas/duración/decodificación.
-- APK universal/ARM64 normales, versión/código 0.3.8/17, firma v2/certificado compatible y ABIs correctos. Sin dispositivo conectado para instalación/escucha física de esta versión.
-- Windows normal 0.3.8+17 recompilado tras las pruebas; ZIP de 22 archivos íntegro con guías, sin paquetes de extensión ni sonda.
-- Publicación: borrador verificado antes de publicar, API pública/adjuntos/tag y manifiesto descargado confirmados después. Artefactos finales en dist/0.3.8-release.
+- APK universal/ARM64 normales, versión/código0.3.9/18, firma v2/certificado compatible y ABIs correctos. Sin dispositivo conectado para instalación/escucha física de esta versión.
+- Windows normal0.3.9+18 recompilado tras las pruebas; ZIP de23 archivos íntegro con guías, sin paquetes de extensión ni sonda.
+- Publicación: borrador verificado antes de publicar, API pública/adjuntos/tag y manifiesto descargado confirmados después. Artefactos finales en dist/0.3.9-release.
 
 ## Pendientes y límites activos
 

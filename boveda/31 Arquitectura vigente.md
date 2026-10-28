@@ -1,11 +1,11 @@
 ---
 tipo: arquitectura-observada
-estado: publicada-0.3.8-con-limites
+estado: publicada-0.3.9-con-limites
 actualizado: 2026-10-28
 ---
 # Arquitectura vigente
 
-Desarrollo local posterior 0.3.9+18: JavascriptScreenService coordina HTTP fuera de QuickJS; ProgramController valida etapas/estado y conserva URLs solo en memoria. ExtensionSourceService/broker admite pantallas JS autorizadas sin cambiar propietario source. network.stream verifica servidores públicos de emisoras. Cancelación y revisión de autorización descartan respuestas tardías. Pruebas/límites: [[37 Explorador y radio JavaScript]]. El mapa publicado 0.3.8 siguiente se conserva como antecedente.
+Ampliación publicada 0.3.9+18: JavascriptScreenService coordina HTTP fuera de QuickJS; ProgramController valida etapas/estado y conserva URLs solo en memoria. ExtensionSourceService/broker admite pantallas JS autorizadas sin cambiar propietario source. network.stream verifica servidores públicos de emisoras. Cancelación y revisión de autorización descartan respuestas tardías. Pruebas/límites: [[37 Explorador y radio JavaScript]]. El mapa publicado 0.3.8 siguiente se conserva como antecedente.
 
 ## Alcance y criterio
 
