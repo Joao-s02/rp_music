@@ -2,15 +2,15 @@
 
 Reproductor Flutter para Android y Windows, ampliable mediante extensiones. Biblioteca local sin cuenta ni conexión; actualizaciones y consultas en línea opcionales.
 
-**Versión en publicación: 0.3.11-alpha.1**, aplicación **0.3.11+20**. [Descargar Android universal, ARM64 y Windows](https://github.com/Joao-s02/rp_music/releases/tag/v0.3.11-alpha.1).
+**Versión publicada: 0.3.11-alpha.1**, aplicación **0.3.11+20**. [Descargar Android universal, ARM64 y Windows](https://github.com/Joao-s02/rp_music/releases/tag/v0.3.11-alpha.1).
 
 [Guía vigente](docs/USO.md) · [Pruebas](docs/PRUEBAS-0.3.11.md) · [Cambios](docs/CAMBIOS-0.3.11.md) · [Documentación](docs/README.md)
 
 ## Novedades0.3.11
 
-Gesto horizontal sobre carátula/minirreproductor; widgets Android compacto, horizontal y carátula redimensionables; listas y álbumes de fuentes con portada grande. Descarga de álbum con carpeta única, cola/cancelación e identidad común de metadatos; prioridad al álbum de origen y agrupación por artista del álbum. Fotos de artistas mediante fuente autorizada y caché privada offline. Los paquetes API2 se instalan por separado y requieren revisar el nuevo permiso de biblioteca. [Cómo probar](docs/PROBAR-0.3.11.md) · [Evidencia y límites](boveda/40%20Gestos%20widgets%20albumes%20y%20descargas%200.3.11.md). Entrega completa en preparación; versiones anteriores conservadas.
+Gesto horizontal sobre carátula/minirreproductor; widgets Android compacto, horizontal y carátula redimensionables; listas y álbumes de fuentes con portada grande. Descarga de álbum con carpeta única, cola/cancelación e identidad común de metadatos; prioridad al álbum de origen y agrupación por artista del álbum. Fotos de artistas mediante fuente autorizada y caché privada offline. Los paquetes API2 se instalan por separado y requieren revisar el nuevo permiso de biblioteca. [Cómo probar](docs/PROBAR-0.3.11.md) · [Evidencia y límites](boveda/40%20Gestos%20widgets%20albumes%20y%20descargas%200.3.11.md). Publicados Android universal/ARM64 y Windows completo con guías, licencias y hashes.
 
-El usuario confirma en0.3.10 YouTube Windows con sonido/descarga y lectura M4A/OPUS sin errores. Verificación local0.3.11:147 pruebas aprobadas/una optativa omitida y análisis limpio; seis canciones de un álbum real exportadas con etiquetas/portadas coherentes, foto guardada y recuperada offline. Android universal y Windows normales preparados para prueba; widgets/selector requieren Android físico.
+El usuario confirma en0.3.10 YouTube Windows con sonido/descarga y lectura M4A/OPUS sin errores. Verificación local0.3.11:147 pruebas aprobadas/una optativa omitida y análisis limpio; seis canciones de un álbum real exportadas con etiquetas/portadas coherentes, foto guardada y recuperada offline. Android universal/ARM64 y Windows publicados; widgets/selector requieren Android físico.
 
 ## Audio Windows y YouTube — 0.3.10
 
@@ -70,6 +70,8 @@ Android: instalar universal o ARM64 compatible encima de la anterior, sin desins
 Biblioteca/preferencias/sesión en soporte privado v2, programas en v3 y letras en lyrics; no borrar esas carpetas. No se migran datos de la antigua alfa 0.1. [Guía completa](docs/USO-0.3.10.md).
 
 ## Extensiones
+
+Para app0.3.11: YouTube Android/Windows0.5.0 y YouTube Explorador Android/Windows0.2.0. Actualizar desde el catálogo y revisar el permiso de biblioteca para retratos. Variantes anteriores conservadas.
 
 [Repositorio de extensiones](https://github.com/Joao-s02/rp-music-extensions): Extensiones → Explorar repositorio → Consultar → instalar/actualizar → revisar permisos. También importar .rpmx. No vienen instaladas ni dentro del APK/ZIP ni como adjuntos de releases de la app.
 
