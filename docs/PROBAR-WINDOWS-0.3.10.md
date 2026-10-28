@@ -1,6 +1,6 @@
-# Windows0.3.10 — corrección local de audio y YouTube
+# Windows0.3.10 — audio y YouTube
 
-App0.3.10+19, **sin publicar**. La release pública0.3.9 sigue disponible como antecedente; requiere esta app local para usar los candidatos YouTube API2 Windows.
+App0.3.10+19 publicada. [Descargar la release completa](https://github.com/Joao-s02/rp_music/releases/tag/v0.3.10-alpha.1). Requiere esta versión para usar las fuentes YouTube API2 Windows.
 
 ## Actualizar la app
 
@@ -10,13 +10,13 @@ Solo cambia motor de Windows; Android conserva el motor previo y parches audio_s
 
 ## YouTube en Windows
 
-Los candidatos están exclusivamente en rp-music-extensions/previews/0.3.10; **todavía no están en catálogo público** y no vienen dentro del ZIP/APK:
+Los candidatos están exclusivamente en rp-music-extensions/previews/0.3.10; **disponibles en el catálogo público** y no vienen dentro del ZIP/APK:
 
 - youtube-music-windows.rpmx — YouTube Windows0.4.1, API2, requiere app0.3.10.
 - youtube-explorer-windows.rpmx — YouTube Explorador Windows0.1.0, API2, requiere app0.3.10.
 - radio-internet.rpmx — Radio por internet0.1.1, API3, requiere app0.3.9 o posterior.
 
-Instalar desde archivo en Extensiones, revisar permisos y activar. Para los dos YouTube API2, elegir quién controla **Fuente** (Usar esta fuente) y abrir YT o YT Explorar. Son identidades Windows independientes; las extensiones Android originales se conservan. No se migra YouTube a JavaScript.
+Consultar el repositorio desde Extensiones → Explorar repositorio e instalar, revisar permisos y activar. Para los dos YouTube API2, elegir quién controla **Fuente** (Usar esta fuente) y abrir YT o YT Explorar. Son identidades Windows independientes; las extensiones Android originales se conservan. No se migra YouTube a JavaScript.
 
 También se probó audio real del Explorador musical JS0.1.0 publicado con el motor nuevo. Puede conservarse instalado; volver a seleccionar canción tras reiniciar para obtener un enlace nuevo. No elegir una pantalla JS como propietaria de Fuente.
 
