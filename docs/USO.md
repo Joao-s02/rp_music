@@ -1,10 +1,10 @@
 # Guía vigente de RP Music
 
-Versión 0.3.5-alpha.1 / app 0.3.5+14, Android y Windows.
+Versión 0.3.6-alpha.1 / app 0.3.6+15, en publicación autorizada.
 
-- [Instalación y uso](USO-0.3.5.md).
-- [Qué probar y verificaciones](PRUEBAS-0.3.5.md).
-- [Cambios](CAMBIOS-0.3.5.md).
-- [Descargas y hashes](https://github.com/Joao-s02/rp_music/releases/tag/v0.3.5-alpha.1).
+- [Instalación y uso](USO-0.3.6.md).
+- [Verificaciones y qué probar](PRUEBAS-0.3.6.md).
+- [Cambios](CAMBIOS-0.3.6.md).
+- [Descargas y hashes](https://github.com/Joao-s02/rp_music/releases/tag/v0.3.6-alpha.1).
 
-Actualizar Android encima sin desinstalar; Windows necesita el ZIP completo. Letras locales recuperadas se guardan dentro de la app, sin modificar música. Las extensiones se instalan/actualizan aparte con permisos revisados. Validación física Android pendiente. Guías anteriores conservadas en el [índice](README.md).
+Android: actualizar encima sin desinstalar. Windows: extraer todo el ZIP. El arreglo previene nuevas descargas M4A fragmentadas incompatibles; no repara automáticamente archivos existentes. Extensiones de 0.3.5 compatibles y sin cambios. Validación física Android pendiente. [Índice](README.md).
