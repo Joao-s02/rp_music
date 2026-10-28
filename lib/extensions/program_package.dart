@@ -15,6 +15,7 @@ bool versionAtLeast(String actual, String minimum) {
 }
 
 const programPermissions = {
+  'network.stream': 'Reproducir audio de servidores HTTPS públicos de emisoras (dominios variables)',
   'lyrics.cache':
       'Buscar letras automáticamente y guardarlas solo dentro de la app',
   'storage.download':
@@ -106,6 +107,8 @@ class ProgramPackage {
                 'storage.private',
                 'library.read',
                 'playback.control',
+                'network.http',
+                'network.stream',
               }.contains(p),
             ))) {
       throw const FormatException(
@@ -125,7 +128,7 @@ class ProgramPackage {
         'Sustituir reproductor o aleatorio requiere nivel avanzado.',
       );
     }
-    if (javascript && (advanced || json['sourceConfig'] != null)) {
+    if (javascript && advanced) {
       throw const FormatException('Pantalla JavaScript incompatible.');
     }
     if (advanced && !permissions.contains('behavior.override')) {
@@ -158,7 +161,9 @@ class ProgramPackage {
         ? null
         : SourceSpec.parse(json['sourceConfig']);
     if (spec != null &&
-        ((!slots.contains('source') && !slots.contains('lyrics')) ||
+        ((!slots.contains('source') &&
+                !slots.contains('lyrics') &&
+                !javascript) ||
             !permissions.contains('network.http'))) {
       throw const FormatException('La fuente necesita network.http.');
     }
@@ -174,7 +179,7 @@ class ProgramPackage {
       );
     }
     if (spec?.navigationLabel != null &&
-        (!slots.contains('source') ||
+        ((!slots.contains('source') && !javascript) ||
             !permissions.contains('navigation.add'))) {
       throw const FormatException(
         'La navegación requiere una fuente y navigation.add.',
@@ -183,6 +188,18 @@ class ProgramPackage {
     final minimum = json['minAppVersion'] ?? (javascript ? '0.3.8' : '0.3.0');
     if (minimum is! String || !RegExp(r'^\d+\.\d+\.\d+$').hasMatch(minimum)) {
       throw const FormatException('Versión mínima inválida.');
+    }
+    if (javascript &&
+        (permissions.contains('network.http') ||
+            permissions.contains('network.stream')) &&
+        (spec == null ||
+            !permissions.contains('network.http') ||
+            !versionAtLeast(minimum, '0.3.9') ||
+            (permissions.contains('network.stream') &&
+                !permissions.contains('playback.control')))) {
+      throw const FormatException(
+        'La red JavaScript requiere configuración, permisos y RP Music 0.3.9.',
+      );
     }
     return ProgramPackage(
       id,

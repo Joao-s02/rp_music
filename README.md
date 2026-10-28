@@ -2,9 +2,17 @@
 
 Reproductor Flutter para Android y Windows, ampliable mediante extensiones. Biblioteca local sin cuenta ni conexión; actualizaciones y consultas en línea opcionales.
 
-**Versión publicada: 0.3.8-alpha.1**, aplicación **0.3.8+17**. [Descargar Android universal, ARM64 y Windows](https://github.com/Joao-s02/rp_music/releases/tag/v0.3.8-alpha.1).
+**Versión 0.3.9-alpha.1 (en publicación)**, aplicación **0.3.9+18**. [Descargar Android universal, ARM64 y Windows](https://github.com/Joao-s02/rp_music/releases/tag/v0.3.9-alpha.1).
 
-[Guía vigente](docs/USO.md) · [Pruebas](docs/PRUEBAS-0.3.8.md) · [Cambios](docs/CAMBIOS-0.3.8.md) · [Documentación](docs/README.md)
+[Guía vigente](docs/USO.md) · [Pruebas](docs/PRUEBAS-0.3.9.md) · [Cambios](docs/CAMBIOS-0.3.9.md) · [Documentación](docs/README.md)
+
+## Desarrollo local 0.3.9+18 — explorador y radio JavaScript
+
+API 3 añade consultas HTTP por etapas, cancelación y audio remoto autorizado mediante el reproductor de la app. Explorador musical (YouTube Music público, sin cuenta) y Radio por internet (Radio Browser, filtros/favoritas privadas) son candidatos independientes en el repositorio de extensiones. Requieren app local 0.3.9; aún no están publicados en catálogo ni incluidos en APK/ZIP. [Alcance y pruebas](boveda/37%20Explorador%20y%20radio%20JavaScript.md).
+
+La radio admite inicialmente emisoras HTTPS MP3/AAC sin HLS. Esta ampliación no declara corregido YouTube Windows. Cuenta, sincronización, descargas e importación de listas desde las nuevas pantallas JS siguen pendientes.
+
+Entrega local en dist/0.3.9-local: APK universal y Windows completo con guía/hashes. 138 pruebas aprobadas, una optativa omitida y análisis limpio; navegación/resolución pública y radio nativa Windows comprobadas. Android físico pendiente por ausencia de dispositivo. [Instalar y probar las extensiones](docs/PROBAR-JAVASCRIPT-0.3.9.md).
 
 ## JavaScript y Dart en paralelo — 0.3.8
 
@@ -51,6 +59,8 @@ Compatibles con 0.3.8: **Laboratorio JS 0.1.0** (pantalla experimental independi
 Fuentes, lógica específica, paquetes y pruebas de proveedores pertenecen solo a ese repositorio. El principal contiene reproductor, motor/SDK y capacidades genéricas; prototipos heredados siguen como deuda de migración. [Contrato API 2](docs/EXTENSIONES-API-2.md).
 
 ## Verificación y pendientes
+
+El usuario confirma buen funcionamiento de 0.3.8 y sus extensiones JavaScript. No se especificaron dispositivo, plataforma ni recorrido de esta confirmación; los límites y pruebas pendientes se conservan.
 
 **122 pruebas aprobadas (120 de app y 2 de extensión)**, análisis de cambios sin incidencias. Prueba de red optativa omitida en esta suite; su resultado positivo de 0.3.5 se conserva como antecedente. Como antecedentes de 0.3.5, los tres casos aportados por el usuario recuperaron letras sincronizadas desde resultados reales YouTube. Prueba completa con paquete real: letras/portada/álbum incrustados en copia de audio sintético, original intacto. Lectura y reproducción nativa Windows aprobadas; ffprobe/ffmpeg confirmaron etiquetas y audio decodificable. No se suman repeticiones como casos nuevos.
 

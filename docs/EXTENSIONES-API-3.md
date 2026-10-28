@@ -1,5 +1,7 @@
 # API 3 JavaScript — experimental 0.3.8
 
+**Ampliación local 0.3.9+18, sin publicar:** HTTP por etapas y audio remoto en [contrato de red](EXTENSIONES-API-3-RED.md). Los límites de ausencia de red/configuración descritos abajo corresponden al prototipo publicado 0.3.8. El nuevo contrato conserva capacidades anteriores, añade permisos explícitos y requiere minAppVersion >= 0.3.9 para usarlos.
+
 Conserva API 1 y API 2/Dart sin migración. API 3 usa QuickJS (flutter_qjs_next 1.5.2), no Node.js. No ejecuta HTML/CSS ni widgets Flutter arbitrarios. La extensión define un árbol visual componible, estado, eventos y navegación; no un tipo de página predeterminado por servicio.
 
 ## Paquete

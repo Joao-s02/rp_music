@@ -18,6 +18,14 @@ class ProgramController extends ChangeNotifier {
   final installed = <String, InstalledProgram>{};
   final owners = <String, String>{};
   final privateData = <String, Map<String, dynamic>>{};
+  // Session-only resolved audio. Never persist expiring URLs in library data.
+  final screenAudio = <String, Uri>{};
+  int authorizationRevision = 0;
+  void _invalidateScreenAudio(String id) {
+    authorizationRevision++;
+    screenAudio.removeWhere((key, _) => key.startsWith('rpmusic-screen:$id:'));
+  }
+
   String? message;
   String? _running;
   bool _disposed = false;
@@ -119,6 +127,7 @@ class ProgramController extends ChangeNotifier {
       enabled: enable,
     );
     if (!item.authorized) item.enabled = false;
+    _invalidateScreenAudio(package.id);
     installed[package.id] = item;
     if (item.enabled) {
       for (final slot in package.slots.where(
@@ -137,6 +146,7 @@ class ProgramController extends ChangeNotifier {
     if (busy) return;
     final item = installed[id];
     if (item == null || (value && !item.authorized)) return;
+    _invalidateScreenAudio(id);
     item.enabled = value;
     item.failures = 0;
     item.error = null;
@@ -155,6 +165,7 @@ class ProgramController extends ChangeNotifier {
     if (busy) return;
     final item = installed[id];
     if (item == null) return;
+    _invalidateScreenAudio(id);
     item.grants = grants.intersection(item.package.permissions);
     if (!item.authorized) item.enabled = false;
     await persist();
@@ -180,6 +191,8 @@ class ProgramController extends ChangeNotifier {
   }
 
   Future<void> restoreBase() async {
+    authorizationRevision++;
+    screenAudio.clear();
     owners.clear();
     for (final item in installed.values) {
       item.enabled = false;
@@ -190,6 +203,7 @@ class ProgramController extends ChangeNotifier {
 
   Future<void> remove(String id) async {
     if (busy) return;
+    _invalidateScreenAudio(id);
     installed.remove(id);
     owners.removeWhere((slot, value) => value == id);
     // Keep data and list definitions for explicit reinstall/recovery.
@@ -224,8 +238,9 @@ class ProgramController extends ChangeNotifier {
   Future<Map<String, dynamic>?> invoke(
     String id,
     String event,
-    Map<String, dynamic> input,
-  ) async {
+    Map<String, dynamic> input, {
+    bool Function()? active,
+  }) async {
     final item = installed[id];
     if (item == null || !item.enabled || !item.authorized || busy) return null;
     final snapshot = Map<String, dynamic>.from(input);
@@ -249,13 +264,31 @@ class ProgramController extends ChangeNotifier {
             )
           : await runtime.execute(item.package.source, snapshot);
       if (_disposed ||
+          active?.call() == false ||
           installed[id] != item ||
           !item.enabled ||
           !item.authorized) {
         return null;
       }
       if (item.package.engine == 'javascript' && event == 'screen') {
-        validateJavascriptView(result['view']);
+        if (result.containsKey('request')) {
+          if (result['request'] is! Map ||
+              result['next'] is! String ||
+              (result['next'] as String).length > 40 ||
+              result.keys.any(
+                (key) => !{'request', 'next', 'context'}.contains(key),
+              )) {
+            throw const FormatException('Etapa de red JavaScript inválida.');
+          }
+        } else {
+          validateJavascriptView(result['view']);
+          if ((snapshot['action'] == null || snapshot['action'] == 'open') &&
+              (result['play'] != null || result['playRemote'] != null)) {
+            throw const FormatException(
+              'No se permite reproducción automática al abrir.',
+            );
+          }
+        }
       }
       if (result.containsKey('state')) {
         if (!allowed(id, 'storage.private') || result['state'] is! Map) {

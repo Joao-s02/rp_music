@@ -14,6 +14,9 @@ void _javascriptWorker((String, String?, SendPort) request) {
     engine = QuickJsRuntime2(
       timeout: 1000,
       memoryLimit: 32 * 1024 * 1024,
+      // Debug Windows builds need room for ordinary nested JSON responses.
+      // Remain below the Windows thread's 1 MiB stack; never disable this limit.
+      stackSize: Platform.isWindows ? 512 * 1024 : 1024 * 1024,
       autoExecutePendingJobs: false,
       webApis: const JsWebApis.none(),
     );

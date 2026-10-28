@@ -1,3 +1,5 @@
 # Guía vigente
 
-Entrega 0.3.8-alpha.1 publicada. [Uso](USO-0.3.8.md), [pruebas](PRUEBAS-0.3.8.md) y [cambios](CAMBIOS-0.3.8.md).
+RP Music **0.3.9+18**, release preliminar en publicación autorizada.
+
+[Instalación y uso 0.3.9](USO-0.3.9.md) · [Pruebas](PRUEBAS-0.3.9.md) · [Cambios](CAMBIOS-0.3.9.md).
