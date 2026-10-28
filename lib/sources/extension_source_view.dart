@@ -7,6 +7,9 @@ import '../extensions/program_controller.dart';
 import '../playback/music_handler.dart';
 import 'extension_source_service.dart';
 import 'source_download.dart';
+import 'album_download.dart';
+import 'download_context.dart';
+import '../app/collection_header.dart';
 
 class ExtensionSourceView extends StatefulWidget {
   const ExtensionSourceView({
@@ -49,6 +52,7 @@ class _ExtensionSourceViewState extends State<ExtensionSourceView> {
       true;
   bool searching = false;
   String? downloading;
+  bool preparingAlbum = false;
   String? error;
   int generation = 0;
   bool get allowed => service.available(widget.extensionId);
@@ -128,7 +132,22 @@ class _ExtensionSourceViewState extends State<ExtensionSourceView> {
         entities = more
             ? [...entities, ...?page?.entities]
             : page?.entities ?? [];
-        collection = page?.collection ?? target;
+        if (!more) {
+          final incoming = page?.collection ?? target;
+          collection = incoming == null
+              ? null
+              : SourceEntity(
+                  incoming.id,
+                  incoming.kind,
+                  incoming.title == 'Colección'
+                      ? (target?.title ?? incoming.title)
+                      : incoming.title,
+                  artwork: incoming.artwork ?? target?.artwork,
+                  artist: incoming.artist?.isNotEmpty == true
+                      ? incoming.artist
+                      : target?.artist,
+                );
+        }
         cursor = page?.cursor;
         if (cursor != null && consumedCursors.contains(cursor)) cursor = null;
         if (!more) pageTitle = page?.title ?? target?.title ?? '';
@@ -198,7 +217,11 @@ class _ExtensionSourceViewState extends State<ExtensionSourceView> {
     if (downloading != null) return;
     setState(() => downloading = track.id);
     try {
-      final saved = await SourceDownload.save(track, service);
+      final saved = await SourceDownload.save(
+        track,
+        service,
+        albumContext: albumContext(track),
+      );
       if (mounted && saved.saved) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -222,6 +245,70 @@ class _ExtensionSourceViewState extends State<ExtensionSourceView> {
       }
     } finally {
       if (mounted) setState(() => downloading = null);
+    }
+  }
+
+  DownloadContext? albumContext([Track? track]) {
+    if (collection?.kind != 'album') return null;
+    final number = track == null ? null : results.indexOf(track) + 1;
+    return DownloadContext(
+      album: pageTitle.isEmpty ? collection!.title : pageTitle,
+      albumArtist: collection!.artist?.isNotEmpty == true
+          ? collection!.artist!
+          : (results.map((t) => t.artist).toSet().length == 1
+                ? results.first.artist
+                : 'Varios artistas'),
+      artwork: collection!.artwork,
+      trackNumber: number,
+      trackTotal: cursor == null ? results.length : null,
+    );
+  }
+
+  Future<void> downloadAlbum() async {
+    if (preparingAlbum ||
+        downloading != null ||
+        searching ||
+        !allowed ||
+        collection?.kind != 'album') {
+      return;
+    }
+    setState(() => preparingAlbum = true);
+    final original = collection!.id;
+    try {
+      var pages = 0;
+      while (cursor != null) {
+        if (!mounted || !allowed || collection?.id != original) return;
+        final previous = cursor;
+        await search(more: true);
+        if (error != null ||
+            cursor == previous ||
+            ++pages > 20 ||
+            results.length > 1000) {
+          throw const FormatException(
+            'No se pudo reunir el álbum completo. Reintenta antes de descargar.',
+          );
+        }
+      }
+      if (!mounted ||
+          !allowed ||
+          results.isEmpty ||
+          collection?.id != original) {
+        return;
+      }
+      await showAlbumDownload(
+        context,
+        AlbumDownload(List.unmodifiable(results), albumContext()!, service),
+      );
+    } catch (e) {
+      if (mounted) {
+        setState(
+          () => error = e is FormatException
+              ? e.message.toString()
+              : 'No se pudo preparar el álbum.',
+        );
+      }
+    } finally {
+      if (mounted) setState(() => preparingAlbum = false);
     }
   }
 
@@ -401,10 +488,69 @@ class _ExtensionSourceViewState extends State<ExtensionSourceView> {
                 )
               : ListView.builder(
                   itemCount:
+                      (collection?.kind == 'album' ? 1 : 0) +
                       entities.length +
                       results.length +
                       (cursor == null ? 0 : 1),
                   itemBuilder: (context, index) {
+                    if (collection?.kind == 'album') {
+                      if (index == 0) {
+                        return CollectionHeader(
+                          title: pageTitle.isEmpty
+                              ? collection!.title
+                              : pageTitle,
+                          label: 'ÁLBUM EN LÍNEA',
+                          description:
+                              '${collection!.artist ?? (results.isEmpty ? '' : results.first.artist)} · ${results.length} canciones${cursor != null ? ' · faltan páginas' : ''}',
+                          artwork: (size) => ClipRRect(
+                            borderRadius: BorderRadius.circular(20),
+                            child: collection!.artwork != null
+                                ? Image.network(
+                                    collection!.artwork!,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (_, error, stack) =>
+                                        Icon(Icons.album, size: size / 2),
+                                  )
+                                : results.isEmpty
+                                ? Icon(Icons.album, size: size / 2)
+                                : Artwork(
+                                    id: results.first.id,
+                                    library: widget.library,
+                                    size: size,
+                                  ),
+                          ),
+                          actions: [
+                            FilledButton.icon(
+                              onPressed: results.isEmpty || !allowed
+                                  ? null
+                                  : () => widget.audio.select(results, 0),
+                              icon: const Icon(Icons.play_arrow),
+                              label: const Text('Reproducir'),
+                            ),
+                            OutlinedButton.icon(
+                              onPressed:
+                                  !allowed ||
+                                      searching ||
+                                      preparingAlbum ||
+                                      downloading != null ||
+                                      !widget.programs.allowed(
+                                        widget.extensionId,
+                                        'storage.download',
+                                      )
+                                  ? null
+                                  : downloadAlbum,
+                              icon: const Icon(Icons.download),
+                              label: Text(
+                                preparingAlbum
+                                    ? 'Preparando…'
+                                    : 'Descargar álbum',
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                      index--;
+                    }
                     if (index < entities.length) {
                       final entity = entities[index];
                       return ListTile(

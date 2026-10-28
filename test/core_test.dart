@@ -128,6 +128,7 @@ void main() {
       size: stat.size,
       modifiedMs: stat.modified.millisecondsSinceEpoch,
       metadataLoaded: true,
+      metadataVersion: 2,
     );
     final progress = <ScanProgress>[];
     final result = await MusicFiles().scan(

@@ -1,6 +1,9 @@
 import 'scrolling_title.dart';
 import 'expanded_player.dart';
 import 'album_detail_view.dart';
+import 'track_swipe.dart';
+import 'collection_header.dart';
+import '../sources/artist_portraits.dart';
 
 import 'dart:async';
 import 'dart:math';
@@ -90,6 +93,23 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
   final searchFocus = FocusNode();
   String? group;
   Timer? debounce;
+  Timer? portraitTimer;
+  late final portraits = ArtistPortraits(
+    Directory('${library.store.directory.path}/artist_portraits'),
+  );
+  void warmPortraits() {
+    portraitTimer?.cancel();
+    portraitTimer = Timer(const Duration(milliseconds: 800), () {
+      final programs = library.programs;
+      unawaited(
+        portraits.warm(
+          library.tracks.expand((t) => t.artists),
+          programs == null ? null : ExtensionSourceService(programs),
+        ),
+      );
+    });
+  }
+
   StreamSubscription<String>? errors;
   final search = TextEditingController();
   LibraryController get library => widget.library;
@@ -112,6 +132,8 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    library.addListener(warmPortraits);
+    warmPortraits();
     errors = audio.errors.stream.listen((text) {
       if (mounted) {
         ScaffoldMessenger.of(context)
@@ -123,6 +145,9 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    library.removeListener(warmPortraits);
+    portraitTimer?.cancel();
+    portraits.dispose();
     errors?.cancel();
     debounce?.cancel();
     search.dispose();
@@ -134,7 +159,10 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     audio.recordEvent('Ciclo de vida: ${state.name}');
     if (state != AppLifecycleState.resumed) unawaited(audio.saveSession());
-    if (state == AppLifecycleState.resumed) widget.notifications?.refresh();
+    if (state == AppLifecycleState.resumed) {
+      widget.notifications?.refresh();
+      warmPortraits();
+    }
   }
 
   void navigate(int value) => setState(() {
@@ -743,7 +771,7 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
         );
 
   String groupKey(Track t) => switch (view) {
-    1 => '${t.album}\n${t.artist}',
+    1 => t.albumKey,
     2 => t.artist,
     _ => t.folder,
   };
@@ -863,13 +891,36 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
         final key = keys[index];
         final items = groups[key]!;
         return ListTile(
-          leading: Icon(
-            view == 1
-                ? Icons.album_outlined
-                : view == 2
-                ? Icons.person_outline
-                : Icons.folder_outlined,
-          ),
+          leading: view == 2
+              ? ListenableBuilder(
+                  listenable: portraits,
+                  builder: (context, _) {
+                    final photo = portraits.image(key);
+                    return ClipOval(
+                      child: photo == null
+                          ? const SizedBox(
+                              width: 48,
+                              height: 48,
+                              child: Icon(Icons.person_outline),
+                            )
+                          : Image.file(
+                              photo,
+                              width: 48,
+                              height: 48,
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, error, stack) =>
+                                  const Icon(Icons.person_outline),
+                            ),
+                    );
+                  },
+                )
+              : Icon(
+                  view == 1
+                      ? Icons.album_outlined
+                      : view == 2
+                      ? Icons.person_outline
+                      : Icons.folder_outlined,
+                ),
           title: Text(
             key.split('\n').first == '.'
                 ? 'Carpeta raíz'
@@ -888,16 +939,30 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
   Widget trackList(
     List<Track> tracks, {
     String? playlist,
+    Widget? header,
     String empty =
         'No hay canciones. Actualiza la carpeta o cambia tu búsqueda.',
   }) {
-    if (tracks.isEmpty) return this.empty(empty, Icons.music_note_outlined);
+    if (tracks.isEmpty) {
+      return header == null
+          ? this.empty(empty, Icons.music_note_outlined)
+          : ListView(
+              children: [
+                header,
+                Padding(padding: const EdgeInsets.all(24), child: Text(empty)),
+              ],
+            );
+    }
     tracks = library.ordered(tracks);
     final cards = library.activeExtension?.layout == 'cards';
     final list = ListView.builder(
-      itemExtent: cards ? 88 : 72,
-      itemCount: tracks.length,
+      itemExtent: header == null ? (cards ? 88 : 72) : null,
+      itemCount: tracks.length + (header == null ? 0 : 1),
       itemBuilder: (context, index) {
+        if (header != null) {
+          if (index == 0) return header;
+          index--;
+        }
         final track = tracks[index];
         final tile = StreamBuilder(
           stream: audio.mediaItem,
@@ -1001,39 +1066,6 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
             ),
             onTap: () => setState(() => group = null),
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-            child: Row(
-              children: [
-                PlaylistCover(library: library, name: name, size: 80),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (library.automaticPlaylist(name))
-                        Text(
-                          library.programs?.allowed(
-                                    library.playlistMeta[name]!['owner']
-                                        as String,
-                                    'playlists.manage',
-                                  ) ==
-                                  true
-                              ? 'Lista automática · activa'
-                              : 'Lista automática · guardada e inactiva',
-                        ),
-                      TextButton.icon(
-                        onPressed: () =>
-                            choosePlaylistCover(context, library, name),
-                        icon: const Icon(Icons.photo_outlined),
-                        label: const Text('Cambiar carátula'),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
           if (missing > 0)
             ListTile(
               title: Text('$missing canciones no disponibles en esta carpeta'),
@@ -1051,6 +1083,48 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
             child: trackList(
               library.playlistTracks(name),
               playlist: name,
+              header: CollectionHeader(
+                title: name,
+                label: library.automaticPlaylist(name)
+                    ? (library.programs?.allowed(
+                                library.playlistMeta[name]!['owner'] as String,
+                                'playlists.manage',
+                              ) ==
+                              true
+                          ? 'Lista automática · activa'
+                          : 'Lista automática · guardada e inactiva')
+                    : 'LISTA LOCAL',
+                description:
+                    '${library.playlistTracks(name).length} canciones · ${library.playlistTracks(name).fold<int>(0, (sum, t) => sum + t.durationMs) ~/ 60000} min${missing > 0 ? ' · $missing no disponibles' : ''}',
+                artwork: (size) =>
+                    PlaylistCover(library: library, name: name, size: size),
+                actions: [
+                  FilledButton.icon(
+                    onPressed: () {
+                      audio.shuffle = false;
+                      audio.select(library.playlistTracks(name), 0);
+                    },
+                    icon: const Icon(Icons.play_arrow),
+                    label: const Text('Reproducir'),
+                  ),
+                  FilledButton.tonalIcon(
+                    onPressed: () {
+                      final tracks = library.playlistTracks(name);
+                      if (tracks.isEmpty) return;
+                      audio.shuffle = true;
+                      audio.select(tracks, Random().nextInt(tracks.length));
+                    },
+                    icon: const Icon(Icons.shuffle),
+                    label: const Text('Aleatorio'),
+                  ),
+                  TextButton.icon(
+                    onPressed: () =>
+                        choosePlaylistCover(context, library, name),
+                    icon: const Icon(Icons.photo_outlined),
+                    label: const Text('Cambiar carátula'),
+                  ),
+                ],
+              ),
               empty: missing > 0
                   ? 'Las canciones de esta lista están fuera de la carpeta actual.'
                   : 'Añade canciones desde el menú de la biblioteca.',
@@ -1459,98 +1533,105 @@ class _PlayerPanelState extends State<PlayerPanel> {
       }
       final desktop = MediaQuery.sizeOf(context).width >= 850;
       if (!desktop && !widget.expanded) {
-        return Material(
-          color: Theme.of(context).colorScheme.surfaceContainerHigh,
-          borderRadius: BorderRadius.circular(20),
-          clipBehavior: Clip.antiAlias,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              StreamBuilder(
-                stream: audio.player.positionStream,
-                builder: (context, position) => StreamBuilder(
-                  stream: audio.player.durationStream,
-                  builder: (context, duration) {
-                    final total = duration.data?.inMilliseconds ?? 0;
-                    return LinearProgressIndicator(
-                      minHeight: 3,
-                      value: total > 0
-                          ? ((position.data?.inMilliseconds ?? 0) / total)
-                                .clamp(0.0, 1.0)
-                          : 0,
-                    );
-                  },
+        return TrackSwipe(
+          audio: audio,
+          child: Material(
+            color: Theme.of(context).colorScheme.surfaceContainerHigh,
+            borderRadius: BorderRadius.circular(20),
+            clipBehavior: Clip.antiAlias,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                StreamBuilder(
+                  stream: audio.player.positionStream,
+                  builder: (context, position) => StreamBuilder(
+                    stream: audio.player.durationStream,
+                    builder: (context, duration) {
+                      final total = duration.data?.inMilliseconds ?? 0;
+                      return LinearProgressIndicator(
+                        minHeight: 3,
+                        value: total > 0
+                            ? ((position.data?.inMilliseconds ?? 0) / total)
+                                  .clamp(0.0, 1.0)
+                            : 0,
+                      );
+                    },
+                  ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(10),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: InkWell(
-                        onTap: openPlayer,
-                        child: Row(
-                          children: [
-                            Artwork(id: track?.id, library: library),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    track?.title ?? 'Elige una canción',
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.w700,
+                Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: InkWell(
+                          onTap: openPlayer,
+                          child: Row(
+                            children: [
+                              Artwork(id: track?.id, library: library),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      track?.title ?? 'Elige una canción',
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.w700,
+                                      ),
                                     ),
-                                  ),
-                                  Text(
-                                    track?.artist ?? 'Tu biblioteca local',
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodySmall,
-                                  ),
-                                ],
+                                    Text(
+                                      track?.artist ?? 'Tu biblioteca local',
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodySmall,
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                    IconButton(
-                      tooltip: 'Favorito',
-                      onPressed:
-                          track == null ||
-                              ExtensionSourceService.remote(track.id)
-                          ? null
-                          : () => library.toggleFavorite(track.id),
-                      icon: Icon(
-                        library.favorites.contains(track?.id)
-                            ? Icons.favorite
-                            : Icons.favorite_border,
-                      ),
-                    ),
-                    StreamBuilder(
-                      stream: audio.player.playerStateStream,
-                      builder: (context, state) => IconButton.filled(
-                        tooltip: audio.player.playing ? 'Pausar' : 'Reproducir',
-                        onPressed: track == null
+                      IconButton(
+                        tooltip: 'Favorito',
+                        onPressed:
+                            track == null ||
+                                ExtensionSourceService.remote(track.id)
                             ? null
-                            : () => audio.player.playing
-                                  ? audio.pause()
-                                  : audio.play(),
+                            : () => library.toggleFavorite(track.id),
                         icon: Icon(
-                          audio.player.playing ? Icons.pause : Icons.play_arrow,
+                          library.favorites.contains(track?.id)
+                              ? Icons.favorite
+                              : Icons.favorite_border,
                         ),
                       ),
-                    ),
-                  ],
+                      StreamBuilder(
+                        stream: audio.player.playerStateStream,
+                        builder: (context, state) => IconButton.filled(
+                          tooltip: audio.player.playing
+                              ? 'Pausar'
+                              : 'Reproducir',
+                          onPressed: track == null
+                              ? null
+                              : () => audio.player.playing
+                                    ? audio.pause()
+                                    : audio.play(),
+                          icon: Icon(
+                            audio.player.playing
+                                ? Icons.pause
+                                : Icons.play_arrow,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         );
       }

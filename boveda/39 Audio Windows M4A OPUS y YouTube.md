@@ -81,3 +81,8 @@ ARM64 normal compilado y verificado: versión0.3.10/código19, solo arm64-v8a y 
 0.3.10-alpha.1 publicada, app0.3.10+19. Android universal/ARM64 y Windows x64 completo con licencias, guías y hashes. ReleaseID 426832656; tag/código 5587b0e07dad13014e8f534854df5d80dd8f1036. Siete adjuntos verificados por tamaño/SHA256/target en borrador y públicamente; tag al commit correcto y manifiesto público idéntico. Catálogo externo 8733caa272a7d8609e9884bff2d12ba42aace43e, diez opciones descargadas con cliente real/SHA256/metadatos válidos. 142 pruebas/una optativa omitida, análisis limpio y cinco casos nativos Windows. YouTube API2/JS con audio real y M4A/OPUS comprobados; fuentes Android conservadas. Android físico, escucha prolongada y latencia API3 Android pendientes. [[39 Audio Windows M4A OPUS y YouTube]].
 
 https://github.com/Joao-s02/rp_music/releases/tag/v0.3.10-alpha.1
+
+
+## Confirmación posterior del usuario
+
+El usuario prueba0.3.10 Android/Windows y confirma explícitamente: YouTube Windows reproduce sonido y descarga canciones; lectura M4A y OPUS Windows sin errores. Es evidencia directa de uso, independiente de las pruebas instrumentadas anteriores. La nueva solicitud de gestos/widgets/listas/álbumes/metadatos/fotos se mantiene en [[40 Gestos widgets albumes y descargas 0.3.11]]. No atribuir mejora de latencia API3 Android a esta confirmación.

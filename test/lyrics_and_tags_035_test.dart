@@ -361,7 +361,8 @@ void main() {
         );
         final file = File('${root.path}/isolated.m4a')
           ..writeAsBytesSync(result.bytes);
-        expect(readMetadata(file).title, 'Etiquetada');
+        // Download metadata must not replace the selected song's identity.
+        expect(readMetadata(file).title, 'Inicial');
         expect(EmbeddedLyrics.read(file), 'Letra sintética');
       } finally {
         port.close();

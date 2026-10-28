@@ -50,3 +50,6 @@ Guías para usar, compilar y programar: [Índice de documentación](../docs/READ
 **Confirmado** es una decisión del usuario. **Implementado/comprobado** exige código o evidencia con alcance indicado. **Propuesta/investigación pendiente** no equivale a implementación. Las notas de versión conservan fases locales y publicación posterior; sus tiempos verbales se leen dentro de esa versión.
 
 La fecha de actualización no cambia la de los hechos históricos. Abrir esta carpeta como bóveda de Obsidian; los enlaces como [[00 Inicio]] son relativos. No requieren complementos.
+
+
+Nueva versión en desarrollo: [[40 Gestos widgets albumes y descargas 0.3.11]]. Confirmación del usuario de0.3.10 conservada en [[39 Audio Windows M4A OPUS y YouTube]].

@@ -4,6 +4,7 @@ import 'package:audio_metadata_reader/audio_metadata_reader.dart';
 import 'package:path/path.dart' as p;
 
 import '../domain/track.dart';
+import 'mp4_album_artist.dart';
 
 const audioExtensions = {'.mp3', '.flac', '.m4a', '.mp4', '.wav', '.opus'};
 
@@ -86,6 +87,7 @@ ScanResult scanDirectory(
     final previous = known[file.id];
     if (previous != null &&
         previous.metadataLoaded &&
+        previous.metadataVersion >= 2 &&
         previous.size == file.size &&
         previous.modifiedMs == file.modifiedMs &&
         file.modifiedMs > 0) {
@@ -105,10 +107,14 @@ ScanResult scanDirectory(
           album: tags.album?.trim().isNotEmpty == true
               ? tags.album!
               : 'Sin álbum',
+          albumArtist: tags.albumArtist ?? mp4AlbumArtist(File(file.id)) ?? '',
+          trackNumber: tags.trackNumber ?? 0,
+          discNumber: tags.discNumber ?? 0,
           durationMs: tags.duration?.inMilliseconds ?? 0,
           size: file.size,
           modifiedMs: file.modifiedMs,
           metadataLoaded: true,
+          metadataVersion: 2,
         );
       } catch (_) {
         skipped++;

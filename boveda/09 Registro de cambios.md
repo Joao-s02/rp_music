@@ -500,3 +500,33 @@ ARM64 normal compilado y verificado: versión0.3.10/código19, solo arm64-v8a y 
 0.3.10-alpha.1 publicada, app0.3.10+19. Android universal/ARM64 y Windows x64 completo con licencias, guías y hashes. ReleaseID 426832656; tag/código 5587b0e07dad13014e8f534854df5d80dd8f1036. Siete adjuntos verificados por tamaño/SHA256/target en borrador y públicamente; tag al commit correcto y manifiesto público idéntico. Catálogo externo 8733caa272a7d8609e9884bff2d12ba42aace43e, diez opciones descargadas con cliente real/SHA256/metadatos válidos. 142 pruebas/una optativa omitida, análisis limpio y cinco casos nativos Windows. YouTube API2/JS con audio real y M4A/OPUS comprobados; fuentes Android conservadas. Android físico, escucha prolongada y latencia API3 Android pendientes. [[39 Audio Windows M4A OPUS y YouTube]].
 
 https://github.com/Joao-s02/rp_music/releases/tag/v0.3.10-alpha.1
+
+
+## 2026-10-28 — pruebas del usuario y desarrollo0.3.11
+
+Usuario confirma YouTube Windows con audio/descarga y M4A/OPUS sin errores en0.3.10. Solicita estrictamente gestos Android, tres widgets redimensionables, listas y álbum remoto con portada grande, metadatos coherentes/descarga de álbum y fotos persistentes de artistas. Implementación local0.3.11+20, proveedorAPI2 separado y catálogo previo intacto. Diagnóstico/decisiones/evidencia y límites en [[40 Gestos widgets albumes y descargas 0.3.11]]. No hay publicación nueva autorizada por esta solicitud de desarrollo.
+
+
+Cierre local0.3.11+20:147 pruebas/una optativa omitida, análisis limpio, álbum real completo de seis canciones con etiquetas/portada/numeración y foto recuperada offline comprobados. Universal firmado y ZIP Windows normal/licencias/guías/hashes preparados; tres widgets con mínimos110×48dp y resizeMode ambos ejes verificados en APK compilado. Sin publicación nueva; Android físico/SAF/launcher y escucha prolongada pendientes. Detalle en [[40 Gestos widgets albumes y descargas 0.3.11]].
+
+
+## Integridad final de la entrega local
+
+ZIP31 archivos y APK universal firmados comprobados; hashes definitivos:
+
+```text
+1cfe46f44abb16934d81aea645308b771d539e48e92a7f72b96ed74b1ca503f6  RP-Music-0.3.11-local-android.apk
+9d68757b3550841780dcfa085e3d387d539139882c5c347b57d6091a0d2c8233  RP-Music-0.3.11-local-windows-x64.zip
+```
+
+Imágenes previas comparadas byte a byte con respaldo; paquetes candidatos externos comparados con su manifiesto SHA256. Catálogo público/paquetes anteriores sin cambios; sin push ni publicación.
+
+
+## Publicación0.3.11 autorizada — 2026-10-28
+
+El usuario solicita «sube la nueva release». Se completa ARM64, guías públicas, catálogo con cuatro actualizacionesAPI2 y siete adjuntos. Se verificarán borrador/tamaños/SHA256/tag antes de publicar y acceso público después. Se conserva alcance y pendientes de [[40 Gestos widgets albumes y descargas 0.3.11]].
+
+
+## Entrega pública preparada
+
+ARM64 normal141.0s, versión0.3.11/código20, solo arm64-v8a y firma v2/certificado previo compatible. Universal conserva bytes normales ya verificados. ZIP público32 archivos íntegros, todas las DLL/data/licencias y tres guías, sin WinRT/rpmx. Siete adjuntos finales en dist/0.3.11-release. Catálogo externo publicado en 2dfeaf16985ba7299e9592261a83cf52ee8d4ea5: diez opciones con cliente real y veinte paquetes/variantes de revisión fija byte a byte/SHA256/metadatos correctos. No confundir esta publicación con prueba física Android.

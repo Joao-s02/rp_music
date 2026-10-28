@@ -1,3 +1,3 @@
 # Guía vigente
 
-[Instalar y usar RP Music 0.3.10](USO-0.3.10.md).
+[Instalar y usar RP Music0.3.11](USO-0.3.11.md).

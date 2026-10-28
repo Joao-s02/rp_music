@@ -18,13 +18,16 @@ import android.widget.RemoteViews
 import com.ryanheise.audioservice.AudioService
 
 /** Event-driven launcher controls using the same media session as the notification. */
-class MusicWidget : AppWidgetProvider() {
+open class MusicWidget : AppWidgetProvider() {
+    override fun onAppWidgetOptionsChanged(context: Context, manager: AppWidgetManager, id: Int, options: android.os.Bundle) {
+        render(context, controller?.playbackState?.state == PlaybackStateCompat.STATE_PLAYING)
+    }
     override fun onUpdate(context: Context, manager: AppWidgetManager, ids: IntArray) {
-        render(context, false)
+        render(context, controller?.playbackState?.state == PlaybackStateCompat.STATE_PLAYING)
         observe(context)
     }
     override fun onDeleted(context: Context, ids: IntArray) {
-        if (AppWidgetManager.getInstance(context).getAppWidgetIds(ComponentName(context, MusicWidget::class.java)).isEmpty()) disconnect()
+        if (providers.all { AppWidgetManager.getInstance(context).getAppWidgetIds(ComponentName(context, it)).isEmpty() }) disconnect()
     }
     override fun onReceive(context: Context, intent: Intent) {
         super.onReceive(context, intent)
@@ -39,6 +42,7 @@ class MusicWidget : AppWidgetProvider() {
     }
 
     companion object {
+        private val providers = listOf(MusicWidget::class.java, CompactMusicWidget::class.java, ArtworkMusicWidget::class.java)
         private const val CONTROL = "com.example.rp_music.WIDGET_CONTROL"
         private var browser: MediaBrowserCompat? = null
         private var controller: MediaControllerCompat? = null
@@ -119,17 +123,24 @@ class MusicWidget : AppWidgetProvider() {
                     if (small !== image) small.recycle()
                 } else file.delete()
             } catch (_: Exception) { file.delete() }
-            prefs.edit().putString("title", metadata?.description?.title?.toString() ?: "Elige tu música")
-                .putString("artist", metadata?.description?.subtitle?.toString() ?: "RP Music · biblioteca local").apply()
+            prefs.edit().putString("title", metadata?.description?.title?.toString() ?: "Elige tu mÃºsica")
+                .putString("artist", metadata?.description?.subtitle?.toString() ?: "RP Music Â· biblioteca local").apply()
         }
         private fun render(context: Context, playing: Boolean) {
             val manager = AppWidgetManager.getInstance(context)
-            val ids = manager.getAppWidgetIds(ComponentName(context, MusicWidget::class.java))
-            if (ids.isEmpty()) return
+            for (provider in providers) for (id in manager.getAppWidgetIds(ComponentName(context, provider))) {
+            val options = manager.getAppWidgetOptions(id)
+            val width = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, 250)
+            val height = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT, 56)
             val prefs = context.getSharedPreferences("home_widget", Context.MODE_PRIVATE)
-            val views = RemoteViews(context.packageName, R.layout.music_widget)
-            views.setTextViewText(R.id.widget_title, prefs.getString("title", "Elige tu música"))
-            views.setTextViewText(R.id.widget_artist, prefs.getString("artist", "RP Music · biblioteca local"))
+            val layout = if (provider == ArtworkMusicWidget::class.java && height >= 140) R.layout.music_widget_artwork else if (provider == MusicWidget::class.java && height >= 100) R.layout.music_widget else R.layout.music_widget_compact
+            val views = RemoteViews(context.packageName, layout)
+            views.setViewVisibility(R.id.widget_previous, if (width >= 270) android.view.View.VISIBLE else android.view.View.GONE)
+            views.setViewVisibility(R.id.widget_next, if (width >= 220) android.view.View.VISIBLE else android.view.View.GONE)
+            views.setViewVisibility(R.id.widget_artist, if (height >= 56) android.view.View.VISIBLE else android.view.View.GONE)
+            views.setViewVisibility(R.id.widget_cover, if (width >= 160 || layout == R.layout.music_widget_artwork) android.view.View.VISIBLE else android.view.View.GONE)
+            views.setTextViewText(R.id.widget_title, prefs.getString("title", "Elige tu mÃºsica"))
+            views.setTextViewText(R.id.widget_artist, prefs.getString("artist", "RP Music Â· biblioteca local"))
             val bitmap = BitmapFactory.decodeFile(java.io.File(context.cacheDir, "home_widget_cover.png").path)
             if (bitmap != null) views.setImageViewBitmap(R.id.widget_cover, bitmap)
             else views.setImageViewResource(R.id.widget_cover, R.mipmap.ic_launcher)
@@ -142,7 +153,11 @@ class MusicWidget : AppWidgetProvider() {
             val open = PendingIntent.getActivity(context, 900, Intent(context, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP), PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
             views.setOnClickPendingIntent(R.id.widget_cover, open)
             views.setOnClickPendingIntent(R.id.widget_title, open)
-            manager.updateAppWidget(ids, views)
+            manager.updateAppWidget(id, views)
+            }
         }
     }
 }
+
+class CompactMusicWidget : MusicWidget()
+class ArtworkMusicWidget : MusicWidget()

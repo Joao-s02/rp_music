@@ -44,6 +44,14 @@
             <meta-data android:name="android.appwidget.provider" android:resource="@xml/music_widget_info" />
         </receiver>
 
+        <receiver android:name=".CompactMusicWidget" android:exported="false" android:label="RP Music · Compacto">
+            <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/music_widget_compact_info" />
+        </receiver>
+        <receiver android:name=".ArtworkMusicWidget" android:exported="false" android:label="RP Music · Carátula">
+            <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/music_widget_artwork_info" />
+        </receiver>
         <service android:name="com.ryanheise.audioservice.AudioService"
             android:foregroundServiceType="mediaPlayback"
             android:exported="true">

@@ -79,3 +79,8 @@ Para pruebas nativas consultar integration_test; Android de fuente recibe un paq
 Universal: build/app/outputs/flutter-apk/app-release.apk. ARM64: app-arm64-v8a-release.apk en la misma carpeta. Windows: build/windows/x64/runner/Release completo. No distribuir solo el EXE ni sobrescribir una copia de pruebas que se deba conservar. Comprobar firmas, ABI/versión, recursos, ZIP y hashes después de cerrar las guías. La firma actual es de desarrollo, no una firma definitiva de tienda.
 
 Publicar exige autorización y el contenido de la [política de releases](../boveda/27%20Publicacion%20de%20releases%20-%20contenido%20obligatorio.md). Los comandos de build no publican nada por sí solos. La sonda con código 7 descrita antes es un antecedente del actualizador de 0.2.4, no el número que deba usarse hoy.
+
+
+## Trabajo local0.3.11+20
+
+Tras pruebas de integración recompilar siempre la entrada normal antes de entregar binarios. No ejecutar Flutter build y Flutter test concurrentemente. Los tests de QuickJS Windows requieren las DLL del build Windows en PATH. Widget compacto/horizontal/carátula y exportación SAF pertenecen a Android; pruebas físicas de launcher/selector se distinguen de compilación y tests de widgets Flutter. Paquetes de proveedores candidatos en rp-music-extensions/previews/0.3.11; no regenerar ni sustituir paquetes publicados anteriores.

@@ -52,7 +52,7 @@ class LibraryScanner(private val context: Context,
             val futures = tracks.map { file -> workers.submit<Pair<Map<String, Any>, Boolean>> {
                 val old = known[file["id"]]
                 val modified = (file["modifiedMs"] as Number).toLong()
-                if (old != null && old["metadataLoaded"] == true && modified > 0 && (old["modifiedMs"] as? Number)?.toLong() == modified &&
+                if (old != null && old["metadataLoaded"] == true && (old["metadataVersion"] as? Number)?.toInt() == 2 && modified > 0 && (old["modifiedMs"] as? Number)?.toLong() == modified &&
                     (old["size"] as? Number)?.toLong() == (file["size"] as Number).toLong()) {
                     old to false
                 } else readTags(file)
@@ -80,15 +80,20 @@ class LibraryScanner(private val context: Context,
                 val mediaUri = MediaStore.getMediaUri(context, Uri.parse(file["id"] as String))
                 if (mediaUri != null) {
                     val columns = arrayOf(MediaStore.Audio.Media.TITLE, MediaStore.Audio.Media.ARTIST,
-                        MediaStore.Audio.Media.ALBUM, MediaStore.Audio.Media.DURATION)
+                        MediaStore.Audio.Media.ALBUM, MediaStore.Audio.Media.DURATION, "album_artist", MediaStore.Audio.Media.TRACK)
                     context.contentResolver.query(mediaUri, columns, null, null, null)?.use { cursor ->
                         if (cursor.moveToFirst() && !cursor.isNull(3) && cursor.getLong(3) > 0) {
                             val data = file.toMutableMap()
                             for ((index, field) in listOf("title", "artist", "album").withIndex()) {
                                 cursor.getString(index)?.takeIf { it.isNotBlank() && it != "<unknown>" }?.let { data[field] = it }
                             }
+                            cursor.getString(4)?.takeIf { it.isNotBlank() && it != "<unknown>" }?.let { data["albumArtist"] = it }
+                            val track = cursor.getInt(5)
+                            data["trackNumber"] = track % 1000
+                            data["discNumber"] = track / 1000
                             data["durationMs"] = cursor.getLong(3)
                             data["metadataLoaded"] = true
+                            data["metadataVersion"] = 2
                             return data to false
                         }
                     }
@@ -100,11 +105,14 @@ class LibraryScanner(private val context: Context,
             retriever.setDataSource(context, Uri.parse(file["id"] as String))
             val data = file.toMutableMap()
             for ((field, key) in listOf("title" to MediaMetadataRetriever.METADATA_KEY_TITLE,
-                "artist" to MediaMetadataRetriever.METADATA_KEY_ARTIST, "album" to MediaMetadataRetriever.METADATA_KEY_ALBUM)) {
+                "artist" to MediaMetadataRetriever.METADATA_KEY_ARTIST, "album" to MediaMetadataRetriever.METADATA_KEY_ALBUM, "albumArtist" to MediaMetadataRetriever.METADATA_KEY_ALBUMARTIST)) {
                 retriever.extractMetadata(key)?.takeIf { it.isNotBlank() }?.let { data[field] = it }
             }
+            data["trackNumber"] = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_CD_TRACK_NUMBER)?.substringBefore("/")?.toIntOrNull() ?: 0
+            data["discNumber"] = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DISC_NUMBER)?.substringBefore("/")?.toIntOrNull() ?: 0
             data["durationMs"] = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)?.toLongOrNull() ?: 0L
             data["metadataLoaded"] = true
+            data["metadataVersion"] = 2
             return data to false
         } catch (e: Exception) { return file to true }
         finally { retriever.release() }

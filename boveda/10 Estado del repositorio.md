@@ -5,6 +5,8 @@ actualizado: 2026-10-28
 ---
 # Estado del repositorio
 
+Trabajo local0.3.11+20, sin publicar: gestos, widgets, listas/álbumes, metadatos/descargas por lote y fotos offline. Usuario confirmó audio/descarga YouTube Windows y M4A/OPUS en0.3.10. Alcance completo, verificaciones y límites en [[40 Gestos widgets albumes y descargas 0.3.11]]. Referencia pública0.3.10 conservada abajo.
+
 0.3.10-alpha.1 publicada, app0.3.10+19. Android universal/ARM64 y Windows x64 completo con licencias, guías y hashes. ReleaseID 426832656; tag/código 5587b0e07dad13014e8f534854df5d80dd8f1036. Siete adjuntos verificados por tamaño/SHA256/target en borrador y públicamente; tag al commit correcto y manifiesto público idéntico. Catálogo externo 8733caa272a7d8609e9884bff2d12ba42aace43e, diez opciones descargadas con cliente real/SHA256/metadatos válidos. 142 pruebas/una optativa omitida, análisis limpio y cinco casos nativos Windows. YouTube API2/JS con audio real y M4A/OPUS comprobados; fuentes Android conservadas. Android físico, escucha prolongada y latencia API3 Android pendientes. [[39 Audio Windows M4A OPUS y YouTube]].
 
 Informe posterior0.3.9: usuario confirma nuevas extensiones funcionales en Android, con latencia percibida3–6s al consultar/abrir contenido API3. No es fallo de apertura vacía confirmado ni benchmark instrumentado. YouTube API2 se conserva; [[38 Latencia de extensiones API 3]].
@@ -69,3 +71,6 @@ Entrega 0.3.7 publicada: navegación genérica de fuentes por entidades/páginas
 Prototipo local 0.3.8+17: API 3/JavaScript en paralelo a Dart; pantallas por árbol genérico, estado/eventos y reproducción explícita autorizada. Laboratorio JS separado en repositorio de extensiones. Paquetes YouTube sin modificar. No publicado; verificación y límites en [[36 Motor JavaScript paralelo]].
 
 0.3.8 publicada: API 3/JavaScript paralelo, pantalla genérica y Laboratorio JS separado. Suite122 (120app+2ext), análisis limpio; interfaz360px, estado/permisos y compatibilidad de paquetes reales Dart comprobados. Android físico y capacidades ampliadas pendientes. [[36 Motor JavaScript paralelo]].
+
+
+Cierre local0.3.11+20:147 pruebas/una optativa omitida, análisis limpio, álbum real completo de seis canciones con etiquetas/portada/numeración y foto recuperada offline comprobados. Universal firmado y ZIP Windows normal/licencias/guías/hashes preparados; tres widgets con mínimos110×48dp y resizeMode ambos ejes verificados en APK compilado. Sin publicación nueva; Android físico/SAF/launcher y escucha prolongada pendientes. Detalle en [[40 Gestos widgets albumes y descargas 0.3.11]].
