@@ -1,5 +1,7 @@
 # Compilar RP Music
 
+Desarrollo local0.3.10: Windows usa just_audio_media_kit/libmpv mediante createNativeAudioPlayer; Android conserva su backend. El paquete media_kit_libs_windows_audio descarga una DLL nativa en compilación; incluirla, su plugin y third_party/windows_audio (avisos/licencias) en el ZIP completo. No reutilizar la antigua DLL just_audio_windows_plus_plugin.dll como motor activo. Pruebas/artefactos y límites en [[39 Audio Windows M4A OPUS y YouTube]] y docs/PROBAR-WINDOWS-0.3.10.md.
+
 Guía de desarrollo actual. Versión de app en pubspec.yaml y lib/app/app_version.dart; contrastar ambas antes de empaquetar. [Índice de documentación](README.md) · [Arquitectura vigente](../boveda/31%20Arquitectura%20vigente.md).
 
 ## Java para Android

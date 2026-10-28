@@ -5,6 +5,8 @@ actualizado: 2026-10-27
 ---
 # Biblioteca y reproduccion
 
+Informe Windows0.3.9 precisado por usuario: M4A/OPUS fallan; FLAC/MP4/MP3 funcionan. Corrección local0.3.10 cambia solo backend Windows y mejora diagnóstico/recuperación; pruebas nativas reales y límites en [[39 Audio Windows M4A OPUS y YouTube]]. No atribuir el fallo a toda reproducción ni a corrupción general de archivos.
+
 ## Requisitos confirmados
 
 Una raíz seleccionada por el usuario con subcarpetas, cientos/miles de canciones y vistas de canciones/álbumes/artistas/carpetas. MP3, FLAC, M4A, MP4, WAV y OPUS solicitados; reconocer un archivo no garantiza cualquier códec en cualquier equipo. MP4 se usa como audio.

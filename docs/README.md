@@ -1,4 +1,10 @@
+# Documentación vigente 0.3.10
+
+[Uso](USO-0.3.10.md) · [Cambios](CAMBIOS-0.3.10.md) · [Pruebas](PRUEBAS-0.3.10.md) · [Compilación](COMPILACION.md) · [API 2](EXTENSIONES-API-2.md) · [API 3](EXTENSIONES-API-3.md)
+
 # Documentación de RP Music
+
+Desarrollo local0.3.10+19: [probar audio Windows y YouTube](PROBAR-WINDOWS-0.3.10.md), [evidencia](../boveda/39%20Audio%20Windows%20M4A%20OPUS%20y%20YouTube.md). Sin nueva publicación; referencia pública siguiente conservada.
 
 Referencia publicada: **0.3.9-alpha.1 / 0.3.9+18**. Las guías versionadas describen esa entrega; notas anteriores conservan sus propios resultados y límites.
 

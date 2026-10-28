@@ -71,6 +71,8 @@ class FakePlayer implements AudioPlayer {
   @override
   Stream<PlaybackEvent> get playbackEventStream => const Stream.empty();
   @override
+  Stream<PlayerException> get errorStream => const Stream.empty();
+  @override
   Stream<ProcessingState> get processingStateStream => const Stream.empty();
   @override
   Stream<Duration> get positionStream => Stream.value(Duration.zero);

@@ -1,9 +1,11 @@
 ---
 tipo: requisitos-y-evidencia
 estado: pendiente-de-medicion-formal
-actualizado: 2026-10-26
+actualizado: 2026-10-28
 ---
 # Rendimiento
+
+Informe0.3.9: usuario confirma nuevas extensiones funcionales en Android, pero percibe3–6s al buscar/abrir contenido y cambiar secciones API3; prioriza conservar YouTube API2. Inspección y ensayo sin red Windows no reproducen esa demora y no sustituyen medición Android. Causas por operación y mejoras todavía propuestas en [[38 Latencia de extensiones API 3]].
 
 ## Prioridad confirmada
 

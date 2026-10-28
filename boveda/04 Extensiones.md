@@ -5,6 +5,10 @@ actualizado: 2026-10-28
 ---
 # Extensiones
 
+Usuario exige resolver YouTube Windows sin migrar API2. Variantes Windows independientes sencillas/Explorador y Radio0.1.1 en verificación local con app0.3.10; paquetes Android y catálogo publicado preservados. Pruebas de reproducción nativa, no solo URL/bytes, en [[39 Audio Windows M4A OPUS y YouTube]]. Sin publicación nueva autorizada.
+
+2026-10-28: usuario confirma funcionamiento de Explorador musical/Radio en Android y señala latencia API3 de3–6s en búsquedas/apertura de contenido/secciones. No migrar YouTube API2 con esta experiencia; medir/optimizar antes de reconsiderarlo. No se atribuye la diferencia al lenguaje sin comparación controlada. [[38 Latencia de extensiones API 3]].
+
 2026-10-28: desarrollo local autorizado de Explorador musical/Radio por internet en JavaScript, HTTP por etapas y audio remoto. Paquetes solo en rp-music-extensions; motor genérico en app 0.3.9+18. No publicados ni migración de YouTube Dart. [[37 Explorador y radio JavaScript]].
 
 ## Visión y alcance confirmado

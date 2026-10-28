@@ -5,6 +5,10 @@ actualizado: 2026-10-28
 ---
 # Estado del repositorio
 
+Desarrollo local0.3.10+19: M4A/OPUS Windows y YouTube API2/JS reproducidos con motor Windows alternativo; Radio0.1.1 candidata. 142 pruebas aprobadas/una optativa omitida, análisis limpio y cinco casos nativos aprobados, incluido controles/bandeja y recuperación de error. APK universal/ZIP Windows normales/licencias/guía/hashes listos en dist/0.3.10-local. No publicado; [[39 Audio Windows M4A OPUS y YouTube]]. MP3/FLAC/MP4 funcionaban en0.3.9 según usuario; Android físico/escucha prolongada pendientes.
+
+Informe posterior0.3.9: usuario confirma nuevas extensiones funcionales en Android, con latencia percibida3–6s al consultar/abrir contenido API3. No es fallo de apertura vacía confirmado ni benchmark instrumentado. YouTube API2 se conserva; [[38 Latencia de extensiones API 3]].
+
 0.3.9 publicada: HTTP/audio remoto JS y Explorador musical/Radio por internet independientes. Verificación y límites en [[37 Explorador y radio JavaScript]].
 
 2026-10-28: el usuario confirma que 0.3.8 fue un éxito y que las extensiones JavaScript funcionan correctamente. Dispositivo, plataforma y recorrido no especificados; confirmación de uso sin nueva prueba instrumentada. Propuesta posterior en [[36 Motor JavaScript paralelo]].

@@ -2,17 +2,30 @@
 
 Reproductor Flutter para Android y Windows, ampliable mediante extensiones. Biblioteca local sin cuenta ni conexión; actualizaciones y consultas en línea opcionales.
 
-**Versión publicada: 0.3.9-alpha.1**, aplicación **0.3.9+18**. [Descargar Android universal, ARM64 y Windows](https://github.com/Joao-s02/rp_music/releases/tag/v0.3.9-alpha.1).
+**Versión en publicación: 0.3.10-alpha.1**, aplicación **0.3.10+19**. [Descargar Android universal, ARM64 y Windows](https://github.com/Joao-s02/rp_music/releases/tag/v0.3.10-alpha.1).
 
-[Guía vigente](docs/USO.md) · [Pruebas](docs/PRUEBAS-0.3.9.md) · [Cambios](docs/CAMBIOS-0.3.9.md) · [Documentación](docs/README.md)
+[Guía vigente](docs/USO.md) · [Pruebas](docs/PRUEBAS-0.3.10.md) · [Cambios](docs/CAMBIOS-0.3.10.md) · [Documentación](docs/README.md)
+
+## Audio Windows y YouTube — 0.3.10
+
+- Windows usa just_audio_media_kit/libmpv en lugar del backend WinRT anterior. M4A reales y OPUS reproducidos; controles MP3/FLAC/MP4/WAV también comprobados. Android conserva su motor y parches audio_service.
+- Diagnóstico conserva error nativo y tiempos con URLs redactadas. Cargas fallidas o interrumpidas no bloquean la siguiente canción; límite Windows de 30 segundos.
+- Catálogo externo: YouTube Windows 0.4.1 y YouTube Explorador Windows 0.1.0 independientes, API 2, app mínima 0.3.10. Código de proveedores Android conservado.
+- Radio por internet 0.1.1 renueva enlace y registra clic en una consulta. Radio original preservada; actualización se ofrece desde app 0.3.9.
+
+Verificación: 142 pruebas aprobadas, una de red optativa omitida, análisis limpio y cinco casos nativos Windows. YouTube API 2 y Explorador JS reprodujeron audio real con controles/revocación. Radio ensayada inició aproximadamente en cinco segundos; no es garantía para toda red/estación ni comparación con la misma emisora del usuario.
+
+Pendientes: Android físico en esta versión, escucha prolongada y más emisoras/equipos. La latencia Android API 3 de 3–6 segundos informada por el usuario sigue pendiente; este cambio Windows no la declara solucionada. Dependencias de audio fijadas y experimentales; licencias y procedencia nativa incluidas. No modifica música local ni releases previas.
 
 ## Explorador y radio JavaScript — 0.3.9
 
 API 3 añade consultas HTTP por etapas, cancelación y audio remoto autorizado mediante el reproductor de la app. Explorador musical (YouTube Music público, sin cuenta) y Radio por internet (Radio Browser, filtros/favoritas privadas) son opciones independientes del catálogo de [rp-music-extensions](https://github.com/Joao-s02/rp-music-extensions). Requieren app 0.3.9 y se instalan por separado; no están incluidos en APK/ZIP. [Alcance y pruebas](boveda/37%20Explorador%20y%20radio%20JavaScript.md).
 
-La radio admite inicialmente emisoras HTTPS MP3/AAC sin HLS. Esta ampliación no declara corregido YouTube Windows. Cuenta, sincronización, descargas e importación de listas desde las nuevas pantallas JS siguen pendientes.
+La radio admite inicialmente emisoras HTTPS MP3/AAC sin HLS. En 0.3.9 no se había corregido YouTube Windows; 0.3.10 añade reproducción nativa comprobada. Cuenta, sincronización, descargas e importación de listas desde las nuevas pantallas JS siguen pendientes.
 
 Publicados Android universal/ARM64 y Windows completo con guías/hashes. 138 pruebas aprobadas, una optativa omitida y análisis limpio; navegación/resolución pública y radio nativa Windows comprobadas. Android físico pendiente por ausencia de dispositivo. [Instalar y probar las extensiones](docs/PROBAR-JAVASCRIPT-0.3.9.md).
+
+Informe posterior del usuario: las dos extensiones funcionan en Android, pero las búsquedas y aperturas de contenido API3 tardan3–6s percibidos. YouTube API2 se conserva; [diagnóstico de latencia y propuestas](boveda/38%20Latencia%20de%20extensiones%20API%203.md), sin mejora aplicada ni medición Android instrumentada todavía.
 
 ## JavaScript y Dart en paralelo — 0.3.8
 
@@ -48,13 +61,13 @@ Reconocer MP3/FLAC/M4A/MP4/WAV/OPUS no garantiza todos los códecs/etiquetas en 
 
 Android: instalar universal o ARM64 compatible encima de la anterior, sin desinstalar para conservar datos; firma actual de desarrollo. Windows: extraer todo el ZIP y abrir rp_music.exe junto con DLL y data. Elegir raíz musical y usar Actualizar biblioteca para incorporar cambios; abrir muestra caché sin reescaneo automático.
 
-Biblioteca/preferencias/sesión en soporte privado v2, programas en v3 y letras en lyrics; no borrar esas carpetas. No se migran datos de la antigua alfa 0.1. [Guía completa](docs/USO-0.3.8.md).
+Biblioteca/preferencias/sesión en soporte privado v2, programas en v3 y letras en lyrics; no borrar esas carpetas. No se migran datos de la antigua alfa 0.1. [Guía completa](docs/USO-0.3.10.md).
 
 ## Extensiones
 
 [Repositorio de extensiones](https://github.com/Joao-s02/rp-music-extensions): Extensiones → Explorar repositorio → Consultar → instalar/actualizar → revisar permisos. También importar .rpmx. No vienen instaladas ni dentro del APK/ZIP ni como adjuntos de releases de la app.
 
-Compatibles con 0.3.8: **Laboratorio JS 0.1.0** (pantalla experimental independiente), **YouTube Explorador 0.1.0** (Android experimental, independiente de la estable), **YouTube Android 0.4.0**, **Letras locales 0.1.0**, Biblioteca viva 0.1.1 y Pulso nocturno 0.1.0. Consultar el catálogo y actualizar YouTube para recibir la nueva lógica; Letras locales es un proveedor independiente de la fuente musical. Variantes para clientes anteriores conservadas. Spotify ya no se ofrece; una instalación previa puede eliminarse manualmente. YouTube Windows sigue como candidato manual con fallos nativos conocidos, fuera del catálogo recomendado.
+Compatibles con 0.3.8: **Laboratorio JS 0.1.0** (pantalla experimental independiente), **YouTube Explorador 0.1.0** (Android experimental, independiente de la estable), **YouTube Android 0.4.0**, **Letras locales 0.1.0**, Biblioteca viva 0.1.1 y Pulso nocturno 0.1.0. Consultar el catálogo y actualizar YouTube para recibir la nueva lógica; Letras locales es un proveedor independiente de la fuente musical. Variantes para clientes anteriores conservadas. Spotify ya no se ofrece; una instalación previa puede eliminarse manualmente. Desde 0.3.10 se ofrecen YouTube Windows 0.4.1 y YouTube Explorador Windows 0.1.0 como opciones API 2 independientes; Radio se actualiza a 0.1.1.
 
 Fuentes, lógica específica, paquetes y pruebas de proveedores pertenecen solo a ese repositorio. El principal contiene reproductor, motor/SDK y capacidades genéricas; prototipos heredados siguen como deuda de migración. [Contrato API 2](docs/EXTENSIONES-API-2.md).
 
@@ -64,7 +77,7 @@ El usuario confirma buen funcionamiento de 0.3.8 y sus extensiones JavaScript. N
 
 **122 pruebas aprobadas (120 de app y 2 de extensión)**, análisis de cambios sin incidencias. Prueba de red optativa omitida en esta suite; su resultado positivo de 0.3.5 se conserva como antecedente. Como antecedentes de 0.3.5, los tres casos aportados por el usuario recuperaron letras sincronizadas desde resultados reales YouTube. Prueba completa con paquete real: letras/portada/álbum incrustados en copia de audio sintético, original intacto. Lectura y reproducción nativa Windows aprobadas; ffprobe/ffmpeg confirmaron etiquetas y audio decodificable. No se suman repeticiones como casos nuevos.
 
-El usuario confirma buen funcionamiento de 0.3.6 y se cierra la incidencia M4A según su informe. Continúan pendientes pruebas específicas documentadas de SD/SAF, permisos, widget y escucha prolongada en varios equipos. Metadatos/letras dependen de cobertura/red; no se garantizan todas las canciones/ediciones. No se declara resuelto YouTube Windows. Detalles: [corrección y confirmación](boveda/34%20Descarga%20M4A%20no%20visible%20en%20biblioteca.md).
+El usuario confirma buen funcionamiento de 0.3.6 y se cierra la incidencia M4A según su informe. Continúan pendientes pruebas específicas documentadas de SD/SAF, permisos, widget y escucha prolongada en varios equipos. Metadatos/letras dependen de cobertura/red; no se garantizan todas las canciones/ediciones. Esa comprobación de 0.3.6 no incluía YouTube Windows; su corrección y pruebas están en 0.3.10. Detalles: [corrección y confirmación](boveda/34%20Descarga%20M4A%20no%20visible%20en%20biblioteca.md).
 
 
 Edición general de etiquetas, cola editable, gapless/fundido, ecualizador como extensión y aislamiento fuerte/firmas/métricas del SDK continúan pendientes. Cuentas/listas/favoritos/historial online pendientes. Ampliación de YouTube en [investigación sin API oficial](boveda/35%20Ampliacion%20de%20YouTube%20sin%20API%20oficial.md); no implementada. Sin soporte web. Código público con objetivo de código abierto; licencia concreta todavía sin elegir, licencias de terceros conservadas.

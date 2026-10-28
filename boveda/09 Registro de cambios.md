@@ -5,6 +5,18 @@ actualizado: 2026-10-26
 ---
 # Registro de cambios
 
+## Audio Windows y YouTube — corrección local 2026-10-28
+
+Informe del usuario precisado: M4A/OPUS fallan, MP3/FLAC/MP4 sí funcionan; radio~30s. Exige resolver también YouTube sin migrar API2. Se reproduce fallo M4A real con WinRT; remux y controles acotan causa, originales intactos. App local0.3.10+19 selecciona media_kit/libmpv solo Windows, añade diagnóstico de error/tiempos y protección de carga; variantes YouTube API2 Windows y radio0.1.1 externas. Doce variantes locales y reproducción real API2/JS/radio aprobadas inicialmente. Suite/recuperación/bandeja/binarios en cierre; [[39 Audio Windows M4A OPUS y YouTube]]. Android y paquetes publicados previos preservados; sin push/publicación ni datos privados en bóveda.
+
+## Informe Android y diagnóstico de latencia API3 — 2026-10-28
+
+Usuario confirma funcionamiento de las nuevas extensiones0.3.9 en Android, pero informa3–6s al buscar/abrir canción o emisora y cambiar secciones. Aclaración corrige interpretación inicial de demora en apertura de pantalla vacía. Mantener YouTube API2; no migrar con esta experiencia. Inspección y ensayo particular externo sin red Windows JIT: aperturas16–19ms medias/motor directo~3ms en este caso, sin medir Android/red/dibujo/primer audio ni comparar API2. Una prueba diagnóstica aprobada, separada de138 de release. Causas Android aún no aisladas; caché de páginas, reutilización HTTP y reducción de esperas de radio son propuestas. [[38 Latencia de extensiones API 3]], [[05 Rendimiento]] y notas afectadas actualizadas. Sin cambios de app/motor/paquetes/versión ni publicación; sin push.
+
+## Cierre local0.3.10 — 2026-10-28
+
+142 pruebas aprobadas/una optativa omitida, análisis limpio y cinco casos nativos distintos aprobados: doce variantes, rechazo/recuperación de archivo inválido, YouTube API2 Windows sencillo/Explorador, JS con audio/radio y bandeja/controles. YouTube API2/JS ya tiene reproducción nativa Windows comprobada en corrección local. Radio candidata usa una consulta de resolución/clic; emisora ensayada inició~5s, sin afirmar resuelto todo caso30s. Windows normal0.3.10+19/ZIP30 archivos y APK normal0.3.10/código19/firma compatible/tres ABI, guías/licencias/hashes en dist/0.3.10-local; candidatos externos en previews/0.3.10. Android mantiene motor; no físico ni escucha prolongada nuevos. [[39 Audio Windows M4A OPUS y YouTube]]. Sin push/commit/publicación ni modificación de música original/catálogo anterior.
+
 ## Explorador musical y radio JavaScript — desarrollo local 2026-10-28
 
 Usuario autoriza ambas extensiones y capacidades necesarias. App local 0.3.9+18: HTTP genérico por etapas, audio remoto/permisos, cancelación/revocación; variantes específicas en repo externo, Dart previo preservado. Contratos/decisiones/pruebas/pendientes en [[37 Explorador y radio JavaScript]], estado en [[10 Estado del repositorio]], mapa en [[31 Arquitectura vigente]]. README/API 3 revisados. Sin push/publicación; cierre de pruebas/binarios pendiente al redactar.
@@ -471,3 +483,13 @@ Catálogo publicado en commit externo 026aa38ff251b61ec341786b079a323399ff87a1: 
 ## Publicación 0.3.9 confirmada
 
 2026-10-28: release pública https://github.com/Joao-s02/rp_music/releases/tag/v0.3.9-alpha.1, app 0.3.9+18, tag/código 54bcb738f67cb34a2d50e5e3cecb863c45c04a91, release ID 426707453. Universal normal final reutilizado; ARM64 normal71.4s con versión/código18/firma v2 compatibles. Windows normal0.3.9+18, ZIP23 archivos con QuickJS y guías. Siete adjuntos comprobados en borrador por tamaño/digest SHA256 y target; API pública confirmó publicación/prerelease, mismos tamaños/hashes, tag correcto y manifiesto descargado idéntico. Extensiones de código 026aa38ff251b61ec341786b079a323399ff87a1, catálogo de ocho opciones verificado con cliente real; dos nuevas y YouTube estable/Explorador/Laboratorio descargados de revisión fija e idénticos. Suite138 aprobadas/una optativa omitida y análisis limpio; navegación/resolución y radio nativa Windows comprobadas. Android físico y audio nativo YouTube Windows pendientes. No se modifican releases anteriores. Commits documentales posteriores no cambian binarios del tag.
+
+
+## Publicación 0.3.10 autorizada — 2026-10-28
+
+El usuario solicita «sube la nueva release». Se prepara entrega completa universal/ARM64/Windows, guías y hashes, catálogo externo con diez opciones y Radio0.1.1 como actualización compatible. Se verificarán borrador/adjuntos antes de publicar y acceso público después. Evidencia nativa y pendientes de [[39 Audio Windows M4A OPUS y YouTube]] se conservan.
+
+
+## Entrega completa preparada
+
+ARM64 normal compilado y verificado: versión0.3.10/código19, solo arm64-v8a y firma v2 con certificado previo. Universal conserva bytes normales comprobados. ZIP público32 archivos, todas las DLL/data/licencias y tres guías, comparado byte a byte con compilación normal; sin WinRT ni rpmx. Siete adjuntos en dist/0.3.10-release y SHA256SUMS final. Catálogo publicado en 8733caa272a7d8609e9884bff2d12ba42aace43e: diez opciones descargadas por el cliente real con SHA256/metadatos correctos, incluida Radio0.1.1 y ambas fuentes Windows. No equivale a Android físico.

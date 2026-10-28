@@ -26,6 +26,7 @@ La bóveda conserva decisiones y evidencia para continuar el proyecto. Referenci
 | Marca, tema y referencias | [[15 Identidad visual e icono]] |
 | Publicaciones | [[27 Publicacion de releases - contenido obligatorio]] |
 | Última entrega y sus pruebas | [[37 Explorador y radio JavaScript]] |
+| Corrección local de Windows y YouTube | [[39 Audio Windows M4A OPUS y YouTube]] |
 
 Guías para usar, compilar y programar: [Índice de documentación](../docs/README.md). Presentación pública: [README del proyecto](../README.md).
 

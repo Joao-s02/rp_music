@@ -5,6 +5,8 @@ actualizado: 2026-10-28
 ---
 # Explorador y radio JavaScript
 
+Confirmación posterior del usuario: ambas nuevas extensiones funcionan en Android; reporta3–6s en consultas/apertura de contenido/secciones API3. Modelo/red no especificados. YouTube API2 se conserva; diagnóstico y propuestas, sin mejora implementada, en [[38 Latencia de extensiones API 3]].
+
 ## Alcance confirmado
 
 Usuario autoriza desarrollar Explorador musical y Radio por internet, añadiendo capacidades necesarias al motor JS. App local 0.3.9+18; publicada sigue 0.3.8+17. La etapa inicial no autorizaba push/publicación; autorización posterior y confirmación al final. API 2 y paquetes previos conservados. Antecedente: [[36 Motor JavaScript paralelo]]; separación: [[04 Extensiones]].

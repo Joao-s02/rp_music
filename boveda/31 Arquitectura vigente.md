@@ -5,6 +5,8 @@ actualizado: 2026-10-28
 ---
 # Arquitectura vigente
 
+Corrección local0.3.10+19: factory createNativeAudioPlayer selecciona media_kit/libmpv solo en Windows; sustituye WinRT para M4A/OPUS y fuentes. Android/audio_service preservados. MusicHandler observa errores/cargas, diagnóstico redactado, cancelación y límite de carga Windows. Selección provisional y evidencia en [[39 Audio Windows M4A OPUS y YouTube]]; referencia publicada0.3.9 siguiente es antecedente hasta nueva publicación.
+
 Ampliación publicada 0.3.9+18: JavascriptScreenService coordina HTTP fuera de QuickJS; ProgramController valida etapas/estado y conserva URLs solo en memoria. ExtensionSourceService/broker admite pantallas JS autorizadas sin cambiar propietario source. network.stream verifica servidores públicos de emisoras. Cancelación y revisión de autorización descartan respuestas tardías. Pruebas/límites: [[37 Explorador y radio JavaScript]]. El mapa publicado 0.3.8 siguiente se conserva como antecedente.
 
 ## Alcance y criterio
