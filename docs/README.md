@@ -1,6 +1,6 @@
 # Documentación de RP Music
 
-Referencia publicada: **0.3.7-alpha.1 / 0.3.7+16** (en publicación). Las guías versionadas describen esa entrega; notas anteriores conservan sus propios resultados y límites.
+Referencia publicada: **0.3.7-alpha.1 / 0.3.7+16**. Las guías versionadas describen esa entrega; notas anteriores conservan sus propios resultados y límites.
 
 ## Para usar y probar
 
