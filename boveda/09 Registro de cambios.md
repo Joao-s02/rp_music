@@ -493,3 +493,10 @@ El usuario solicita «sube la nueva release». Se prepara entrega completa unive
 ## Entrega completa preparada
 
 ARM64 normal compilado y verificado: versión0.3.10/código19, solo arm64-v8a y firma v2 con certificado previo. Universal conserva bytes normales comprobados. ZIP público32 archivos, todas las DLL/data/licencias y tres guías, comparado byte a byte con compilación normal; sin WinRT ni rpmx. Siete adjuntos en dist/0.3.10-release y SHA256SUMS final. Catálogo publicado en 8733caa272a7d8609e9884bff2d12ba42aace43e: diez opciones descargadas por el cliente real con SHA256/metadatos correctos, incluida Radio0.1.1 y ambas fuentes Windows. No equivale a Android físico.
+
+
+## Publicación confirmada — 2026-10-28
+
+0.3.10-alpha.1 publicada, app0.3.10+19. Android universal/ARM64 y Windows x64 completo con licencias, guías y hashes. ReleaseID 426832656; tag/código 5587b0e07dad13014e8f534854df5d80dd8f1036. Siete adjuntos verificados por tamaño/SHA256/target en borrador y públicamente; tag al commit correcto y manifiesto público idéntico. Catálogo externo 8733caa272a7d8609e9884bff2d12ba42aace43e, diez opciones descargadas con cliente real/SHA256/metadatos válidos. 142 pruebas/una optativa omitida, análisis limpio y cinco casos nativos Windows. YouTube API2/JS con audio real y M4A/OPUS comprobados; fuentes Android conservadas. Android físico, escucha prolongada y latencia API3 Android pendientes. [[39 Audio Windows M4A OPUS y YouTube]].
+
+https://github.com/Joao-s02/rp_music/releases/tag/v0.3.10-alpha.1

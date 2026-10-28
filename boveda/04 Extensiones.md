@@ -88,3 +88,6 @@ Prototipo local 0.3.8+17: API 3/JavaScript en paralelo a Dart; pantallas por ár
 API 3/JavaScript publicada en 0.3.8 en paralelo a Dart: screen independiente con árboles combinables, estado y acciones autorizadas. Laboratorio JS0.1.0 en catálogo como sexta opción; API 2/YouTube sin migrar ni modificar. No Node/HTML libre ni red/cuentas en API 3. [[36 Motor JavaScript paralelo]].
 
 Publicación 0.3.9 confirmada: Explorador musical 0.1.0/Radio por internet 0.1.0 en catálogo como séptima/octava opción, minAppVersion0.3.9. App publicada con API3 HTTP/audio remoto, Dart y paquetes anteriores preservados. Sin cuentas/sincronización, Android físico y audio nativo YouTube Windows pendientes. [[37 Explorador y radio JavaScript]].
+
+
+0.3.10 publicada: motor Windows libmpv, M4A/OPUS y audio YouTube API2/JS comprobados, variantes Windows y Radio0.1.1 en catálogo externo. Evidencia, licencias y límites vigentes en [[39 Audio Windows M4A OPUS y YouTube]]. Android físico/latencia API3 pendientes.

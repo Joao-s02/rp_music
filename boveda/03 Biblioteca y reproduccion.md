@@ -50,3 +50,6 @@ El usuario probó controles/fuente en versiones anteriores. Audio nativo 0.3.3 s
 Actualización 0.3.5: [[33 Metadatos de descargas YouTube]] incorpora lectura de letras incrustadas en la base (incluido SYLT en milisegundos), búsqueda automática al seleccionar canción con proveedor autorizado y caché privada. Letras recuperadas para archivos existentes no modifican la música, por decisión expresa. Descargas nuevas M4A admiten etiquetas y letras incrustadas sin recodificar; contratos/proveedores externos separados. La entrega 0.3.4 del párrafo anterior se publicó posteriormente; 0.3.5 se publicó posteriormente; confirmación en nota 33.
 
 Corrección 0.3.6 publicada: el escritor conserva inicialización previa en MP4/M4A fragmentado compatible. No cambia el escáner ni repara automáticamente canciones existentes. Evidencia y prueba física pendiente en [[34 Descarga M4A no visible en biblioteca]].
+
+
+0.3.10 publicada: motor Windows libmpv, M4A/OPUS y audio YouTube API2/JS comprobados, variantes Windows y Radio0.1.1 en catálogo externo. Evidencia, licencias y límites vigentes en [[39 Audio Windows M4A OPUS y YouTube]]. Android físico/latencia API3 pendientes.

@@ -5,7 +5,7 @@ actualizado: 2026-10-28
 ---
 # Estado del repositorio
 
-Desarrollo local0.3.10+19: M4A/OPUS Windows y YouTube API2/JS reproducidos con motor Windows alternativo; Radio0.1.1 candidata. 142 pruebas aprobadas/una optativa omitida, análisis limpio y cinco casos nativos aprobados, incluido controles/bandeja y recuperación de error. APK universal/ZIP Windows normales/licencias/guía/hashes listos en dist/0.3.10-local. No publicado; [[39 Audio Windows M4A OPUS y YouTube]]. MP3/FLAC/MP4 funcionaban en0.3.9 según usuario; Android físico/escucha prolongada pendientes.
+0.3.10-alpha.1 publicada, app0.3.10+19. Android universal/ARM64 y Windows x64 completo con licencias, guías y hashes. ReleaseID 426832656; tag/código 5587b0e07dad13014e8f534854df5d80dd8f1036. Siete adjuntos verificados por tamaño/SHA256/target en borrador y públicamente; tag al commit correcto y manifiesto público idéntico. Catálogo externo 8733caa272a7d8609e9884bff2d12ba42aace43e, diez opciones descargadas con cliente real/SHA256/metadatos válidos. 142 pruebas/una optativa omitida, análisis limpio y cinco casos nativos Windows. YouTube API2/JS con audio real y M4A/OPUS comprobados; fuentes Android conservadas. Android físico, escucha prolongada y latencia API3 Android pendientes. [[39 Audio Windows M4A OPUS y YouTube]].
 
 Informe posterior0.3.9: usuario confirma nuevas extensiones funcionales en Android, con latencia percibida3–6s al consultar/abrir contenido API3. No es fallo de apertura vacía confirmado ni benchmark instrumentado. YouTube API2 se conserva; [[38 Latencia de extensiones API 3]].
 
@@ -15,12 +15,9 @@ Informe posterior0.3.9: usuario confirma nuevas extensiones funcionales en Andro
 
 ## Referencia publicada
 
-**0.3.9-alpha.1**, aplicación **0.3.9+18**, Android universal/ARM64 y Windows x64. [Release pública](https://github.com/Joao-s02/rp_music/releases/tag/v0.3.9-alpha.1).
+0.3.10-alpha.1 publicada, app0.3.10+19. Android universal/ARM64 y Windows x64 completo con licencias, guías y hashes. ReleaseID 426832656; tag/código 5587b0e07dad13014e8f534854df5d80dd8f1036. Siete adjuntos verificados por tamaño/SHA256/target en borrador y públicamente; tag al commit correcto y manifiesto público idéntico. Catálogo externo 8733caa272a7d8609e9884bff2d12ba42aace43e, diez opciones descargadas con cliente real/SHA256/metadatos válidos. 142 pruebas/una optativa omitida, análisis limpio y cinco casos nativos Windows. YouTube API2/JS con audio real y M4A/OPUS comprobados; fuentes Android conservadas. Android físico, escucha prolongada y latencia API3 Android pendientes. [[39 Audio Windows M4A OPUS y YouTube]].
 
-- Tag/código: 54bcb738f67cb34a2d50e5e3cecb863c45c04a91.
-- Extensiones de código: 026aa38ff251b61ec341786b079a323399ff87a1 de rp-music-extensions. Ocho opciones verificadas con cliente real; cinco paquetes de revisión fija comparados byte a byte. Extensiones exclusivamente allí, fuera de APK/ZIP/adjuntos.
-- Siete adjuntos públicos verificados por tamaño/digest SHA256 y target en borrador y después de publicar. Tag al commit correcto y manifiesto público idéntico al local. Artefactos: dist/0.3.9-release.
-- Evidencia actual: [[37 Explorador y radio JavaScript]]. Antecedentes: [[36 Motor JavaScript paralelo]], [[35 Ampliacion de YouTube sin API oficial]], [[34 Descarga M4A no visible en biblioteca]] y [[33 Metadatos de descargas YouTube]].
+[Release pública](https://github.com/Joao-s02/rp_music/releases/tag/v0.3.10-alpha.1). Artefactos finales: dist/0.3.10-release. Antecedente0.3.9: [[37 Explorador y radio JavaScript]].
 
 ## Capacidades actuales
 
@@ -61,7 +58,7 @@ Fallo posterior confirmado en 0.3.5: etiquetar MP4/M4A fragmentado desplaza la i
 
 Prueba física Android con archivos personales, selector SAF/exportación real, permisos, SD/launcher/widget y escucha prolongada; actualización entre releases conservando datos; cobertura de formatos/redes/regiones. Letras/metadatos pueden faltar o corresponder a versiones distintas; servicios con 503/timeouts observados. No se promete toda canción ni etiqueta.
 
-YouTube Windows funcional; cuentas/listas/favoritos/historial online; edición general de etiquetas, cola editable, gapless/fundido, ecualizador como extensión; aislamiento/métricas/firmas del SDK y licencia concreta. Spotify y Play Store dejan de ser objetivos. Distribución oficial exclusivamente GitHub. [[07 Preguntas e investigacion]]. Publicaciones futuras requieren autorización y [[27 Publicacion de releases - contenido obligatorio]].
+Más pruebas prolongadas de YouTube Windows; cuentas/listas/favoritos/historial online; edición general de etiquetas, cola editable, gapless/fundido, ecualizador como extensión; aislamiento/métricas/firmas del SDK y licencia concreta. Spotify y Play Store dejan de ser objetivos. Distribución oficial exclusivamente GitHub. [[07 Preguntas e investigacion]]. Publicaciones futuras requieren autorización y [[27 Publicacion de releases - contenido obligatorio]].
 
 0.3.6 corrige moov al final en M4A fragmentados: inicialización previa y offsets relativos validados, sin recodificar. Copia del archivo aportado y fixture fragmentado decodificados por ffmpeg; escáner de escritorio encuentra la copia. No se reescriben archivos existentes al actualizar. Confirmación posterior del usuario: buen funcionamiento de 0.3.6; incidencia M4A cerrada según su informe, sin atribuir pruebas específicas adicionales. [[34 Descarga M4A no visible en biblioteca]].
 
