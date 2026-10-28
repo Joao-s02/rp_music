@@ -1,6 +1,6 @@
 # Guía vigente de RP Music
 
-Versión 0.3.6-alpha.1 / app 0.3.6+15, en publicación autorizada.
+Versión 0.3.6-alpha.1 / app 0.3.6+15, publicada.
 
 - [Instalación y uso](USO-0.3.6.md).
 - [Verificaciones y qué probar](PRUEBAS-0.3.6.md).
