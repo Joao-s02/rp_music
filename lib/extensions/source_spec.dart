@@ -8,8 +8,10 @@ class SourceSpec {
     this.color, {
     this.description = 'Canciones · sin cuenta. Reproducción en línea; requiere conexión. Algunas canciones pueden no estar disponibles.',
     this.searchLabel = 'Buscar canciones',
+    this.browse = false,
   });
   final String name;
+  final bool browse;
   final String description, searchLabel;
   final List<String> domains, platforms;
   final String? navigationLabel;
@@ -83,6 +85,9 @@ class SourceSpec {
     }
     final description = raw['description'];
     final searchLabel = raw['searchLabel'];
+    if (raw['browse'] != null && raw['browse'] is! bool) {
+      throw const FormatException('Exploración de fuente inválida.');
+    }
     if ((description != null &&
             (description is! String || description.length > 400)) ||
         (searchLabel != null &&
@@ -96,12 +101,14 @@ class SourceSpec {
       label,
       icon,
       color,
+      browse: raw['browse'] == true,
       description: description as String? ?? 'Canciones · sin cuenta. Reproducción en línea; requiere conexión. Algunas canciones pueden no estar disponibles.',
       searchLabel: searchLabel as String? ?? 'Buscar canciones',
     );
   }
   Map<String, dynamic> toJson() => {
     'name': name,
+    if (browse) 'browse': true,
     'description': description,
     'searchLabel': searchLabel,
     'domains': domains,

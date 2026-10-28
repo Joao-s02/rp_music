@@ -22,8 +22,13 @@ class LibraryController extends ChangeNotifier {
     for (final track in values) {
       remoteTracks[track.id] = track;
     }
-    while (remoteTracks.length > 2000) {
-      remoteTracks.remove(remoteTracks.keys.first);
+    final pinned = {...favorites, ...playlists.values.expand((ids) => ids)};
+    final removable = remoteTracks.keys
+        .where((id) => !pinned.contains(id))
+        .toList();
+    for (final id in removable) {
+      if (remoteTracks.length <= 2000) break;
+      remoteTracks.remove(id);
     }
   }
 
@@ -66,6 +71,29 @@ class LibraryController extends ChangeNotifier {
     }
     final available = tracks.map((track) => track.id).toSet();
     playlists[clean] = ids.where(available.contains).toSet().toList();
+    await persist();
+    notifyListeners();
+  }
+
+  Future<void> importSourcePlaylist(String name, List<Track> values) async {
+    final clean = name.trim();
+    if (clean.isEmpty ||
+        clean.length > 80 ||
+        playlists.containsKey(clean) ||
+        values.isEmpty ||
+        values.length > 10000 ||
+        values.any(
+          (t) =>
+              t.sourceId == null ||
+              !t.id.startsWith('rpmusic-source:${t.sourceId}:'),
+        )) {
+      throw const FormatException(
+        'Elige un nombre nuevo y una colección válida.',
+      );
+    }
+    // A detached snapshot: no remote playlist link or signed audio URL is stored.
+    playlists[clean] = values.map((t) => t.id).toList();
+    rememberRemoteTracks(values);
     await persist();
     notifyListeners();
   }
@@ -130,6 +158,13 @@ class LibraryController extends ChangeNotifier {
         tracks = (json['tracks'] as List)
             .map((e) => Track.fromJson(Map<String, dynamic>.from(e as Map)))
             .toList();
+        for (final raw in json['remoteTracks'] as List? ?? []) {
+          final track = Track.fromJson(Map<String, dynamic>.from(raw as Map));
+          if (track.sourceId != null &&
+              track.id.startsWith('rpmusic-source:${track.sourceId}:')) {
+            remoteTracks[track.id] = track;
+          }
+        }
         favorites = (json['favorites'] as List).cast<String>().toSet();
         playlists = (json['playlists'] as Map).map(
           (key, value) =>
@@ -171,6 +206,14 @@ class LibraryController extends ChangeNotifier {
       'schema': 1,
       'root': _stableTracks == null ? root : _stableRoot,
       'tracks': (_stableTracks ?? tracks).map((e) => e.toJson()).toList(),
+      'remoteTracks': remoteTracks.values
+          .where(
+            (t) =>
+                favorites.contains(t.id) ||
+                playlists.values.any((ids) => ids.contains(t.id)),
+          )
+          .map((t) => t.toJson())
+          .toList(),
       'favorites': favorites.toList(),
       'playlistMeta': jsonDecode(jsonEncode(playlistMeta)),
       'playlists': playlists.map((k, v) => MapEntry(k, List<String>.of(v))),
@@ -353,7 +396,7 @@ class LibraryController extends ChangeNotifier {
     if (!playlists.containsKey(name) || automaticPlaylist(name)) {
       throw const FormatException('Elige una lista manual existente.');
     }
-    final available = tracks.map((t) => t.id).toSet();
+    final available = {...remoteTracks.keys, ...tracks.map((t) => t.id)};
     final before = playlists[name]!.length;
     playlists[name] = {
       ...playlists[name]!,
@@ -374,7 +417,7 @@ class LibraryController extends ChangeNotifier {
   }
 
   List<Track> playlistTracks(String name) {
-    final byId = {for (final track in tracks) track.id: track};
+    final byId = {...remoteTracks, for (final track in tracks) track.id: track};
     return [
       for (final id in playlists[name] ?? <String>[])
         if (byId[id] != null) byId[id]!,
@@ -392,7 +435,7 @@ class LibraryController extends ChangeNotifier {
   }
 
   Future<void> removeMissingFromPlaylist(String name) async {
-    final available = tracks.map((t) => t.id).toSet();
+    final available = {...remoteTracks.keys, ...tracks.map((t) => t.id)};
     playlists[name]?.removeWhere((id) => !available.contains(id));
     notifyListeners();
     await persist();

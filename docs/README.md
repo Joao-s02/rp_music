@@ -1,17 +1,19 @@
 # Documentación de RP Music
 
-Referencia publicada: **0.3.6-alpha.1 / 0.3.6+15**. Las guías versionadas describen esa entrega; notas anteriores conservan sus propios resultados y límites.
+Referencia publicada: **0.3.7-alpha.1 / 0.3.7+16** (en publicación). Las guías versionadas describen esa entrega; notas anteriores conservan sus propios resultados y límites.
 
 ## Para usar y probar
+
+- [Uso 0.3.7](USO-0.3.7.md), [pruebas](PRUEBAS-0.3.7.md) y [cambios](CAMBIOS-0.3.7.md).
 
 - [Uso 0.3.6](USO-0.3.6.md), [pruebas](PRUEBAS-0.3.6.md) y [cambios](CAMBIOS-0.3.6.md).
 
 - [Uso 0.3.5](USO-0.3.5.md), [pruebas](PRUEBAS-0.3.5.md) y [cambios](CAMBIOS-0.3.5.md).
 
-- [Guía vigente](USO.md) → [Uso 0.3.6](USO-0.3.6.md).
-- [Pruebas recomendadas 0.3.6](PRUEBAS-0.3.6.md).
-- [Cambios 0.3.6](CAMBIOS-0.3.6.md) y [notas de release](RELEASE-0.3.6.md).
-- [Descargas](https://github.com/Joao-s02/rp_music/releases/tag/v0.3.6-alpha.1): Android universal, ARM64 y Windows con guías/hashes.
+- [Guía vigente](USO.md) → [Uso 0.3.7](USO-0.3.7.md).
+- [Pruebas recomendadas 0.3.7](PRUEBAS-0.3.7.md).
+- [Cambios 0.3.7](CAMBIOS-0.3.7.md) y [notas de release](RELEASE-0.3.7.md).
+- [Descargas](https://github.com/Joao-s02/rp_music/releases/tag/v0.3.7-alpha.1): Android universal, ARM64 y Windows con guías/hashes.
 
 ## Para desarrollar
 
