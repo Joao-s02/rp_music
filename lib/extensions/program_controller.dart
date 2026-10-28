@@ -7,6 +7,8 @@ import '../data/local_store.dart';
 import '../app/app_version.dart';
 import 'program_package.dart';
 import 'program_runtime.dart';
+import 'javascript_program_runtime.dart';
+import 'javascript_view_schema.dart';
 
 class ProgramController extends ChangeNotifier {
   ProgramController(this.store, {ProgramRuntime? runtime})
@@ -106,7 +108,11 @@ class ProgramController extends ChangeNotifier {
     if (installed.length >= 16 && !installed.containsKey(package.id)) {
       throw const FormatException('Límite de 16 extensiones instaladas.');
     }
-    await runtime.compile(package.source);
+    if (package.engine == 'javascript') {
+      await JavascriptProgramRuntime.validate(package.source);
+    } else {
+      await runtime.compile(package.source);
+    }
     final item = InstalledProgram(
       package,
       grants.intersection(package.permissions),
@@ -115,7 +121,9 @@ class ProgramController extends ChangeNotifier {
     if (!item.authorized) item.enabled = false;
     installed[package.id] = item;
     if (item.enabled) {
-      for (final slot in package.slots.where((slot) => slot != 'lists')) {
+      for (final slot in package.slots.where(
+        (slot) => slot != 'lists' && slot != 'screen',
+      )) {
         owners.putIfAbsent(slot, () => package.id);
       }
     }
@@ -133,7 +141,9 @@ class ProgramController extends ChangeNotifier {
     item.failures = 0;
     item.error = null;
     if (value) {
-      for (final slot in item.package.slots.where((slot) => slot != 'lists')) {
+      for (final slot in item.package.slots.where(
+        (slot) => slot != 'lists' && slot != 'screen',
+      )) {
         owners.putIfAbsent(slot, () => id);
       }
     }
@@ -232,12 +242,20 @@ class ProgramController extends ChangeNotifier {
     final watch = Stopwatch()..start();
     try {
       await persist();
-      final result = await runtime.execute(item.package.source, snapshot);
+      final result = item.package.engine == 'javascript'
+          ? await JavascriptProgramRuntime.execute(
+              item.package.source,
+              snapshot,
+            )
+          : await runtime.execute(item.package.source, snapshot);
       if (_disposed ||
           installed[id] != item ||
           !item.enabled ||
           !item.authorized) {
         return null;
+      }
+      if (item.package.engine == 'javascript' && event == 'screen') {
+        validateJavascriptView(result['view']);
       }
       if (result.containsKey('state')) {
         if (!allowed(id, 'storage.private') || result['state'] is! Map) {

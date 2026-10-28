@@ -29,6 +29,7 @@ const programPermissions = {
   'behavior.override': 'Sustituir funciones base (nivel avanzado)',
 };
 const programSlots = {
+  'screen': 'Pantalla JavaScript independiente',
   'lyrics': 'Letras de canciones locales',
   'source': 'Fuente musical en línea',
   'library': 'Biblioteca',
@@ -49,12 +50,14 @@ class ProgramPackage {
     this.advanced, {
     this.sourceSpec,
     this.minAppVersion = '0.3.0',
+    this.engine = 'dart',
   });
   final String id, name, version, description, source;
   final Set<String> permissions, slots;
   final bool advanced;
   final SourceSpec? sourceSpec;
   final String minAppVersion;
+  final String engine;
   factory ProgramPackage.parse(Map<String, dynamic> json) {
     String text(String key, int max) {
       final value = json[key];
@@ -66,7 +69,9 @@ class ProgramPackage {
       return value;
     }
 
-    if (json['apiVersion'] != 2) {
+    final javascript =
+        json['apiVersion'] == 3 && json['engine'] == 'javascript';
+    if (json['apiVersion'] != 2 && !javascript) {
       throw const FormatException(
         'Se requiere API 2 de extensiones programables.',
       );
@@ -91,6 +96,25 @@ class ProgramPackage {
 
     final permissions = values('permissions', programPermissions.keys.toSet());
     final slots = values('capabilities', programSlots.keys.toSet());
+    if (javascript &&
+        (slots.length != 1 ||
+            !slots.contains('screen') ||
+            !permissions.contains('navigation.add') ||
+            permissions.any(
+              (p) => !{
+                'navigation.add',
+                'storage.private',
+                'library.read',
+                'playback.control',
+              }.contains(p),
+            ))) {
+      throw const FormatException(
+        'API 3 solo admite pantalla, estado, biblioteca y reproducción autorizadas.',
+      );
+    }
+    if (!javascript && slots.contains('screen')) {
+      throw const FormatException('Las pantallas requieren JavaScript/API 3.');
+    }
     final level = json['level'] ?? 'standard';
     if (!['standard', 'advanced'].contains(level)) {
       throw const FormatException('Nivel no compatible.');
@@ -100,6 +124,9 @@ class ProgramPackage {
       throw const FormatException(
         'Sustituir reproductor o aleatorio requiere nivel avanzado.',
       );
+    }
+    if (javascript && (advanced || json['sourceConfig'] != null)) {
+      throw const FormatException('Pantalla JavaScript incompatible.');
     }
     if (advanced && !permissions.contains('behavior.override')) {
       throw const FormatException(
@@ -153,7 +180,7 @@ class ProgramPackage {
         'La navegación requiere una fuente y navigation.add.',
       );
     }
-    final minimum = json['minAppVersion'] ?? '0.3.0';
+    final minimum = json['minAppVersion'] ?? (javascript ? '0.3.8' : '0.3.0');
     if (minimum is! String || !RegExp(r'^\d+\.\d+\.\d+$').hasMatch(minimum)) {
       throw const FormatException('Versión mínima inválida.');
     }
@@ -168,10 +195,12 @@ class ProgramPackage {
       advanced,
       sourceSpec: spec,
       minAppVersion: minimum,
+      engine: javascript ? 'javascript' : 'dart',
     );
   }
   Map<String, dynamic> toJson() => {
-    'apiVersion': 2,
+    'apiVersion': engine == 'javascript' ? 3 : 2,
+    if (engine == 'javascript') 'engine': engine,
     'level': advanced ? 'advanced' : 'standard',
     'id': id,
     'name': name,

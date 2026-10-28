@@ -3,6 +3,7 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
+  flutter_qjs_next
   just_audio_windows_plus
 )
 

@@ -1,3 +1,3 @@
-const appVersion = '0.3.7';
-const appBuild = 16;
-const appRelease = '0.3.7-alpha.1';
+const appVersion = '0.3.8';
+const appBuild = 17;
+const appRelease = '0.3.8-alpha.1';

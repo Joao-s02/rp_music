@@ -1,8 +1,10 @@
 # Documentación de RP Music
 
-Referencia publicada: **0.3.7-alpha.1 / 0.3.7+16**. Las guías versionadas describen esa entrega; notas anteriores conservan sus propios resultados y límites.
+Referencia publicada: **0.3.8-alpha.1 / 0.3.8+17** (en publicación). Las guías versionadas describen esa entrega; notas anteriores conservan sus propios resultados y límites.
 
 ## Para usar y probar
+
+- [Uso 0.3.8](USO-0.3.8.md), [pruebas](PRUEBAS-0.3.8.md) y [cambios](CAMBIOS-0.3.8.md).
 
 - [Uso 0.3.7](USO-0.3.7.md), [pruebas](PRUEBAS-0.3.7.md) y [cambios](CAMBIOS-0.3.7.md).
 
@@ -10,10 +12,14 @@ Referencia publicada: **0.3.7-alpha.1 / 0.3.7+16**. Las guías versionadas descr
 
 - [Uso 0.3.5](USO-0.3.5.md), [pruebas](PRUEBAS-0.3.5.md) y [cambios](CAMBIOS-0.3.5.md).
 
-- [Guía vigente](USO.md) → [Uso 0.3.7](USO-0.3.7.md).
-- [Pruebas recomendadas 0.3.7](PRUEBAS-0.3.7.md).
-- [Cambios 0.3.7](CAMBIOS-0.3.7.md) y [notas de release](RELEASE-0.3.7.md).
-- [Descargas](https://github.com/Joao-s02/rp_music/releases/tag/v0.3.7-alpha.1): Android universal, ARM64 y Windows con guías/hashes.
+- [Guía vigente](USO.md) → [Uso 0.3.8](USO-0.3.8.md).
+- [Pruebas recomendadas 0.3.8](PRUEBAS-0.3.8.md).
+- [Cambios 0.3.8](CAMBIOS-0.3.8.md) y [notas de release](RELEASE-0.3.8.md).
+- [Descargas](https://github.com/Joao-s02/rp_music/releases/tag/v0.3.8-alpha.1): Android universal, ARM64 y Windows con guías/hashes.
+
+## JavaScript experimental
+
+[Guía de prueba](PROBAR-JAVASCRIPT-0.3.8.md) y [API 3 JavaScript](EXTENSIONES-API-3.md), motor paralelo a Dart en 0.3.8+17. [Estado y pruebas](../boveda/36%20Motor%20JavaScript%20paralelo.md). Publicación 0.3.8 autorizada en curso.
 
 ## Para desarrollar
 
