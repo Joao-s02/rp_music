@@ -93,3 +93,5 @@ Separación y deuda heredada: [[04 Extensiones]]. Políticas de release: [[27 Pu
 ## Corrección 0.3.6 — contenedor fragmentado
 
 DownloadTags separa MP4 plano y fragmentado: el diseño de moov final de 0.3.5 es incompatible con fragmentos que requieren inicialización previa. La ruta corregida mantiene moov delante de sidx/moof y admite solo offsets relativos validados; otras variantes vuelven al audio original con aviso. Herramienta genérica de reparación a copia nueva, sin sobrescribir originales ni contener lógica del proveedor. Evidencia del archivo real y pruebas sintéticas en [[34 Descarga M4A no visible en biblioteca]]. Publicado como 0.3.6-alpha.1; prueba física todavía pendiente.
+
+Trabajo local 0.3.7+16: variante YouTube Explorador 0.1.0 con ID independiente, sin alterar YouTube Android 0.4.0 ni catálogo. Navegación pública e importación persistente implementadas localmente; cuenta/sincronización pendientes. Contratos y evidencia en [[35 Ampliacion de YouTube sin API oficial]]. No publicado.

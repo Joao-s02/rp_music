@@ -141,6 +141,13 @@ class ExtensionSourceService {
     if (rows is! List || rows.length > 50) {
       throw const FormatException('Resultados incompatibles.');
     }
+    return parseTracks(id, rows);
+  }
+
+  List<Track> parseTracks(String id, List rows, {bool duplicates = false}) {
+    if (rows.length > 200) {
+      throw const FormatException('Página demasiado grande.');
+    }
     final spec = programs.installed[id]!.package.sourceSpec!;
     final result = <Track>[];
     final ids = <String>{};
@@ -153,7 +160,7 @@ class ExtensionSourceService {
         throw const FormatException('Canción inválida.');
       }
       final key = row['id'] as String;
-      if (!ids.add(key)) continue;
+      if (!ids.add(key) && !duplicates) continue;
       final image = row['artwork'];
       if (image != null &&
           (image is! String || !spec.permits(Uri.parse(image)))) {
@@ -184,6 +191,80 @@ class ExtensionSourceService {
     return result;
   }
 
+  Future<SourcePage> explore(
+    String id, {
+    String query = '',
+    String kind = 'song',
+    String? entity,
+    String? cursor,
+  }) async {
+    if (!['song', 'artist', 'album', 'playlist'].contains(kind) ||
+        query.length > 200 ||
+        (cursor?.length ?? 0) > 16000 ||
+        (entity != null &&
+            !RegExp(r'^[a-zA-Z0-9_.-]{1,200}$').hasMatch(entity))) {
+      throw const FormatException('Exploración inválida.');
+    }
+    if (programs.installed[id]?.package.sourceSpec?.browse != true) {
+      throw const FormatException('Esta fuente no ofrece exploración.');
+    }
+    final data = await invoke(id, 'browse', {
+      'query': query.trim(),
+      'kind': kind,
+      'id': ?entity,
+      'cursor': ?cursor,
+    });
+    if (!available(id)) throw const FormatException('Fuente desactivada.');
+    final rows = data['tracks'] ?? <dynamic>[];
+    final entities = data['entities'] ?? <dynamic>[];
+    if (rows is! List || entities is! List || entities.length > 100) {
+      throw const FormatException('Página incompatible.');
+    }
+    final next = data['cursor'];
+    if (next != null &&
+        (next is! String || next.isEmpty || next.length > 16000)) {
+      throw const FormatException('Continuación inválida.');
+    }
+    final parsed = <SourceEntity>[];
+    for (final row in [
+      ...entities,
+      if (data['collection'] != null) data['collection'],
+    ]) {
+      if (row is! Map ||
+          row['id'] is! String ||
+          !RegExp(r'^[a-zA-Z0-9_.-]{1,200}$').hasMatch(row['id'] as String) ||
+          !['artist', 'album', 'playlist'].contains(row['kind']) ||
+          row['title'] is! String ||
+          (row['title'] as String).trim().isEmpty ||
+          (row['title'] as String).length > 200) {
+        throw const FormatException('Elemento incompatible.');
+      }
+      parsed.add(
+        SourceEntity(
+          row['id'] as String,
+          row['kind'] as String,
+          row['title'] as String,
+        ),
+      );
+    }
+    return SourcePage(
+      parseTracks(
+        id,
+        rows,
+        duplicates: entity != null || data['collection'] != null,
+      ),
+      parsed,
+      data['title'] is String
+          ? (data['title'] as String).substring(
+              0,
+              (data['title'] as String).length.clamp(0, 200),
+            )
+          : '',
+      next as String?,
+      data['collection'] == null ? null : parsed.removeLast(),
+    );
+  }
+
   Future<Uri> resolve(Track track) async {
     final id = track.sourceId;
     if (id == null || !track.id.startsWith('rpmusic-source:$id:')) {
@@ -201,4 +282,24 @@ class ExtensionSourceService {
     }
     return uri;
   }
+}
+
+class SourceEntity {
+  const SourceEntity(this.id, this.kind, this.title);
+  final String id, kind, title;
+}
+
+class SourcePage {
+  const SourcePage(
+    this.tracks,
+    this.entities,
+    this.title,
+    this.cursor, [
+    this.collection,
+  ]);
+  final SourceEntity? collection;
+  final List<Track> tracks;
+  final List<SourceEntity> entities;
+  final String title;
+  final String? cursor;
 }

@@ -131,3 +131,9 @@ La sección 0.3.4 anterior conserva su fase de preparación; esa app se publicó
 - Etiquetado del nuevo MP4/M4A en memoria: incluye portada y letra, conserva los bytes/posiciones del audio y no recodifica. Otro contenedor o un error de etiquetas conserva el audio original con aviso. No es un editor de originales locales ni garantiza todos los campos.
 
 La implementación específica de cualquier proveedor y sus pruebas permanecen exclusivamente en rp-music-extensions. Guía de uso: [0.3.5](USO-0.3.5.md).
+
+## Exploración de colecciones — candidato local 0.3.7
+
+Opt-in sourceConfig.browse=true, omitido/false para fuentes existentes. source/browse recibe query (hasta 200), kind=song/artist/album/playlist, id remoto opcional y cursor opaco opcional de hasta 16000 caracteres. Devuelve tracks (máximo 200 por página), entities (máximo 100: id, kind=artist/album/playlist, title), title y cursor opcionales; collection opcional identifica la colección abierta. Los IDs tienen las mismas restricciones alfanuméricas que source/search. Se conservan límites HTTP/dominios, propietario y descarte por revocación.
+
+El anfitrión muestra filtros, entidades, páginas y Cargar más. Importar copia está disponible para álbum/lista cuando no hay cursor pendiente; no descarga audio ni crea vínculo de sincronización. Orden y repeticiones se preservan. Persistencia de referencias/metadatos remotos usados por listas/favoritos, sin guardar URLs firmadas. No equivale a conexión de cuenta ni sincronización. La extensión original conserva búsqueda/descarga anteriores; variante experimental y catálogo se gestionan solo en su repositorio.

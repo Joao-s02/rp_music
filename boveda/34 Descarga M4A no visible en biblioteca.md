@@ -1,6 +1,6 @@
 ---
 tipo: investigacion-de-incidencia
-estado: correccion-publicada-con-validacion-fisica-pendiente
+estado: resuelta-segun-confirmacion-del-usuario
 actualizado: 2026-10-27
 ---
 # Descarga M4A no visible en biblioteca
@@ -69,3 +69,7 @@ Preparación de publicación: ARM64 normal release aprobado (129.7 s), código 1
 Borrador autenticado verificado antes de publicar por tamaños/digests SHA-256 y target_commitish. Después, API pública sin autenticación confirmó prerelease visible, siete adjuntos con mismos tamaños/hashes, tag al commit esperado y SHA256SUMS descargado idéntico al local. Commits documentales posteriores confirman publicación y no cambian binarios del tag.
 
 No se incluyen música privada ni la copia reparada en Git/release. Extensiones compatibles sin cambios. La publicación no acredita prueba física Android ni reparación automática de archivos anteriores; no se modificaron adjuntos de 0.3.5.
+
+## Confirmación del usuario
+
+2026-10-27: tras instalar la release 0.3.6, el usuario informa «todo funciona muy bien». Se cierra la incidencia M4A como resuelta según su confirmación; no se infieren pruebas individuales de SD, widget, permisos ni escucha prolongada.

@@ -64,3 +64,13 @@ Antecedentes: [[22 Extensiones - alcance del primer sistema]], [[23 Extensiones 
 ## Publicación 0.3.5 confirmada
 
 App 0.3.5-alpha.1 publicada: https://github.com/Joao-s02/rp_music/releases/tag/v0.3.5-alpha.1. Catálogo público verificado con YouTube Android 0.4.0 y Letras locales 0.1.0 para anfitrión 0.3.5, Biblioteca viva 0.1.1 y Pulso nocturno 0.1.0. Spotify fuera del catálogo, variantes anteriores intactas. Nueva capacidad lyrics/permiso lyrics.cache con library.read/network.http; resultados locales solo en caché privada. El estado público no elimina las validaciones físicas pendientes. [[33 Metadatos de descargas YouTube]].
+
+## Alcance confirmado de cuenta e importación — 2026-10-27
+
+El usuario elige conectar Google y sincronizar cambios en ambos sentidos. Importar listas crea copias locales independientes: sus ediciones no se propagan a la lista de origen. Las vistas de cuenta/listas remotas se distinguirán de dichas copias. No se presume que favoritos de archivos locales equivalgan a valoraciones de vídeos sin una identidad remota comprobada. Alcance deseado no equivale a viabilidad verificada de historial/biblioteca Music.
+
+El usuario no tiene proyecto Google Cloud ni cliente OAuth y solicita guía. Se inicia por crear proyecto, activar YouTube Data API v3 y configurar consentimiento externo en pruebas con su usuario. Tipo de cliente y conexión definitiva aún por validar para Android/Windows y capacidades Music; no usar flujo TV como sustituto automático de cliente móvil. API oficial soporta listas y valoraciones de vídeos; no se ha acreditado sincronización completa de biblioteca/historial Music. Documentación consultada: https://developers.google.com/youtube/data/guides/auth/installed-apps , https://developers.google.com/youtube/data/reference/rest/v3/playlists/list , https://developers.google.com/youtube/data/reference/rest/v3/videos/rate y https://ytmusicapi.readthedocs.io/en/stable/setup/oauth.html . Credenciales y sesiones fuera de Git/bóveda. Sin código de autenticación ni sincronización implementado todavía.
+
+2026-10-28: el usuario detiene la API oficial y la preparación Google Cloud; explorar ampliación no oficial de la extensión existente. Deseo de sincronización bidireccional y copias importadas independientes conservado, viabilidad pendiente. Investigación, fases propuestas y límites en [[35 Ampliacion de YouTube sin API oficial]]. No implementado.
+
+Trabajo local 0.3.7+16: variante YouTube Explorador 0.1.0 con ID independiente, sin alterar YouTube Android 0.4.0 ni catálogo. Navegación pública e importación persistente implementadas localmente; cuenta/sincronización pendientes. Contratos y evidencia en [[35 Ampliacion de YouTube sin API oficial]]. No publicado.

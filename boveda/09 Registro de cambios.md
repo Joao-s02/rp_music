@@ -413,3 +413,25 @@ Cierre local de la corrección M4A: APK universal normal 0.3.6+15 compilado (160
 Usuario solicita explícitamente la release con las versiones corregidas. Se prepara entrega completa universal/ARM64/Windows de 0.3.6+15, guías y hashes. Sin nuevos cambios funcionales tras la corrección y 110 pruebas; no se vuelve a presentar la prueba de red de 0.3.5 como nueva. La petición anterior de issue se aclaró antes de crear nada. No se adjunta música privada, solo binarios y documentos de la app. Extensiones actuales compatibles sin cambios. Evidencia y confirmación en [[34 Descarga M4A no visible en biblioteca]].
 
 Publicación 0.3.6 confirmada: https://github.com/Joao-s02/rp_music/releases/tag/v0.3.6-alpha.1, tag/código d0d894257e52f89f3c6edc80359bc737bf9bbf51, release ID 426240606. Siete adjuntos verificados en borrador y mediante API pública por tamaño/digest; tag y manifiesto descargado confirmados. README/Inicio/Estado/guías actualizados. Extensiones sin cambios y archivos privados excluidos. Límites de prueba física y archivos anteriores conservados en [[34 Descarga M4A no visible en biblioteca]].
+
+## Confirmación 0.3.6 y revisión de pendientes — 2026-10-27
+
+2026-10-27: tras instalar la release 0.3.6, el usuario informa «todo funciona muy bien». Se cierra la incidencia M4A como resuelta según su confirmación; no se infieren pruebas individuales de SD, widget, permisos ni escucha prolongada. Se revisan los pendientes vigentes: YouTube Windows, ampliación de fuente, audio avanzado, ecualizador externo, rendimiento, SDK, licencia y mejoras futuras de biblioteca. Spotify y Play Store cancelados; retirada Spotify ya ejecutada. README y notas 07/10/34 actualizados localmente; sin cambios de código ni nueva publicación.
+
+2026-10-27: iniciada definición de ampliación YouTube a petición del usuario. Revisados contrato source, vista actual y paquete externo; investigadas referencias primarias de navegación/autenticación. Alcance de cuenta e importación consultado, pendiente. Propuestas y límites en [[07 Preguntas e investigacion]]. Sin implementación ni publicación nueva.
+
+2026-10-27: usuario confirma cuenta Google con sincronización bidireccional y listas importadas independientes. Solicita guía para crear proyecto Google Cloud; no dispone de OAuth. Registrado alcance y límites de API oficial frente a Music en [[07 Preguntas e investigacion]] y [[04 Extensiones]]. Sin implementación ni publicación nueva.
+
+## Cambio de vía YouTube — 2026-10-28
+
+Por instrucción del usuario se detiene API oficial/Google Cloud. Investigadas navegación pública y autenticación por sesión de navegador documentadas por ytmusicapi. Revisados transporte, servicio y persistencia remota; faltan entidades/paginación, persistencia duradera y gestión protegida de sesión. Plan propuesto, no implementación comprobada, en [[35 Ampliacion de YouTube sin API oficial]]. No se modifican reproducción/descargas ni se publica.
+
+## Primera fase local YouTube Explorador — 2026-10-28
+
+Por autorización del usuario se copia la extensión estable con ID nuevo; original/hash y catálogo preservados. App local 0.3.7+16 incorpora navegación genérica e importación remota persistente. Proveedor específico exclusivamente en repo de extensiones. Pruebas de persistencia/contrato/interfaz y navegación pública, incluida lista de 100+95 pistas; límites y cierre en [[35 Ampliacion de YouTube sin API oficial]]. Login/sincronización no implementados. No publicar ni enviar cambios sin autorización.
+
+Cierre local Explorador: suite final 114 aprobadas/una red optativa omitida; análisis sin incidencias; prueba de UI a 360 px, paquete en intérprete y consultas públicas aprobados. APK universal 0.3.7+16 compilado y firma compatible comprobada; guía y hashes locales. Stable 0.4.0 hash intacto, catálogo sin cambios. Fotos históricas de prueba restauradas. No push ni release. [[35 Ampliacion de YouTube sin API oficial]].
+
+Último sondeo paginado aprobado: lista pública larga de 100 pistas en primera página + 100 en continuación con el paquete definitivo; ID público del caso guardado en tests/explorer-live-list.json del repositorio externo. Siete comprobaciones sintéticas del paquete aprobadas.
+
+2026-10-28: usuario autoriza publicar nueva release 0.3.7. Se preparan tres binarios, guías y hashes; Explorador como entrada separada en repositorio de extensiones, estable intacta. Confirmación remota pendiente hasta terminar.
