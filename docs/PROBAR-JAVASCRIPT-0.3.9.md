@@ -1,6 +1,6 @@
 # Probar Explorador musical y Radio por internet
 
-Entrega **0.3.9+18**, en publicación autorizada. La app 0.3.8 publicada no admite estos paquetes de red. Actualiza con el APK universal/ARM64 o abre la carpeta Windows completa; conserva datos y no desinstales para actualizar.
+Entrega **0.3.9+18**, publicada como preliminar. La app 0.3.8 publicada no admite estos paquetes de red. Actualiza con el APK universal/ARM64 o abre la carpeta Windows completa; conserva datos y no desinstales para actualizar.
 
 Las dos extensiones están en el catálogo público de https://github.com/Joao-s02/rp-music-extensions y también en previews/js-music-0.1.0 de ese repositorio. No se incluyen dentro del APK/ZIP:
 
@@ -9,7 +9,7 @@ Las dos extensiones están en el catálogo público de https://github.com/Joao-s
 
 ## Instalación
 
-1. Abre la app0.3.9 y entra en Extensiones → Explorar repositorio → https://github.com/Joao-s02/rp-music-extensions → Consultar. También puedes instalar desde archivo.
+1. Abre la app 0.3.9 y entra en Extensiones → Explorar repositorio → https://github.com/Joao-s02/rp-music-extensions → Consultar. También puedes instalar desde archivo.
 2. Instala cada opción del catálogo o importa el .rpmx y revisa sus permisos. Ambas usan red a dominios declarados, datos privados, navegación y reproducción. Radio añade permiso para audio HTTPS de servidores públicos de emisoras con dominios variables.
 3. Abre **Explorar JS** o **Radio JS** en la navegación. No hace falta cambiar el propietario de Fuente; YouTube estable y Explorador Dart siguen disponibles.
 

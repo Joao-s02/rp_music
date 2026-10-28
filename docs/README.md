@@ -1,6 +1,6 @@
 # Documentación de RP Music
 
-Referencia 0.3.9-alpha.1 / 0.3.9+18 en publicación autorizada. Las guías versionadas describen esa entrega; notas anteriores conservan sus propios resultados y límites.
+Referencia publicada: **0.3.9-alpha.1 / 0.3.9+18**. Las guías versionadas describen esa entrega; notas anteriores conservan sus propios resultados y límites.
 
 ## Para usar y probar
 
@@ -15,13 +15,13 @@ Referencia 0.3.9-alpha.1 / 0.3.9+18 en publicación autorizada. Las guías versi
 - [Uso 0.3.5](USO-0.3.5.md), [pruebas](PRUEBAS-0.3.5.md) y [cambios](CAMBIOS-0.3.5.md).
 
 - [Guía vigente](USO.md) → [Uso0.3.9](USO-0.3.9.md).
-- [Pruebas recomendadas 0.3.8](PRUEBAS-0.3.8.md).
-- [Cambios 0.3.8](CAMBIOS-0.3.8.md) y [notas de release](RELEASE-0.3.8.md).
-- [Descargas](https://github.com/Joao-s02/rp_music/releases/tag/v0.3.8-alpha.1): Android universal, ARM64 y Windows con guías/hashes.
+- [Pruebas recomendadas0.3.9](PRUEBAS-0.3.9.md).
+- [Cambios0.3.9](CAMBIOS-0.3.9.md) y [notas de release](RELEASE-0.3.9.md).
+- [Descargas](https://github.com/Joao-s02/rp_music/releases/tag/v0.3.9-alpha.1): Android universal, ARM64 y Windows con guías/hashes.
 
 ## JavaScript experimental
 
-Desarrollo local 0.3.9: [guía para probar explorador y radio](PROBAR-JAVASCRIPT-0.3.9.md), [HTTP y audio remoto API 3](EXTENSIONES-API-3-RED.md), [estado y pruebas](../boveda/37%20Explorador%20y%20radio%20JavaScript.md). Paquetes candidatos separados; sin publicación nueva.
+Publicada 0.3.9: [guía para probar explorador y radio](PROBAR-JAVASCRIPT-0.3.9.md), [HTTP y audio remoto API 3](EXTENSIONES-API-3-RED.md), [estado y pruebas](../boveda/37%20Explorador%20y%20radio%20JavaScript.md). Dos paquetes publicados por separado en catálogo, sin incluirlos en los binarios.
 
 [Guía de prueba](PROBAR-JAVASCRIPT-0.3.8.md) y [API 3 JavaScript](EXTENSIONES-API-3.md), motor paralelo a Dart en 0.3.8+17. [Estado y pruebas](../boveda/36%20Motor%20JavaScript%20paralelo.md). Publicada como entrega preliminar.
 

@@ -2,21 +2,21 @@
 
 Reproductor Flutter para Android y Windows, ampliable mediante extensiones. Biblioteca local sin cuenta ni conexión; actualizaciones y consultas en línea opcionales.
 
-**Versión 0.3.9-alpha.1 (en publicación)**, aplicación **0.3.9+18**. [Descargar Android universal, ARM64 y Windows](https://github.com/Joao-s02/rp_music/releases/tag/v0.3.9-alpha.1).
+**Versión publicada: 0.3.9-alpha.1**, aplicación **0.3.9+18**. [Descargar Android universal, ARM64 y Windows](https://github.com/Joao-s02/rp_music/releases/tag/v0.3.9-alpha.1).
 
 [Guía vigente](docs/USO.md) · [Pruebas](docs/PRUEBAS-0.3.9.md) · [Cambios](docs/CAMBIOS-0.3.9.md) · [Documentación](docs/README.md)
 
-## Desarrollo local 0.3.9+18 — explorador y radio JavaScript
+## Explorador y radio JavaScript — 0.3.9
 
-API 3 añade consultas HTTP por etapas, cancelación y audio remoto autorizado mediante el reproductor de la app. Explorador musical (YouTube Music público, sin cuenta) y Radio por internet (Radio Browser, filtros/favoritas privadas) son candidatos independientes en el repositorio de extensiones. Requieren app local 0.3.9; aún no están publicados en catálogo ni incluidos en APK/ZIP. [Alcance y pruebas](boveda/37%20Explorador%20y%20radio%20JavaScript.md).
+API 3 añade consultas HTTP por etapas, cancelación y audio remoto autorizado mediante el reproductor de la app. Explorador musical (YouTube Music público, sin cuenta) y Radio por internet (Radio Browser, filtros/favoritas privadas) son opciones independientes del catálogo de [rp-music-extensions](https://github.com/Joao-s02/rp-music-extensions). Requieren app 0.3.9 y se instalan por separado; no están incluidos en APK/ZIP. [Alcance y pruebas](boveda/37%20Explorador%20y%20radio%20JavaScript.md).
 
 La radio admite inicialmente emisoras HTTPS MP3/AAC sin HLS. Esta ampliación no declara corregido YouTube Windows. Cuenta, sincronización, descargas e importación de listas desde las nuevas pantallas JS siguen pendientes.
 
-Entrega local en dist/0.3.9-local: APK universal y Windows completo con guía/hashes. 138 pruebas aprobadas, una optativa omitida y análisis limpio; navegación/resolución pública y radio nativa Windows comprobadas. Android físico pendiente por ausencia de dispositivo. [Instalar y probar las extensiones](docs/PROBAR-JAVASCRIPT-0.3.9.md).
+Publicados Android universal/ARM64 y Windows completo con guías/hashes. 138 pruebas aprobadas, una optativa omitida y análisis limpio; navegación/resolución pública y radio nativa Windows comprobadas. Android físico pendiente por ausencia de dispositivo. [Instalar y probar las extensiones](docs/PROBAR-JAVASCRIPT-0.3.9.md).
 
 ## JavaScript y Dart en paralelo — 0.3.8
 
-Motor JavaScript/API 3 en paralelo a API 2/Dart. La extensión define páginas, formularios, botones y acciones mediante componentes nativos combinables; no necesita una pantalla Flutter específica por cada flujo. Laboratorio JS 0.1.0 se ofrece como opción independiente en el catálogo del repositorio de extensiones, fuera del APK/ZIP. Los paquetes YouTube estable y Explorador permanecen intactos y usan Dart. No es Node.js ni HTML/CSS libre; red, cuentas y sincronización siguen pendientes. [Contrato experimental](docs/EXTENSIONES-API-3.md) y [evidencia](boveda/36%20Motor%20JavaScript%20paralelo.md).
+Motor JavaScript/API 3 en paralelo a API 2/Dart. La extensión define páginas, formularios, botones y acciones mediante componentes nativos combinables; no necesita una pantalla Flutter específica por cada flujo. Laboratorio JS 0.1.0 se ofrece como opción independiente en el catálogo del repositorio de extensiones, fuera del APK/ZIP. Los paquetes YouTube estable y Explorador permanecen intactos y usan Dart. No es Node.js ni HTML/CSS libre. El prototipo0.3.8 no ofrecía red; se añade en 0.3.9. Cuentas y sincronización siguen pendientes. [Contrato experimental](docs/EXTENSIONES-API-3.md) y [evidencia](boveda/36%20Motor%20JavaScript%20paralelo.md).
 
 ## Novedades de 0.3.7
 

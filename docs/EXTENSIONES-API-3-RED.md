@@ -1,6 +1,6 @@
-# API 3 — red y audio remoto (0.3.9 local)
+# API 3 — red y audio remoto (0.3.9)
 
-Complementa [API 3 original](EXTENSIONES-API-3.md). Implementación experimental local 0.3.9+18, sin publicación. QuickJS sigue sin fetch/XHR/Node/npm/archivos ni Promesas de extensión. Se conserva API 2, capacidad screen independiente y propietario de Fuente de las extensiones Dart.
+Complementa [API 3 original](EXTENSIONES-API-3.md). Implementación experimental publicada en 0.3.9+18. QuickJS sigue sin fetch/XHR/Node/npm/archivos ni Promesas de extensión. Se conserva API 2, capacidad screen independiente y propietario de Fuente de las extensiones Dart.
 
 ## Paquete
 
