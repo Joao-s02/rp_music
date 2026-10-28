@@ -7,12 +7,12 @@ actualizado: 2026-10-28
 
 ## Referencia publicada
 
-**0.3.7-alpha.1**, aplicación **0.3.7+16**, Android universal/ARM64 y Windows x64. [Release pública](https://github.com/Joao-s02/rp_music/releases/tag/v0.3.7-alpha.1).
+**0.3.8-alpha.1**, aplicación **0.3.8+17**, Android universal/ARM64 y Windows x64. [Release pública](https://github.com/Joao-s02/rp_music/releases/tag/v0.3.8-alpha.1).
 
-- Tag/código: df3c1ec6c184218778a01b96c63b1cc5f812ddbf.
-- Extensiones: 3cb1181eeaa8a8c303a5cf50a5bcdece077412be de rp-music-extensions. Código/paquetes específicos exclusivamente allí; commits documentales posteriores no cambian binarios.
+- Tag/código: d5452275e1023e6125feca130b884180f14b2a1e.
+- Extensiones: 9116d70e70a954618675d6d0e66b32cfb580d39f de rp-music-extensions. Código/paquetes específicos exclusivamente allí; commits documentales posteriores no cambian binarios.
 - Siete adjuntos públicos verificados por tamaño/SHA-256: dos APK, ZIP Windows completo, USO, PRUEBAS, CAMBIOS y SHA256SUMS. Manifiesto descargado sin autenticación idéntico al local; tag confirmado al commit esperado.
-- Evidencia de entrega actual en [[35 Ampliacion de YouTube sin API oficial]]. Corrección M4A anterior en [[34 Descarga M4A no visible en biblioteca]]; metadatos/letras en [[33 Metadatos de descargas YouTube]]; navegación histórica en [[30 Archivo de navegacion y estado]].
+- Evidencia de entrega actual en [[36 Motor JavaScript paralelo]]. Explorador en [[35 Ampliacion de YouTube sin API oficial]]. Corrección M4A anterior en [[34 Descarga M4A no visible en biblioteca]]; metadatos/letras en [[33 Metadatos de descargas YouTube]]; navegación histórica en [[30 Archivo de navegacion y estado]].
 
 ## Capacidades actuales
 
@@ -34,18 +34,18 @@ Contratos en [[04 Extensiones]], comportamiento en [[03 Biblioteca y reproduccio
 
 ## Extensiones para esta versión
 
-Catálogo público: YouTube Explorador 0.1.0 (Android, requiere app 0.3.7), YouTube Android 0.4.0, Letras locales 0.1.0, Biblioteca viva 0.1.1 y Pulso nocturno 0.1.0. Los dos nuevos paquetes requieren app 0.3.5 y revisar permisos/dominios. Variantes anteriores conservadas. Spotify cancelado/retirado del catálogo; archivos históricos no borrados y una instalación previa no se elimina automáticamente.
+Catálogo público: Laboratorio JS 0.1.0 (API 3, app 0.3.8+), YouTube Explorador 0.1.0 (Android, requiere app 0.3.7), YouTube Android 0.4.0, Letras locales 0.1.0, Biblioteca viva 0.1.1 y Pulso nocturno 0.1.0. Los dos nuevos paquetes requieren app 0.3.5 y revisar permisos/dominios. Variantes anteriores conservadas. Spotify cancelado/retirado del catálogo; archivos históricos no borrados y una instalación previa no se elimina automáticamente.
 
 YouTube Windows 0.3.0 sigue como candidato manual fuera del catálogo recomendado, con fallos nativos conocidos. Ninguna extensión viene dentro del APK/ZIP ni adjunta a la release de la app.
 
 ## Verificaciones registradas
 
-- Suite 114 aprobadas, análisis de los cambios sin incidencias. Prueba de red optativa omitida; resultado positivo de 0.3.5 como antecedente, no prueba nueva.
+- Suite final 122 aprobadas (120app +2ext), análisis de los cambios sin incidencias. Prueba de red optativa omitida; resultado positivo de 0.3.5 como antecedente, no prueba nueva.
 - Antecedente 0.3.5: tres casos del usuario desde resultados reales YouTube/duración real obtuvieron letras sincronizadas. Prueba completa con paquete real incrustó letras/portada/álbum en audio sintético, con original intacto.
 - Antecedente 0.3.5: lector y reproducción nativa Windows de M4A etiquetado aprobados; ffprobe/ffmpeg comprobaron etiquetas/duración/decodificación.
-- APK universal/ARM64 normales, versión/código 0.3.7/16, firma v2/certificado compatible y ABIs correctos. Sin dispositivo conectado para instalación/escucha física de esta versión.
-- Windows normal 0.3.7+16 recompilado tras las pruebas; ZIP de 22 archivos íntegro con guías, sin paquetes de extensión ni sonda.
-- Publicación: borrador verificado antes de publicar, API pública/adjuntos/tag y manifiesto descargado confirmados después. Artefactos finales en dist/0.3.7-release.
+- APK universal/ARM64 normales, versión/código 0.3.8/17, firma v2/certificado compatible y ABIs correctos. Sin dispositivo conectado para instalación/escucha física de esta versión.
+- Windows normal 0.3.8+17 recompilado tras las pruebas; ZIP de 22 archivos íntegro con guías, sin paquetes de extensión ni sonda.
+- Publicación: borrador verificado antes de publicar, API pública/adjuntos/tag y manifiesto descargado confirmados después. Artefactos finales en dist/0.3.8-release.
 
 ## Pendientes y límites activos
 
@@ -62,3 +62,5 @@ Trabajo local 0.3.7+16: variante YouTube Explorador 0.1.0 con ID independiente, 
 Entrega 0.3.7 publicada: navegación genérica de fuentes por entidades/páginas, importación persistente de copias independientes y variante Explorador separada de la estable. 114 pruebas aprobadas/una red optativa omitida; análisis limpio, UI 360px e intérprete/red pública aprobados. Cuenta/sincronización y prueba física pendientes. [[35 Ampliacion de YouTube sin API oficial]].
 
 Prototipo local 0.3.8+17: API 3/JavaScript en paralelo a Dart; pantallas por árbol genérico, estado/eventos y reproducción explícita autorizada. Laboratorio JS separado en repositorio de extensiones. Paquetes YouTube sin modificar. No publicado; verificación y límites en [[36 Motor JavaScript paralelo]].
+
+0.3.8 publicada: API 3/JavaScript paralelo, pantalla genérica y Laboratorio JS separado. Suite122 (120app+2ext), análisis limpio; interfaz360px, estado/permisos y compatibilidad de paquetes reales Dart comprobados. Android físico y capacidades ampliadas pendientes. [[36 Motor JavaScript paralelo]].

@@ -64,3 +64,5 @@ El usuario no tiene proyecto Google Cloud ni cliente OAuth y solicita guía. Se 
 Primera fase publicada en 0.3.7: Explorador independiente, navegación pública e importación persistente. Siguiente pendiente: acceso por sesión y sincronización bidireccional; no API oficial ni Google Cloud. [[35 Ampliacion de YouTube sin API oficial]].
 
 2026-10-28: usuario solicita mayor autonomía visual de extensiones y autoriza prototipo JavaScript conservando Dart/YouTube. Árbol componible, pantallas/eventos propios en verificación local; no equivale todavía a HTML/CSS libre, Node.js ni motor completo. [[36 Motor JavaScript paralelo]].
+
+Primera API 3 visual publicada en 0.3.8, Dart preservado. Sigue pendiente ampliar componentes/servicios y validar Android; no equivale a SDK ilimitado ni a migración YouTube. [[36 Motor JavaScript paralelo]].

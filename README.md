@@ -2,7 +2,7 @@
 
 Reproductor Flutter para Android y Windows, ampliable mediante extensiones. Biblioteca local sin cuenta ni conexión; actualizaciones y consultas en línea opcionales.
 
-**Versión 0.3.8-alpha.1 (en publicación)**, aplicación **0.3.8+17**. [Descargar Android universal, ARM64 y Windows](https://github.com/Joao-s02/rp_music/releases/tag/v0.3.8-alpha.1).
+**Versión publicada: 0.3.8-alpha.1**, aplicación **0.3.8+17**. [Descargar Android universal, ARM64 y Windows](https://github.com/Joao-s02/rp_music/releases/tag/v0.3.8-alpha.1).
 
 [Guía vigente](docs/USO.md) · [Pruebas](docs/PRUEBAS-0.3.8.md) · [Cambios](docs/CAMBIOS-0.3.8.md) · [Documentación](docs/README.md)
 

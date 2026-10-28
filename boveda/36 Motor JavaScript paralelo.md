@@ -1,13 +1,13 @@
 ---
 tipo: implementacion-experimental
-estado: prototipo-local-comprobado-con-limites
+estado: publicado-con-validacion-fisica-pendiente
 actualizado: 2026-10-28
 ---
 # Motor JavaScript paralelo
 
 ## Alcance confirmado
 
-Usuario solicita prototipo JavaScript y extensión de prueba, preservando las extensiones YouTube actuales. Se conservan API 1 y API 2/Dart; ninguna migración automática. No autorizado publicar esta nueva versión. Antecedente [[04 Extensiones]], [[31 Arquitectura vigente]] y [[35 Ampliacion de YouTube sin API oficial]].
+Usuario solicita prototipo JavaScript y extensión de prueba, preservando las extensiones YouTube actuales. Se conservan API 1 y API 2/Dart; ninguna migración automática. En la etapa inicial no estaba autorizada la publicación; autorización posterior y confirmación al final de esta nota. Antecedente [[04 Extensiones]], [[31 Arquitectura vigente]] y [[35 Ampliacion de YouTube sin API oficial]].
 
 ## Elección provisional e implementación
 
@@ -44,3 +44,7 @@ Sin publicación, push ni cambio de catálogo. Prueba física Android pendiente.
 APK final verificado: firma v2 válida y certificado SHA256 eba2769ed11d359c8f89f6991bc6867c7766f6f46a4295bc5386e7d41ce7d38d, compatible con versiones anteriores; aapt confirma código17, versión0.3.8 y arm64-v8a/armeabi-v7a/x86_64.
 
 2026-10-28: usuario autoriza publicar release0.3.8. Se preparan universal/ARM64/Windows y guías/hashes; Laboratorio JS como opción separada en catálogo, previas intactas. Confirmación remota pendiente hasta finalizar.
+
+## Publicación confirmada
+
+2026-10-28: release pública https://github.com/Joao-s02/rp_music/releases/tag/v0.3.8-alpha.1, app 0.3.8+17, tag/código d5452275e1023e6125feca130b884180f14b2a1e, release ID 426315233. Universal reutiliza binario normal final verificado; ARM64 release normal 165.0s, código17/versionName0.3.8 y firma v2 compatible. Windows normal ProductVersion0.3.8+17, ZIP completo con flutter_qjs_next_plugin.dll y guías. Siete adjuntos verificados en borrador por tamaños/digests SHA256 y target; después API pública confirmó publicación/prerelease, mismos siete tamaños/hashes, tag correcto y manifiesto descargado idéntico. Extensiones de código 9116d70e70a954618675d6d0e66b32cfb580d39f: catálogo de seis opciones verificado por cliente real; Laboratorio JS, YouTube estable y Explorador descargados y comparados byte a byte. Commits documentales posteriores no modifican binarios. Sin prueba física Android; SDK JS experimental sin Node/red/HTML libre. No se modifican releases anteriores.
