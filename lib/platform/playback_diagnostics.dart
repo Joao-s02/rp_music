@@ -53,6 +53,7 @@ class _DiagnosticsDialogState extends State<DiagnosticsDialog> {
         'Audio: ${state.processingState.name}; posición: ${state.position.inSeconds}s; cola: ${widget.audio.tracks.length}; índice: ${widget.audio.index}',
         for (final entry in native.entries) '${entry.key}: ${entry.value}',
         'Último error del servicio: ${widget.audio.lastSystemError ?? 'ninguno registrado'}',
+        'Último error de audio: ${widget.audio.lastPlaybackError ?? 'ninguno registrado'}',
         'Eventos recientes (sesión actual):',
         ...widget.audio.diagnosticEvents,
       ].join('\n');

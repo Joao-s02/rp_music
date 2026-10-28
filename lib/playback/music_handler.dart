@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:math';
 
 import 'package:audio_service/audio_service.dart';
@@ -7,6 +8,7 @@ import 'package:just_audio/just_audio.dart';
 
 import '../domain/track.dart';
 import '../data/local_store.dart';
+import 'native_audio_player.dart';
 
 class MusicHandler extends BaseAudioHandler with SeekHandler {
   final AudioPlayer player;
@@ -19,6 +21,19 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
   bool _shuttingDown = false;
   Future<void>? _closing;
   String? lastSystemError;
+  String? lastPlaybackError;
+  void _recordPlaybackError(Object error) {
+    final text = error is PlayerException
+        ? 'Motor ${error.code}: ${error.message ?? 'sin detalle'}'
+        : '${error.runtimeType}: $error';
+    final redacted = text.replaceAll(
+      RegExp(r'(?:https?|file)://[^\s]+'),
+      '<origen>',
+    );
+    lastPlaybackError = redacted.substring(0, redacted.length.clamp(0, 500));
+    recordEvent('Error de audio: $lastPlaybackError');
+  }
+
   final List<String> diagnosticEvents = [];
   String _lastState = '';
   void recordEvent(String text) {
@@ -31,6 +46,28 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
   Future<void> _operations = Future.value();
   int _generation = 0;
   bool _loading = false;
+  Completer<Duration?>? _pendingLoadFailure;
+  void _interruptPendingLoad() {
+    final pending = _pendingLoadFailure;
+    if (pending != null && !pending.isCompleted) {
+      pending.completeError(
+        PlayerInterruptedException('Carga cancelada o sustituida.'),
+      );
+    }
+  }
+
+  void _handlePlaybackError(Object error) {
+    _recordPlaybackError(error);
+    final pending = _pendingLoadFailure;
+    if (pending != null && !pending.isCompleted) {
+      pending.completeError(error);
+    } else if (!_loading) {
+      errors.add(
+        'El motor de audio no pudo continuar. Consulta el diagnóstico en Ajustes.',
+      );
+    }
+  }
+
   bool _playIntent = false;
   List<Track> tracks = [];
   int index = -1;
@@ -48,7 +85,7 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
     this.sessionStore,
     this.artworkLoader,
     this.onEmptyPlay,
-  }) : player = player ?? AudioPlayer() {
+  }) : player = player ?? createNativeAudioPlayer() {
     if (sessionStore != null) {
       _checkpointTimer = Timer.periodic(const Duration(seconds: 5), (_) {
         if (this.player.playing && !_loading) unawaited(saveSession());
@@ -58,10 +95,10 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
     _subscriptions.add(
       this.player.playbackEventStream.listen(
         (_) => _publish(),
-        onError: (Object _) =>
-            errors.add('No se pudo reproducir este archivo.'),
+        onError: _handlePlaybackError,
       ),
     );
+    _subscriptions.add(this.player.errorStream.listen(_handlePlaybackError));
     _subscriptions.add(
       this.player.processingStateStream.listen((state) {
         if (state == ProcessingState.completed && !_loading) {
@@ -197,6 +234,7 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
       'Selección de pista: $selected/${tracks.length}; autoplay=$autoplay',
     );
     final generation = ++_generation;
+    _interruptPendingLoad();
     _loading = true;
     _playIntent = autoplay;
     final operation = _operations.then((_) async {
@@ -214,12 +252,16 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
       if (!_online(track)) unawaited(_loadArtwork(track, generation));
       try {
         ({AudioSource source, Uri? artwork})? online;
+        final loadWatch = Stopwatch()..start();
         if (_online(track)) {
           if (onlineSourceLoader == null ||
               onlineAllowed?.call(track) != true) {
             throw StateError('Online source unavailable');
           }
           online = await onlineSourceLoader!(track);
+          recordEvent(
+            'Resolución de fuente: ${loadWatch.elapsedMilliseconds} ms',
+          );
           if (generation != _generation || _shuttingDown) return;
           if (onlineAllowed?.call(track) != true) {
             throw StateError('Permission revoked');
@@ -228,14 +270,33 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
             mediaItem.add(_mediaItem(track).copyWith(artUri: online.artwork));
           }
         }
-        final duration = await player.setAudioSource(
-          online?.source ??
-              AudioSource.uri(
-                track.id.startsWith('content://')
-                    ? Uri.parse(track.id)
-                    : Uri.file(track.id),
-              ),
-          initialPosition: initialPosition,
+        loadWatch.reset();
+        final failure = Completer<Duration?>();
+        _pendingLoadFailure = failure;
+        Duration? duration;
+        try {
+          final loading = Future.any<Duration?>([
+            player.setAudioSource(
+              online?.source ??
+                  AudioSource.uri(
+                    track.id.startsWith('content://')
+                        ? Uri.parse(track.id)
+                        : Uri.file(track.id),
+                  ),
+              initialPosition: initialPosition,
+            ),
+            failure.future,
+          ]);
+          duration = await (Platform.isWindows
+              ? loading.timeout(const Duration(seconds: 30))
+              : loading);
+        } finally {
+          if (identical(_pendingLoadFailure, failure)) {
+            _pendingLoadFailure = null;
+          }
+        }
+        recordEvent(
+          'Carga del motor de audio: ${loadWatch.elapsedMilliseconds} ms',
         );
         if (generation == _generation && !_shuttingDown) {
           if (recordHistory &&
@@ -254,8 +315,9 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
           unawaited(saveSession(position: initialPosition));
           if (_playIntent) unawaited(play());
         }
-      } catch (_) {
+      } catch (error) {
         if (generation == _generation && !_shuttingDown) {
+          _recordPlaybackError(error);
           _loading = false;
           _playIntent = false;
           await player.stop();
@@ -263,7 +325,7 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
           errors.add(
             _online(track)
                 ? 'No se pudo reproducir «${track.title}». Revisa la conexión y los permisos; el servicio puede rechazar esta canción.'
-                : 'No se pudo abrir «${track.title}». Comprueba el archivo y su formato.',
+                : 'El motor de audio no pudo cargar «${track.title}». Consulta el diagnóstico en Ajustes.',
           );
         }
       }
@@ -341,7 +403,8 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
       final playback = player.play();
       _publish();
       await playback;
-    } catch (_) {
+    } catch (error) {
+      _recordPlaybackError(error);
       errors.add('No se pudo iniciar el audio.');
     }
   }
@@ -447,6 +510,7 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
   @override
   Future<void> stop() async {
     ++_generation;
+    _interruptPendingLoad();
     _playIntent = false;
     _loading = false;
     await player.pause();
@@ -520,6 +584,7 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
     _seekCheckpoint?.cancel();
     ++_generation;
     _playIntent = false;
+    _interruptPendingLoad();
     // Silence first; saving state and native disposal happen after sound stops.
     await player.setVolume(0);
     await player.pause();

@@ -68,6 +68,7 @@ void main() {
             expect(index, greaterThanOrEqualTo(0));
             action += '$index';
           }
+          final actionWatch = Stopwatch()..start();
           final result = await screens.run(id, {
             'action': action,
             'fields': step['fields'] ?? {},
@@ -77,6 +78,7 @@ void main() {
             'action': action,
             'error': result['error'],
             'message': result['message'],
+            'actionMs': actionWatch.elapsedMilliseconds,
           });
           expect(result['error'], isNot(true), reason: '${result['message']}');
           final state = programs.privateData[id] ?? {};
@@ -123,12 +125,19 @@ void main() {
             report['nativeAudio'] = true;
             report['title'] = track.title;
             report['positionMs'] = audio.player.position.inMilliseconds;
+            (report['steps'] as List).last['with2sProgressMs'] =
+                actionWatch.elapsedMilliseconds;
+            (report['steps'] as List).last['nativePlayback'] = true;
             await audio.pause();
             expect(audio.player.playing, isFalse);
             unawaited(audio.play());
             await Future<void>.delayed(const Duration(seconds: 1));
             expect(audio.player.playing, isTrue);
-            await programs.setEnabled(id, false);
+            if (step['revoke'] == false) {
+              await audio.stop();
+            } else {
+              await programs.setEnabled(id, false);
+            }
             await Future<void>.delayed(const Duration(milliseconds: 400));
             expect(audio.player.playing, isFalse);
             report['revocationStopped'] = true;
