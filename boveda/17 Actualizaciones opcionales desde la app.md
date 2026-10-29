@@ -65,3 +65,7 @@ Actualizador admite certificado descendiente mediante linaje Android, manteniend
 ## Perfil experimental local 0.3.15
 
 El motor detecta si el manifiesto permite solicitar instalaciones. Sin ese permiso, consulta versiones y abre la página oficial para actualizar desde navegador/Archivos; no descarga ni invoca instalador interno ni pausa el audio. Tras aceptar Play Protect la variante y bloquear el control, este perfil pasa a ser predeterminado de release; control solo diagnóstico explícito. Verificado en emulador, pendiente teléfono. Motivo, comparación de paquetes y límites en [[44 Diagnostico local de instalacion y actualizaciones manuales]].
+
+## Cierre 0.3.15 publicado
+
+Actualización Android por web/Archivos sin permiso para instalar paquetes y firma compatible publicados. Usuario confirma instalación sin aviso en su teléfono; alcance y evidencia: [[44 Diagnostico local de instalacion y actualizaciones manuales]].

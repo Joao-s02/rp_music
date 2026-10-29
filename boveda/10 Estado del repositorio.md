@@ -1,9 +1,11 @@
 ---
 tipo: estado-actual
 estado: publicado-con-limites-experimentales
-actualizado: 2026-10-28
+actualizado: 2026-10-29
 ---
 # Estado del repositorio
+
+0.3.15-alpha.1 publicada, app0.3.15+24. ReleaseID 428029331; tag/código 9dcdeb1f0d842bfc2bb1abe098f961ba378b9e9b. Android universal exacto probado por el usuario, ARM64 y Windows x64 completo (32 archivos/licencias/guías). Siete adjuntos verificados en borrador y públicamente por tamaño/SHA256; tag al commit correcto y manifiesto descargado idéntico. Universal sin REQUEST_INSTALL_PACKAGES aceptado por Play Protect e instalado en emulador conservando lista/fecha original; usuario confirma instalación directa sin aviso en su teléfono. Android usa actualizaciones por web/Archivos y firma de producción con transición compatible. 166 pruebas aprobadas/una optativa omitida y análisis limpio. ARM64 físico/análisis automático específico, otros dispositivos, escucha prolongada y latencia API3 Android pendientes. Catálogo externo conservado, sin nuevos paquetes. [[44 Diagnostico local de instalacion y actualizaciones manuales]].
 
 0.3.13-alpha.1 publicada, app0.3.13+22. ReleaseID 427408912; tag/código a3f8449a83aaec7da29c5762c4adfff82bd1fbc0. Android universal/ARM64 y Windows x64 completo32 archivos/licencias/guías. Siete adjuntos verificados en borrador y por API pública: tamaños/SHA256, tag al commit correcto y manifiesto descargado idéntico. Catálogo externo ab48a631237f3bf04057b6662b8b168b94b62449: diez opciones y29 paquetes/variantes verificados byte a byte; cliente real selecciona YouTube Android/Windows0.5.2 y Explorador Android/Windows0.2.2. 164 pruebas aprobadas/una optativa omitida, análisis limpio; descarga nativa Windows con álbum Busca Una Mujer, pista5,55 líneas LRC incrustadas, reproducción y bloques mdat conservados. Android físico, escucha prolongada, valoración visual del usuario y latencia API3 Android pendientes. [[42 Albumes y extensiones con identidad RP 0.3.13]].
 
@@ -21,9 +23,7 @@ Informe posterior0.3.9: usuario confirma nuevas extensiones funcionales en Andro
 
 ## Referencia publicada
 
-0.3.11-alpha.1 publicada, app0.3.11+20. Android universal/ARM64 y Windows x64 completo con licencias/guías/hashes. ReleaseID 427162160; tag/código 34211ad4760368c1c76808fff67deb1a7579c441. Siete adjuntos verificados por tamaño/SHA256/target en borrador y públicamente, tag al commit correcto y manifiesto descargado idéntico. Extensiones 2dfeaf16985ba7299e9592261a83cf52ee8d4ea5: diez opciones verificadas con cliente real y veinte paquetes/variantes de revisión fija byte a byte. YouTube Android/Windows0.5.0 y Explorador Android/Windows0.2.0, minApp0.3.11; API2 y variantes anteriores conservadas.147 pruebas aprobadas/una optativa omitida, análisis limpio; seis canciones de álbum real con etiquetas/portada/numeración iguales y foto recuperada offline comprobadas. Android físico (widgets/launcher/SAF), escucha prolongada y latencia API3 Android pendientes. [[40 Gestos widgets albumes y descargas 0.3.11]].
-
-[Release pública](https://github.com/Joao-s02/rp_music/releases/tag/v0.3.11-alpha.1). Artefactos finales: dist/0.3.11-release. Antecedentes: [[39 Audio Windows M4A OPUS y YouTube]], [[37 Explorador y radio JavaScript]].
+[Release 0.3.15](https://github.com/Joao-s02/rp_music/releases/tag/v0.3.15-alpha.1). Evidencia y límites: [[44 Diagnostico local de instalacion y actualizaciones manuales]].
 
 ## Capacidades actuales
 

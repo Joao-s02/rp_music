@@ -1,11 +1,11 @@
 ---
 tipo: indice
 estado: vigente
-actualizado: 2026-10-28
+actualizado: 2026-10-29
 ---
 # RP Music — red de conocimiento
 
-La bóveda conserva decisiones y evidencia para continuar el proyecto. Referencia publicada: **0.3.13-alpha.1**, aplicación **0.3.13+22**, Android y Windows. Estado actual y comprobaciones: [[10 Estado del repositorio]].
+La bóveda conserva decisiones y evidencia para continuar el proyecto. Referencia publicada: **0.3.15-alpha.1**, aplicación **0.3.15+24**, Android y Windows. Estado actual y comprobaciones: [[10 Estado del repositorio]].
 
 ## Empezar aquí
 
@@ -25,13 +25,13 @@ La bóveda conserva decisiones y evidencia para continuar el proyecto. Referenci
 | Preguntas todavía abiertas | [[07 Preguntas e investigacion]] |
 | Marca, tema y referencias | [[15 Identidad visual e icono]] |
 | Publicaciones | [[27 Publicacion de releases - contenido obligatorio]] |
-| Última entrega y sus pruebas | [[42 Albumes y extensiones con identidad RP 0.3.13]] |
+| Última entrega y sus pruebas | [[44 Diagnostico local de instalacion y actualizaciones manuales]] |
 | Alerta Android y diagnóstico local | [[43 Play Protect y firma de Android]], [[44 Diagnostico local de instalacion y actualizaciones manuales]] |
 | Corrección local de Windows y YouTube | [[39 Audio Windows M4A OPUS y YouTube]] |
 
 Guías para usar, compilar y programar: [Índice de documentación](../docs/README.md). Presentación pública: [README del proyecto](../README.md).
 
-Última publicación y límites experimentales: [[42 Albumes y extensiones con identidad RP 0.3.13]].
+Última publicación y límites: [[44 Diagnostico local de instalacion y actualizaciones manuales]].
 
 0.3.5 publicada: [[33 Metadatos de descargas YouTube]] — letras incrustadas, búsqueda automática y nuevas descargas etiquetadas. Entrega anterior en [[32 Pruebas 0.3.3 y mejoras 0.3.4]].
 

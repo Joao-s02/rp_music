@@ -133,3 +133,7 @@ Actualizador admite certificado descendiente mediante linaje Android, manteniend
 Perfil local 0.3.15 sin instalador: capacidad nativa derivada de permisos reales del manifiesto; controlador y vista ofrecen actualización mediante página oficial cuando falta REQUEST_INSTALL_PACKAGES. No altera motor musical ni extensiones. Experimento y evidencia en [[44 Diagnostico local de instalacion y actualizaciones manuales]].
 
 Tras resultado seguro de Play Protect frente a bloqueo del control, el perfil manual pasa a ser predeterminado de release. Instalación/identidad/lista conservadas comprobadas en emulador; pendiente teléfono, sin publicar.
+
+## Cierre 0.3.15 publicado
+
+Actualización Android por web/Archivos sin permiso para instalar paquetes y firma compatible publicados. Usuario confirma instalación sin aviso en su teléfono; alcance y evidencia: [[44 Diagnostico local de instalacion y actualizaciones manuales]].

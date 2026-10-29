@@ -1,6 +1,6 @@
 ---
 tipo: experimento-local-controlado
-estado: confirmado-por-usuario-publicacion-en-preparacion
+estado: publicado-con-confirmacion-y-limites
 actualizado: 2026-10-29
 ---
 # Diagnostico local de instalacion y actualizaciones manuales
@@ -50,3 +50,9 @@ Verificación final del valor predeterminado: `:app:processReleaseMainManifest -
 ## Confirmación física y publicación autorizada — 2026-10-29
 
 El usuario confirma: «ahora google play protec ni aparece, directo instala la app». Resultado del universal en su teléfono, modelo/versiones no registrados; no se interpreta como protección desactivada ni garantía para todos los equipos. Luego autoriza publicar la nueva release. Se prepara 0.3.15+24, universal exacto probado, ARM64 y Windows completos con guías/hashes; no modificar catálogo externo. Verificación de borrador obligatoria antes de publicar. [[44 Diagnostico local de instalacion y actualizaciones manuales]].
+
+## Publicación verificada — 2026-10-29
+
+0.3.15-alpha.1 publicada, app0.3.15+24. ReleaseID 428029331; tag/código 9dcdeb1f0d842bfc2bb1abe098f961ba378b9e9b. Android universal exacto probado por el usuario, ARM64 y Windows x64 completo (32 archivos/licencias/guías). Siete adjuntos verificados en borrador y públicamente por tamaño/SHA256; tag al commit correcto y manifiesto descargado idéntico. Universal sin REQUEST_INSTALL_PACKAGES aceptado por Play Protect e instalado en emulador conservando lista/fecha original; usuario confirma instalación directa sin aviso en su teléfono. Android usa actualizaciones por web/Archivos y firma de producción con transición compatible. 166 pruebas aprobadas/una optativa omitida y análisis limpio. ARM64 físico/análisis automático específico, otros dispositivos, escucha prolongada y latencia API3 Android pendientes. Catálogo externo conservado, sin nuevos paquetes. [[44 Diagnostico local de instalacion y actualizaciones manuales]].
+
+[Release pública](https://github.com/Joao-s02/rp_music/releases/tag/v0.3.15-alpha.1). Antecedentes locales conservados como historial; no describen el estado final. ARM64 SHA256 ffe7a4f8424fdea1ea2b0504b065b752535cda6829eb4b7dba4ef379b9f2f956; universal conserva d10238a37d5c59b12b3796e43e7c0ff3e89260250c14a01148806413d6634a34.
