@@ -1,11 +1,121 @@
 import 'dart:convert';
 import 'dart:typed_data';
+import 'dart:io';
 
 /// Adds iTunes-compatible tags to a newly downloaded ISO-BMFF audio file.
 /// Flat files keep their media offsets using a trailing moov. Fragmented files
 /// keep their initialization before the fragments and require relative offsets.
 /// Audio is never re-encoded.
 class DownloadTags {
+  /// Streams media payloads unchanged; only bounded MP4 headers enter memory.
+  static Future<File> mp4File(
+    File audio,
+    Map<String, dynamic> tags, {
+    Uint8List? cover,
+    String? coverMime,
+  }) async {
+    final input = await audio.open();
+    final boxes =
+        <({String type, int start, int size, int width, Uint8List raw})>[];
+    try {
+      final length = await input.length();
+      var offset = 0, metadataBytes = 0;
+      while (offset < length) {
+        await input.setPosition(offset);
+        final header = await input.read(16.clamp(0, length - offset));
+        if (header.length < 8) {
+          throw const FormatException('Contenedor truncado.');
+        }
+        final view = ByteData.sublistView(header);
+        var size = view.getUint32(0), width = 8;
+        if (size == 1) {
+          if (header.length < 16) {
+            throw const FormatException('Cabecera truncada.');
+          }
+          size = view.getUint64(8);
+          width = 16;
+        } else if (size == 0) {
+          size = length - offset;
+        }
+        if (size < width || size > length - offset) {
+          throw const FormatException('Tamaño MP4 inválido.');
+        }
+        final type = latin1.decode(header.sublist(4, 8));
+        Uint8List raw;
+        if (type == 'mdat') {
+          raw = _box('mdat', Uint8List(0));
+        } else {
+          metadataBytes += size;
+          if (metadataBytes > 32 * 1024 * 1024 || size > 8 * 1024 * 1024) {
+            throw const FormatException('Cabeceras MP4 demasiado grandes.');
+          }
+          await input.setPosition(offset);
+          raw = await input.read(size);
+          if (raw.length != size) {
+            throw const FormatException('Contenedor truncado.');
+          }
+          raw = _explicitSize(raw);
+        }
+        boxes.add((
+          type: type,
+          start: offset,
+          size: size,
+          width: width,
+          raw: raw,
+        ));
+        offset += size;
+      }
+    } finally {
+      await input.close();
+    }
+    // Reuse exactly the same metadata writer and fragmented-offset validation.
+    final tagged = _boxes(
+      mp4(
+        _join(boxes.map((b) => b.raw)),
+        tags,
+        cover: cover,
+        coverMime: coverMime,
+      ),
+    );
+    final newMoov = tagged.singleWhere((b) => b.type == 'moov').raw;
+    final original = boxes.indexWhere((b) => b.type == 'moov');
+    final fragment = boxes.indexWhere((b) => b.type == 'moof');
+    final index = boxes.indexWhere((b) => b.type == 'sidx');
+    final insertion = fragment < 0
+        ? boxes.length
+        : original < fragment
+        ? original
+        : index >= 0 && index < fragment
+        ? index
+        : fragment;
+    final result = File('${audio.path}.tagged');
+    final sink = result.openWrite();
+    try {
+      for (var i = 0; i <= boxes.length; i++) {
+        if (i == insertion) sink.add(newMoov);
+        if (i == boxes.length) break;
+        final box = boxes[i];
+        if (i == original) {
+          if (fragment < 0) sink.add(_box('free', Uint8List(box.size - 8)));
+          continue;
+        }
+        // Explicit size also handles an original trailing mdat with size zero.
+        final header = ByteData(box.width)
+          ..setUint32(0, box.width == 16 ? 1 : box.size);
+        header.buffer.asUint8List().setRange(4, 8, latin1.encode(box.type));
+        if (box.width == 16) header.setUint64(8, box.size);
+        sink.add(header.buffer.asUint8List());
+        await sink.addStream(
+          audio.openRead(box.start + box.width, box.start + box.size),
+        );
+      }
+      await sink.flush();
+    } finally {
+      await sink.close();
+    }
+    return result;
+  }
+
   static Uint8List mp4(
     Uint8List audio,
     Map<String, dynamic> tags, {

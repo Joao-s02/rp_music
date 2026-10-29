@@ -36,7 +36,7 @@ Desde la raíz del proyecto:
 flutter build apk --release
 ```
 
-El APK resultante está en `build/app/outputs/flutter-apk/app-release.apk`. Es un archivo de compilación local; no sustituye por sí solo paquetes de `dist` ni releases publicadas. La firma de distribución actual sigue siendo de desarrollo.
+El APK resultante está en `build/app/outputs/flutter-apk/app-release.apk`. Es un archivo de compilación local; no sustituye por sí solo paquetes de `dist` ni releases publicadas. La firma release actual requiere credenciales de producción y transición compatible; usar tools/build-android-signed.ps1 y consultar ANDROID-SIGNING.md. No distribuir el APK intermedio de Gradle antes de la firma final validada.
 
 Usar el flujo completo de Flutter para que regenere el registro de plugins correspondiente a release. Omitir ese paso con `--no-pub` o invocar Gradle directamente después de una compilación debug puede dejar un registro que incluye `integration_test`, aunque esa dependencia de pruebas no se enlace en release.
 

@@ -34,12 +34,15 @@ class Track {
   List<String> get artists {
     final seen = <String>{};
     final names = artist
-        .split(',')
-        .map((name) => name.trim())
+        .split(RegExp(r',|\s+(?:y|&)\s+', caseSensitive: false))
+        .map((name) => name.trim().replaceAll(RegExp(r'\s+'), ' '))
         .where((name) => name.isNotEmpty && seen.add(name.toLowerCase()))
         .toList();
     return names.isEmpty ? ['Artista desconocido'] : names;
   }
+
+  static String artistKey(String name) =>
+      name.trim().replaceAll(RegExp(r'\s+'), ' ').toLowerCase();
 
   String get format {
     if (sourceId != null) return 'En línea';

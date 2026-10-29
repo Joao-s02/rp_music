@@ -1,117 +1,43 @@
 ---
 tipo: estado-actual
-estado: publicado-con-limites-experimentales
+estado: publicacion-0.3.16-en-preparacion
 actualizado: 2026-10-29
 ---
 # Estado del repositorio
 
-0.3.15-alpha.1 publicada, app0.3.15+24. ReleaseID 428029331; tag/código 9dcdeb1f0d842bfc2bb1abe098f961ba378b9e9b. Android universal exacto probado por el usuario, ARM64 y Windows x64 completo (32 archivos/licencias/guías). Siete adjuntos verificados en borrador y públicamente por tamaño/SHA256; tag al commit correcto y manifiesto descargado idéntico. Universal sin REQUEST_INSTALL_PACKAGES aceptado por Play Protect e instalado en emulador conservando lista/fecha original; usuario confirma instalación directa sin aviso en su teléfono. Android usa actualizaciones por web/Archivos y firma de producción con transición compatible. 166 pruebas aprobadas/una optativa omitida y análisis limpio. ARM64 físico/análisis automático específico, otros dispositivos, escucha prolongada y latencia API3 Android pendientes. Catálogo externo conservado, sin nuevos paquetes. [[44 Diagnostico local de instalacion y actualizaciones manuales]].
+## Referencia publicada: 0.3.15
 
-0.3.13-alpha.1 publicada, app0.3.13+22. ReleaseID 427408912; tag/código a3f8449a83aaec7da29c5762c4adfff82bd1fbc0. Android universal/ARM64 y Windows x64 completo32 archivos/licencias/guías. Siete adjuntos verificados en borrador y por API pública: tamaños/SHA256, tag al commit correcto y manifiesto descargado idéntico. Catálogo externo ab48a631237f3bf04057b6662b8b168b94b62449: diez opciones y29 paquetes/variantes verificados byte a byte; cliente real selecciona YouTube Android/Windows0.5.2 y Explorador Android/Windows0.2.2. 164 pruebas aprobadas/una optativa omitida, análisis limpio; descarga nativa Windows con álbum Busca Una Mujer, pista5,55 líneas LRC incrustadas, reproducción y bloques mdat conservados. Android físico, escucha prolongada, valoración visual del usuario y latencia API3 Android pendientes. [[42 Albumes y extensiones con identidad RP 0.3.13]].
+0.3.15-alpha.1 publicada, app0.3.15+24. ReleaseID 428029331; tag/código 9dcdeb1f0d842bfc2bb1abe098f961ba378b9e9b. Android universal exacto probado por el usuario, ARM64 y Windows x64 completo (32 archivos/licencias/guías). Siete adjuntos verificados en borrador y públicamente por tamaño/SHA256; tag al commit correcto y manifiesto descargado idéntico. Universal sin REQUEST_INSTALL_PACKAGES aceptado por Play Protect e instalado en emulador conservando lista/fecha original; usuario confirma A34 con actualización sin aviso y Pova 7 con análisis solicitado e instalación normal, sin clasificación dañina. Android usa actualizaciones por web/Archivos y firma de producción con transición compatible. 166 pruebas aprobadas/una optativa omitida y análisis limpio. ARM64 físico/análisis automático específico, otros dispositivos, escucha prolongada y latencia API3 Android pendientes. Catálogo externo conservado, sin nuevos paquetes. [[44 Diagnostico local de instalacion y actualizaciones manuales]].
 
-0.3.12-alpha.1 publicada, app0.3.12+21. ReleaseID 427362713; tag/código ea48d880c9c48c599026fe6605e4f94ce175bb85. Android universal/ARM64 y Windows x64 completo (32 archivos, licencias y guías). Siete adjuntos comprobados en borrador y por API pública: tamaño, SHA256, destino del tag y manifiesto descargado idéntico. Catálogo externo 1121a419cf4999b765de64cb0374ccf241bd28ec: diez opciones y 25 paquetes/variantes comprobados byte a byte; cliente real selecciona YouTube0.5.1, Explorador0.2.1 y Letras locales0.1.1. 155 pruebas aprobadas/una optativa omitida, análisis limpio; descarga nativa Windows con55 líneas LRC incrustadas, reproducción y bloques de audio conservados. Android físico, escucha prolongada, valoración visual del usuario y latencia API3 Android pendientes. [[41 Letras dinamicas y reproductor fijo 0.3.12]].
+La publicación se conserva como antecedente comprobado; no se consultó nuevamente GitHub en esta revisión. El código local avanza a **0.3.16+25**, sin nueva publicación ni catálogo actualizado.
 
-0.3.11-alpha.1 publicada, app0.3.11+20. Android universal/ARM64 y Windows x64 completo con licencias/guías/hashes. ReleaseID 427162160; tag/código 34211ad4760368c1c76808fff67deb1a7579c441. Siete adjuntos verificados por tamaño/SHA256/target en borrador y públicamente, tag al commit correcto y manifiesto descargado idéntico. Extensiones 2dfeaf16985ba7299e9592261a83cf52ee8d4ea5: diez opciones verificadas con cliente real y veinte paquetes/variantes de revisión fija byte a byte. YouTube Android/Windows0.5.0 y Explorador Android/Windows0.2.0, minApp0.3.11; API2 y variantes anteriores conservadas.147 pruebas aprobadas/una optativa omitida, análisis limpio; seis canciones de álbum real con etiquetas/portada/numeración iguales y foto recuperada offline comprobadas. Android físico (widgets/launcher/SAF), escucha prolongada y latencia API3 Android pendientes. [[40 Gestos widgets albumes y descargas 0.3.11]].
+## Desarrollo local 0.3.16
 
-0.3.10-alpha.1 publicada, app0.3.10+19. Android universal/ARM64 y Windows x64 completo con licencias, guías y hashes. ReleaseID 426832656; tag/código 5587b0e07dad13014e8f534854df5d80dd8f1036. Siete adjuntos verificados por tamaño/SHA256/target en borrador y públicamente; tag al commit correcto y manifiesto público idéntico. Catálogo externo 8733caa272a7d8609e9884bff2d12ba42aace43e, diez opciones descargadas con cliente real/SHA256/metadatos válidos. 142 pruebas/una optativa omitida, análisis limpio y cinco casos nativos Windows. YouTube API2/JS con audio real y M4A/OPUS comprobados; fuentes Android conservadas. Android físico, escucha prolongada y latencia API3 Android pendientes. [[39 Audio Windows M4A OPUS y YouTube]].
+Petición, decisiones, cambios y verificaciones en [[45 Portadas artistas navegacion y descargas 0.3.16]]. Incluye «Explorar» con cinco destinos fijos, descargas de álbum a disco/reintentos, búsqueda e indicador de álbum, agrupación de artistas, imágenes de entidades, candidatos de metadatos/portadas y diagnóstico/caché API 3. No considerar probado en dispositivos ni distribuido por existir en código.
 
-Informe posterior0.3.9: usuario confirma nuevas extensiones funcionales en Android, con latencia percibida3–6s al consultar/abrir contenido API3. No es fallo de apertura vacía confirmado ni benchmark instrumentado. YouTube API2 se conserva; [[38 Latencia de extensiones API 3]].
+## Capacidades publicadas y límites
 
-0.3.9 publicada: HTTP/audio remoto JS y Explorador musical/Radio por internet independientes. Verificación y límites en [[37 Explorador y radio JavaScript]].
-
-2026-10-28: el usuario confirma que 0.3.8 fue un éxito y que las extensiones JavaScript funcionan correctamente. Dispositivo, plataforma y recorrido no especificados; confirmación de uso sin nueva prueba instrumentada. Propuesta posterior en [[36 Motor JavaScript paralelo]].
-
-## Referencia publicada
-
-[Release 0.3.15](https://github.com/Joao-s02/rp_music/releases/tag/v0.3.15-alpha.1). Evidencia y límites: [[44 Diagnostico local de instalacion y actualizaciones manuales]].
-
-## Capacidades actuales
-
-| Área | Estado |
+| Área | Estado de referencia |
 | --- | --- |
-| Biblioteca local | Raíz/subcarpetas, caché, escaneo manual/progresivo, búsqueda, álbumes/artistas/carpetas y orden. |
-| Audio | Cola de selección, controles/volumen, aleatorio/repetición, anterior/avance histórico y restauración sin autoplay. |
-| Listas/archivos | Manuales/favoritos/carátulas/añadir álbumes; automáticas por extensión; borrado confirmado y metadatos de lectura. |
-| Reproductor | Carátula/espacios adaptables y controles principales fijos; disposición de extensión por contrato. |
-| Letras base | Lee incrustadas en formatos compatibles; SYLT en milisegundos añadido; importación LRC/TXT y sincronización por línea/seek. Límites concretos en nota 33. |
-| Letras automáticas | Extensión autorizada busca al seleccionar canción sin incrustadas/caché. Resultados privados, sin modificar música local. No es barrido masivo. |
-| Descargas | Nuevas M4A compatibles con etiquetas, portada y letras disponibles sin recodificar. Selector, permiso storage.download y audio hasta 64 MiB/3 min. Datos parciales/errores con aviso. |
-| Android | Sesión/notificación/carátula/controles, permisos y widget. Lectura SAF con copia temporal privada acotada; retesteo físico actual pendiente. |
-| Windows | Audio local, volumen y bandeja/salida. YouTube Windows no supera pruebas nativas previas; no declararlo funcional. |
-| Actualizaciones | Consulta opcional/manual/diaria, canales y descarga/verificación. Android usa instalador; Windows extrae ZIP manualmente. |
-| Extensiones | API1/2 conservadas y API3/JavaScript: pantallas, HTTP por etapas y audio remoto autorizados. Catálogo/permisos/recuperación; proveedor lyrics independiente. |
+| Biblioteca | Raíz/subcarpetas, caché, escaneo manual/progresivo, búsqueda, favoritos/listas, álbumes/artistas/carpetas y orden. |
+| Audio | Cola de selección, controles/volumen, aleatorio/repetición, historial y restauración sin autoplay. Android conserva just_audio/audio_service; Windows usa libmpv. |
+| Letras | Incrustadas compatibles y LRC/TXT; sincronización según tiempos disponibles. Letras locales automáticas mediante extensión/caché privada. |
+| Descargas | M4A con etiquetas/portada/letras disponibles sin recodificar; álbum completo secuencial. Informe actual de álbum faltante en canciones sueltas reabierto. |
+| Extensiones | API 1/2 preservadas; API 3 JS con vistas nativas, HTTP por etapas y audio autorizado. Catálogo externo, permisos y recuperación. |
+| YouTube Windows | Reproducción/descarga nativas y confirmación del usuario desde 0.3.10; ya no figura como función sin implementar. |
+| Android | Sesión/notificación/controles y widgets; actualizaciones web/Archivos. Instalación universal 0.3.15 informada en A34/Pova 7; no valida otros flujos o esta nueva versión. |
+| Cuenta | Sin acceso por sesión ni sincronización bidireccional implementados. Navegación pública y copias importadas sí existen. |
 
-Contratos en [[04 Extensiones]], comportamiento en [[03 Biblioteca y reproduccion]], módulos en [[31 Arquitectura vigente]].
+## Pendientes vigentes
 
-## Extensiones para esta versión
+- Entrega local0.3.16 comprobada: suite163/una omitida, Android universal firmado, Windows normal/ZIP32archivos, metadatos/portada ante503 y capturas Flutter. Resultados y límites en [[45 Portadas artistas navegacion y descargas 0.3.16]]. Aún sin publicar.
+- Prueba física Android: SD/SAF, exportación, widgets/launcher, gestos, controles, ARM64 y escucha prolongada.
+- Medir la demora API 3 en Android por etapas y primer audio; caché y diagnóstico local no acreditan mejora física.
+- Confirmar con casos del usuario el álbum faltante; cobertura de imágenes/letras no universal.
+- Funciones futuras, confianza del SDK, licencia y benchmarks en [[07 Preguntas e investigacion]] y [[05 Rendimiento]].
 
-Catálogo público: Explorador musical 0.1.0 y Radio por internet 0.1.0 (API3, app 0.3.9+), Laboratorio JS 0.1.0 (API 3, app 0.3.8+), YouTube Explorador 0.1.0 (Android, requiere app 0.3.7), YouTube Android 0.4.0, Letras locales 0.1.0, Biblioteca viva 0.1.1 y Pulso nocturno 0.1.0. Los dos nuevos paquetes requieren app 0.3.5 y revisar permisos/dominios. Variantes anteriores conservadas. Spotify cancelado/retirado del catálogo; archivos históricos no borrados y una instalación previa no se elimina automáticamente.
+## Evidencia por versión
 
-YouTube Windows 0.3.0 sigue como candidato manual fuera del catálogo recomendado, con fallos nativos conocidos. Ninguna extensión viene dentro del APK/ZIP ni adjunta a la release de la app.
+[[44 Diagnostico local de instalacion y actualizaciones manuales]] (0.3.15), [[43 Play Protect y firma de Android]] (0.3.14), [[42 Albumes y extensiones con identidad RP 0.3.13]], [[41 Letras dinamicas y reproductor fijo 0.3.12]], [[40 Gestos widgets albumes y descargas 0.3.11]], [[39 Audio Windows M4A OPUS y YouTube]], [[37 Explorador y radio JavaScript]], [[36 Motor JavaScript paralelo]]. Las fases locales y resultados parciales conservados en esas notas no sustituyen su cierre publicado.
 
-## Verificaciones registradas
-
-- Suite final138 aprobadas (130app+8ext), análisis sin incidencias. Navegación/resolución y lista100+100 públicas; radio AAC nativa Windows/pausa/reanudación/revocación aprobadas. Prueba de red optativa omitida; resultado positivo de 0.3.5 como antecedente, no prueba nueva.
-- Antecedente 0.3.5: tres casos del usuario desde resultados reales YouTube/duración real obtuvieron letras sincronizadas. Prueba completa con paquete real incrustó letras/portada/álbum en audio sintético, con original intacto.
-- Antecedente 0.3.5: lector y reproducción nativa Windows de M4A etiquetado aprobados; ffprobe/ffmpeg comprobaron etiquetas/duración/decodificación.
-- APK universal/ARM64 normales, versión/código0.3.9/18, firma v2/certificado compatible y ABIs correctos. Sin dispositivo conectado para instalación/escucha física de esta versión.
-- Windows normal0.3.9+18 recompilado tras las pruebas; ZIP de23 archivos íntegro con guías, sin paquetes de extensión ni sonda.
-- Publicación: borrador verificado antes de publicar, API pública/adjuntos/tag y manifiesto descargado confirmados después. Artefactos finales en dist/0.3.9-release.
-
-## Pendientes y límites activos
-
-Fallo posterior confirmado en 0.3.5: etiquetar MP4/M4A fragmentado desplaza la inicialización al final y produce archivos incompatibles. Corrección publicada 0.3.6+15 y copia del archivo aportado reparada, decodificada y encontrada por escáner de escritorio. 110 pruebas aprobadas y análisis limpio de cambios. Usuario confirma el 2026-10-27 que todo funciona muy bien; incidencia M4A cerrada según ese informe. [[34 Descarga M4A no visible en biblioteca]].
-
-Prueba física Android con archivos personales, selector SAF/exportación real, permisos, SD/launcher/widget y escucha prolongada; actualización entre releases conservando datos; cobertura de formatos/redes/regiones. Letras/metadatos pueden faltar o corresponder a versiones distintas; servicios con 503/timeouts observados. No se promete toda canción ni etiqueta.
-
-Más pruebas prolongadas de YouTube Windows; cuentas/listas/favoritos/historial online; edición general de etiquetas, cola editable, gapless/fundido, ecualizador como extensión; aislamiento/métricas/firmas del SDK y licencia concreta. Spotify y Play Store dejan de ser objetivos. Distribución oficial exclusivamente GitHub. [[07 Preguntas e investigacion]]. Publicaciones futuras requieren autorización y [[27 Publicacion de releases - contenido obligatorio]].
-
-0.3.6 corrige moov al final en M4A fragmentados: inicialización previa y offsets relativos validados, sin recodificar. Copia del archivo aportado y fixture fragmentado decodificados por ffmpeg; escáner de escritorio encuentra la copia. No se reescriben archivos existentes al actualizar. Confirmación posterior del usuario: buen funcionamiento de 0.3.6; incidencia M4A cerrada según su informe, sin atribuir pruebas específicas adicionales. [[34 Descarga M4A no visible en biblioteca]].
-
-Trabajo local 0.3.7+16: variante YouTube Explorador 0.1.0 con ID independiente, sin alterar YouTube Android 0.4.0 ni catálogo. Navegación pública e importación persistente implementadas localmente; cuenta/sincronización pendientes. Contratos y evidencia en [[35 Ampliacion de YouTube sin API oficial]]. No publicado.
-
-Entrega 0.3.7 publicada: navegación genérica de fuentes por entidades/páginas, importación persistente de copias independientes y variante Explorador separada de la estable. 114 pruebas aprobadas/una red optativa omitida; análisis limpio, UI 360px e intérprete/red pública aprobados. Cuenta/sincronización y prueba física pendientes. [[35 Ampliacion de YouTube sin API oficial]].
-
-Prototipo local 0.3.8+17: API 3/JavaScript en paralelo a Dart; pantallas por árbol genérico, estado/eventos y reproducción explícita autorizada. Laboratorio JS separado en repositorio de extensiones. Paquetes YouTube sin modificar. No publicado; verificación y límites en [[36 Motor JavaScript paralelo]].
-
-0.3.8 publicada: API 3/JavaScript paralelo, pantalla genérica y Laboratorio JS separado. Suite122 (120app+2ext), análisis limpio; interfaz360px, estado/permisos y compatibilidad de paquetes reales Dart comprobados. Android físico y capacidades ampliadas pendientes. [[36 Motor JavaScript paralelo]].
-
-
-Cierre local0.3.11+20:147 pruebas/una optativa omitida, análisis limpio, álbum real completo de seis canciones con etiquetas/portada/numeración y foto recuperada offline comprobados. Universal firmado y ZIP Windows normal/licencias/guías/hashes preparados; tres widgets con mínimos110×48dp y resizeMode ambos ejes verificados en APK compilado. Sin publicación nueva; Android físico/SAF/launcher y escucha prolongada pendientes. Detalle en [[40 Gestos widgets albumes y descargas 0.3.11]].
-
-
-Trabajo local0.3.12+21: letras sincronizadas prioritarias, escena visual con tiempos reales, reproductor fijo/volumen emergente y cola centrada/animada. Fuente/paquetes/pruebas específicas exclusivamente en repositorio de extensiones; catálogo publicado intacto. Contexto, verificaciones y pendientes en [[41 Letras dinamicas y reproductor fijo 0.3.12]]. Referencia pública0.3.11 conservada.
-
-## Desarrollo local 0.3.13
-
-Informe confirmado de letras 0.3.12 y corrección de álbum/identidad visual/consentimiento conjunto: [[42 Albumes y extensiones con identidad RP 0.3.13]]. No publicada.
-
-0.3.13+22 comprobada localmente:164 pruebas/una optativa omitida, análisis limpio, descarga nativa Windows con álbum/pista/LRC y audio conservado. Universal/Windows completo con hashes, cuatro candidatos externos separados. Sin publicación/push; Android físico pendiente. [[42 Albumes y extensiones con identidad RP 0.3.13]].
-
-## Play Protect — investigación 2026-10-28
-
-Usuario reporta aviso de app dañina en versiones anterior/actual. APK0.3.13 confirma firma Android Debug y permiso del actualizador, sin cambios recientes en manifiesto/firma/dependencias. Causa de clasificación desconocida; texto literal solicitado. Sin cambios de clave/ID/binarios ni apelación enviada. [[43 Play Protect y firma de Android]].
-
-## Mitigación local Play Protect0.3.14 — 2026-10-28
-
-Firma propia/rotación compatible y bloqueo sin credenciales implementados. Actualización en emuladorAPI37 conserva lista/instalación y Play Protect instalado muestra sin apps dañinas, RP Music incluida. No reproduce aún análisis de instalación del teléfono. Candidato sin publicar, revisión oficial no enviada; detalles y pendientes en [[43 Play Protect y firma de Android]].
-
-## Prueba del candidato: aviso persiste — 2026-10-28
-
-El usuario informa que sigue apareciendo como app dañina. Mitigación de firma no resuelve el caso reportado; resultado de emulador no basta. Captura/categoría y datos del dispositivo pendientes; informe oficial preparado, no enviado. [[43 Play Protect y firma de Android]].
-
-Captura recibida: Play Protect muestra bloqueo por posible app dañina para RP Music, sin categoría específica. El incidente permanece abierto. Informe actualizado; análisis externo pendiente de autorización, sin subida ni apelación enviada. [[43 Play Protect y firma de Android]].
-
-## VirusTotal completado — 2026-10-28
-
-Subida explícitamente autorizada y completada del APK0.3.14, SHA256779936fdcae781ed5ab87ab7e08345043365d982ff60e68e2008ba87a904245a. [Informe público](https://www.virustotal.com/gui/file/779936fdcae781ed5ab87ab7e08345043365d982ff60e68e2008ba87a904245a/detection). Resultado visible: ningún proveedor marca malicioso; 67 Undetected, 7 tipo no soportado y Google Failure. No contar Failure como limpio ni equiparar este informe a Play Protect: aviso del teléfono permanece sin resolver. Evidencia AX/PNG local y texto de apelación preparado, no enviado. Solicitar autorización de contacto y correo del propietario antes de presentar a Google.
-
-## Diagnóstico local 0.3.15 — 2026-10-29
-
-El usuario rechaza contactar a Google. Dos candidatos locales aíslan un único permiso; variante sin instalador interno ofrece actualizaciones por web. Compilados y comparados, 166 pruebas aprobadas/una omitida y análisis limpio. Control solicita análisis automático de Play Protect, pendiente de autorización diferenciada; no es un veredicto limpio. Problema abierto, sin publicar. [[44 Diagnostico local de instalacion y actualizaciones manuales]].
-
-Resultado posterior autorizado: control bloqueado, variante manual aceptada por Play Protect como segura e instalada sin pérdida de la lista de prueba ni cambio de fecha original. Coincidencia del APK instalado por hash. Release Android adopta modo manual por defecto; control solo diagnóstico explícito. Solución comprobada en emulador, pendiente confirmación en teléfono; todavía sin publicar. [[44 Diagnostico local de instalacion y actualizaciones manuales]].
-
-## Confirmación física y publicación autorizada — 2026-10-29
-
-El usuario confirma: «ahora google play protec ni aparece, directo instala la app». Resultado del universal en su teléfono, modelo/versiones no registrados; no se interpreta como protección desactivada ni garantía para todos los equipos. Luego autoriza publicar la nueva release. Se prepara 0.3.15+24, universal exacto probado, ARM64 y Windows completos con guías/hashes; no modificar catálogo externo. Verificación de borrador obligatoria antes de publicar. [[44 Diagnostico local de instalacion y actualizaciones manuales]].
+Publicación0.3.16 autorizada; preparación de ARM64/catálogo y borrador en curso. [[45 Portadas artistas navegacion y descargas 0.3.16]].

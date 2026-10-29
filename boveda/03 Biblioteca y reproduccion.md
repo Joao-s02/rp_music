@@ -1,7 +1,7 @@
 ---
 tipo: requisitos-y-estado
 estado: vigente
-actualizado: 2026-10-27
+actualizado: 2026-10-29
 ---
 # Biblioteca y reproduccion
 
@@ -74,3 +74,7 @@ Informe confirmado de letras 0.3.12 y corrección de álbum/identidad visual/con
 ## Cierre 0.3.13 publicado
 
 Corrección de álbum y datos parciales, interfaz de álbumes/fuentes/extensiones, cola más lenta y consentimiento conjunto publicados. Evidencia y límites vigentes: [[42 Albumes y extensiones con identidad RP 0.3.13]].
+
+## Desarrollo0.3.16
+
+Agrupación de artistas sin distinción de mayúsculas/espacios y separación coma/y/&, búsqueda plegable dentro del álbum e indicador animado de pista; descargas de álbum a disco con reintentos y fotos/portadas de entidades en fuentes. Local, no publicado; límites y evidencia en [[45 Portadas artistas navegacion y descargas 0.3.16]].

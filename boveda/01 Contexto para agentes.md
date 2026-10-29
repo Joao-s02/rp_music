@@ -1,7 +1,7 @@
 ---
 tipo: guia
 estado: vigente
-actualizado: 2026-10-26
+actualizado: 2026-10-29
 ---
 # Contexto para agentes
 
@@ -44,7 +44,7 @@ El alfa y arquitectura-reproductor-flutter.md son antecedentes, no decisiones ac
 
 ## Límites que conservar
 
-- Fuente inicial Android; Windows de esa fuente, cuentas y listas/favoritos/historial online pendientes. Vía no oficial experimental ya aceptada: no repetir esa elección.
+- Fuente inicial Android; YouTube Windows reproduce/descarga desde0.3.10. Cuentas y sincronización de listas/favoritos/historial online pendientes. Vía no oficial experimental ya aceptada: no repetir esa elección.
 - dart_eval/API 2 es una elección técnica provisional, no Dart/Flutter arbitrario ni aislamiento duro de memoria.
 - Ecualizador reservado a futura extensión: no añadir al núcleo ni darlo por implementado por un dibujo.
 - Conservar los dos ajustes de third_party/audio_service; leer su RP-MUSIC-PATCH.md antes de sustituir la dependencia.

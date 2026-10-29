@@ -1,7 +1,7 @@
 ---
 tipo: requisitos-y-evidencia
 estado: pendiente-de-medicion-formal
-actualizado: 2026-10-28
+actualizado: 2026-10-29
 ---
 # Rendimiento
 
@@ -30,3 +30,7 @@ Actualizador fuera del arranque bloqueante y descargas por fragmentos. Diagnóst
 Acordar biblioteca/equipos reproducibles, formatos/cantidad, caché fría/caliente, modo release, red y extensiones activas. Medir inicio/escaneo/primer audio/saltos/memoria/batería y comparar base sin extensiones con escenarios activos.
 
 Hay equipos informados, pero no matriz de benchmark ni presupuestos aceptados. Panel de recursos por extensión pendiente; tiempo/fallos no equivalen a RAM/CPU/batería atribuida. No sumar pruebas repetidas como cobertura nueva. [[07 Preguntas e investigacion]].
+
+## Desarrollo0.3.16
+
+Instrumentación de motor/registro, red y acción API3, caché pública optativa de60s y descargas de álbum a disco implementadas localmente. Sin benchmark Android ni presupuestos acordados; resultados y límites en [[45 Portadas artistas navegacion y descargas 0.3.16]].

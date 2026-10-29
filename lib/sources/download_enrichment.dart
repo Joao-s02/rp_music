@@ -11,10 +11,11 @@ import 'extension_source_service.dart';
 import 'download_context.dart';
 
 class EnrichedDownload {
-  EnrichedDownload(this.bytes, this.mime, this.title, this.notice);
+  EnrichedDownload(this.bytes, this.mime, this.title, this.notice, {this.file});
   final Uint8List bytes;
   final String mime, title;
   final String? notice;
+  final File? file;
 }
 
 class DownloadEnrichment {
@@ -26,6 +27,7 @@ class DownloadEnrichment {
     DownloadContext? albumContext,
     bool Function()? cancelled,
     Map<String, (Uint8List, String)>? coverCache,
+    File? audioFile,
   }) async {
     final id = track.sourceId!;
     final package = service.programs.installed[id]!.package;
@@ -37,6 +39,7 @@ class DownloadEnrichment {
     final tags = DownloadContext.merge(track, {}, albumContext);
 
     String? image = albumContext?.artwork ?? track.artwork;
+    final artworkCandidates = <String>[];
     var missing = false;
     try {
       if (!allowed()) {
@@ -62,10 +65,15 @@ class DownloadEnrichment {
           returnedTags is Map &&
           DownloadContext.normalize('${returnedTags['album'] ?? ''}') ==
               DownloadContext.normalize('${tags['album'] ?? ''}');
-      if (albumContext == null &&
-          matchingAlbum &&
-          result['artwork'] is String) {
-        image = result['artwork'] as String;
+      if (matchingAlbum) {
+        if (result['artwork'] is String) {
+          artworkCandidates.add(result['artwork'] as String);
+        }
+        if (result['artworkAlternatives'] is List) {
+          artworkCandidates.addAll(
+            (result['artworkAlternatives'] as List).whereType<String>().take(3),
+          );
+        }
       }
     } catch (_) {
       if (!allowed()) rethrow;
@@ -90,7 +98,19 @@ class DownloadEnrichment {
     }
     Uint8List? cover;
     String? coverMime;
-    if (image != null) {
+    final albumCoverKey = albumContext == null
+        ? null
+        : 'album:${DownloadContext.normalize(albumContext.album)}\n${DownloadContext.normalize(albumContext.albumArtist)}';
+    final sharedCover = albumCoverKey == null
+        ? null
+        : coverCache?[albumCoverKey];
+    if (sharedCover != null) {
+      cover = sharedCover.$1;
+      coverMime = sharedCover.$2;
+    }
+    if (image != null) artworkCandidates.add(image);
+    for (final image in artworkCandidates.toSet()) {
+      if (cover != null) break;
       try {
         final result =
             coverCache?[image] ??
@@ -104,12 +124,13 @@ class DownloadEnrichment {
           throw const FormatException('Portada no autorizada.');
         }
         coverCache?[image] = result;
+        if (albumCoverKey != null) coverCache?[albumCoverKey] = result;
+        break;
       } catch (_) {
-        missing = true;
+        // Try another explicitly returned, authorized cover of the same album.
       }
-    } else {
-      missing = true;
     }
+    if (cover == null) missing = true;
     if (!allowed()) {
       throw const FormatException('Fuente desactivada o permiso retirado.');
     }
@@ -123,11 +144,18 @@ class DownloadEnrichment {
         mime,
         track.title,
         'Audio guardado en su formato original; no se pudieron incrustar etiquetas en este contenedor.',
+        file: audioFile,
       );
     }
     Uint8List tagged;
+    File? taggedFile;
     try {
-      tagged = await _tag((bytes, tags, cover, coverMime));
+      if (audioFile == null) {
+        tagged = await _tag((bytes, tags, cover, coverMime));
+      } else {
+        taggedFile = await _tagFile(audioFile.path, tags, cover, coverMime);
+        tagged = Uint8List(0);
+      }
     } catch (_) {
       if (!allowed()) {
         throw const FormatException('Fuente desactivada o permiso retirado.');
@@ -137,6 +165,7 @@ class DownloadEnrichment {
         mime,
         track.title,
         'Audio guardado sin modificar; no se pudieron incrustar las etiquetas en este archivo.',
+        file: audioFile,
       );
     }
     if (!allowed()) {
@@ -152,6 +181,44 @@ class DownloadEnrichment {
           : missing
           ? 'Canción guardada con los metadatos disponibles; algunos datos o letras no se encontraron.'
           : null,
+      file: taggedFile,
+    );
+  }
+
+  static Future<File> _tagFile(
+    String path,
+    Map<String, dynamic> tags,
+    Uint8List? cover,
+    String? mime,
+  ) => Isolate.run(
+    () => DownloadTags.mp4File(File(path), tags, cover: cover, coverMime: mime),
+  );
+
+  static Future<EnrichedDownload> applyFile(
+    Track track,
+    File audio,
+    String mime,
+    ExtensionSourceService service, {
+    DownloadContext? albumContext,
+    bool Function()? cancelled,
+    Map<String, (Uint8List, String)>? coverCache,
+  }) async {
+    final reader = await audio.open();
+    late Uint8List header;
+    try {
+      header = await reader.read(12);
+    } finally {
+      await reader.close();
+    }
+    return apply(
+      track,
+      header,
+      mime,
+      service,
+      albumContext: albumContext,
+      cancelled: cancelled,
+      coverCache: coverCache,
+      audioFile: audio,
     );
   }
 

@@ -85,9 +85,14 @@ void main() {
       tester.view.physicalSize = Size(width, 800);
       tester.view.devicePixelRatio = 1;
       tester.platformDispatcher.textScaleFactorTestValue = 1.3;
+      tester.platformDispatcher.accessibilityFeaturesTestValue =
+          FakeAccessibilityFeatures(disableAnimations: true);
       addTearDown(tester.view.resetPhysicalSize);
       addTearDown(tester.view.resetDevicePixelRatio);
       addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+      addTearDown(
+        tester.platformDispatcher.clearAccessibilityFeaturesTestValue,
+      );
       final tracks = List.generate(
         12,
         (i) => Track(

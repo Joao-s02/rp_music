@@ -1,7 +1,7 @@
 ---
 tipo: arquitectura-observada
-estado: publicada-0.3.9-con-limites
-actualizado: 2026-10-28
+estado: publicada-0.3.15-y-desarrollo-local-0.3.16
+actualizado: 2026-10-29
 ---
 # Arquitectura vigente
 
@@ -20,7 +20,7 @@ Mapa de la implementación observada en el código de 0.3.8, no propuesta de rec
 | Arranque | Configura almacenamiento, audio/sesión, notificaciones, actualizador y programas; conecta plataforma y restaura sesión sin autoplay. | [main.dart](../lib/main.dart) |
 | Biblioteca | Estado observable con ChangeNotifier: raíz, catálogo/caché, favoritos/listas, preferencias y operaciones de archivo. | [LibraryController](../lib/app/library_controller.dart) |
 | Interfaz | Pantallas Material, tema, navegación adaptable, álbum, reproductor expandido y carátulas/listas. | [MusicApp](../lib/app/music_app.dart), [tema](../lib/app/music_theme.dart), [álbum](../lib/app/album_detail_view.dart), [reproductor](../lib/app/expanded_player.dart) |
-| Modelos | Track, artistas derivados por coma, formato conocido y orden, sin edición de etiquetas del archivo. | [Track](../lib/domain/track.dart), [orden](../lib/domain/track_sort.dart) |
+| Modelos | Track, artistas derivados (coma; local0.3.16 añade y/& y agrupación sin distinguir mayúsculas), formato conocido y orden, sin edición de etiquetas del archivo. | [Track](../lib/domain/track.dart), [orden](../lib/domain/track_sort.dart) |
 | Archivos | Selección/escaneo/metadatos/borrado; Android delega a canal nativo y Windows usa rutas/lector Dart en trabajo separado. | [MusicFiles](../lib/data/music_files.dart), [scanner](../lib/data/library_scanner.dart), [scanner Android](../android/app/src/main/kotlin/com/example/rp_music/LibraryScanner.kt) |
 | Persistencia | JSON en soporte de app, escrituras serializadas, temporal/archivo anterior y recuperación desde respaldo. | [LocalStore](../lib/data/local_store.dart) |
 | Audio | MusicHandler: cola, comandos, estado multimedia, carga/errores/generaciones, historial y sesión. just_audio/audio_session y AudioService en Android. | [MusicHandler](../lib/playback/music_handler.dart), [configuración](../lib/playback/playback_config.dart) |
@@ -66,7 +66,7 @@ LocalStore conserva archivos backup y usa pending durante escritura. Las carpeta
 
 ## Audio y plataformas
 
-Dependencias actuales en [pubspec](../pubspec.yaml): just_audio, audio_session, audio_service y backend Windows just_audio_windows_plus 0.5.5. audio_service 0.18.19 se resuelve a copia local mediante dependency_overrides; [parche](../third_party/audio_service/RP-MUSIC-PATCH.md) documenta dos ajustes Android. No sustituirla por Pub sin revisar y validar comportamiento.
+Dependencias actuales en [pubspec](../pubspec.yaml): just_audio, audio_session, audio_service y backend Windows just_audio_media_kit2.1.0/libmpv. audio_service 0.18.19 se resuelve a copia local mediante dependency_overrides; [parche](../third_party/audio_service/RP-MUSIC-PATCH.md) documenta dos ajustes Android. No sustituirla por Pub sin revisar y validar comportamiento.
 
 Android usa servicio multimedia y canales nativos de biblioteca/sistema. Windows usa su backend y canal de ciclo de vida para bandeja/salida. No inferir de esto DSP, DAC, SMTC completo o cualquier códec comprobado. Evidencia específica de cada entrega en las notas de pruebas.
 
@@ -137,3 +137,7 @@ Tras resultado seguro de Play Protect frente a bloqueo del control, el perfil ma
 ## Cierre 0.3.15 publicado
 
 Actualización Android por web/Archivos sin permiso para instalar paquetes y firma compatible publicados. Usuario confirma instalación sin aviso en su teléfono; alcance y evidencia: [[44 Diagnostico local de instalacion y actualizaciones manuales]].
+
+## Desarrollo0.3.16
+
+SourceAudioTransfer.receiveFile transmite audio al temporal; DownloadTags.mp4File etiqueta cabeceras MP4 acotadas y conserva payload por flujo; AlbumDownload conserva índices/carpeta en reintentos y Android SAF recibe ruta privada. JavascriptScreenService incorpora caché optativa por revisión de permisos y tiempos por fase. Navegación reúne contribuciones en Explorar; identidades locales de artista normalizadas sin reescribir música. Alcance/evidencia en [[45 Portadas artistas navegacion y descargas 0.3.16]].

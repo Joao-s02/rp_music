@@ -1,7 +1,7 @@
 ---
 tipo: historial
 estado: vigente
-actualizado: 2026-10-28
+actualizado: 2026-10-29
 ---
 # Registro de cambios
 
@@ -613,3 +613,28 @@ El usuario confirma: «ahora google play protec ni aparece, directo instala la a
 ## Publicación comprobada 0.3.15 — 2026-10-29
 
 0.3.15-alpha.1 publicada, app0.3.15+24. ReleaseID 428029331; tag/código 9dcdeb1f0d842bfc2bb1abe098f961ba378b9e9b. Android universal exacto probado por el usuario, ARM64 y Windows x64 completo (32 archivos/licencias/guías). Siete adjuntos verificados en borrador y públicamente por tamaño/SHA256; tag al commit correcto y manifiesto descargado idéntico. Universal sin REQUEST_INSTALL_PACKAGES aceptado por Play Protect e instalado en emulador conservando lista/fecha original; usuario confirma instalación directa sin aviso en su teléfono. Android usa actualizaciones por web/Archivos y firma de producción con transición compatible. 166 pruebas aprobadas/una optativa omitida y análisis limpio. ARM64 físico/análisis automático específico, otros dispositivos, escucha prolongada y latencia API3 Android pendientes. Catálogo externo conservado, sin nuevos paquetes. [[44 Diagnostico local de instalacion y actualizaciones manuales]].
+
+## Confirmación en dos dispositivos reales — 2026-10-29
+
+El usuario informa resultados de la 0.3.15 publicada:
+
+- Samsung Galaxy A34: no apareció Play Protect; actualización normal.
+- Tecno Pova 7: apareció la solicitud de análisis de Play Protect; la app se instaló normalmente y no fue clasificada como dañina.
+
+Son dos dispositivos confirmados por el usuario, no pruebas físicas realizadas por el agente ni dispositivos adicionales al informe anterior sin modelo. No se registra una variante de APK, hash, versión de Android/Play Protect ni prueba de reproducción nuevos porque no fueron especificados. Se confirma resuelto el bloqueo de instalación en ambos casos reportados; no se infiere protección desactivada ni garantía para todos los equipos. Binarios y adjuntos publicados permanecen intactos. [[44 Diagnostico local de instalacion y actualizaciones manuales]].
+
+## Desarrollo local0.3.16 — 2026-10-29
+
+Usuario confirma ocho requisitos y elige Explorar único/descarga a archivo con progreso y reintento sin segundo plano persistente. Casos de regresión: La Incondicional y Las Noches sueltas. Implementación local y pruebas de navegación/álbum/artistas/descargas, paquetes externos y diagnóstico/caché API3 en [[45 Portadas artistas navegacion y descargas 0.3.16]]. Suite163 aprobadas/una omitida y escritor de65MiB con payload intacto. Consultas reales recuperan álbumes, pero enriquecimiento posterior reproduce MusicBrainz503 y ausencia de portada; no se declara cerrada la regresión física. Documentación distingue publicado0.3.15 de local0.3.16 y retira estados actuales contradictorios; antecedentes conservados en notas de versión. Sin push/publicación.
+
+Cierre local0.3.16: respaldo de vídeo exacto comprobado ante MusicBrainz503 con portada1200×1200; cuatro paquetes Dart finales pasan pruebas, cinco candidatos externos con hashes. Android universal normal firmado y Windows normal compilados; ZIP32archivos íntegro, guías/manifiesto en dist/0.3.16-local. Capturas históricas restauradas. Cero dispositivos ADB. No publicado ni push; [[45 Portadas artistas navegacion y descargas 0.3.16]].
+
+## Publicación0.3.16 autorizada — 2026-10-29
+
+El usuario solicita «sube la nueva release». Se prepara ARM64 firmado además del universal/Windows normales ya comprobados, cinco actualizaciones de catálogo externo, tres guías y manifiesto. Verificar borrador por tamaño/SHA256/tag y confirmar después por API pública. Las pruebas físicas y latencia Android siguen pendientes; no hay confirmación de uso del usuario de0.3.16.
+
+ARM64 normal final compilado140.9s; versión0.3.16/código25, soloarm64-v8a y firma de producción/transición compatibles verificados. Sin REQUEST_INSTALL_PACKAGES; no equivale a prueba física ni veredicto Play Protect nuevo.
+
+## Comprobación previa de publicación
+
+Tres binarios normales preparados: universal exacto de la entrega local, ARM64 firmado140.9s y Windows0.3.16+25/ZIP32archivos. Siete adjuntos con SHA256: universal, ARM64, Windows, USO, PRUEBAS, CAMBIOS y manifiesto. Catálogo externo publicado enb74564aaee444294580ff1aefa7a6e8f337fabcd: diez opciones y34paquetes/variantes comprobados contra los bytes públicos; cliente real selecciona YouTube0.5.3, Explorador0.2.3 y Explorador JS0.1.1, conservando las variantes anteriores para0.3.15. Publicación de la app pendiente de comprobación del borrador.

@@ -89,14 +89,14 @@ void main() {
       expect(find.text('24b Hi-Res'), findsNothing);
       await tester.ensureVisible(find.text('Reproducir'));
       await tester.tap(find.text('Reproducir'));
-      await tester.pumpAndSettle();
+      await tester.pump(const Duration(milliseconds: 400));
       expect(audio.tracks.length, 2);
       expect(audio.shuffle, isFalse);
       await tester.tap(find.byTooltip('Añadir álbum a una lista'));
       expect(saved, isTrue);
       await tester.ensureVisible(find.byKey(const ValueKey('album-queue')));
       await tester.tap(find.byKey(const ValueKey('album-queue')));
-      await tester.pumpAndSettle();
+      await tester.pump(const Duration(milliseconds: 400));
       expect(tester.takeException(), isNull);
       await tester.runAsync(() async {
         final image =
@@ -172,7 +172,9 @@ void main() {
       final audio = MusicHandler(player: FakePlayer());
       await tester.pumpWidget(MusicApp(library: library, audio: audio));
       await tester.pumpAndSettle();
-      expect(find.byType(NavigationDestination), findsNWidgets(6));
+      expect(find.byType(NavigationDestination), findsNWidgets(5));
+      await tester.tap(find.text('Explorar').last);
+      await tester.pumpAndSettle();
       await tester.tap(find.byIcon(Icons.cloud_outlined).last);
       await tester.pumpAndSettle();
       expect(find.byType(ExtensionSourceView), findsOneWidget);

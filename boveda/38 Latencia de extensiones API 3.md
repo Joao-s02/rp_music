@@ -1,7 +1,7 @@
 ---
 tipo: diagnostico-y-propuesta
 estado: pendiente-de-medicion-android
-actualizado: 2026-10-28
+actualizado: 2026-10-29
 ---
 # Latencia de extensiones API 3
 
@@ -42,3 +42,7 @@ Dos escrituras por invocación, registro87–88KB en este caso. Una prueba diagn
 4. Conservar contenido previo mientras carga y distinguir carga/error; esto mejora experiencia, no implica que el servidor responda antes.
 
 Solo tras medir mejora real reconsiderar migración de YouTube. No se modifica motor/app/paquetes/versiones/publicaciones en este diagnóstico. README y notas actualizados localmente; sin push.
+
+## Desarrollo0.3.16
+
+Diagnóstico por fases y caché optativa acotada de páginas públicas añadidos al código; prueba controlada verifica reutilización e invalidación por permisos. No declara solucionada la demora Android. Evidencia vigente en [[45 Portadas artistas navegacion y descargas 0.3.16]].

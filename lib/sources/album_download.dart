@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:async';
 
 import 'package:file_picker/file_picker.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -43,28 +44,49 @@ class AlbumDownload extends ChangeNotifier {
   int saved = 0, failed = 0, processed = 0;
   String current = '', message = '';
   final List<String> failures = [];
+  final Set<int> failedIndices = {};
+  final Set<int> savedIndices = {};
+  String? destination;
+  int receivedBytes = 0;
+  int? totalBytes;
+  DateTime? progressNotified;
+  Future<void> retryFailed() async {
+    if (running || failedIndices.isEmpty) return;
+    finished = false;
+    cancelled = false;
+    failures.clear();
+    failed = 0;
+    processed = savedIndices.length;
+    await run(retrying: true);
+  }
+
   void cancel() {
     cancelled = true;
     notifyListeners();
   }
 
-  Future<void> run() async {
+  Future<void> run({bool retrying = false}) async {
     if (running || finished) return;
     running = true;
     notifyListeners();
     try {
       const channel = MethodChannel('rp_music/library');
-      final folder = chooseFolder != null
-          ? await chooseFolder!()
-          : Platform.isAndroid
-          ? await channel.invokeMethod<String>('chooseDownloadFolder')
-          : await FilePicker.getDirectoryPath(
-              dialogTitle: 'Carpeta para el álbum',
-            );
+      final folder =
+          destination ??
+          (chooseFolder != null
+              ? await chooseFolder!()
+              : Platform.isAndroid
+              ? await channel.invokeMethod<String>('chooseDownloadFolder')
+              : await FilePicker.getDirectoryPath(
+                  dialogTitle: 'Carpeta para el álbum',
+                ));
       if (folder == null || cancelled) {
         cancelled = true;
         return;
       }
+      destination = folder;
+      final retryIndices = Set<int>.of(failedIndices);
+      failedIndices.clear();
       final sourceId = tracks.first.sourceId!;
       final package = service.programs.installed[sourceId]?.package;
       bool stopped() =>
@@ -72,34 +94,68 @@ class AlbumDownload extends ChangeNotifier {
           !service.available(sourceId) ||
           service.programs.installed[sourceId]?.package != package ||
           !service.programs.allowed(sourceId, 'storage.download');
-      // A batch holds one audio file in memory; each file receives the same album.
+      // Audio payloads stream to disk; only bounded MP4 metadata enters memory.
       final coverCache = <String, (Uint8List, String)>{};
       for (var i = 0; i < tracks.length; i++) {
+        if (retrying && !retryIndices.contains(i)) continue;
         if (stopped()) {
           cancelled = true;
           break;
         }
         final track = tracks[i];
         current = track.title;
+        receivedBytes = 0;
+        totalBytes = null;
         notifyListeners();
+        Directory? temporary;
         try {
-          final audio = await (receive ?? SourceAudioTransfer.receive)(
-            track,
-            service,
-          );
-          if (stopped()) {
-            cancelled = true;
-            break;
+          late EnrichedDownload enriched;
+          if (receive != null) {
+            final audio = await receive!(track, service);
+            if (stopped()) {
+              cancelled = true;
+              break;
+            }
+            enriched = await DownloadEnrichment.apply(
+              track,
+              audio.$1,
+              audio.$2,
+              service,
+              albumContext: album.at(i + 1, tracks.length),
+              cancelled: stopped,
+              coverCache: coverCache,
+            );
+          } else {
+            final root = Platform.isAndroid
+                ? await getTemporaryDirectory()
+                : Directory.systemTemp;
+            temporary = await root.createTemp('rp_album_');
+            final audio = await SourceAudioTransfer.receiveFile(
+              track,
+              service,
+              temporary,
+              cancelled: stopped,
+              onProgress: (received, total) {
+                receivedBytes = received;
+                totalBytes = total;
+                final now = DateTime.now();
+                if (progressNotified == null ||
+                    now.difference(progressNotified!).inMilliseconds >= 150) {
+                  progressNotified = now;
+                  notifyListeners();
+                }
+              },
+            );
+            enriched = await DownloadEnrichment.applyFile(
+              track,
+              audio.$1,
+              audio.$2,
+              service,
+              albumContext: album.at(i + 1, tracks.length),
+              cancelled: stopped,
+              coverCache: coverCache,
+            );
           }
-          final enriched = await DownloadEnrichment.apply(
-            track,
-            audio.$1,
-            audio.$2,
-            service,
-            albumContext: album.at(i + 1, tracks.length),
-            cancelled: stopped,
-            coverCache: coverCache,
-          );
           if (stopped()) {
             cancelled = true;
             break;
@@ -116,7 +172,10 @@ class AlbumDownload extends ChangeNotifier {
             await channel.invokeMethod<String>('writeDownload', {
               'folder': folder,
               'name': name,
-              'bytes': enriched.bytes,
+              if (enriched.file != null)
+                'path': enriched.file!.path
+              else
+                'bytes': enriched.bytes,
               'mime': enriched.mime,
             });
           } else {
@@ -131,7 +190,17 @@ class AlbumDownload extends ChangeNotifier {
               '${target.path}.${DateTime.now().microsecondsSinceEpoch}.part',
             );
             try {
-              await temporary.writeAsBytes(enriched.bytes, flush: true);
+              if (enriched.file != null) {
+                final sink = temporary.openWrite();
+                try {
+                  await sink.addStream(enriched.file!.openRead());
+                  await sink.flush();
+                } finally {
+                  await sink.close();
+                }
+              } else {
+                await temporary.writeAsBytes(enriched.bytes, flush: true);
+              }
               if (stopped()) {
                 cancelled = true;
                 break;
@@ -141,6 +210,7 @@ class AlbumDownload extends ChangeNotifier {
               if (await temporary.exists()) await temporary.delete();
             }
           }
+          savedIndices.add(i);
           saved++;
           if (enriched.notice != null) message = enriched.notice!;
         } catch (error) {
@@ -148,6 +218,7 @@ class AlbumDownload extends ChangeNotifier {
             cancelled = true;
             break;
           }
+          failedIndices.add(i);
           failed++;
           final reason = error is FormatException
               ? error.message
@@ -167,6 +238,10 @@ class AlbumDownload extends ChangeNotifier {
               ? 'No se pudo escribir en la carpeta elegida.'
               : 'No se pudo completar la descarga.';
           failures.add('${i + 1}. ${track.title}: $reason');
+        } finally {
+          if (temporary != null && await temporary.exists()) {
+            await temporary.delete(recursive: true);
+          }
         }
         processed++;
         notifyListeners();
@@ -209,6 +284,16 @@ Future<void> showAlbumDownload(BuildContext context, AlbumDownload job) async {
                     value: job.processed / job.tracks.length,
                   ),
                 if (job.current.isNotEmpty) Text(job.current),
+                if (job.running && job.receivedBytes > 0) ...[
+                  LinearProgressIndicator(
+                    value: job.totalBytes == null
+                        ? null
+                        : job.receivedBytes / job.totalBytes!,
+                  ),
+                  Text(
+                    '${(job.receivedBytes / 1048576).toStringAsFixed(1)} MiB${job.totalBytes == null ? '' : ' / ${(job.totalBytes! / 1048576).toStringAsFixed(1)} MiB'}',
+                  ),
+                ],
                 Text('${job.saved} guardadas · ${job.failed} fallidas'),
                 if (job.cancelled)
                   const Text(
@@ -230,6 +315,11 @@ Future<void> showAlbumDownload(BuildContext context, AlbumDownload job) async {
               FilledButton(
                 onPressed: job.run,
                 child: const Text('Elegir carpeta y descargar'),
+              ),
+            if (job.finished && !job.running && job.failedIndices.isNotEmpty)
+              FilledButton(
+                onPressed: job.retryFailed,
+                child: const Text('Reintentar fallidas'),
               ),
             if (job.running)
               TextButton(

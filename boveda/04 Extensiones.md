@@ -1,7 +1,7 @@
 ---
 tipo: requisitos-y-contratos
 estado: vigente-con-limites-experimentales
-actualizado: 2026-10-28
+actualizado: 2026-10-29
 ---
 # Extensiones
 
@@ -109,3 +109,7 @@ Informe confirmado de letras 0.3.12 y corrección de álbum/identidad visual/con
 ## Cierre 0.3.13 publicado
 
 Corrección de álbum y datos parciales, interfaz de álbumes/fuentes/extensiones, cola más lenta y consentimiento conjunto publicados. Evidencia y límites vigentes: [[42 Albumes y extensiones con identidad RP 0.3.13]].
+
+## Desarrollo0.3.16
+
+Explorar reúne fuentes/pantallas visuales conservando cinco destinos. Candidatos externos YouTube0.5.3/Explorador0.2.3 y Explorador JS0.1.1 en checkout independiente; catálogo anterior preservado. Regresión de álbum en canciones sueltas reabierta por informe del usuario. Evidencia en [[45 Portadas artistas navegacion y descargas 0.3.16]].

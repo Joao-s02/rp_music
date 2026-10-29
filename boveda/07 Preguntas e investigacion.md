@@ -1,7 +1,7 @@
 ---
 tipo: pendientes-y-resoluciones
 estado: vigente
-actualizado: 2026-10-28
+actualizado: 2026-10-29
 ---
 # Preguntas e investigacion
 
@@ -10,7 +10,7 @@ actualizado: 2026-10-28
 | Tema | Qué falta |
 | --- | --- |
 | Ecualizador | Próxima extensión deseada: requisitos, puntos de integración audio/DSP, compatibilidad y pruebas. No implementado ni añadido al núcleo. |
-| Fuente en línea | Windows, cuentas, listas/favoritos/historial online, artistas/álbumes completos, redes/regiones y escucha larga. |
+| Fuente en línea | Cuentas/sincronización, redes/regiones y escucha larga. Windows y navegación pública de artistas/álbumes ya entregados; regresión actual de álbum en canciones sueltas y calidad de portadas en [[45 Portadas artistas navegacion y descargas 0.3.16]]. |
 | SDK/confianza | Memoria/aislamiento, autoría/firmas, colaboración, componentes visuales amplios y métricas atribuibles. |
 | Audio avanzado | Gapless/fundido, cola editable y edición de metadatos con protección de sobrescritura. LRC/TXT por línea ya implementado en 0.3.4. Enriquecimiento de descargas en [[33 Metadatos de descargas YouTube]]. |
 | Plataformas/equipos | Retesteo físico actual, gestos/tres botones, SD/SAF, launcher/widget, actualización entre releases conservando datos y controles multimedia Windows. |
@@ -26,7 +26,7 @@ Consultar documentación primaria vigente al realizar una investigación nueva; 
 | --- | --- |
 | ¿Reconstruir alfa? | Autorizado/ejecutado preservando Git/bóveda. [[11 Reconstruccion - primera base]]. |
 | ¿Motor/persistencia/runtime sin elegir? | Elección técnica provisional implementada: just_audio/audio_service, JSON y dart_eval/API 2. [[31 Arquitectura vigente]]. |
-| ¿Android o Windows primero? | App para ambos. Fuente inicial prioriza Android por aceptación posterior; Windows de esa fuente pendiente. [[04 Extensiones]]. |
+| ¿Android o Windows primero? | App para ambos. Fuente inicial priorizó Android; audio/descarga Windows comprobados desde0.3.10. [[04 Extensiones]]. |
 | ¿Identidad/tema/fuentes? | A confirmado y tema/fuentes integrados; álbum/reproductor rediseñados. [[15 Identidad visual e icono]]. |
 | ¿Catálogo/instalación? | Archivo y repositorio GitHub, permisos y actualización explícita. [[04 Extensiones]]. |
 | ¿Varias activas/conflictos/recuperación? | Aceptados e implementados con propietarios por función, base y fallos; límites del SDK conservados. |
@@ -68,3 +68,7 @@ Primera fase publicada en 0.3.7: Explorador independiente, navegación pública 
 Primera API 3 visual publicada en 0.3.8, Dart preservado. Sigue pendiente ampliar componentes/servicios y validar Android; no equivale a SDK ilimitado ni a migración YouTube. [[36 Motor JavaScript paralelo]].
 
 API3 HTTP por etapas/audio remoto y dos extensiones publicadas en 0.3.9; no siguen como propuestas. Pendientes Android físico, escucha prolongada, audio YouTube Windows, cuentas/sincronización y aislamiento/firmas. [[37 Explorador y radio JavaScript]].
+
+## Desarrollo0.3.16 — 2026-10-29
+
+Requisitos, elecciones de navegación/descarga, regresión confirmada con La Incondicional/Las Noches, cambios locales y evidencia en [[45 Portadas artistas navegacion y descargas 0.3.16]]. No cerrar latencia Android ni regresión física por una consulta de escritorio.

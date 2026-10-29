@@ -13,10 +13,20 @@ typedef ScreenTransport = Future<Map<String, dynamic>> Function(
 
 /// Host-controlled continuations: JavaScript never receives a native fetch bridge.
 class JavascriptScreenService {
-  JavascriptScreenService(this.programs, {ScreenTransport? transport})
-    : transport = transport ?? ExtensionHttpTransport.request;
+  JavascriptScreenService(
+    this.programs, {
+    ScreenTransport? transport,
+    this.onTiming,
+  }) : transport = transport ?? ExtensionHttpTransport.request;
   final ProgramController programs;
   final ScreenTransport transport;
+  final void Function(String phase, int milliseconds)? onTiming;
+  final _cache =
+      <
+        String,
+        ({DateTime expires, Map<String, dynamic> response, int bytes})
+      >{};
+  int? _cacheRevision;
 
   Future<Map<String, dynamic>> run(
     String id,
@@ -25,6 +35,10 @@ class JavascriptScreenService {
   }) async {
     final installed = programs.installed[id];
     final revision = programs.authorizationRevision;
+    if (_cacheRevision != revision) {
+      _cache.clear();
+      _cacheRevision = revision;
+    }
     void check() {
       if (installed == null ||
           programs.installed[id] != installed ||
@@ -42,6 +56,7 @@ class JavascriptScreenService {
     Map<String, dynamic>? response;
     for (var step = 0; step < 5; step++) {
       check();
+      final execution = Stopwatch()..start();
       final data = await programs.invoke(
         id,
         'screen',
@@ -60,6 +75,7 @@ class JavascriptScreenService {
             active?.call() != false &&
             programs.authorizationRevision == revision,
       );
+      onTiming?.call('motor y registro', execution.elapsedMilliseconds);
       check();
       if (data == null) {
         throw const FormatException(
@@ -87,7 +103,46 @@ class JavascriptScreenService {
         throw const FormatException('Dominio de consulta no autorizado.');
       }
       try {
-        response = await transport(request, installed.package);
+        final cacheSeconds = request['cacheSeconds'];
+        final cacheable =
+            cacheSeconds is int && cacheSeconds > 0 && cacheSeconds <= 60;
+        final key = jsonEncode([id, request]);
+        final cached = cacheable ? _cache[key] : null;
+        if (cached != null && DateTime.now().isBefore(cached.expires)) {
+          response = Map<String, dynamic>.from(cached.response);
+          onTiming?.call('red desde caché', 0);
+        } else {
+          final network = Stopwatch()..start();
+          response = await transport(request, installed.package);
+          onTiming?.call('red', network.elapsedMilliseconds);
+          check();
+          if (cacheable &&
+              response['status'] == 200 &&
+              (response['cookies'] is! List ||
+                  (response['cookies'] as List).isEmpty)) {
+            final size = utf8.encode(jsonEncode(response)).length;
+            if (size <= 512 * 1024) {
+              _cache.removeWhere(
+                (_, value) => DateTime.now().isAfter(value.expires),
+              );
+              while (_cache.isNotEmpty &&
+                  (_cache.length >= 8 ||
+                      _cache.values.fold<int>(
+                                0,
+                                (sum, value) => sum + value.bytes,
+                              ) +
+                              size >
+                          2 * 1024 * 1024)) {
+                _cache.remove(_cache.keys.first);
+              }
+              _cache[key] = (
+                expires: DateTime.now().add(Duration(seconds: cacheSeconds)),
+                response: Map<String, dynamic>.from(response),
+                bytes: size,
+              );
+            }
+          }
+        }
       } catch (_) {
         // Operational failures are data, not malformed extension outputs.
         response = {'status': 0, 'body': '', 'cookies': <String>[]};

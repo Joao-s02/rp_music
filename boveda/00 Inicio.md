@@ -53,9 +53,11 @@ Guías para usar, compilar y programar: [Índice de documentación](../docs/READ
 La fecha de actualización no cambia la de los hechos históricos. Abrir esta carpeta como bóveda de Obsidian; los enlaces como [[00 Inicio]] son relativos. No requieren complementos.
 
 
-Última versión publicada: [[42 Albumes y extensiones con identidad RP 0.3.13]]. Confirmación del usuario de0.3.10 conservada en [[39 Audio Windows M4A OPUS y YouTube]].
+Última versión publicada: [[44 Diagnostico local de instalacion y actualizaciones manuales]]. Confirmación del usuario de0.3.10 conservada en [[39 Audio Windows M4A OPUS y YouTube]].
 
 
-Última entrega: [[42 Albumes y extensiones con identidad RP 0.3.13]]. Publicación vigente: [[42 Albumes y extensiones con identidad RP 0.3.13]].
+Última entrega publicada: [[44 Diagnostico local de instalacion y actualizaciones manuales]].
 
-Investigación de distribución vigente: [[43 Play Protect y firma de Android]] — aviso reportado, causa pendiente de clasificar.
+Antecedente de distribución: [[43 Play Protect y firma de Android]]. Resultado posterior de instalación0.3.15 en [[44 Diagnostico local de instalacion y actualizaciones manuales]].
+
+Desarrollo local en curso: [[45 Portadas artistas navegacion y descargas 0.3.16]]. Publicación de referencia0.3.15; consultar [[10 Estado del repositorio]] para distinguir implementación/verificación/distribución.

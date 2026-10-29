@@ -35,7 +35,15 @@ class DownloadContext {
     Map<String, dynamic> remote,
     DownloadContext? context,
   ) {
-    final known = track.album.trim().isNotEmpty && track.album != 'Sin álbum';
+    final known =
+        track.album.trim().isNotEmpty &&
+        ![
+          'sin álbum',
+          'sin album',
+          'unknown album',
+          'álbum desconocido',
+          'album desconocido',
+        ].contains(normalize(track.album));
     final tags = <String, dynamic>{
       'title': track.title,
       'artist': track.artist,
