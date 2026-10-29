@@ -223,6 +223,7 @@ class UpdateController extends ChangeNotifier {
   AppRelease? available;
   File? downloaded;
   Map<String, dynamic> _info = {};
+  bool get manualAndroidUpdates => android && _info['directInstall'] == false;
   HttpClient? _downloadClient;
   void _notify() {
     if (!_disposed) notifyListeners();
@@ -382,6 +383,10 @@ class UpdateController extends ChangeNotifier {
   Future<void> download() async {
     final release = available;
     if (release == null || downloading || installing) return;
+    if (manualAndroidUpdates) {
+      await openRelease();
+      return;
+    }
     downloading = true;
     _cancelled = false;
     downloaded = null;
@@ -458,6 +463,10 @@ class UpdateController extends ChangeNotifier {
   }
 
   Future<void> install() async {
+    if (manualAndroidUpdates) {
+      await openRelease();
+      return;
+    }
     final release = available;
     final file = downloaded;
     if (release == null || file == null || installing || downloading) return;
@@ -491,6 +500,10 @@ class UpdateController extends ChangeNotifier {
     if (available == null) return;
     try {
       await platform.openPage(available!.page);
+      if (manualAndroidUpdates) {
+        message = 'Descarga el APK desde la página oficial y ábrelo en Archivos para actualizar sin desinstalar.';
+        _notify();
+      }
     } catch (_) {
       message = 'No se pudo abrir la descarga.';
       _notify();

@@ -4,8 +4,11 @@ import 'dart:io';
 
 import 'package:crypto/crypto.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter/material.dart';
+import 'package:rp_music/updates/update_widgets.dart';
 import 'package:rp_music/updates/update_controller.dart';
 import 'package:rp_music/data/local_store.dart';
+import 'playback_and_ui_test.dart' show MemoryStore;
 
 Map<String, dynamic> fixture({
   String tag = 'v9.0.0-alpha.1',
@@ -108,10 +111,14 @@ class FakePlatform extends UpdatePlatform {
   final Directory directory;
   bool installerAllowed = true;
   int installs = 0;
+  bool directInstall = true;
+  int pageOpens = 0;
+  String? lastPage;
   @override
   Future<Map<String, dynamic>> info() async => {
     'arm64': true,
     'directory': directory.path,
+    'directInstall': directInstall,
   };
   @override
   Future<bool> install(File apk, AppRelease release) async {
@@ -120,7 +127,10 @@ class FakePlatform extends UpdatePlatform {
   }
 
   @override
-  Future<void> openPage(String url) async {}
+  Future<void> openPage(String url) async {
+    pageOpens++;
+    lastPage = url;
+  }
 }
 
 void main() {
@@ -230,6 +240,81 @@ void main() {
   tearDown(() async {
     await temp.delete(recursive: true);
   });
+  test(
+    'edición sin instalador abre la release sin descargar APK ni instalar',
+    () async {
+      final platform = FakePlatform(temp)..directInstall = false;
+      var requests = 0;
+      final updater = UpdateController(
+        LocalStore(temp),
+        platform: platform,
+        android: true,
+        clientFactory: () {
+          requests++;
+          return FakeClient(
+            FakeResponse([
+              utf8.encode(jsonEncode([fixture()])),
+            ]),
+          );
+        },
+      );
+      await updater.check(manual: true);
+      expect(updater.manualAndroidUpdates, isTrue);
+      await updater.download();
+      expect(requests, 1);
+      expect(updater.downloaded, isNull);
+      expect(platform.pageOpens, 1);
+      expect(
+        platform.lastPage,
+        startsWith('https://github.com/Joao-s02/rp_music/releases/tag/'),
+      );
+      await updater.install();
+      expect(platform.installs, 0);
+      expect(platform.pageOpens, 2);
+      expect(updater.message, contains('sin desinstalar'));
+      updater.dispose();
+    },
+  );
+  testWidgets(
+    'oferta sin permiso de paquetes muestra descarga web y no pausa audio',
+    (tester) async {
+      final platform = FakePlatform(temp)..directInstall = false;
+      final updates = UpdateController(
+        MemoryStore(),
+        platform: platform,
+        android: true,
+        clientFactory: () => FakeClient(
+          FakeResponse([
+            utf8.encode(jsonEncode([fixture()])),
+          ]),
+        ),
+      );
+      await tester.runAsync(() => updates.check(manual: true));
+      await tester.pumpWidget(
+        const MaterialApp(home: Scaffold(body: SizedBox())),
+      );
+      var pauses = 0;
+      unawaited(
+        showUpdateDialog(
+          tester.element(find.byType(Scaffold)),
+          updates,
+          () async {
+            pauses++;
+          },
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('Descargar desde la web'), findsOneWidget);
+      expect(find.text('Instalar actualización'), findsNothing);
+      await tester.tap(find.text('Descargar desde la web'));
+      await tester.pumpAndSettle();
+      expect(platform.pageOpens, 1);
+      expect(pauses, 0);
+      expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox());
+      updates.dispose();
+    },
+  );
   test(
     'sin internet automático es silencioso y respeta la espera diaria',
     () async {

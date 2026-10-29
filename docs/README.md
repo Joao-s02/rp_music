@@ -58,3 +58,9 @@ Otras versiones están enlazadas desde el índice de la bóveda. No actualizar r
 ## Pruebas 0.3.13
 
 [Cómo probar](PROBAR-0.3.13.md). Álbumes de descargas, interfaz RP y consentimiento conjunto. Publicada.
+
+## Revisión Android 0.3.14
+
+[Probar Play Protect](PROBAR-PLAY-PROTECT-0.3.14.md) · [Firma y custodia](ANDROID-SIGNING.md) · [Informe de revisión preparado, no enviado](PLAY-PROTECT-REVIEW.md). Candidato local; análisis instalado de emulador sin alertas, teléfono original pendiente.
+
+Candidato Android 0.3.15 y comparación de Play Protect: [prueba y límites](PROBAR-PLAY-PROTECT-0.3.15.md). Aceptado en emulador; teléfono pendiente.

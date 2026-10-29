@@ -84,3 +84,9 @@ Publicar exige autorización y el contenido de la [política de releases](../bov
 ## Trabajo local0.3.11+20
 
 Tras pruebas de integración recompilar siempre la entrada normal antes de entregar binarios. No ejecutar Flutter build y Flutter test concurrentemente. Los tests de QuickJS Windows requieren las DLL del build Windows en PATH. Widget compacto/horizontal/carátula y exportación SAF pertenecen a Android; pruebas físicas de launcher/selector se distinguen de compilación y tests de widgets Flutter. Paquetes de proveedores candidatos en rp-music-extensions/previews/0.3.11; no regenerar ni sustituir paquetes publicados anteriores.
+
+## Firma Android de distribución
+
+Desde el candidato0.3.14, una release Android exige credenciales de producción; no usa debug como fallback. Usar tools/build-android-signed.ps1 y verificar el APK final con linaje; [configuración y custodia](ANDROID-SIGNING.md). La transición inicial desde0.3.13 se abre desde Archivos/Descargas.
+
+Desde el candidato0.3.15, release utiliza por defecto actualizaciones desde web/Archivos y retira REQUEST_INSTALL_PACKAGES mediante el manifiesto de release. La herramienta de firma adopta el mismo valor predeterminado. `-NoDirectInstaller:$false` reproduce exclusivamente el control de diagnóstico; no distribuirlo. Comparación de Play Protect y límites: [prueba local](PROBAR-PLAY-PROTECT-0.3.15.md).

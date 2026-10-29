@@ -26,6 +26,7 @@ La bóveda conserva decisiones y evidencia para continuar el proyecto. Referenci
 | Marca, tema y referencias | [[15 Identidad visual e icono]] |
 | Publicaciones | [[27 Publicacion de releases - contenido obligatorio]] |
 | Última entrega y sus pruebas | [[42 Albumes y extensiones con identidad RP 0.3.13]] |
+| Alerta Android y diagnóstico local | [[43 Play Protect y firma de Android]], [[44 Diagnostico local de instalacion y actualizaciones manuales]] |
 | Corrección local de Windows y YouTube | [[39 Audio Windows M4A OPUS y YouTube]] |
 
 Guías para usar, compilar y programar: [Índice de documentación](../docs/README.md). Presentación pública: [README del proyecto](../README.md).
@@ -56,3 +57,5 @@ La fecha de actualización no cambia la de los hechos históricos. Abrir esta ca
 
 
 Última entrega: [[42 Albumes y extensiones con identidad RP 0.3.13]]. Publicación vigente: [[42 Albumes y extensiones con identidad RP 0.3.13]].
+
+Investigación de distribución vigente: [[43 Play Protect y firma de Android]] — aviso reportado, causa pendiente de clasificar.

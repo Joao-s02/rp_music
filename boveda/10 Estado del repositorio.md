@@ -87,3 +87,31 @@ Trabajo local0.3.12+21: letras sincronizadas prioritarias, escena visual con tie
 Informe confirmado de letras 0.3.12 y corrección de álbum/identidad visual/consentimiento conjunto: [[42 Albumes y extensiones con identidad RP 0.3.13]]. No publicada.
 
 0.3.13+22 comprobada localmente:164 pruebas/una optativa omitida, análisis limpio, descarga nativa Windows con álbum/pista/LRC y audio conservado. Universal/Windows completo con hashes, cuatro candidatos externos separados. Sin publicación/push; Android físico pendiente. [[42 Albumes y extensiones con identidad RP 0.3.13]].
+
+## Play Protect — investigación 2026-10-28
+
+Usuario reporta aviso de app dañina en versiones anterior/actual. APK0.3.13 confirma firma Android Debug y permiso del actualizador, sin cambios recientes en manifiesto/firma/dependencias. Causa de clasificación desconocida; texto literal solicitado. Sin cambios de clave/ID/binarios ni apelación enviada. [[43 Play Protect y firma de Android]].
+
+## Mitigación local Play Protect0.3.14 — 2026-10-28
+
+Firma propia/rotación compatible y bloqueo sin credenciales implementados. Actualización en emuladorAPI37 conserva lista/instalación y Play Protect instalado muestra sin apps dañinas, RP Music incluida. No reproduce aún análisis de instalación del teléfono. Candidato sin publicar, revisión oficial no enviada; detalles y pendientes en [[43 Play Protect y firma de Android]].
+
+## Prueba del candidato: aviso persiste — 2026-10-28
+
+El usuario informa que sigue apareciendo como app dañina. Mitigación de firma no resuelve el caso reportado; resultado de emulador no basta. Captura/categoría y datos del dispositivo pendientes; informe oficial preparado, no enviado. [[43 Play Protect y firma de Android]].
+
+Captura recibida: Play Protect muestra bloqueo por posible app dañina para RP Music, sin categoría específica. El incidente permanece abierto. Informe actualizado; análisis externo pendiente de autorización, sin subida ni apelación enviada. [[43 Play Protect y firma de Android]].
+
+## VirusTotal completado — 2026-10-28
+
+Subida explícitamente autorizada y completada del APK0.3.14, SHA256779936fdcae781ed5ab87ab7e08345043365d982ff60e68e2008ba87a904245a. [Informe público](https://www.virustotal.com/gui/file/779936fdcae781ed5ab87ab7e08345043365d982ff60e68e2008ba87a904245a/detection). Resultado visible: ningún proveedor marca malicioso; 67 Undetected, 7 tipo no soportado y Google Failure. No contar Failure como limpio ni equiparar este informe a Play Protect: aviso del teléfono permanece sin resolver. Evidencia AX/PNG local y texto de apelación preparado, no enviado. Solicitar autorización de contacto y correo del propietario antes de presentar a Google.
+
+## Diagnóstico local 0.3.15 — 2026-10-29
+
+El usuario rechaza contactar a Google. Dos candidatos locales aíslan un único permiso; variante sin instalador interno ofrece actualizaciones por web. Compilados y comparados, 166 pruebas aprobadas/una omitida y análisis limpio. Control solicita análisis automático de Play Protect, pendiente de autorización diferenciada; no es un veredicto limpio. Problema abierto, sin publicar. [[44 Diagnostico local de instalacion y actualizaciones manuales]].
+
+Resultado posterior autorizado: control bloqueado, variante manual aceptada por Play Protect como segura e instalada sin pérdida de la lista de prueba ni cambio de fecha original. Coincidencia del APK instalado por hash. Release Android adopta modo manual por defecto; control solo diagnóstico explícito. Solución comprobada en emulador, pendiente confirmación en teléfono; todavía sin publicar. [[44 Diagnostico local de instalacion y actualizaciones manuales]].
+
+## Confirmación física y publicación autorizada — 2026-10-29
+
+El usuario confirma: «ahora google play protec ni aparece, directo instala la app». Resultado del universal en su teléfono, modelo/versiones no registrados; no se interpreta como protección desactivada ni garantía para todos los equipos. Luego autoriza publicar la nueva release. Se prepara 0.3.15+24, universal exacto probado, ARM64 y Windows completos con guías/hashes; no modificar catálogo externo. Verificación de borrador obligatoria antes de publicar. [[44 Diagnostico local de instalacion y actualizaciones manuales]].

@@ -1,0 +1,14 @@
+Please review the Google Play Protect classification of RP Music (package com.example.rp_music).
+
+Users report that, after the installation-time analysis, Play Protect displays the Spanish warning "Se bloqueó la app dañina" / "Es posible que esta app sea dañina" for RP Music. The warning persists when the user tests our 0.3.14+23 review candidate. We have a screenshot of this warning, but do not yet have a specific threat category or the affected device/Play Protect version.
+
+Exact APK SHA256: 779936fdcae781ed5ab87ab7e08345043365d982ff60e68e2008ba87a904245a
+VirusTotal report: https://www.virustotal.com/gui/file/779936fdcae781ed5ab87ab7e08345043365d982ff60e68e2008ba87a904245a/detection
+The completed report shows no security vendor flagging the file as malicious. Its Google engine result is FAILURE, not a clean verdict. We do not treat these results as proof that the app is harmless or the classification is a false positive.
+
+RP Music is a local/offline music player with optional user-authorized network sources and code extensions. It declares internet/network, media playback/notification and explicit update-installation permissions; no SMS, contacts, accessibility or notification-listener access. Updates validate package identity, version, hash and signer before invoking Android's installer. Extensions require installation and declared grants; we do not claim all runtimes provide hard isolation.
+
+We corrected a debug-signing publication configuration with a protected production key and Android signing-certificate rotation. The package name is unchanged. Android9+ uses the production signer; older Android retains the legacy signer for update compatibility. This correction is not claimed to cure the detection. The same APK updated an API37 emulator without uninstalling or losing a synthetic playlist, and an installed-app Play Protect scan on that emulator reported no harmful apps. This does not reproduce or clear the physical-device installation warning.
+
+Public source: https://github.com/Joao-s02/rp_music
+Please review the classification of this exact APK. This submission requests review of the current warning, not advice about a future implementation.

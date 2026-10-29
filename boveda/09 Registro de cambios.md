@@ -567,3 +567,45 @@ El usuario solicita continuar y luego subir la nueva release. Se publica0.3.12+2
 ## Publicación autorizada — 2026-10-28
 
 El usuario solicita subir la nueva release. Se prepara0.3.13+22 con universal/ARM64/Windows, guías/hashes y cuatro paquetes externos actualizados; comprobación de borrador y pública antes de confirmar publicación. [[42 Albumes y extensiones con identidad RP 0.3.13]].
+
+## Play Protect — investigación 2026-10-28
+
+Usuario reporta aviso de app dañina en versiones anterior/actual. APK0.3.13 confirma firma Android Debug y permiso del actualizador, sin cambios recientes en manifiesto/firma/dependencias. Causa de clasificación desconocida; texto literal solicitado. Sin cambios de clave/ID/binarios ni apelación enviada. [[43 Play Protect y firma de Android]].
+
+## Aclaración del análisis Play Protect — 2026-10-28
+
+Usuario precisa: análisis antes indicaba segura; en versiones anterior/actual termina con advertencia de posible daño, permitiendo instalar. No es solo solicitud de escaneo. Categoría/texto literal pendientes; no afirmar falso positivo ni causa por firma debug. [[43 Play Protect y firma de Android]].
+
+## Mitigación local Play Protect0.3.14 — 2026-10-28
+
+Firma propia/rotación compatible y bloqueo sin credenciales implementados. Actualización en emuladorAPI37 conserva lista/instalación y Play Protect instalado muestra sin apps dañinas, RP Music incluida. No reproduce aún análisis de instalación del teléfono. Candidato sin publicar, revisión oficial no enviada; detalles y pendientes en [[43 Play Protect y firma de Android]].
+
+Cierre de mitigación local0.3.14:164 pruebas/una optativa omitida, análisis limpio. APK final comprobado por firmas/rangos y hash instalado; Play Protect en emulador sin apps dañinas, RP Music recién analizada. Pendiente resultado de instalación en teléfono afectado; no se presenta como problema resuelto globalmente. [[43 Play Protect y firma de Android]].
+
+## Prueba del candidato: aviso persiste — 2026-10-28
+
+El usuario informa que sigue apareciendo como app dañina. Mitigación de firma no resuelve el caso reportado; resultado de emulador no basta. Captura/categoría y datos del dispositivo pendientes; informe oficial preparado, no enviado. [[43 Play Protect y firma de Android]].
+
+Captura recibida: Play Protect muestra bloqueo por posible app dañina para RP Music, sin categoría específica. El incidente permanece abierto. Informe actualizado; análisis externo pendiente de autorización, sin subida ni apelación enviada. [[43 Play Protect y firma de Android]].
+
+## VirusTotal autorizado — 2026-10-28
+
+El usuario autoriza explícitamente subir el APK0.3.14 de revisión a VirusTotal tras conocer la compartición del archivo/informe. Hash779936fdcae781ed5ab87ab7e08345043365d982ff60e68e2008ba87a904245a verificado localmente. Consulta previa del hash: Item not found. Archivo seleccionado y Confirm upload pulsado; subida en curso, no confundir con análisis completado. No autoriza todavía apelación/contacto a Google.
+
+## VirusTotal completado — 2026-10-28
+
+Subida explícitamente autorizada y completada del APK0.3.14, SHA256779936fdcae781ed5ab87ab7e08345043365d982ff60e68e2008ba87a904245a. [Informe público](https://www.virustotal.com/gui/file/779936fdcae781ed5ab87ab7e08345043365d982ff60e68e2008ba87a904245a/detection). Resultado visible: ningún proveedor marca malicioso; 67 Undetected, 7 tipo no soportado y Google Failure. No contar Failure como limpio ni equiparar este informe a Play Protect: aviso del teléfono permanece sin resolver. Evidencia AX/PNG local y texto de apelación preparado, no enviado. Solicitar autorización de contacto y correo del propietario antes de presentar a Google.
+
+## Investigación local del bloqueo — 2026-10-28
+
+Usuario rechaza contactar a Google y pide intentarlo localmente. Se reproduce Harmful app blocked al actualizar0.3.14 desde Downloads en emulador; se cancela sin ignorar Play Protect. Preparado perfil0.3.15 que aísla permiso de instalación y mantiene actualizaciones por web, sin quitar música/extensiones. Diez pruebas de actualizador aprobadas; clasificación pendiente. [[44 Diagnostico local de instalacion y actualizaciones manuales]].
+
+## Comparación local preparada — 2026-10-29
+
+Control y variante0.3.15 compilados, firmados y comparados: mismo DEX/AOT/bibliotecas/recursos, solo cambia permiso REQUEST_INSTALL_PACKAGES y firmas de integridad. 166 pruebas aprobadas, una optativa omitida; análisis limpio. Emulador recuperado tras ANR sin borrar datos. Control abierto mediante instalador ACTION_VIEW solicita envío automático a Google para análisis; no pulsado, autorización consultada al usuario por su negativa previa. No hay solución confirmada ni nueva publicación. [[44 Diagnostico local de instalacion y actualizaciones manuales]].
+
+El usuario autoriza posteriormente el análisis automático. Control bloqueado; variante sin permiso de instalación recibe This app looks safe y se instala correctamente. APK instalado coincide por hash, conserva fecha original y lista de prueba. Se adopta actualización por web/Archivos como valor predeterminado Android release. Verificado en emulador API37; pendiente teléfono, sin publicación ni apelación. [[44 Diagnostico local de instalacion y actualizaciones manuales]].
+
+## Confirmación física y publicación autorizada — 2026-10-29
+
+El usuario confirma: «ahora google play protec ni aparece, directo instala la app». Resultado del universal en su teléfono, modelo/versiones no registrados; no se interpreta como protección desactivada ni garantía para todos los equipos. Luego autoriza publicar la nueva release. Se prepara 0.3.15+24, universal exacto probado, ARM64 y Windows completos con guías/hashes; no modificar catálogo externo. Verificación de borrador obligatoria antes de publicar. [[44 Diagnostico local de instalacion y actualizaciones manuales]].

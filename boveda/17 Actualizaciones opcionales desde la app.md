@@ -57,3 +57,11 @@ El usuario aprobó la propuesta junto con el informe 0.2.3. Android ya consulta 
 ## Evolución local 0.2.6
 
 Tras informe de botón Ver actualización poco útil, oferta centrada con versiones, descarga/progreso y posponer sin omitir. Windows también descarga/verifica ZIP en la app, con extracción/reemplazo manuales. Se conservan guardas Android. Ver [[21 Pruebas 0.2.5 y mejoras 0.2.6]] para implementación y validación.
+
+## Transición de firma local0.3.14
+
+Actualizador admite certificado descendiente mediante linaje Android, manteniendo comprobaciones de identidad/versión/hash y validación de sistema. Primera transición desde0.3.13 se abre desde Archivos. Firma moderna/compatibilidad antigua, pruebas y límites en [[43 Play Protect y firma de Android]]. No publicada.
+
+## Perfil experimental local 0.3.15
+
+El motor detecta si el manifiesto permite solicitar instalaciones. Sin ese permiso, consulta versiones y abre la página oficial para actualizar desde navegador/Archivos; no descarga ni invoca instalador interno ni pausa el audio. Tras aceptar Play Protect la variante y bloquear el control, este perfil pasa a ser predeterminado de release; control solo diagnóstico explícito. Verificado en emulador, pendiente teléfono. Motivo, comparación de paquetes y límites en [[44 Diagnostico local de instalacion y actualizaciones manuales]].

@@ -14,6 +14,11 @@ android {
     namespace = "com.example.rp_music"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = "30.0.16248370"
+    // Manual updates are the release default after the controlled Play Protect test.
+    // Explicit false is reserved for reproducing the diagnostic control APK.
+    if (System.getenv("RP_ANDROID_NO_DIRECT_INSTALLER") != "false") {
+        sourceSets.getByName("release").manifest.srcFile("src/reviewNoInstaller/AndroidManifest.xml")
+    }
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -32,11 +37,37 @@ android {
         versionName = flutter.versionName
     }
 
+    signingConfigs {
+        create("production") {
+            val keyPath = System.getenv("RP_ANDROID_KEYSTORE")
+            if (!keyPath.isNullOrBlank()) {
+                storeFile = file(keyPath)
+                storePassword = System.getenv("RP_ANDROID_STORE_PASSWORD")
+                keyAlias = System.getenv("RP_ANDROID_KEY_ALIAS") ?: "rp_music"
+                keyPassword = System.getenv("RP_ANDROID_KEY_PASSWORD")
+            }
+        }
+    }
+
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+            // Production credentials are supplied by the local signing tool.
+            // Never silently distribute another APK with a debug certificate.
+            signingConfig = signingConfigs.getByName("production")
+        }
+    }
+}
+
+gradle.taskGraph.whenReady {
+    val releaseRequested = allTasks.any {
+        it.project == project && it.name.contains("Release") &&
+            (it.name.startsWith("assemble") || it.name.startsWith("bundle") || it.name.startsWith("package"))
+    }
+    if (releaseRequested) {
+        listOf("RP_ANDROID_KEYSTORE", "RP_ANDROID_STORE_PASSWORD", "RP_ANDROID_KEY_PASSWORD").forEach {
+            require(!System.getenv(it).isNullOrBlank()) {
+                "Missing production signing configuration. Use tools/build-android-signed.ps1."
+            }
         }
     }
 }

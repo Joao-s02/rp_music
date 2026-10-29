@@ -125,3 +125,11 @@ Informe confirmado de letras 0.3.12 y corrección de álbum/identidad visual/con
 ## Cierre 0.3.13 publicado
 
 Corrección de álbum y datos parciales, interfaz de álbumes/fuentes/extensiones, cola más lenta y consentimiento conjunto publicados. Evidencia y límites vigentes: [[42 Albumes y extensiones con identidad RP 0.3.13]].
+
+## Transición de firma local0.3.14
+
+Actualizador admite certificado descendiente mediante linaje Android, manteniendo comprobaciones de identidad/versión/hash y validación de sistema. Primera transición desde0.3.13 se abre desde Archivos. Firma moderna/compatibilidad antigua, pruebas y límites en [[43 Play Protect y firma de Android]]. No publicada.
+
+Perfil local 0.3.15 sin instalador: capacidad nativa derivada de permisos reales del manifiesto; controlador y vista ofrecen actualización mediante página oficial cuando falta REQUEST_INSTALL_PACKAGES. No altera motor musical ni extensiones. Experimento y evidencia en [[44 Diagnostico local de instalacion y actualizaciones manuales]].
+
+Tras resultado seguro de Play Protect frente a bloqueo del control, el perfil manual pasa a ser predeterminado de release. Instalación/identidad/lista conservadas comprobadas en emulador; pendiente teléfono, sin publicar.
