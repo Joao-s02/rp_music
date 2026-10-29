@@ -2,7 +2,7 @@
 
 Reproductor Flutter para Android y Windows, ampliable mediante extensiones. Biblioteca local sin cuenta ni conexión; actualizaciones y consultas en línea opcionales.
 
-**Versión en publicación: 0.3.13-alpha.1**, aplicación **0.3.13+22**. [Descargar Android universal, ARM64 y Windows](https://github.com/Joao-s02/rp_music/releases/tag/v0.3.13-alpha.1).
+**Versión publicada: 0.3.13-alpha.1**, aplicación **0.3.13+22**. [Descargar Android universal, ARM64 y Windows](https://github.com/Joao-s02/rp_music/releases/tag/v0.3.13-alpha.1).
 
 [Guía vigente](docs/USO.md) · [Pruebas](docs/PRUEBAS-0.3.13.md) · [Cambios](docs/CAMBIOS-0.3.13.md) · [Documentación](docs/README.md)
 
@@ -10,7 +10,7 @@ Reproductor Flutter para Android y Windows, ampliable mediante extensiones. Bibl
 
 Corrección de álbum para los cuatro paquetes YouTube (0.5.2 / Explorador0.2.2), indicador de cola más lento, álbumes con funda/surcos RP y emblemas de extensiones. Catálogo como acción principal, personalización plegable y botón explícito «Aceptar todo e instalar». Búsqueda/categorías/resultados de fuentes renovados. Letras sincronizadas conservadas. Descarga nativa Windows comprobada con álbum/pista incrustados, 55 líneas sincronizadas y audio conservado.
 
-[Instalación y uso](docs/USO-0.3.13.md) · [Resultados y límites](boveda/42%20Albumes%20y%20extensiones%20con%20identidad%20RP%200.3.13.md). 164 pruebas aprobadas/una optativa omitida y análisis limpio. Android universal y Windows completo compilados y verificados localmente; pendiente prueba física Android. Publicación autorizada en preparación, con cuatro actualizaciones de catálogo y siete adjuntos.
+[Instalación y uso](docs/USO-0.3.13.md) · [Resultados y límites](boveda/42%20Albumes%20y%20extensiones%20con%20identidad%20RP%200.3.13.md). 164 pruebas aprobadas/una optativa omitida y análisis limpio. Android universal y Windows completo compilados y verificados localmente; pendiente prueba física Android. Publicada con cuatro actualizaciones de catálogo y siete adjuntos verificados.
 
 ## Novedades 0.3.12 — letras y reproductor
 

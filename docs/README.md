@@ -2,7 +2,7 @@
 
 [Instalación y uso](USO-0.3.13.md) · [Pruebas](PRUEBAS-0.3.13.md) · [Cambios](CAMBIOS-0.3.13.md) · [Release](RELEASE-0.3.13.md)
 
-Álbumes de descargas corregidos, identidad RP en álbumes/fuentes, cola más lenta y consentimiento conjunto. Android universal/ARM64 y Windows completo en publicación. Android físico y escucha prolongada pendientes.
+Álbumes de descargas corregidos, identidad RP en álbumes/fuentes, cola más lenta y consentimiento conjunto. Android universal/ARM64 y Windows completo publicados. Android físico y escucha prolongada pendientes.
 
 ## Antecedente 0.3.12
 
@@ -57,4 +57,4 @@ Otras versiones están enlazadas desde el índice de la bóveda. No actualizar r
 
 ## Pruebas 0.3.13
 
-[Cómo probar](PROBAR-0.3.13.md). Álbumes de descargas, interfaz RP y consentimiento conjunto. En publicación.
+[Cómo probar](PROBAR-0.3.13.md). Álbumes de descargas, interfaz RP y consentimiento conjunto. Publicada.
