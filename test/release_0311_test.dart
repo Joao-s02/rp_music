@@ -191,13 +191,18 @@ void main() {
     final previous = File('${dir.path}/01 - Original - Pista 0.m4a')
       ..writeAsBytesSync([9, 8, 7]);
     try {
+      var failSecond = true;
+      final received = <String>[];
       final job = AlbumDownload(
         tracks,
         album,
         service,
         chooseFolder: () async => dir.path,
         receive: (t, s) async {
-          if (t.title == 'Pista 1') throw const FormatException('Unavailable');
+          received.add(t.title);
+          if (t.title == 'Pista 1' && failSecond) {
+            throw const FormatException('Unavailable');
+          }
           return (bytes, 'audio/mp4');
         },
       );
@@ -215,6 +220,14 @@ void main() {
       expect(copies.length, 2);
       expect(copies.map((f) => readMetadata(f).album).toSet(), {'Original'});
       expect(copies.map((f) => readMetadata(f).trackNumber).toSet(), {1, 3});
+      failSecond = false;
+      received.clear();
+      await job.retryFailed();
+      expect(received, ['Pista 1']);
+      expect(job.saved, 3);
+      expect(job.failed, 0);
+      expect(job.failures, isEmpty);
+      expect(previous.readAsBytesSync(), [9, 8, 7]);
       job.dispose();
       final gate = Completer<(Uint8List, String)>();
       var started = false;
@@ -237,7 +250,7 @@ void main() {
       await task;
       expect(cancelled.saved, 0);
       expect(cancelled.cancelled, true);
-      expect(dir.listSync().length, 3);
+      expect(dir.listSync().length, 4);
       cancelled.dispose();
     } finally {
       programs.dispose();

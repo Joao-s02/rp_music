@@ -1,5 +1,6 @@
 import 'album_sleeve.dart';
 import 'pulse_surface.dart';
+import 'now_playing_bars.dart';
 
 import 'dart:math';
 
@@ -19,12 +20,14 @@ class AlbumDetailView extends StatefulWidget {
     required this.onBack,
     required this.onSave,
     required this.menu,
+    this.query = '',
   });
   final List<Track> tracks;
   final MusicHandler audio;
   final LibraryController library;
   final VoidCallback onBack, onSave;
   final Widget Function(Track) menu;
+  final String query;
   @override
   State<AlbumDetailView> createState() => _AlbumDetailViewState();
 }
@@ -91,7 +94,13 @@ class _AlbumDetailViewState extends State<AlbumDetailView> {
     return StreamBuilder(
       stream: widget.audio.mediaItem,
       builder: (context, current) {
-        final shown = queue ? widget.audio.tracks : tracks;
+        final shown = (queue ? widget.audio.tracks : tracks)
+            .where(
+              (track) => '${track.title} ${track.artist}'
+                  .toLowerCase()
+                  .contains(widget.query),
+            )
+            .toList();
         return CustomScrollView(
           key: const PageStorageKey('album-detail'),
           slivers: [
@@ -306,11 +315,13 @@ class _AlbumDetailViewState extends State<AlbumDetailView> {
               ),
             ),
             if (shown.isEmpty)
-              const SliverToBoxAdapter(
+              SliverToBoxAdapter(
                 child: Padding(
-                  padding: EdgeInsets.all(24),
+                  padding: const EdgeInsets.all(24),
                   child: Text(
-                    'La cola está vacía. Reproduce el álbum para comenzar.',
+                    widget.query.isNotEmpty
+                        ? 'No hay canciones que coincidan en este álbum.'
+                        : 'La cola está vacía. Reproduce el álbum para comenzar.',
                   ),
                 ),
               ),
@@ -345,10 +356,15 @@ class _AlbumDetailViewState extends State<AlbumDetailView> {
                           SizedBox(
                             width: 26,
                             child: selected
-                                ? Icon(
-                                    Icons.graphic_eq,
-                                    color: accent,
-                                    size: 22,
+                                ? StreamBuilder(
+                                    stream:
+                                        widget.audio.player.playerStateStream,
+                                    builder: (context, state) => NowPlayingBars(
+                                      playing:
+                                          state.data?.playing ??
+                                          widget.audio.player.playing,
+                                      size: 22,
+                                    ),
                                   )
                                 : Text(
                                     (index + 1).toString().padLeft(2, '0'),

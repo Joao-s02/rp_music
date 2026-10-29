@@ -1,4 +1,11 @@
-# Documentación de RP Music 0.3.13
+# Documentación de RP Music
+
+**0.3.16+25** — [Uso](USO-0.3.16.md), [pruebas](PRUEBAS-0.3.16.md), [cambios](CAMBIOS-0.3.16.md), [release](RELEASE-0.3.16.md). Android universal/ARM64 y Windows preparados para publicación autorizada.
+
+Antecedente0.3.15: [Uso](USO-0.3.15.md), [pruebas](PRUEBAS-0.3.15.md), [cambios](CAMBIOS-0.3.15.md).
+
+## Antecedente 0.3.13
+
 
 [Instalación y uso](USO-0.3.13.md) · [Pruebas](PRUEBAS-0.3.13.md) · [Cambios](CAMBIOS-0.3.13.md) · [Release](RELEASE-0.3.13.md)
 

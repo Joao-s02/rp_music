@@ -128,7 +128,9 @@ void main() {
       expect(find.text('Elegir imagen propia'), findsOneWidget);
       await tester.tap(find.text('Usar mosaico automático'));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Extensiones'));
+      await tester.tap(find.text('Explorar').last);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Administrar extensiones'));
       await tester.pumpAndSettle();
       expect(find.text('Instalar Biblioteca viva'), findsNothing);
       await tester.tap(find.text('Explorar repositorio'));

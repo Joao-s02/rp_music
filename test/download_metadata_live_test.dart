@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:ui' as ui;
 
 import 'package:audio_metadata_reader/audio_metadata_reader.dart';
 import 'package:crypto/crypto.dart';
@@ -34,6 +35,10 @@ void main() {
             defaultValue: 'android',
           ),
           transport: (request, package) async {
+            const unavailableHost = String.fromEnvironment('METADATA_UNAVAILABLE_HOST');
+            if (unavailableHost.isNotEmpty && Uri.parse(request['url'] as String).host == unavailableHost) {
+              return {'status': 503, 'body': ''};
+            }
             final result = await ExtensionHttpTransport.request(
               request,
               package,
@@ -74,6 +79,16 @@ void main() {
         expect(tags.lyrics!.length, greaterThan(100));
         expect(tags.title, isNotEmpty);
         expect(tags.pictures, isNotEmpty);
+        const expectedAlbum = String.fromEnvironment('METADATA_EXPECTED_ALBUM');
+        if (expectedAlbum.isNotEmpty) {
+          expect(tags.album?.toLowerCase(), expectedAlbum.toLowerCase());
+        }
+        final codec = await ui.instantiateImageCodec(tags.pictures.first.bytes);
+        final frame = await codec.getNextFrame();
+        // ignore: avoid_print
+        print('LIVE_COVER_SIZE: ${frame.image.width}x${frame.image.height}');
+        frame.image.dispose();
+        codec.dispose();
         expect(tags.duration?.inMilliseconds, 4000);
         expect(sha256.convert(await original.readAsBytes()), hash);
         // Report only presence, never copyrighted lyric content.

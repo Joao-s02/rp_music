@@ -31,6 +31,11 @@ class _JavascriptScreenViewState extends State<JavascriptScreenView> {
   String? error;
   int generation = 0;
   int? audioGeneration;
+  late JavascriptScreenService service = JavascriptScreenService(
+    widget.programs,
+    onTiming: (phase, milliseconds) =>
+        widget.audio.recordEvent('Extensión JS · $phase: ${milliseconds}ms'),
+  );
   bool get enabled =>
       widget.programs.allowed(widget.extensionId, 'navigation.add');
   @override
@@ -48,6 +53,12 @@ class _JavascriptScreenViewState extends State<JavascriptScreenView> {
       busy = false;
       view = null;
       fields.clear();
+      service = JavascriptScreenService(
+        widget.programs,
+        onTiming: (phase, milliseconds) => widget.audio.recordEvent(
+          'Extensión JS · $phase: ${milliseconds}ms',
+        ),
+      );
       run();
     }
   }
@@ -79,13 +90,16 @@ class _JavascriptScreenViewState extends State<JavascriptScreenView> {
       error = null;
     });
     try {
-      final service = JavascriptScreenService(widget.programs);
+      final actionWatch = Stopwatch()..start();
       final result = await service.run(id, {
         'action': action ?? 'open',
         'fields': Map<String, String>.of(fields),
         if (widget.programs.allowed(id, 'library.read'))
           'tracks': snapshot.rows,
       }, active: () => mounted && token == generation);
+      widget.audio.recordEvent(
+        'Extensión JS · acción completa: ${actionWatch.elapsedMilliseconds}ms',
+      );
       if (!mounted ||
           id != widget.extensionId ||
           token != generation ||

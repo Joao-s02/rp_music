@@ -603,12 +603,30 @@ class _ExtensionSourceViewState extends State<ExtensionSourceView> {
                     if (index < entities.length) {
                       final entity = entities[index];
                       return ListTile(
-                        leading: Icon(
-                          entity.kind == 'artist'
-                              ? Icons.person_outline
-                              : entity.kind == 'album'
-                              ? Icons.album_outlined
-                              : Icons.playlist_play,
+                        leading: ClipRRect(
+                          borderRadius: BorderRadius.circular(
+                            entity.kind == 'artist' ? 30 : 10,
+                          ),
+                          child: SizedBox(
+                            width: 56,
+                            height: 56,
+                            child: entity.artwork == null
+                                ? Icon(
+                                    entity.kind == 'artist'
+                                        ? Icons.person_outline
+                                        : Icons.album_outlined,
+                                  )
+                                : Image.network(
+                                    entity.artwork!,
+                                    fit: BoxFit.cover,
+                                    cacheWidth: 224,
+                                    errorBuilder: (_, error, stack) => Icon(
+                                      entity.kind == 'artist'
+                                          ? Icons.person_outline
+                                          : Icons.album_outlined,
+                                    ),
+                                  ),
+                          ),
                         ),
                         title: Text(entity.title),
                         trailing: const Icon(Icons.chevron_right),

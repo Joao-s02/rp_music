@@ -5,7 +5,7 @@
 - 166 pruebas automáticas aprobadas, una de red opcional omitida; análisis del código sin incidencias. Incluye modo de actualización manual sin descarga/instalador interno y diálogo sin pausa del audio.
 - Universal: comparación de APK con el control confirma DEX, AOT Flutter, bibliotecas y recursos idénticos. Solo manifiesto y firmas de integridad diferentes; único permiso retirado REQUEST_INSTALL_PACKAGES.
 - Emulador API 37: análisis automático autorizado de ambos APK. Control bloqueado; candidato This app looks safe, instalado sin ignorar alertas. Hash del APK instalado idéntico al candidato, misma fecha original y lista de prueba conservadas.
-- Usuario en teléfono real: confirma que Play Protect ya no muestra aviso y la app se instala directamente. Dispositivo/versiones de Google no registrados; no es medición universal.
+- Usuario en dos dispositivos reales: Samsung Galaxy A34 actualiza sin mostrar Play Protect; Tecno Pova 7 solicita análisis y se instala normalmente, sin clasificación dañina. Versión de Android/Google y variante de APK no especificadas; no es medición universal.
 - Android ARM64 y Windows se compilan para esta versión y se verifican versión, estructura, firmas/ABI cuando corresponda y contenido del ZIP. No equivalen a escucha física nueva.
 
 ## Comprobaciones del usuario

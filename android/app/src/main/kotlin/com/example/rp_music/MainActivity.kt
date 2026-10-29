@@ -181,11 +181,19 @@ class MainActivity : AudioServiceActivity() {
                             val parent = android.provider.DocumentsContract.buildDocumentUriUsingTree(root, android.provider.DocumentsContract.getTreeDocumentId(root))
                             val name = call.argument<String>("name")!!
                             check(name.length <= 180 && name.none { it == '/' || it.code == 92 || it.code < 32 })
-                            val bytes = call.argument<ByteArray>("bytes")!!
-                            check(bytes.size <= 64 * 1024 * 1024)
+                            val path = call.argument<String>("path")
+                            val source = path?.let { java.io.File(it).canonicalFile }
+                            val bytes = if (source == null) call.argument<ByteArray>("bytes")!! else null
+                            if (source != null) {
+                                check(source.path.startsWith(cacheDir.canonicalPath + java.io.File.separator))
+                                check(source.isFile && source.length() <= 544L * 1024 * 1024)
+                            } else check(bytes!!.size <= 64 * 1024 * 1024)
                             created = android.provider.DocumentsContract.createDocument(contentResolver, parent, call.argument<String>("mime")!!, name)
                             check(created != null)
-                            contentResolver.openOutputStream(created!!, "w")!!.use { it.write(bytes) }
+                            contentResolver.openOutputStream(created!!, "w")!!.use { output ->
+                                if (source != null) source.inputStream().use { it.copyTo(output, 64 * 1024) }
+                                else output.write(bytes!!)
+                            }
                             runOnUiThread { result.success(created.toString()) }
                         } catch (e: Exception) {
                             created?.let { try { android.provider.DocumentsContract.deleteDocument(contentResolver, it) } catch (_: Exception) {} }

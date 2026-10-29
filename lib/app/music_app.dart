@@ -119,14 +119,14 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
     'Biblioteca',
     'Favoritos',
     'Listas',
-    'Extensiones',
+    'Explorar',
     'Ajustes',
   ];
   static const icons = [
     Icons.library_music_outlined,
     Icons.favorite_outline,
     Icons.queue_music,
-    Icons.extension_outlined,
+    Icons.explore_outlined,
     Icons.settings_outlined,
   ];
   @override
@@ -194,9 +194,7 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
         sourceDestination = null;
         page = 0;
       }
-      final selectedIndex = selectedContribution == null
-          ? page
-          : labels.length + contributions.indexOf(selectedContribution);
+      final selectedIndex = selectedContribution == null ? page : 3;
       final desktop = size.maxWidth >= 850;
       final keyboard = MediaQuery.viewInsetsOf(context).bottom > 0;
       return Scaffold(
@@ -224,11 +222,6 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
                       NavigationRailDestination(
                         icon: Icon(icons[i]),
                         label: Text(labels[i]),
-                      ),
-                    for (final entry in contributions)
-                      NavigationRailDestination(
-                        icon: ExtensionNavigationIcon(entry),
-                        label: Text(entry.label),
                       ),
                   ],
                   selectedIndex: selectedIndex,
@@ -354,7 +347,7 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
                                 if (mounted) {
                                   setState(() {
                                     query = value.toLowerCase().trim();
-                                    group = null;
+                                    if (view != 1) group = null;
                                   });
                                 }
                               },
@@ -417,7 +410,7 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
                                     'Tus canciones favoritas aparecerán aquí.',
                               ),
                               2 => playlistView(),
-                              3 => extensionView(),
+                              3 => exploreView(),
                               _ => settingsView(),
                             },
                     ),
@@ -440,9 +433,7 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
         bottomNavigationBar: desktop || keyboard
             ? null
             : NavigationBar(
-                labelBehavior: contributions.isEmpty
-                    ? NavigationDestinationLabelBehavior.alwaysShow
-                    : NavigationDestinationLabelBehavior.onlyShowSelected,
+                labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
                 selectedIndex: selectedIndex,
                 onDestinationSelected: navigate,
                 destinations: [
@@ -451,16 +442,57 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
                       icon: Icon(icons[i]),
                       label: labels[i],
                     ),
-                  for (final entry in contributions)
-                    NavigationDestination(
-                      icon: ExtensionNavigationIcon(entry),
-                      label: entry.label,
-                    ),
                 ],
               ),
       );
     },
   );
+
+  Widget exploreView() {
+    final entries = extensionDestinations(
+      library.programs,
+      Platform.operatingSystem,
+    );
+    return ListView(
+      padding: const EdgeInsets.all(20),
+      children: [
+        ListTile(
+          leading: const Icon(Icons.extension_outlined),
+          title: const Text('Administrar extensiones'),
+          subtitle: const Text('Instalar, actualizar y revisar permisos'),
+          trailing: const Icon(Icons.chevron_right),
+          onTap: () => Navigator.of(context).push(
+            MaterialPageRoute<void>(
+              builder: (_) => Scaffold(
+                appBar: AppBar(title: const Text('Extensiones')),
+                body: extensionView(),
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
+        if (entries.isEmpty)
+          const Padding(
+            padding: EdgeInsets.all(16),
+            child: Text(
+              'Instala una fuente o extensión visual para explorar música aquí.',
+            ),
+          ),
+        for (final entry in entries)
+          Card(
+            child: ListTile(
+              leading: ExtensionNavigationIcon(entry),
+              title: Text(entry.label),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => setState(() {
+                sourceDestination = entry.id;
+                page = 3;
+              }),
+            ),
+          ),
+      ],
+    );
+  }
 
   Widget empty(String text, IconData icon, {Widget? action}) => Center(
     child: SingleChildScrollView(
@@ -562,7 +594,8 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
     if (view == 1 && group != null) {
       return AlbumDetailView(
         key: ValueKey(group),
-        tracks: filtered.where((t) => groupKey(t) == group).toList(),
+        tracks: library.tracks.where((t) => groupKey(t) == group).toList(),
+        query: query,
         audio: audio,
         library: library,
         onBack: () => setState(() => group = null),
@@ -790,7 +823,11 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
               tracks
                   .where(
                     (t) => view == 2
-                        ? t.artists.contains(group)
+                        ? t.artists.any(
+                            (name) =>
+                                Track.artistKey(name) ==
+                                Track.artistKey(group!),
+                          )
                         : groupKey(t) == group,
                   )
                   .toList(),
@@ -800,8 +837,12 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
       );
     }
     final groups = <String, List<Track>>{};
+    final artistNames = <String, String>{};
     for (final track in tracks) {
-      for (final key in view == 2 ? track.artists : [groupKey(track)]) {
+      for (final name in view == 2 ? track.artists : [groupKey(track)]) {
+        final key = view == 2
+            ? artistNames.putIfAbsent(Track.artistKey(name), () => name)
+            : name;
         groups.putIfAbsent(key, () => []).add(track);
       }
     }
@@ -834,7 +875,14 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
                 child: Card(
                   clipBehavior: Clip.antiAlias,
                   child: InkWell(
-                    onTap: () => setState(() => group = key),
+                    onTap: () => setState(() {
+                      group = key;
+                      debounce?.cancel();
+                      search.clear();
+                      query = '';
+                      searchExpanded = false;
+                      searchFocus.unfocus();
+                    }),
                     child: Padding(
                       padding: const EdgeInsets.all(12),
                       child: Column(
