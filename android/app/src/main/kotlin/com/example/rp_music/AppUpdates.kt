@@ -13,12 +13,28 @@ import java.security.MessageDigest
 import java.util.concurrent.ExecutorService
 
 class AppUpdates(private val activity: MainActivity, private val worker: ExecutorService) {
+    private fun directInstallationAvailable(): Boolean =
+        activity.packageManager.getPackageInfo(activity.packageName, PackageManager.GET_PERMISSIONS)
+            .requestedPermissions?.contains(android.Manifest.permission.REQUEST_INSTALL_PACKAGES) == true
     @Suppress("DEPRECATION")
     private fun signatures(info: PackageInfo): Set<String> {
         val values = if (Build.VERSION.SDK_INT >= 28) info.signingInfo?.apkContentsSigners else info.signatures
         return values?.map { hash(it.toByteArray()) }?.toSet() ?: emptySet()
     }
     private fun hash(bytes: ByteArray): String = MessageDigest.getInstance("SHA-256").digest(bytes).joinToString("") { "%02x".format(it) }
+    private fun acceptsSigner(installed: PackageInfo, archive: PackageInfo): Boolean {
+        val current = signatures(installed)
+        if (current.isEmpty()) return false
+        if (current == signatures(archive)) return true
+        if (Build.VERSION.SDK_INT < 28) return false
+        val signing = archive.signingInfo ?: return false
+        if (signing.hasMultipleSigners()) return false
+        // Android verifies the cryptographic proof of rotation again during
+        // installation. Only a descendant of the installed signer is allowed;
+        // never accept an older APK merely because it shares an ancestor.
+        val history = signing.signingCertificateHistory?.map { hash(it.toByteArray()) }?.toSet() ?: emptySet()
+        return history.containsAll(current)
+    }
     @Suppress("DEPRECATION")
     private fun code(info: PackageInfo): Long = if (Build.VERSION.SDK_INT >= 28) info.longVersionCode else info.versionCode.toLong()
 
@@ -26,6 +42,7 @@ class AppUpdates(private val activity: MainActivity, private val worker: Executo
     fun handle(call: io.flutter.plugin.common.MethodCall, result: MethodChannel.Result) {
         when (call.method) {
             "info" -> result.success(mapOf(
+                "directInstall" to directInstallationAvailable(),
                 "arm64" to Build.SUPPORTED_ABIS.contains("arm64-v8a"),
                 "directory" to File(activity.filesDir, "updates").canonicalPath
             ))
@@ -37,6 +54,7 @@ class AppUpdates(private val activity: MainActivity, private val worker: Executo
             }
             "install" -> worker.execute {
                 try {
+                    require(directInstallationAvailable()) { "Esta edición utiliza la página oficial de descarga." }
                     val file = File(call.argument<String>("path") ?: "").canonicalFile
                     require(file.parentFile == File(activity.filesDir, "updates").canonicalFile && file.name == "rp-music-update.apk")
                     val digest = MessageDigest.getInstance("SHA-256")
@@ -48,7 +66,7 @@ class AppUpdates(private val activity: MainActivity, private val worker: Executo
                     val archive = activity.packageManager.getPackageArchiveInfo(file.path, flags) ?: error("APK ilegible")
                     require(archive.packageName == activity.packageName && code(archive) > code(installed))
                     require(archive.versionName == call.argument<String>("version"))
-                    require(signatures(installed).isNotEmpty() && signatures(installed) == signatures(archive))
+                    require(acceptsSigner(installed, archive))
                     activity.runOnUiThread {
                         try {
                             if (Build.VERSION.SDK_INT >= 26 && !activity.packageManager.canRequestPackageInstalls()) {

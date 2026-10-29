@@ -53,7 +53,9 @@ Future<void> showUpdateDialog(
               ),
             const SizedBox(height: 12),
             Text(
-              updates.android
+              updates.manualAndroidUpdates
+                  ? 'Descarga desde la página oficial y abre el APK en Archivos. No desinstales la app.'
+                  : updates.android
                   ? 'La descarga se realiza aquí. Android te pedirá confirmar la instalación.'
                   : 'El ZIP se descarga aquí. Después deberás extraerlo y cerrar la versión anterior desde la bandeja.',
             ),
@@ -70,7 +72,9 @@ Future<void> showUpdateDialog(
             onPressed: updates.installing
                 ? null
                 : () async {
-                    if (updates.downloaded == null) {
+                    if (updates.manualAndroidUpdates) {
+                      await updates.openRelease();
+                    } else if (updates.downloaded == null) {
                       await updates.download();
                     } else if (updates.android) {
                       await beforeInstall();
@@ -80,14 +84,18 @@ Future<void> showUpdateDialog(
                     }
                   },
             icon: Icon(
-              updates.downloaded == null
+              updates.manualAndroidUpdates
+                  ? Icons.open_in_browser
+                  : updates.downloaded == null
                   ? Icons.download
                   : updates.android
                   ? Icons.install_mobile
                   : Icons.folder_open,
             ),
             label: Text(
-              updates.downloaded == null
+              updates.manualAndroidUpdates
+                  ? 'Descargar desde la web'
+                  : updates.downloaded == null
                   ? 'Actualizar · descargar'
                   : updates.android
                   ? 'Instalar actualización'
@@ -221,7 +229,13 @@ class UpdateSettings extends StatelessWidget {
                   onPressed: updates.cancelDownload,
                   child: const Text('Cancelar descarga'),
                 ),
-              ] else if (updates.downloaded != null)
+              ] else if (updates.manualAndroidUpdates)
+                FilledButton.icon(
+                  onPressed: updates.openRelease,
+                  icon: const Icon(Icons.open_in_browser),
+                  label: const Text('Descargar desde la web'),
+                )
+              else if (updates.downloaded != null)
                 FilledButton.icon(
                   onPressed: updates.installing
                       ? null
@@ -246,7 +260,7 @@ class UpdateSettings extends StatelessWidget {
                   icon: const Icon(Icons.download),
                   label: Text('Descargar actualización'),
                 ),
-              if (updates.android)
+              if (updates.android && !updates.manualAndroidUpdates)
                 const Padding(
                   padding: EdgeInsets.only(top: 8),
                   child: Text(

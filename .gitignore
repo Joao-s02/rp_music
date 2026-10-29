@@ -33,6 +33,10 @@ migrate_working_dir/
 /build/
 /coverage/
 /dist/
+/.signing/
+*.p12
+*.jks
+*.keystore
 diagnostico-instalacion*.txt
 
 # Symbolication related

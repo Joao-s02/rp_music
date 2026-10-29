@@ -2,9 +2,15 @@
 
 Reproductor Flutter para Android y Windows, ampliable mediante extensiones. Biblioteca local sin cuenta ni conexión; actualizaciones y consultas en línea opcionales.
 
-**Versión publicada: 0.3.13-alpha.1**, aplicación **0.3.13+22**. [Descargar Android universal, ARM64 y Windows](https://github.com/Joao-s02/rp_music/releases/tag/v0.3.13-alpha.1).
+**Versión en publicación: 0.3.15-alpha.1**, aplicación **0.3.15+24**. [Descargar Android universal, ARM64 y Windows](https://github.com/Joao-s02/rp_music/releases/tag/v0.3.15-alpha.1).
 
-[Guía vigente](docs/USO.md) · [Pruebas](docs/PRUEBAS-0.3.13.md) · [Cambios](docs/CAMBIOS-0.3.13.md) · [Documentación](docs/README.md)
+[Guía vigente](docs/USO.md) · [Pruebas](docs/PRUEBAS-0.3.15.md) · [Cambios](docs/CAMBIOS-0.3.15.md) · [Documentación](docs/README.md)
+
+## Novedades 0.3.15 — instalación Android
+
+Android retira el permiso para iniciar instalaciones. La app consulta versiones y abre la descarga oficial; el usuario instala el APK desde Archivos. Firma de producción con transición compatible, datos y funciones musicales conservados. **Actualizar desde Archivos sin desinstalar**, especialmente desde 0.3.13.
+
+Play Protect bloqueó el control y aceptó el universal corregido en emulador. El usuario confirma instalación directa sin advertencia en su teléfono. No garantiza el resultado en todos los equipos; ARM64 físico y análisis específico pendientes. 166 pruebas aprobadas/una optativa omitida y análisis limpio. [Uso](docs/USO-0.3.15.md) · [Resultados](boveda/44%20Diagnostico%20local%20de%20instalacion%20y%20actualizaciones%20manuales.md). Android universal/ARM64 y Windows en preparación para publicación. Catálogo de extensiones conservado.
 
 ## Novedades 0.3.13
 
@@ -123,3 +129,19 @@ Leer AGENTS.md y la [bóveda](boveda/00%20Inicio.md). [Estado actual](boveda/10%
 
 
 Capturas demostrativas0.3.12 (no Android físico): [Escena de letras](design/verification/lyrics-0.3.12-scene.png) · [Reproductor fijo](design/verification/player-0.3.12-360.png).
+
+## Antecedente del aviso Android (0.3.12–0.3.14)
+
+Un usuario reporta que, después del análisis de Play Protect, aparece advertencia de posible daño en0.3.12/0.3.13 aunque permite instalar. Bloqueo de instalación reproducido en emulador; causa aún sin confirmar. Se verificó que los APK publicados usan certificado de depuración; la integridad de descarga no sustituye una revisión de seguridad. [Hallazgos y pendientes](boveda/43%20Play%20Protect%20y%20firma%20de%20Android.md).
+
+## Candidato de revisión 0.3.14+23
+
+Firma de producción con transición compatible (Android9+; firmante anterior enAndroid6–8), bloqueo de builds sin credenciales y actualizador que reconoce linaje. Actualización sin desinstalar/lista conservada y análisis instalado de Play Protect sin alertas comprobados en emuladorAPI37. No equivale al resultado de instalación del teléfono afectado; causa original aún no confirmada. [Cómo probar](docs/PROBAR-PLAY-PROTECT-0.3.14.md) · [Firma y custodia](docs/ANDROID-SIGNING.md). Candidato aceptado; publicación autorizada en preparación. 164 pruebas aprobadas/una optativa omitida y análisis limpio.
+
+Resultado posterior del usuario: el aviso de app dañina persiste en el teléfono al probar el candidato. El problema permanece abierto; el análisis sin alertas del emulador no confirma una solución.
+
+Análisis externo autorizado: [VirusTotal0.3.14](https://www.virustotal.com/gui/file/779936fdcae781ed5ab87ab7e08345043365d982ff60e68e2008ba87a904245a/detection) sin motores que marquen malicioso, pero Google figura Failure. No confirma solución del aviso del teléfono. Revisión oficial preparada, no enviada.
+
+## Resultado 0.3.15 confirmado por el usuario
+
+Comparación controlada en emulador API37: el APK con permiso de instalación fue bloqueado; sin ese permiso, Play Protect respondió «This app looks safe» y la actualización terminó correctamente, conservando la lista de prueba y fecha original. Android release adopta actualizaciones desde la web/Archivos, manteniendo música y extensiones. 166 pruebas aprobadas, una optativa omitida y análisis del código sin incidencias. El usuario confirmó después instalación directa sin advertencia en su teléfono. [Alcance y pruebas](boveda/44%20Diagnostico%20local%20de%20instalacion%20y%20actualizaciones%20manuales.md). Candidato aceptado; publicación autorizada en preparación.
