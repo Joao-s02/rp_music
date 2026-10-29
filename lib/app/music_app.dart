@@ -1,3 +1,4 @@
+import 'pulse_surface.dart';
 import 'scrolling_title.dart';
 import 'expanded_player.dart';
 import 'album_detail_view.dart';
@@ -828,54 +829,57 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
             itemBuilder: (context, index) {
               final key = keys[index];
               final items = groups[key]!;
-              return Card(
-                clipBehavior: Clip.antiAlias,
-                child: InkWell(
-                  onTap: () => setState(() => group = key),
-                  child: Padding(
-                    padding: const EdgeInsets.all(12),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Stack(
-                            fit: StackFit.expand,
-                            children: [
-                              Artwork(
-                                id: items.first.id,
-                                library: library,
-                                size: double.infinity,
-                              ),
-                              Positioned(
-                                right: 6,
-                                bottom: 6,
-                                child: IconButton.filled(
-                                  tooltip: 'Reproducir álbum',
-                                  onPressed: () => audio.select(items, 0),
-                                  icon: const Icon(Icons.play_arrow),
+              return PulseSurface(
+                index: index,
+                child: Card(
+                  clipBehavior: Clip.antiAlias,
+                  child: InkWell(
+                    onTap: () => setState(() => group = key),
+                    child: Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: Stack(
+                              fit: StackFit.expand,
+                              children: [
+                                Artwork(
+                                  id: items.first.id,
+                                  library: library,
+                                  size: double.infinity,
                                 ),
-                              ),
-                            ],
+                                Positioned(
+                                  right: 6,
+                                  bottom: 6,
+                                  child: IconButton.filled(
+                                    tooltip: 'Reproducir álbum',
+                                    onPressed: () => audio.select(items, 0),
+                                    icon: const Icon(Icons.play_arrow),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 10),
-                        Text(
-                          key.split('\n').first,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(fontWeight: FontWeight.w700),
-                        ),
-                        Text(
-                          items.first.artist,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: Theme.of(context).textTheme.bodySmall,
-                        ),
-                        Text(
-                          '${items.length} pistas',
-                          style: Theme.of(context).textTheme.bodySmall,
-                        ),
-                      ],
+                          const SizedBox(height: 10),
+                          Text(
+                            key.split('\n').first,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(fontWeight: FontWeight.w700),
+                          ),
+                          Text(
+                            items.first.artist,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                          Text(
+                            '${items.length} pistas',
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),

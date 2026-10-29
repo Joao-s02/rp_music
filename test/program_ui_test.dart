@@ -144,7 +144,10 @@ void main() {
       await tester.tap(find.text('Cancelar'));
       await tester.pumpAndSettle();
 
-      expect(find.text('Quién controla cada función'), findsOneWidget);
+      expect(find.text('Personaliza tu experiencia'), findsOneWidget);
+      await tester.ensureVisible(find.text('Personaliza tu experiencia'));
+      await tester.tap(find.text('Personaliza tu experiencia'));
+      await tester.pumpAndSettle();
       await tester.scrollUntilVisible(
         find.text('Interfaz base'),
         350,

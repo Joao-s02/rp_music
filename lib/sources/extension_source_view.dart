@@ -1,3 +1,6 @@
+import '../app/pulse_surface.dart';
+import '../extensions/extension_emblem.dart';
+
 import 'package:flutter/material.dart';
 
 import '../app/library_controller.dart';
@@ -324,161 +327,207 @@ class _ExtensionSourceViewState extends State<ExtensionSourceView> {
         'Fuente en línea';
     final content = Column(
       children: [
-        Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              if (widget.embedded)
-                Row(
-                  children: [
-                    Icon(
-                      Icons.library_music_outlined,
-                      color: Color(
-                        widget
-                                .programs
-                                .installed[widget.extensionId]
-                                ?.package
-                                .sourceSpec
-                                ?.color ??
-                            0xff47efe0,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        name,
-                        style: Theme.of(context).textTheme.titleLarge,
-                      ),
-                    ),
-                  ],
-                ),
-              const SizedBox(height: 12),
-              if (MediaQuery.viewInsetsOf(context).bottom == 0)
-                Text(
-                  widget
-                          .programs
-                          .installed[widget.extensionId]
-                          ?.package
-                          .sourceSpec
-                          ?.description ??
-                      '',
-                ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: query,
-                enabled: allowed,
-                maxLength: 200,
-                textInputAction: TextInputAction.search,
-                onSubmitted: (_) => search(),
-                decoration: InputDecoration(
-                  labelText:
-                      widget
-                          .programs
-                          .installed[widget.extensionId]
-                          ?.package
-                          .sourceSpec
-                          ?.searchLabel ??
-                      'Buscar canciones',
-                  suffixIcon: IconButton(
-                    tooltip: 'Buscar',
-                    onPressed: allowed && !searching ? () => search() : null,
-                    icon: const Icon(Icons.search),
-                  ),
-                ),
-              ),
-              if (explorer)
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
+        PulseSurface(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                if (widget.embedded)
+                  Row(
                     children: [
-                      for (final entry in const {
-                        'song': 'Canciones',
-                        'artist': 'Artistas',
-                        'album': 'Álbumes',
-                        'playlist': 'Listas',
-                      }.entries)
-                        Padding(
-                          padding: const EdgeInsets.only(right: 8),
-                          child: ChoiceChip(
-                            label: Text(entry.value),
-                            selected: kind == entry.key,
-                            onSelected: searching
-                                ? null
-                                : (_) {
-                                    setState(() => kind = entry.key);
-                                    search();
-                                  },
-                          ),
+                      ExtensionEmblem(id: widget.extensionId),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          name,
+                          style: Theme.of(context).textTheme.titleLarge,
                         ),
+                      ),
                     ],
                   ),
-                ),
-              if (collection != null) ...[
-                Row(
-                  children: [
-                    IconButton(
-                      tooltip: 'Volver a resultados',
-                      onPressed: searching ? null : () => search(),
-                      icon: const Icon(Icons.arrow_back),
-                    ),
-                    Expanded(
-                      child: Text(
-                        pageTitle.isEmpty ? collection!.title : pageTitle,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
+                const SizedBox(height: 12),
+                if (MediaQuery.viewInsetsOf(context).bottom == 0)
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          widget
+                                  .programs
+                                  .installed[widget.extensionId]
+                                  ?.package
+                                  .sourceSpec
+                                  ?.description ??
+                              '',
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
+                      IconButton(
+                        tooltip: 'Información de la fuente',
+                        icon: const Icon(Icons.info_outline_rounded),
+                        onPressed: () => showDialog<void>(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: Text(name),
+                            content: Text(
+                              widget
+                                      .programs
+                                      .installed[widget.extensionId]
+                                      ?.package
+                                      .sourceSpec
+                                      ?.description ??
+                                  '',
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(context),
+                                child: const Text('Entendido'),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: query,
+                  enabled: allowed,
+                  maxLength: 200,
+                  buildCounter: (
+                    _, {
+                    required currentLength,
+                    required isFocused,
+                    maxLength,
+                  }) => null,
+                  textInputAction: TextInputAction.search,
+                  onSubmitted: (_) => search(),
+                  decoration: InputDecoration(
+                    filled: true,
+                    prefixIcon: const Icon(Icons.search_rounded),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(22),
+                      borderSide: BorderSide.none,
                     ),
-                  ],
+                    labelText:
+                        widget
+                            .programs
+                            .installed[widget.extensionId]
+                            ?.package
+                            .sourceSpec
+                            ?.searchLabel ??
+                        'Buscar canciones',
+                    suffixIcon: IconButton(
+                      tooltip: 'Buscar',
+                      onPressed: allowed && !searching ? () => search() : null,
+                      icon: const Icon(Icons.search),
+                    ),
+                  ),
                 ),
-                Wrap(
-                  spacing: 8,
-                  children: [
-                    FilledButton.icon(
-                      onPressed: results.isEmpty || !allowed
-                          ? null
-                          : () => widget.audio.select(results, 0),
-                      icon: const Icon(Icons.play_arrow),
-                      label: const Text('Reproducir'),
+                if (explorer)
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [
+                        for (final entry in const {
+                          'song': 'Canciones',
+                          'artist': 'Artistas',
+                          'album': 'Álbumes',
+                          'playlist': 'Listas',
+                        }.entries)
+                          Padding(
+                            padding: const EdgeInsets.only(right: 8),
+                            child: ChoiceChip(
+                              avatar: Icon(switch (entry.key) {
+                                'artist' => Icons.person_rounded,
+                                'album' => Icons.album_rounded,
+                                'playlist' => Icons.queue_music_rounded,
+                                _ => Icons.music_note_rounded,
+                              }, size: 18),
+                              label: Text(entry.value),
+                              selected: kind == entry.key,
+                              onSelected: searching
+                                  ? null
+                                  : (_) {
+                                      setState(() => kind = entry.key);
+                                      search();
+                                    },
+                            ),
+                          ),
+                      ],
                     ),
-                    OutlinedButton.icon(
-                      onPressed:
-                          searching ||
-                              cursor != null ||
-                              results.isEmpty ||
-                              collection?.kind == 'artist' ||
-                              !allowed
-                          ? null
-                          : importCollection,
-                      icon: const Icon(Icons.playlist_add),
-                      label: const Text('Importar copia'),
+                  ),
+                if (collection != null) ...[
+                  Row(
+                    children: [
+                      IconButton(
+                        tooltip: 'Volver a resultados',
+                        onPressed: searching ? null : () => search(),
+                        icon: const Icon(Icons.arrow_back),
+                      ),
+                      Expanded(
+                        child: Text(
+                          pageTitle.isEmpty ? collection!.title : pageTitle,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Wrap(
+                    spacing: 8,
+                    children: [
+                      FilledButton.icon(
+                        onPressed: results.isEmpty || !allowed
+                            ? null
+                            : () => widget.audio.select(results, 0),
+                        icon: const Icon(Icons.play_arrow),
+                        label: const Text('Reproducir'),
+                      ),
+                      OutlinedButton.icon(
+                        onPressed:
+                            searching ||
+                                cursor != null ||
+                                results.isEmpty ||
+                                collection?.kind == 'artist' ||
+                                !allowed
+                            ? null
+                            : importCollection,
+                        icon: const Icon(Icons.playlist_add),
+                        label: const Text('Importar copia'),
+                      ),
+                    ],
+                  ),
+                  if (cursor != null)
+                    const Text(
+                      'Carga todas las páginas antes de importar la colección.',
                     ),
-                  ],
-                ),
-                if (cursor != null)
-                  const Text(
-                    'Carga todas las páginas antes de importar la colección.',
+                ],
+                if (!allowed)
+                  FilledButton(
+                    onPressed:
+                        widget.programs.allowed(
+                          widget.extensionId,
+                          'network.http',
+                        )
+                        ? () => widget.programs.choose(
+                            'source',
+                            widget.extensionId,
+                          )
+                        : null,
+                    child: const Text('Usar esta fuente'),
+                  ),
+                if (searching) const LinearProgressIndicator(),
+                if (error != null)
+                  Text(
+                    error!,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.error,
+                    ),
                   ),
               ],
-              if (!allowed)
-                FilledButton(
-                  onPressed:
-                      widget.programs.allowed(
-                        widget.extensionId,
-                        'network.http',
-                      )
-                      ? () =>
-                            widget.programs.choose('source', widget.extensionId)
-                      : null,
-                  child: const Text('Usar esta fuente'),
-                ),
-              if (searching) const LinearProgressIndicator(),
-              if (error != null)
-                Text(
-                  error!,
-                  style: TextStyle(color: Theme.of(context).colorScheme.error),
-                ),
-            ],
+            ),
           ),
         ),
         Expanded(
@@ -578,44 +627,60 @@ class _ExtensionSourceViewState extends State<ExtensionSourceView> {
                       );
                     }
                     final track = results[trackIndex];
-                    return ListTile(
-                      title: Text(
-                        track.title,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                    return PulseSurface(
+                      index: trackIndex,
+                      child: Card(
+                        margin: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 4,
+                        ),
+                        child: ListTile(
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 6,
+                          ),
+                          title: Text(
+                            track.title,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          subtitle: Text(
+                            track.artist,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          leading: Artwork(
+                            id: track.id,
+                            library: widget.library,
+                          ),
+                          trailing:
+                              widget.programs.allowed(
+                                widget.extensionId,
+                                'storage.download',
+                              )
+                              ? IconButton(
+                                  tooltip: downloading == track.id
+                                      ? 'Descargando…'
+                                      : 'Descargar canción',
+                                  onPressed: downloading != null || !allowed
+                                      ? null
+                                      : () => download(track),
+                                  icon: downloading == track.id
+                                      ? const SizedBox(
+                                          width: 22,
+                                          height: 22,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                          ),
+                                        )
+                                      : const Icon(Icons.download_outlined),
+                                )
+                              : const Icon(Icons.play_arrow_rounded),
+                          onTap: allowed
+                              ? () => widget.audio.select(results, trackIndex)
+                              : null,
+                        ),
                       ),
-                      subtitle: Text(
-                        track.artist,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      leading: Artwork(id: track.id, library: widget.library),
-                      trailing:
-                          widget.programs.allowed(
-                            widget.extensionId,
-                            'storage.download',
-                          )
-                          ? IconButton(
-                              tooltip: downloading == track.id
-                                  ? 'Descargando…'
-                                  : 'Descargar canción',
-                              onPressed: downloading != null || !allowed
-                                  ? null
-                                  : () => download(track),
-                              icon: downloading == track.id
-                                  ? const SizedBox(
-                                      width: 22,
-                                      height: 22,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2,
-                                      ),
-                                    )
-                                  : const Icon(Icons.download_outlined),
-                            )
-                          : const Icon(Icons.play_arrow_rounded),
-                      onTap: allowed
-                          ? () => widget.audio.select(results, trackIndex)
-                          : null,
                     );
                   },
                 ),

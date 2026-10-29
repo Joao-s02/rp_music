@@ -15,7 +15,7 @@ class _NowPlayingBarsState extends State<NowPlayingBars>
     with SingleTickerProviderStateMixin {
   late final motion = AnimationController(
     vsync: this,
-    duration: const Duration(milliseconds: 1100),
+    duration: const Duration(milliseconds: 2100),
   );
   void update() {
     if (widget.playing && !MediaQuery.disableAnimationsOf(context)) {

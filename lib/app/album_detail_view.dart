@@ -1,3 +1,6 @@
+import 'album_sleeve.dart';
+import 'pulse_surface.dart';
+
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -106,119 +109,133 @@ class _AlbumDetailViewState extends State<AlbumDetailView> {
               ),
             ),
             SliverToBoxAdapter(
-              child: Container(
-                margin: const EdgeInsets.symmetric(horizontal: 20),
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(24),
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      theme.colorScheme.surfaceContainerHigh,
-                      theme.colorScheme.surfaceContainer,
-                    ],
+              child: PulseSurface(
+                inset: const EdgeInsets.symmetric(horizontal: 20),
+                child: Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 20),
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(24),
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        theme.colorScheme.surfaceContainerHigh,
+                        theme.colorScheme.surfaceContainer,
+                      ],
+                    ),
                   ),
-                ),
-                child: Column(
-                  children: [
-                    LayoutBuilder(
-                      builder: (context, box) {
-                        final size = min(280.0, box.maxWidth);
-                        return Center(
-                          child: SizedBox(
-                            width: size,
-                            height: size,
-                            child: Stack(
-                              children: [
-                                Positioned.fill(
-                                  child: Artwork(
-                                    id: tracks.first.id,
-                                    library: widget.library,
-                                    size: size,
+                  child: Column(
+                    children: [
+                      LayoutBuilder(
+                        builder: (context, box) {
+                          final size = min(280.0, box.maxWidth);
+                          return Center(
+                            child: SizedBox(
+                              width: size,
+                              height: size,
+                              child: StreamBuilder(
+                                stream: widget.audio.playbackState,
+                                initialData: widget.audio.playbackState.value,
+                                builder: (context, playback) => AlbumSleeve(
+                                  playing:
+                                      playback.data?.playing == true &&
+                                      tracks.any(
+                                        (t) => t.id == current.data?.id,
+                                      ),
+                                  child: Stack(
+                                    children: [
+                                      Positioned.fill(
+                                        child: Artwork(
+                                          id: tracks.first.id,
+                                          library: widget.library,
+                                          size: size,
+                                        ),
+                                      ),
+                                      if (formats.length == 1)
+                                        Positioned(
+                                          top: 10,
+                                          right: 10,
+                                          child: chip(formats.first),
+                                        ),
+                                    ],
                                   ),
                                 ),
-                                if (formats.length == 1)
-                                  Positioned(
-                                    top: 10,
-                                    right: 10,
-                                    child: chip(formats.first),
-                                  ),
-                              ],
+                              ),
                             ),
+                          );
+                        },
+                      ),
+                      const SizedBox(height: 22),
+                      Text(
+                        '● ÁLBUM LOCAL',
+                        style: theme.textTheme.labelLarge?.copyWith(
+                          color: accent,
+                          letterSpacing: 2,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        title,
+                        textAlign: TextAlign.center,
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.headlineMedium?.copyWith(
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        artists.length == 1 ? artists.first : 'Varios artistas',
+                        textAlign: TextAlign.center,
+                        style: theme.textTheme.titleMedium,
+                      ),
+                      const SizedBox(height: 14),
+                      Wrap(
+                        alignment: WrapAlignment.center,
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: [
+                          chip(
+                            '${tracks.length} canciones${total > 0 ? ' · ${time(total)}${tracks.any((t) => t.durationMs == 0) ? ' conocidos' : ''}' : ''}',
                           ),
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 22),
-                    Text(
-                      '● ÁLBUM LOCAL',
-                      style: theme.textTheme.labelLarge?.copyWith(
-                        color: accent,
-                        letterSpacing: 2,
+                          if (formats.length > 1) chip(formats.join(' / ')),
+                        ],
                       ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      title,
-                      textAlign: TextAlign.center,
-                      maxLines: 3,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.w800,
+                      const SizedBox(height: 20),
+                      Wrap(
+                        alignment: WrapAlignment.center,
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: [
+                          FilledButton.icon(
+                            onPressed: () {
+                              widget.audio.shuffle = false;
+                              widget.audio.select(tracks, 0);
+                            },
+                            icon: const Icon(Icons.play_arrow),
+                            label: const Text('Reproducir'),
+                          ),
+                          FilledButton.tonalIcon(
+                            onPressed: () {
+                              widget.audio.shuffle = true;
+                              widget.audio.select(
+                                tracks,
+                                Random().nextInt(tracks.length),
+                              );
+                            },
+                            icon: const Icon(Icons.shuffle),
+                            label: const Text('Aleatorio'),
+                          ),
+                          IconButton.filledTonal(
+                            onPressed: widget.onSave,
+                            tooltip: 'Añadir álbum a una lista',
+                            icon: const Icon(Icons.playlist_add),
+                          ),
+                        ],
                       ),
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      artists.length == 1 ? artists.first : 'Varios artistas',
-                      textAlign: TextAlign.center,
-                      style: theme.textTheme.titleMedium,
-                    ),
-                    const SizedBox(height: 14),
-                    Wrap(
-                      alignment: WrapAlignment.center,
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: [
-                        chip(
-                          '${tracks.length} canciones${total > 0 ? ' · ${time(total)}${tracks.any((t) => t.durationMs == 0) ? ' conocidos' : ''}' : ''}',
-                        ),
-                        if (formats.length > 1) chip(formats.join(' / ')),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-                    Wrap(
-                      alignment: WrapAlignment.center,
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: [
-                        FilledButton.icon(
-                          onPressed: () {
-                            widget.audio.shuffle = false;
-                            widget.audio.select(tracks, 0);
-                          },
-                          icon: const Icon(Icons.play_arrow),
-                          label: const Text('Reproducir'),
-                        ),
-                        FilledButton.tonalIcon(
-                          onPressed: () {
-                            widget.audio.shuffle = true;
-                            widget.audio.select(
-                              tracks,
-                              Random().nextInt(tracks.length),
-                            );
-                          },
-                          icon: const Icon(Icons.shuffle),
-                          label: const Text('Aleatorio'),
-                        ),
-                        IconButton.filledTonal(
-                          onPressed: widget.onSave,
-                          tooltip: 'Añadir álbum a una lista',
-                          icon: const Icon(Icons.playlist_add),
-                        ),
-                      ],
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
