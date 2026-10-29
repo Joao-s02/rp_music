@@ -1,6 +1,6 @@
 ---
 tipo: requisitos-correccion-y-diseno
-estado: desarrollo-local-en-verificacion
+estado: publicado-con-validacion-y-limites
 actualizado: 2026-10-28
 ---
 # Letras dinamicas y reproductor fijo 0.3.12
@@ -44,3 +44,9 @@ El usuario solicita continuar y luego subir la nueva release. Se publica0.3.12+2
 ## Cierre de validación previo a publicación
 
 155 pruebas aprobadas, una optativa omitida, análisis limpio. Ocho pruebas dirigidas incluyen texto 1.6 y 2, espacios del sistema y cuatro tamaños. Descarga nativa Windows: 55 líneas sincronizadas incrustadas, reproducción real y solicitud de seek a un tiempo de letra; SHA256 de bloques mdat conservado. Capturas revisadas de widgets Flutter, sin representar dispositivo físico. Compilaciones normales posteriores a integración: Windows 90.5s, Android universal 131.8s y ARM64 153.5s. APK versión 0.3.12, código 21; firma conservada y ABI verificadas. Windows ZIP completo de 32 archivos. Siete adjuntos y hashes preparados. Extensiones publicadas en 1121a41: diez opciones y 25 paquetes/variantes verificados byte a byte. Sin Android físico conectado; escucha prolongada, valoración visual real y latencia API3 pendientes.
+
+## Publicación comprobada — 2026-10-28
+
+0.3.12-alpha.1 publicada, app0.3.12+21. ReleaseID 427362713; tag/código ea48d880c9c48c599026fe6605e4f94ce175bb85. Android universal/ARM64 y Windows x64 completo (32 archivos, licencias y guías). Siete adjuntos comprobados en borrador y por API pública: tamaño, SHA256, destino del tag y manifiesto descargado idéntico. Catálogo externo 1121a419cf4999b765de64cb0374ccf241bd28ec: diez opciones y 25 paquetes/variantes comprobados byte a byte; cliente real selecciona YouTube0.5.1, Explorador0.2.1 y Letras locales0.1.1. 155 pruebas aprobadas/una optativa omitida, análisis limpio; descarga nativa Windows con55 líneas LRC incrustadas, reproducción y bloques de audio conservados. Android físico, escucha prolongada, valoración visual del usuario y latencia API3 Android pendientes. [[41 Letras dinamicas y reproductor fijo 0.3.12]].
+
+[Release pública](https://github.com/Joao-s02/rp_music/releases/tag/v0.3.12-alpha.1). Las secciones de preparación anteriores describen el orden histórico, no el estado final.

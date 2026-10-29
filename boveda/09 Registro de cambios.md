@@ -1,9 +1,13 @@
 ---
 tipo: historial
 estado: vigente
-actualizado: 2026-10-26
+actualizado: 2026-10-28
 ---
 # Registro de cambios
+
+## Publicación 0.3.12 — 2026-10-28
+
+0.3.12-alpha.1 publicada, app0.3.12+21. ReleaseID 427362713; tag/código ea48d880c9c48c599026fe6605e4f94ce175bb85. Android universal/ARM64 y Windows x64 completo (32 archivos, licencias y guías). Siete adjuntos comprobados en borrador y por API pública: tamaño, SHA256, destino del tag y manifiesto descargado idéntico. Catálogo externo 1121a419cf4999b765de64cb0374ccf241bd28ec: diez opciones y 25 paquetes/variantes comprobados byte a byte; cliente real selecciona YouTube0.5.1, Explorador0.2.1 y Letras locales0.1.1. 155 pruebas aprobadas/una optativa omitida, análisis limpio; descarga nativa Windows con55 líneas LRC incrustadas, reproducción y bloques de audio conservados. Android físico, escucha prolongada, valoración visual del usuario y latencia API3 Android pendientes. [[41 Letras dinamicas y reproductor fijo 0.3.12]].
 
 ## Audio Windows y YouTube — corrección local 2026-10-28
 

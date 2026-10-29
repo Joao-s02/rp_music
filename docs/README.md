@@ -1,4 +1,10 @@
-# Documentación de RP Music0.3.11
+# Documentación de RP Music 0.3.12
+
+[Instalación y uso](USO-0.3.12.md) · [Pruebas](PRUEBAS-0.3.12.md) · [Cambios](CAMBIOS-0.3.12.md) · [Release](RELEASE-0.3.12.md)
+
+Letras sincronizadas y vista Escena, reproductor fijo, volumen desplegable y cola centrada. Publicados Android universal/ARM64 y Windows completo. Android físico y escucha prolongada pendientes.
+
+## Antecedente 0.3.11
 
 [Instalación y uso](USO-0.3.11.md) · [Pruebas](PRUEBAS-0.3.11.md) · [Cambios](CAMBIOS-0.3.11.md) · [Notas de release](RELEASE-0.3.11.md)
 

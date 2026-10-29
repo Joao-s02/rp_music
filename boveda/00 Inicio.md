@@ -5,7 +5,7 @@ actualizado: 2026-10-28
 ---
 # RP Music — red de conocimiento
 
-La bóveda conserva decisiones y evidencia para continuar el proyecto. Referencia publicada: **0.3.11-alpha.1**, aplicación **0.3.11+20**, Android y Windows. Estado actual y comprobaciones: [[10 Estado del repositorio]].
+La bóveda conserva decisiones y evidencia para continuar el proyecto. Referencia publicada: **0.3.12-alpha.1**, aplicación **0.3.12+21**, Android y Windows. Estado actual y comprobaciones: [[10 Estado del repositorio]].
 
 ## Empezar aquí
 
