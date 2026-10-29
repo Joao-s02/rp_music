@@ -59,3 +59,6 @@ Desarrollo0.3.11: gesto de pistas, widgets adaptables, encabezados de listas/ál
 
 
 0.3.11 publicada: gestos, widgets adaptables, colecciones, descarga por álbum y retratos offline; identidad albumArtist/numeración/metadataVersion2 y contrato sourceConfig.artistArtwork/library.read. Verificación y límites actuales en [[40 Gestos widgets albumes y descargas 0.3.11]]. No modifica música existente.
+
+
+Trabajo local0.3.12+21: letras sincronizadas prioritarias, escena visual con tiempos reales, reproductor fijo/volumen emergente y cola centrada/animada. Fuente/paquetes/pruebas específicas exclusivamente en repositorio de extensiones; catálogo publicado intacto. Contexto, verificaciones y pendientes en [[41 Letras dinamicas y reproductor fijo 0.3.12]]. Referencia pública0.3.11 conservada.

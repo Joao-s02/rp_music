@@ -53,3 +53,6 @@ La fecha de actualización no cambia la de los hechos históricos. Abrir esta ca
 
 
 Última versión publicada: [[40 Gestos widgets albumes y descargas 0.3.11]]. Confirmación del usuario de0.3.10 conservada en [[39 Audio Windows M4A OPUS y YouTube]].
+
+
+Trabajo local0.3.12+21: letras sincronizadas prioritarias, escena visual con tiempos reales, reproductor fijo/volumen emergente y cola centrada/animada. Fuente/paquetes/pruebas específicas exclusivamente en repositorio de extensiones; catálogo publicado intacto. Contexto, verificaciones y pendientes en [[41 Letras dinamicas y reproductor fijo 0.3.12]]. Referencia pública0.3.11 conservada.

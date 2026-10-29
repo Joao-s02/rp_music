@@ -74,3 +74,6 @@ Prototipo local 0.3.8+17: API 3/JavaScript en paralelo a Dart; pantallas por ár
 
 
 Cierre local0.3.11+20:147 pruebas/una optativa omitida, análisis limpio, álbum real completo de seis canciones con etiquetas/portada/numeración y foto recuperada offline comprobados. Universal firmado y ZIP Windows normal/licencias/guías/hashes preparados; tres widgets con mínimos110×48dp y resizeMode ambos ejes verificados en APK compilado. Sin publicación nueva; Android físico/SAF/launcher y escucha prolongada pendientes. Detalle en [[40 Gestos widgets albumes y descargas 0.3.11]].
+
+
+Trabajo local0.3.12+21: letras sincronizadas prioritarias, escena visual con tiempos reales, reproductor fijo/volumen emergente y cola centrada/animada. Fuente/paquetes/pruebas específicas exclusivamente en repositorio de extensiones; catálogo publicado intacto. Contexto, verificaciones y pendientes en [[41 Letras dinamicas y reproductor fijo 0.3.12]]. Referencia pública0.3.11 conservada.

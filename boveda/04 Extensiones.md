@@ -94,3 +94,6 @@ Publicación 0.3.9 confirmada: Explorador musical 0.1.0/Radio por internet 0.1.0
 
 
 Desarrollo0.3.11: gesto de pistas, widgets adaptables, encabezados de listas/álbum remoto, descarga secuencial con contexto de álbum y retratos privados offline. Track incorpora albumArtist/numeración y versión de lectura2: primera actualización relee caché antigua sin modificar originales. Capacidades genéricas en app; fuentes/selección de metadatos/paquetes en repositorio externo. Evidencia/estado exacto en [[40 Gestos widgets albumes y descargas 0.3.11]].
+
+
+Trabajo local0.3.12+21: letras sincronizadas prioritarias, escena visual con tiempos reales, reproductor fijo/volumen emergente y cola centrada/animada. Fuente/paquetes/pruebas específicas exclusivamente en repositorio de extensiones; catálogo publicado intacto. Contexto, verificaciones y pendientes en [[41 Letras dinamicas y reproductor fijo 0.3.12]]. Referencia pública0.3.11 conservada.

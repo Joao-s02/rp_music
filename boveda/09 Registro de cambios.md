@@ -537,3 +537,13 @@ ARM64 normal141.0s, versión0.3.11/código20, solo arm64-v8a y firma v2/certific
 0.3.11-alpha.1 publicada, app0.3.11+20. Android universal/ARM64 y Windows x64 completo con licencias/guías/hashes. ReleaseID 427162160; tag/código 34211ad4760368c1c76808fff67deb1a7579c441. Siete adjuntos verificados por tamaño/SHA256/target en borrador y públicamente, tag al commit correcto y manifiesto descargado idéntico. Extensiones 2dfeaf16985ba7299e9592261a83cf52ee8d4ea5: diez opciones verificadas con cliente real y veinte paquetes/variantes de revisión fija byte a byte. YouTube Android/Windows0.5.0 y Explorador Android/Windows0.2.0, minApp0.3.11; API2 y variantes anteriores conservadas.147 pruebas aprobadas/una optativa omitida, análisis limpio; seis canciones de álbum real con etiquetas/portada/numeración iguales y foto recuperada offline comprobadas. Android físico (widgets/launcher/SAF), escucha prolongada y latencia API3 Android pendientes. [[40 Gestos widgets albumes y descargas 0.3.11]].
 
 https://github.com/Joao-s02/rp_music/releases/tag/v0.3.11-alpha.1
+
+
+## 2026-10-28 — prueba0.3.11 y desarrollo0.3.12
+
+Usuario confirma gesto horizontal, informa regresión a letras planas y pide ocho refinamientos de letras/reproductor/cola. Se separa selección de LRC de identidad de álbum y valida duración numérica en intérprete. Nuevo layout sin desplazamiento, volumen emergente, borde/origen refinados y cola centrada con indicador decorativo. Es implementación local; evidencia y límites en [[41 Letras dinamicas y reproductor fijo 0.3.12]]. Sin autorización de nueva publicación en este mensaje.
+
+
+## Autorización posterior de publicación — 2026-10-28
+
+El usuario solicita continuar y luego subir la nueva release. Se publica0.3.12+21 tras cerrar validaciones, con universal/ARM64/Windows, guías/hashes y cinco actualizaciones del catálogo externo. Se mantiene registro separado de preparación local, pruebas y publicación. [[41 Letras dinamicas y reproductor fijo 0.3.12]].

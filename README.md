@@ -2,9 +2,15 @@
 
 Reproductor Flutter para Android y Windows, ampliable mediante extensiones. Biblioteca local sin cuenta ni conexión; actualizaciones y consultas en línea opcionales.
 
-**Versión publicada: 0.3.11-alpha.1**, aplicación **0.3.11+20**. [Descargar Android universal, ARM64 y Windows](https://github.com/Joao-s02/rp_music/releases/tag/v0.3.11-alpha.1).
+**Versión en publicación: 0.3.12-alpha.1**, aplicación **0.3.12+21**. [Descargar Android universal, ARM64 y Windows](https://github.com/Joao-s02/rp_music/releases/tag/v0.3.12-alpha.1).
 
-[Guía vigente](docs/USO.md) · [Pruebas](docs/PRUEBAS-0.3.11.md) · [Cambios](docs/CAMBIOS-0.3.11.md) · [Documentación](docs/README.md)
+[Guía vigente](docs/USO.md) · [Pruebas](docs/PRUEBAS-0.3.12.md) · [Cambios](docs/CAMBIOS-0.3.12.md) · [Documentación](docs/README.md)
+
+## Novedades0.3.12 — letras y reproductor
+
+Descargas priorizan letras sincronizadas de la misma interpretación sin alterar el álbum. Letras vivas y vista Escena con transiciones, fondo animado por posición y controles ocultables; EnhancedLRC usa tiempos por palabra solo cuando existen. Reproductor ampliado fijo y adaptable, volumen tras botón, origen sin duplicar, carátula sin borde cian y cola centrada con indicador animado/pausa. [Cómo probar](docs/PROBAR-0.3.12.md) · [Evidencia y límites](boveda/41%20Letras%20dinamicas%20y%20reproductor%20fijo%200.3.12.md).
+
+Paquetes externos: YouTube Android/Windows0.5.1, Explorador Android/Windows0.2.1 y Letras locales0.1.1, app mínima0.3.12. Los anteriores y el catálogo público se conservan. Recuperación de LRC para archivos anteriores solo en caché privada, sin escribir música. Entrega completa en preparación.155 pruebas aprobadas/una optativa omitida y análisis limpio; descarga real con55 líneas LRC y audio conservado comprobada.
 
 ## Novedades0.3.11
 
@@ -108,3 +114,6 @@ Leer AGENTS.md y la [bóveda](boveda/00%20Inicio.md). [Estado actual](boveda/10%
 [![RP Music — Tu música. Tus reglas. Ver el tráiler en YouTube](design/youtube/rp-music-miniatura.jpg)](https://youtu.be/lobwRKtXv-M)
 
 ▶ **[Ver el tráiler de RP Music en YouTube](https://youtu.be/lobwRKtXv-M)**
+
+
+Capturas demostrativas0.3.12 (no Android físico): [Escena de letras](design/verification/lyrics-0.3.12-scene.png) · [Reproductor fijo](design/verification/player-0.3.12-360.png).
