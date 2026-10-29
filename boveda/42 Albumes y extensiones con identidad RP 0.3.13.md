@@ -1,6 +1,6 @@
 ---
 tipo: correccion-y-diseno
-estado: implementado-y-verificado-localmente
+estado: publicado-con-validacion-y-limites
 actualizado: 2026-10-28
 ---
 # Albumes y extensiones con identidad RP 0.3.13
@@ -63,3 +63,9 @@ El usuario solicita subir la nueva release. Se prepara0.3.13+22 con universal/AR
 ## Comprobación previa a publicación
 
 ARM64 normal compilado72.1s, versión0.3.13/código22 y firma idéntica al universal/entregas previas. Windows ZIP32 archivos verificados byte a byte. Siete adjuntos y manifiesto preparados. Catálogo externo ab48a63 publicado: diez opciones,29 paquetes/variantes verificados byte a byte y cliente real selecciona los cuatro nuevos paquetes. Binarios normales sin complemento de integración ni rpmx.
+
+## Publicación comprobada — 2026-10-28
+
+0.3.13-alpha.1 publicada, app0.3.13+22. ReleaseID 427408912; tag/código a3f8449a83aaec7da29c5762c4adfff82bd1fbc0. Android universal/ARM64 y Windows x64 completo32 archivos/licencias/guías. Siete adjuntos verificados en borrador y por API pública: tamaños/SHA256, tag al commit correcto y manifiesto descargado idéntico. Catálogo externo ab48a631237f3bf04057b6662b8b168b94b62449: diez opciones y29 paquetes/variantes verificados byte a byte; cliente real selecciona YouTube Android/Windows0.5.2 y Explorador Android/Windows0.2.2. 164 pruebas aprobadas/una optativa omitida, análisis limpio; descarga nativa Windows con álbum Busca Una Mujer, pista5,55 líneas LRC incrustadas, reproducción y bloques mdat conservados. Android físico, escucha prolongada, valoración visual del usuario y latencia API3 Android pendientes. [[42 Albumes y extensiones con identidad RP 0.3.13]].
+
+[Release pública](https://github.com/Joao-s02/rp_music/releases/tag/v0.3.13-alpha.1). Las fases locales y límites anteriores se conservan como historial, no como estado final.

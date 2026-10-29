@@ -5,6 +5,10 @@ actualizado: 2026-10-28
 ---
 # Registro de cambios
 
+## Publicación 0.3.13 — 2026-10-28
+
+0.3.13-alpha.1 publicada, app0.3.13+22. ReleaseID 427408912; tag/código a3f8449a83aaec7da29c5762c4adfff82bd1fbc0. Android universal/ARM64 y Windows x64 completo32 archivos/licencias/guías. Siete adjuntos verificados en borrador y por API pública: tamaños/SHA256, tag al commit correcto y manifiesto descargado idéntico. Catálogo externo ab48a631237f3bf04057b6662b8b168b94b62449: diez opciones y29 paquetes/variantes verificados byte a byte; cliente real selecciona YouTube Android/Windows0.5.2 y Explorador Android/Windows0.2.2. 164 pruebas aprobadas/una optativa omitida, análisis limpio; descarga nativa Windows con álbum Busca Una Mujer, pista5,55 líneas LRC incrustadas, reproducción y bloques mdat conservados. Android físico, escucha prolongada, valoración visual del usuario y latencia API3 Android pendientes. [[42 Albumes y extensiones con identidad RP 0.3.13]].
+
 ## Informe 0.3.12 y desarrollo 0.3.13 — 2026-10-28
 
 Usuario confirma letras sincronizadas en extensión/local y aprueba lectura/Escena. Solicita cola más lenta, recuperar álbum en los cuatro YouTube y renovar álbumes/extensiones/instalación. Corrección y diseño locales, pruebas y límites en [[42 Albumes y extensiones con identidad RP 0.3.13]]. Publicación vigente0.3.12; no confundir con candidatos.

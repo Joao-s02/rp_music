@@ -116,3 +116,7 @@ El usuario pidió animar la marca dentro del tráiler aprobado. R/P aparecen esc
 ## Desarrollo local 0.3.13
 
 Informe confirmado de letras 0.3.12 y corrección de álbum/identidad visual/consentimiento conjunto: [[42 Albumes y extensiones con identidad RP 0.3.13]]. No publicada.
+
+## Cierre 0.3.13 publicado
+
+Corrección de álbum y datos parciales, interfaz de álbumes/fuentes/extensiones, cola más lenta y consentimiento conjunto publicados. Evidencia y límites vigentes: [[42 Albumes y extensiones con identidad RP 0.3.13]].

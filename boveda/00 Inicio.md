@@ -5,7 +5,7 @@ actualizado: 2026-10-28
 ---
 # RP Music — red de conocimiento
 
-La bóveda conserva decisiones y evidencia para continuar el proyecto. Referencia publicada: **0.3.12-alpha.1**, aplicación **0.3.12+21**, Android y Windows. Estado actual y comprobaciones: [[10 Estado del repositorio]].
+La bóveda conserva decisiones y evidencia para continuar el proyecto. Referencia publicada: **0.3.13-alpha.1**, aplicación **0.3.13+22**, Android y Windows. Estado actual y comprobaciones: [[10 Estado del repositorio]].
 
 ## Empezar aquí
 
@@ -25,12 +25,12 @@ La bóveda conserva decisiones y evidencia para continuar el proyecto. Referenci
 | Preguntas todavía abiertas | [[07 Preguntas e investigacion]] |
 | Marca, tema y referencias | [[15 Identidad visual e icono]] |
 | Publicaciones | [[27 Publicacion de releases - contenido obligatorio]] |
-| Última entrega y sus pruebas | [[41 Letras dinamicas y reproductor fijo 0.3.12]] |
+| Última entrega y sus pruebas | [[42 Albumes y extensiones con identidad RP 0.3.13]] |
 | Corrección local de Windows y YouTube | [[39 Audio Windows M4A OPUS y YouTube]] |
 
 Guías para usar, compilar y programar: [Índice de documentación](../docs/README.md). Presentación pública: [README del proyecto](../README.md).
 
-Última publicación y límites experimentales: [[41 Letras dinamicas y reproductor fijo 0.3.12]].
+Última publicación y límites experimentales: [[42 Albumes y extensiones con identidad RP 0.3.13]].
 
 0.3.5 publicada: [[33 Metadatos de descargas YouTube]] — letras incrustadas, búsqueda automática y nuevas descargas etiquetadas. Entrega anterior en [[32 Pruebas 0.3.3 y mejoras 0.3.4]].
 
@@ -52,7 +52,7 @@ Guías para usar, compilar y programar: [Índice de documentación](../docs/READ
 La fecha de actualización no cambia la de los hechos históricos. Abrir esta carpeta como bóveda de Obsidian; los enlaces como [[00 Inicio]] son relativos. No requieren complementos.
 
 
-Última versión publicada: [[41 Letras dinamicas y reproductor fijo 0.3.12]]. Confirmación del usuario de0.3.10 conservada en [[39 Audio Windows M4A OPUS y YouTube]].
+Última versión publicada: [[42 Albumes y extensiones con identidad RP 0.3.13]]. Confirmación del usuario de0.3.10 conservada en [[39 Audio Windows M4A OPUS y YouTube]].
 
 
-Desarrollo actual: [[42 Albumes y extensiones con identidad RP 0.3.13]]. Publicación vigente: [[41 Letras dinamicas y reproductor fijo 0.3.12]].
+Última entrega: [[42 Albumes y extensiones con identidad RP 0.3.13]]. Publicación vigente: [[42 Albumes y extensiones con identidad RP 0.3.13]].
