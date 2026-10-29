@@ -5,6 +5,8 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
 import 'program_catalog.dart';
+import 'extension_emblem.dart';
+import '../app/pulse_surface.dart';
 import 'javascript_screen_view.dart';
 import '../sources/extension_source_view.dart';
 import '../playback/music_handler.dart';
@@ -57,6 +59,8 @@ class _ProgramManagerViewState extends State<ProgramManagerView> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Center(child: ExtensionEmblem(id: package.id, size: 64)),
+              const SizedBox(height: 12),
               Text(
                 '${package.id} · ${package.version} · ${package.advanced ? 'Avanzada' : 'Normal'}',
               ),
@@ -71,6 +75,11 @@ class _ProgramManagerViewState extends State<ProgramManagerView> {
               const SizedBox(height: 12),
               const Text(
                 'Código experimental sin firma de autor. Instala archivos de confianza. El acceso se limita a los permisos que aceptes; no obtiene escritura sobre tu música.',
+              ),
+              const SizedBox(height: 12),
+              Text(
+                '${package.permissions.length} permisos solicitados',
+                style: Theme.of(context).textTheme.titleSmall,
               ),
               for (final permission in package.permissions)
                 CheckboxListTile(
@@ -96,11 +105,13 @@ class _ProgramManagerViewState extends State<ProgramManagerView> {
               onPressed: () => Navigator.pop(context, (grants, false)),
               child: const Text('Guardar desactivada'),
             ),
-            FilledButton(
-              onPressed: grants.containsAll(package.permissions)
-                  ? () => Navigator.pop(context, (grants, true))
-                  : null,
-              child: const Text('Aceptar y activar'),
+            FilledButton.icon(
+              onPressed: () => Navigator.pop(context, (
+                <String>{...grants, ...package.permissions},
+                true,
+              )),
+              icon: const Icon(Icons.done_all_rounded),
+              label: const Text('Aceptar todo e instalar'),
             ),
           ],
         ),
@@ -206,6 +217,8 @@ class _ProgramManagerViewState extends State<ProgramManagerView> {
             : 'Instalada';
         return Card(
           child: ListTile(
+            contentPadding: const EdgeInsets.all(14),
+            leading: ExtensionEmblem(id: item.id),
             title: Text(item.name),
             subtitle: Text(
               '${item.version} · ${item.description}\n$status${installed == null ? '' : ' · versión local ${installed.package.version}'}',
@@ -270,20 +283,49 @@ class _ProgramManagerViewState extends State<ProgramManagerView> {
       children: [
         Text('Extensiones', style: Theme.of(context).textTheme.headlineMedium),
         const Text(
-          'Instala extensiones Dart o JavaScript desde archivo, revisa sus permisos y elige quién controla cada función. Las extensiones JSON anteriores siguen disponibles.',
+          'Tu música, con más posibilidades. Descubre fuentes, letras y nuevas formas de escuchar.',
         ),
         const SizedBox(height: 16),
-        FilledButton.tonalIcon(
-          onPressed: working || manager?.busy == true ? null : import,
-          icon: const Icon(Icons.file_open_outlined),
-          label: const Text('Importar extensión'),
+        PulseSurface(
+          child: Card(
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Row(
+                children: [
+                  const ExtensionEmblem(id: 'rp.explorar', size: 58),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Dale otra dimensión',
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
+                        Text(
+                          '${manager?.installed.length ?? 0} instaladas · Tú eliges qué activar',
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
         ),
-        OutlinedButton.icon(
+        const SizedBox(height: 16),
+        FilledButton.icon(
           onPressed: working || manager == null || manager.busy
               ? null
               : openCatalog,
-          icon: const Icon(Icons.cloud_download_outlined),
+          icon: const Icon(Icons.explore_rounded),
           label: const Text('Explorar repositorio'),
+        ),
+        const SizedBox(height: 8),
+        OutlinedButton.icon(
+          onPressed: working || manager?.busy == true ? null : import,
+          icon: const Icon(Icons.file_open_outlined),
+          label: const Text('Importar extensión'),
         ),
         if (working) const LinearProgressIndicator(),
         OutlinedButton.icon(
@@ -297,51 +339,58 @@ class _ProgramManagerViewState extends State<ProgramManagerView> {
         if (manager?.message != null) Text(manager!.message!),
         if (manager != null) ...[
           const SizedBox(height: 16),
+          ExpansionTile(
+            leading: const Icon(Icons.tune_rounded),
+            title: const Text('Personaliza tu experiencia'),
+            subtitle: const Text('Elige tu fuente, letras y reproductor'),
+            childrenPadding: const EdgeInsets.fromLTRB(12, 0, 12, 16),
+            children: [
+              for (final slot in programSlots.entries.where(
+                (slot) => slot.key != 'lists' && slot.key != 'screen',
+              ))
+                Padding(
+                  padding: const EdgeInsets.only(top: 12),
+                  child: DropdownButtonFormField<String>(
+                    key: ValueKey(
+                      '${slot.key}:${manager.owner(slot.key)?.package.id}:${manager.installed.values.where((item) => item.enabled).length}',
+                    ),
+                    initialValue: manager.owner(slot.key)?.package.id ?? '',
+                    isExpanded: true,
+                    decoration: InputDecoration(labelText: slot.value),
+                    items: [
+                      const DropdownMenuItem(
+                        value: '',
+                        child: Text('Aplicación base'),
+                      ),
+                      for (final item in manager.installed.values.where(
+                        (item) =>
+                            item.enabled &&
+                            item.authorized &&
+                            item.package.slots.contains(slot.key),
+                      ))
+                        DropdownMenuItem(
+                          value: item.package.id,
+                          child: Text(
+                            item.package.name,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                    ],
+                    onChanged: manager.busy
+                        ? null
+                        : (id) =>
+                              manager.choose(slot.key, id == '' ? null : id),
+                  ),
+                ),
+            ],
+          ),
+          const SizedBox(height: 20),
           Text(
-            'Quién controla cada función',
+            'Tus extensiones',
             style: Theme.of(context).textTheme.titleLarge,
           ),
-          const Text(
-            'Puedes activar varias. Si compiten por la misma función, elige aquí cuál usar.',
-          ),
-          for (final slot in programSlots.entries.where(
-            (slot) => slot.key != 'lists' && slot.key != 'screen',
-          ))
-            Padding(
-              padding: const EdgeInsets.only(top: 12),
-              child: DropdownButtonFormField<String>(
-                key: ValueKey(
-                  '${slot.key}:${manager.owner(slot.key)?.package.id}:${manager.installed.values.where((item) => item.enabled).length}',
-                ),
-                initialValue: manager.owner(slot.key)?.package.id ?? '',
-                isExpanded: true,
-                decoration: InputDecoration(labelText: slot.value),
-                items: [
-                  const DropdownMenuItem(
-                    value: '',
-                    child: Text('Aplicación base'),
-                  ),
-                  for (final item in manager.installed.values.where(
-                    (item) =>
-                        item.enabled &&
-                        item.authorized &&
-                        item.package.slots.contains(slot.key),
-                  ))
-                    DropdownMenuItem(
-                      value: item.package.id,
-                      child: Text(
-                        item.package.name,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                ],
-                onChanged: manager.busy
-                    ? null
-                    : (id) => manager.choose(slot.key, id == '' ? null : id),
-              ),
-            ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 8),
           for (final item in manager.installed.values)
             Card(
               child: Padding(
@@ -349,6 +398,11 @@ class _ProgramManagerViewState extends State<ProgramManagerView> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: ExtensionEmblem(id: item.package.id),
+                    ),
+                    const SizedBox(height: 8),
                     SwitchListTile(
                       contentPadding: EdgeInsets.zero,
                       title: Text(

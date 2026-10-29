@@ -101,3 +101,7 @@ Trabajo local0.3.12+21: letras sincronizadas prioritarias, escena visual con tie
 ## Cierre 0.3.12 publicado
 
 Letras sincronizadas, vista Escena, reproductor fijo y cola centrada publicados. Resultados, revisión externa y límites vigentes: [[41 Letras dinamicas y reproductor fijo 0.3.12]].
+
+## Desarrollo local 0.3.13
+
+Informe confirmado de letras 0.3.12 y corrección de álbum/identidad visual/consentimiento conjunto: [[42 Albumes y extensiones con identidad RP 0.3.13]]. No publicada.

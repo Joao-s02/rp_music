@@ -79,3 +79,9 @@ Cierre local0.3.11+20:147 pruebas/una optativa omitida, análisis limpio, álbum
 
 
 Trabajo local0.3.12+21: letras sincronizadas prioritarias, escena visual con tiempos reales, reproductor fijo/volumen emergente y cola centrada/animada. Fuente/paquetes/pruebas específicas exclusivamente en repositorio de extensiones; catálogo publicado intacto. Contexto, verificaciones y pendientes en [[41 Letras dinamicas y reproductor fijo 0.3.12]]. Referencia pública0.3.11 conservada.
+
+## Desarrollo local 0.3.13
+
+Informe confirmado de letras 0.3.12 y corrección de álbum/identidad visual/consentimiento conjunto: [[42 Albumes y extensiones con identidad RP 0.3.13]]. No publicada.
+
+0.3.13+22 comprobada localmente:164 pruebas/una optativa omitida, análisis limpio, descarga nativa Windows con álbum/pista/LRC y audio conservado. Universal/Windows completo con hashes, cuatro candidatos externos separados. Sin publicación/push; Android físico pendiente. [[42 Albumes y extensiones con identidad RP 0.3.13]].

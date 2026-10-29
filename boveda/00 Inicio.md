@@ -25,12 +25,12 @@ La bóveda conserva decisiones y evidencia para continuar el proyecto. Referenci
 | Preguntas todavía abiertas | [[07 Preguntas e investigacion]] |
 | Marca, tema y referencias | [[15 Identidad visual e icono]] |
 | Publicaciones | [[27 Publicacion de releases - contenido obligatorio]] |
-| Última entrega y sus pruebas | [[40 Gestos widgets albumes y descargas 0.3.11]] |
+| Última entrega y sus pruebas | [[41 Letras dinamicas y reproductor fijo 0.3.12]] |
 | Corrección local de Windows y YouTube | [[39 Audio Windows M4A OPUS y YouTube]] |
 
 Guías para usar, compilar y programar: [Índice de documentación](../docs/README.md). Presentación pública: [README del proyecto](../README.md).
 
-Última publicación y límites experimentales: [[40 Gestos widgets albumes y descargas 0.3.11]].
+Última publicación y límites experimentales: [[41 Letras dinamicas y reproductor fijo 0.3.12]].
 
 0.3.5 publicada: [[33 Metadatos de descargas YouTube]] — letras incrustadas, búsqueda automática y nuevas descargas etiquetadas. Entrega anterior en [[32 Pruebas 0.3.3 y mejoras 0.3.4]].
 
@@ -52,7 +52,7 @@ Guías para usar, compilar y programar: [Índice de documentación](../docs/READ
 La fecha de actualización no cambia la de los hechos históricos. Abrir esta carpeta como bóveda de Obsidian; los enlaces como [[00 Inicio]] son relativos. No requieren complementos.
 
 
-Última versión publicada: [[40 Gestos widgets albumes y descargas 0.3.11]]. Confirmación del usuario de0.3.10 conservada en [[39 Audio Windows M4A OPUS y YouTube]].
+Última versión publicada: [[41 Letras dinamicas y reproductor fijo 0.3.12]]. Confirmación del usuario de0.3.10 conservada en [[39 Audio Windows M4A OPUS y YouTube]].
 
 
-Trabajo local0.3.12+21: letras sincronizadas prioritarias, escena visual con tiempos reales, reproductor fijo/volumen emergente y cola centrada/animada. Fuente/paquetes/pruebas específicas exclusivamente en repositorio de extensiones; catálogo publicado intacto. Contexto, verificaciones y pendientes en [[41 Letras dinamicas y reproductor fijo 0.3.12]]. Referencia pública0.3.11 conservada.
+Desarrollo actual: [[42 Albumes y extensiones con identidad RP 0.3.13]]. Publicación vigente: [[41 Letras dinamicas y reproductor fijo 0.3.12]].

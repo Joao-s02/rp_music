@@ -1,4 +1,10 @@
-# Documentación de RP Music 0.3.12
+# Documentación de RP Music 0.3.13
+
+[Instalación y uso](USO-0.3.13.md) · [Pruebas](PRUEBAS-0.3.13.md) · [Cambios](CAMBIOS-0.3.13.md) · [Release](RELEASE-0.3.13.md)
+
+Álbumes de descargas corregidos, identidad RP en álbumes/fuentes, cola más lenta y consentimiento conjunto. Android universal/ARM64 y Windows completo en publicación. Android físico y escucha prolongada pendientes.
+
+## Antecedente 0.3.12
 
 [Instalación y uso](USO-0.3.12.md) · [Pruebas](PRUEBAS-0.3.12.md) · [Cambios](CAMBIOS-0.3.12.md) · [Release](RELEASE-0.3.12.md)
 
@@ -48,3 +54,7 @@ Otras versiones están enlazadas desde el índice de la bóveda. No actualizar r
 ## Desarrollo local0.3.12
 
 [Prueba de letras y reproductor](PROBAR-0.3.12.md) · [Evidencia](../boveda/41%20Letras%20dinamicas%20y%20reproductor%20fijo%200.3.12.md). La referencia pública continúa en0.3.11.
+
+## Pruebas 0.3.13
+
+[Cómo probar](PROBAR-0.3.13.md). Álbumes de descargas, interfaz RP y consentimiento conjunto. En publicación.

@@ -112,3 +112,7 @@ En la primera integración de iconos aún no se habían aplicado tema/fuentes; e
 ## Uso audiovisual animado — 2026-10-25
 
 El usuario pidió animar la marca dentro del tráiler aprobado. R/P aparecen escalonadas y las cinco barras cambian de altura; se usan recortes del PNG A, conservando el dibujo del monograma. Esta adaptación solo afecta al vídeo; maestro e iconos instalables intactos. Implementación y comprobaciones en [[19 Trailer de RP Music]].
+
+## Desarrollo local 0.3.13
+
+Informe confirmado de letras 0.3.12 y corrección de álbum/identidad visual/consentimiento conjunto: [[42 Albumes y extensiones con identidad RP 0.3.13]]. No publicada.

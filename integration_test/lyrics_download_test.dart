@@ -1,8 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
+import 'package:flutter/foundation.dart';
+import 'package:rp_music/extensions/extension_http_transport.dart';
+import 'package:audio_metadata_reader/audio_metadata_reader.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:rp_music/data/local_store.dart';
@@ -68,15 +70,37 @@ void main() {
         );
         await programs.install(package, package.permissions);
         await programs.choose('source', package.id);
-        final service = ExtensionSourceService(programs);
+        final service = ExtensionSourceService(
+          programs,
+          transport: (request, package) async {
+            final host = Uri.parse(request['url'] as String).host;
+            try {
+              final response = await ExtensionHttpTransport.request(
+                request,
+                package,
+              );
+              debugPrint('Comprobación HTTP: $host · ${response['status']}');
+              return response;
+            } catch (error) {
+              debugPrint('Comprobación HTTP: $host · ${error.runtimeType}');
+              rethrow;
+            }
+          },
+        );
         final tracks = await service.search(
           scenario['query'] as String,
           package.id,
         );
-        final track = tracks.firstWhere(
+        final selected = tracks.firstWhere(
           (t) => t.title.toLowerCase().contains(
             (scenario['titleContains'] as String).toLowerCase(),
           ),
+        );
+        final track = scenario['unknownAlbum'] == true
+            ? Track.fromJson({...selected.toJson(), 'album': 'Sin álbum'})
+            : selected;
+        debugPrint(
+          'Pista de prueba: ${track.title} · ${track.artist} · ${track.durationMs} ms',
         );
         final received = await SourceAudioTransfer.receive(track, service);
         final tagged = await DownloadEnrichment.apply(
@@ -89,6 +113,17 @@ void main() {
         expect(mediaDigests(tagged.bytes), mediaDigests(received.$1));
         final file = File('${temp.path}/download.m4a');
         await file.writeAsBytes(tagged.bytes);
+        final metadata = readMetadata(file);
+        if (scenario['expectedAlbum'] is String) {
+          expect(
+            metadata.album?.toLowerCase(),
+            (scenario['expectedAlbum'] as String).toLowerCase(),
+            reason: tagged.notice,
+          );
+          if (scenario['expectedTrackNumber'] is int) {
+            expect(metadata.trackNumber, scenario['expectedTrackNumber']);
+          }
+        }
         final embedded = EmbeddedLyrics.read(file);
         expect(embedded, isNotNull, reason: tagged.notice);
         final lyrics = Lyrics.parse(embedded!);
@@ -117,6 +152,9 @@ void main() {
           'nativePlayback': true,
           'seekToTimedCue': true,
           'audioBytesPreservedByTagger': true,
+          if (scenario['expectedAlbum'] is String) 'album': metadata.album,
+          if (scenario['expectedAlbum'] is String)
+            'trackNumber': metadata.trackNumber,
         };
         await File.fromUri(base.uri.resolve(scenario['report'] as String))
             .writeAsString(jsonEncode(report));

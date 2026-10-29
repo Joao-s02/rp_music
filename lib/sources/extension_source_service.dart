@@ -120,10 +120,12 @@ class ExtensionSourceService {
       }
       stage = data['next'] as String;
       final request = Map<String, dynamic>.from(data['request'] as Map);
+      var retried = false;
       try {
         response = await transport(request, package);
         if (operation == 'metadata' &&
             [429, 503].contains(response['status'])) {
+          retried = true;
           await Future<void>.delayed(const Duration(milliseconds: 1200));
           if (!available(id, localLyrics: localLyrics) ||
               programs.installed[id]?.package != package) {
@@ -131,8 +133,23 @@ class ExtensionSourceService {
           }
           response = await transport(request, package);
         }
-      } catch (_) {
+      } catch (error) {
         if (operation != 'metadata') rethrow;
+        // A transient connection failure must not silently discard album data
+        // after the audio download succeeded. Retry once, only for metadata.
+        if (!retried && (error is IOException || error is TimeoutException)) {
+          await Future<void>.delayed(const Duration(milliseconds: 400));
+          if (!available(id, localLyrics: localLyrics) ||
+              programs.installed[id]?.package != package) {
+            throw const FormatException('Fuente desactivada o modificada.');
+          }
+          try {
+            response = await transport(request, package);
+            continue;
+          } catch (_) {
+            // Preserve partial metadata when the second attempt also fails.
+          }
+        }
         // Let the package return the metadata/lyrics already obtained. Never
         // fabricate a successful response or erase an earlier stage's result.
         response = {'status': 0, 'body': ''};

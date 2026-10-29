@@ -5,6 +5,10 @@ actualizado: 2026-10-28
 ---
 # Registro de cambios
 
+## Informe 0.3.12 y desarrollo 0.3.13 — 2026-10-28
+
+Usuario confirma letras sincronizadas en extensión/local y aprueba lectura/Escena. Solicita cola más lenta, recuperar álbum en los cuatro YouTube y renovar álbumes/extensiones/instalación. Corrección y diseño locales, pruebas y límites en [[42 Albumes y extensiones con identidad RP 0.3.13]]. Publicación vigente0.3.12; no confundir con candidatos.
+
 ## Publicación 0.3.12 — 2026-10-28
 
 0.3.12-alpha.1 publicada, app0.3.12+21. ReleaseID 427362713; tag/código ea48d880c9c48c599026fe6605e4f94ce175bb85. Android universal/ARM64 y Windows x64 completo (32 archivos, licencias y guías). Siete adjuntos comprobados en borrador y por API pública: tamaño, SHA256, destino del tag y manifiesto descargado idéntico. Catálogo externo 1121a419cf4999b765de64cb0374ccf241bd28ec: diez opciones y 25 paquetes/variantes comprobados byte a byte; cliente real selecciona YouTube0.5.1, Explorador0.2.1 y Letras locales0.1.1. 155 pruebas aprobadas/una optativa omitida, análisis limpio; descarga nativa Windows con55 líneas LRC incrustadas, reproducción y bloques de audio conservados. Android físico, escucha prolongada, valoración visual del usuario y latencia API3 Android pendientes. [[41 Letras dinamicas y reproductor fijo 0.3.12]].
@@ -551,3 +555,11 @@ Usuario confirma gesto horizontal, informa regresión a letras planas y pide och
 ## Autorización posterior de publicación — 2026-10-28
 
 El usuario solicita continuar y luego subir la nueva release. Se publica0.3.12+21 tras cerrar validaciones, con universal/ARM64/Windows, guías/hashes y cinco actualizaciones del catálogo externo. Se mantiene registro separado de preparación local, pruebas y publicación. [[41 Letras dinamicas y reproductor fijo 0.3.12]].
+
+## Cierre local0.3.13 — 2026-10-28
+
+164 pruebas aprobadas/una omitida, análisis limpio; cuatro paquetes reales y descarga nativa con álbum/pista5/55 líneas incrustadas y audio conservado. Android universal firmado compatible y Windows completo32 archivos/licencias/guías entregados localmente con hashes. Sin publicación/push, Android físico pendiente. [[42 Albumes y extensiones con identidad RP 0.3.13]].
+
+## Publicación autorizada — 2026-10-28
+
+El usuario solicita subir la nueva release. Se prepara0.3.13+22 con universal/ARM64/Windows, guías/hashes y cuatro paquetes externos actualizados; comprobación de borrador y pública antes de confirmar publicación. [[42 Albumes y extensiones con identidad RP 0.3.13]].
