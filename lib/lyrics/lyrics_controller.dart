@@ -103,6 +103,7 @@ class LyricsController extends ChangeNotifier {
 
   Future<Lyrics?> _load(Track track, String key, bool force) async {
     final revision = _revisions[track.id] ?? 0;
+    Lyrics? embeddedPlain;
     // Yield so pending is registered before the program registry can notify.
     await Future<void>.delayed(Duration.zero);
     errors.remove(track.id);
@@ -118,8 +119,11 @@ class LyricsController extends ChangeNotifier {
             }
             if (embedded != null && embedded.trim().isNotEmpty) {
               final value = Lyrics.parse(embedded);
-              values[track.id] = value;
-              return value;
+              if (value.lines.isNotEmpty) {
+                values[track.id] = value;
+                return value;
+              }
+              embeddedPlain = value;
             }
           } catch (_) {
             // Import and network fallback remain usable if a tag format fails.
@@ -147,10 +151,16 @@ class LyricsController extends ChangeNotifier {
           if ((_revisions[track.id] ?? 0) != revision) return values[track.id];
           if (text.trim().isNotEmpty) {
             final value = Lyrics.parse(text);
-            values[track.id] = value;
-            return value;
+            values[track.id] = value.lines.isNotEmpty
+                ? value
+                : embeddedPlain ?? value;
+            return values[track.id];
           }
         }
+      }
+      if (embeddedPlain != null) {
+        values[track.id] = embeddedPlain;
+        return embeddedPlain;
       }
       if (!canFetch(track)) return values[track.id];
       final miss = _missFile(track.id);
@@ -197,6 +207,11 @@ class LyricsController extends ChangeNotifier {
         return null;
       }
       if ((_revisions[track.id] ?? 0) != revision) return values[track.id];
+      if (values[track.id]?.lines.isNotEmpty == true &&
+          Lyrics.parse(text).lines.isEmpty) {
+        errors[track.id] = 'Se conserva la letra sincronizada guardada; el proveedor solo devolvió texto.';
+        return values[track.id];
+      }
       await save(track.id, text, track: track);
       return values[track.id];
     } catch (_) {
@@ -211,7 +226,10 @@ class LyricsController extends ChangeNotifier {
 
   static String textFrom(Map<String, dynamic> result) {
     final sync = result['syncedLyrics'];
-    final value = sync is String && sync.trim().isNotEmpty
+    final value =
+        sync is String &&
+            sync.trim().isNotEmpty &&
+            Lyrics.parse(sync).lines.isNotEmpty
         ? sync
         : result['plainLyrics'] ?? '';
     if (value is! String || utf8.encode(value).length > 262144) {

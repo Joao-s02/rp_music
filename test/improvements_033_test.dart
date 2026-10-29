@@ -273,9 +273,9 @@ void main() {
       expect(find.text('FLAC'), findsWidgets);
       Navigator.of(tester.element(find.text('Detalles de la canción'))).pop();
       await tester.pumpAndSettle();
-      await tester.tap(find.widgetWithText(ActionChip, 'Cola'));
-      await tester.pumpAndSettle();
-      expect(find.text('Cola en curso'), findsNWidgets(2));
+      await tester.tap(find.text('Cola'));
+      await tester.pump(const Duration(milliseconds: 500));
+      expect(find.text('Cola en curso'), findsOneWidget);
       await tester.pumpWidget(const SizedBox());
       await tester.runAsync(audio.close);
       library.dispose();

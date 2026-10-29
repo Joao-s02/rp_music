@@ -5,6 +5,7 @@ import 'dart:typed_data';
 
 import '../data/download_tags.dart';
 import '../domain/track.dart';
+import '../domain/lyrics.dart';
 import '../lyrics/lyrics_controller.dart';
 import 'extension_source_service.dart';
 import 'download_context.dart';
@@ -145,7 +146,10 @@ class DownloadEnrichment {
       tagged,
       'audio/mp4',
       tags['title'] as String,
-      missing
+      tags['lyrics'] is String &&
+              Lyrics.parse(tags['lyrics'] as String).lines.isEmpty
+          ? 'Canción guardada; el proveedor solo ofreció letra de texto, sin tiempos de sincronización.'
+          : missing
           ? 'Canción guardada con los metadatos disponibles; algunos datos o letras no se encontraron.'
           : null,
     );

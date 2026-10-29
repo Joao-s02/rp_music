@@ -37,3 +37,8 @@ Otras versiones están enlazadas desde el índice de la bóveda. No actualizar r
 ## Antecedente: entrega 0.3.4
 
 [Uso 0.3.4](USO-0.3.4.md) · [Pruebas](PRUEBAS-0.3.4.md) · [Cambios](CAMBIOS-0.3.4.md). Los límites de Windows remoto y Spotify sin cuenta están indicados en esos documentos.
+
+
+## Desarrollo local0.3.12
+
+[Prueba de letras y reproductor](PROBAR-0.3.12.md) · [Evidencia](../boveda/41%20Letras%20dinamicas%20y%20reproductor%20fijo%200.3.12.md). La referencia pública continúa en0.3.11.
