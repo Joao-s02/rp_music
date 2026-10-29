@@ -1,6 +1,6 @@
 ---
 tipo: arquitectura-observada
-estado: publicada-0.3.15-y-desarrollo-local-0.3.16
+estado: publicada-0.3.16-con-limites
 actualizado: 2026-10-29
 ---
 # Arquitectura vigente
@@ -141,3 +141,7 @@ Actualización Android por web/Archivos sin permiso para instalar paquetes y fir
 ## Desarrollo0.3.16
 
 SourceAudioTransfer.receiveFile transmite audio al temporal; DownloadTags.mp4File etiqueta cabeceras MP4 acotadas y conserva payload por flujo; AlbumDownload conserva índices/carpeta en reintentos y Android SAF recibe ruta privada. JavascriptScreenService incorpora caché optativa por revisión de permisos y tiempos por fase. Navegación reúne contribuciones en Explorar; identidades locales de artista normalizadas sin reescribir música. Alcance/evidencia en [[45 Portadas artistas navegacion y descargas 0.3.16]].
+
+## Cierre0.3.16 publicado
+
+Explorar único, portadas/álbumes con respaldo de origen, artistas, búsqueda/indicador de álbum, descarga a disco/reintentos y diagnóstico/caché API3 publicados. Evidencia y pendientes: [[45 Portadas artistas navegacion y descargas 0.3.16]].

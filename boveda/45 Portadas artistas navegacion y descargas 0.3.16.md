@@ -1,6 +1,6 @@
 ---
 tipo: requisitos-implementacion-y-verificacion
-estado: desarrollo-local-con-verificacion-parcial
+estado: publicado-con-validacion-y-limites
 actualizado: 2026-10-29
 ---
 # Portadas artistas navegacion y descargas 0.3.16
@@ -71,3 +71,9 @@ ARM64 normal final compilado140.9s; versión0.3.16/código25, soloarm64-v8a y fi
 ## Comprobación previa de publicación
 
 Tres binarios normales preparados: universal exacto de la entrega local, ARM64 firmado140.9s y Windows0.3.16+25/ZIP32archivos. Siete adjuntos con SHA256: universal, ARM64, Windows, USO, PRUEBAS, CAMBIOS y manifiesto. Catálogo externo publicado enb74564aaee444294580ff1aefa7a6e8f337fabcd: diez opciones y34paquetes/variantes comprobados contra los bytes públicos; cliente real selecciona YouTube0.5.3, Explorador0.2.3 y Explorador JS0.1.1, conservando las variantes anteriores para0.3.15. Publicación de la app pendiente de comprobación del borrador.
+
+## Publicación comprobada — 2026-10-29
+
+0.3.16-alpha.1 publicada, app0.3.16+25. ReleaseID 428152288; tag/código 9aceaa2db7c9d54c764de79252bd5761895508cd. Android universal/ARM64 y Windows x64 completo32archivos/licencias/guías. Siete adjuntos verificados en borrador y públicamente por tamaño/SHA256, tag al commit correcto y manifiesto descargado idéntico. Catálogo externo b74564aaee444294580ff1aefa7a6e8f337fabcd: diez opciones y34paquetes/variantes comprobados; cliente real selecciona YouTube0.5.3, Explorador0.2.3 y Explorador JS0.1.1, con variantes anteriores preservadas. 163 pruebas aprobadas/una optativa omitida y análisis limpio; pruebas adicionales de metadatos/portadas y respaldo ante503 separadas. APK sin permiso de instalar paquetes, firma compatible. Sin prueba física nueva ni medición de latencia API3 Android; SAF/widgets/ARM64 físicos y escucha prolongada pendientes. [[45 Portadas artistas navegacion y descargas 0.3.16]].
+
+[Release pública](https://github.com/Joao-s02/rp_music/releases/tag/v0.3.16-alpha.1). Las fases locales anteriores se conservan como historial y no describen el estado final.
