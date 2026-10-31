@@ -38,6 +38,10 @@ Las extensiones API 2/Dart y API 3/JavaScript se instalan por separado desde el 
 
 Usa la [release 0.3.16](https://github.com/Joao-s02/rp_music/releases/tag/v0.3.16-alpha.1). Android: descarga el APK apropiado e instala desde Archivos **sin desinstalar** para conservar datos. Windows: extrae el ZIP completo, incluidas DLL, datos y licencias; no copies solo el EXE. Consulta [instalación y uso](docs/USO-0.3.16.md) y [firma Android](docs/ANDROID-SIGNING.md).
 
+## Candidato local A01 — recuperación de biblioteca
+
+Corrección no publicada: valida la biblioteca completa antes de aplicarla, intenta el respaldo ante datos incompatibles y conserva archivos rechazados. Sin copia válida, bloquea el guardado para proteger los originales; volver a seleccionar carpeta no lo desbloquea. [Comprobación sintética y límites](docs/USO.md#candidato-local-recuperación-de-biblioteca-a01). No modifica los archivos musicales ni corrige otros hallazgos.
+
 ## Verificación y pendientes
 
 La referencia publicada 0.3.15 registra 166 pruebas aprobadas, una optativa omitida y análisis limpio. Sus resultados no son una prueba de 0.3.16. 0.3.16:163 pruebas aprobadas/una omitida y análisis limpio; metadatos/portadas y respaldo ante503 comprobados. [Comprobaciones y límites actuales](docs/PRUEBAS-0.3.16.md).
