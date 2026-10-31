@@ -1,6 +1,6 @@
 # Documentación de RP Music
 
-**0.3.16+25** — [Uso](USO-0.3.16.md), [pruebas](PRUEBAS-0.3.16.md), [cambios](CAMBIOS-0.3.16.md), [release](RELEASE-0.3.16.md). Android universal/ARM64 y Windows publicados con siete adjuntos verificados.
+**0.3.18+27** — [Uso](USO-0.3.18.md), [pruebas](PRUEBAS-0.3.18.md), [cambios](CAMBIOS-0.3.18.md), [release](RELEASE-0.3.18.md). Android universal/ARM64 y Windows publicados con siete adjuntos verificados.
 
 Antecedente0.3.15: [Uso](USO-0.3.15.md), [pruebas](PRUEBAS-0.3.15.md), [cambios](CAMBIOS-0.3.15.md).
 
@@ -73,6 +73,6 @@ Otras versiones están enlazadas desde el índice de la bóveda. No actualizar r
 Candidato Android 0.3.15 y comparación de Play Protect: [prueba y límites](PROBAR-PLAY-PROTECT-0.3.15.md). Aceptado en emulador; teléfono pendiente.
 
 
-## 0.3.18 en preparación
+## 0.3.18 publicada
 
-[Uso](USO-0.3.18.md) · [Cambios](CAMBIOS-0.3.18.md) · [Pruebas](PRUEBAS-0.3.18.md). Navegación, caché de búsqueda y escaneo; publicación pendiente.
+[Uso](USO-0.3.18.md) · [Cambios](CAMBIOS-0.3.18.md) · [Pruebas](PRUEBAS-0.3.18.md). Navegación, caché de búsqueda y escaneo; siete adjuntos publicados y verificados.

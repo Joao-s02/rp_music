@@ -1,10 +1,10 @@
 # Guía vigente
 
-[Instalar y usar RP Music 0.3.16](USO-0.3.16.md).
+[Instalar y usar RP Music 0.3.18](USO-0.3.18.md).
 
-## Candidato local: recuperación de biblioteca (A01)
+## Recuperación de biblioteca (A01), incluida en 0.3.18
 
-No publicado. Si el principal contiene datos incompatibles, se intenta el respaldo antes de mostrar la biblioteca. Un guardado posterior conserva el archivo rechazado junto a los originales, como `library.json.rejected` (o con sufijo numérico), y no lo coloca sobre el respaldo válido.
+Si el principal contiene datos incompatibles, se intenta el respaldo antes de mostrar la biblioteca. Un guardado posterior conserva el archivo rechazado junto a los originales, como `library.json.rejected` (o con sufijo numérico), y no lo coloca sobre el respaldo válido.
 
 Si ninguna copia sirve, aparece «No se pudo recuperar la biblioteca guardada. El guardado está bloqueado para conservar los archivos originales.» Cambiar ajustes o seleccionar de nuevo la carpeta no desbloquea ese guardado: se requiere recuperar una copia válida por separado. No borres ni sustituyas esos archivos para probarlo con tu biblioteca real. Esta corrección no añade una pantalla de reparación ni modifica archivos musicales.
 
