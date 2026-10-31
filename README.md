@@ -2,19 +2,19 @@
 
 Reproductor Flutter para Android y Windows, ampliable mediante extensiones. Biblioteca local sin cuenta ni conexión; actualizaciones y consultas en línea opcionales.
 
-**Versión publicada: 0.3.16-alpha.1**, aplicación **0.3.16+25**. [Descargar Android universal, ARM64 y Windows](https://github.com/Joao-s02/rp_music/releases/tag/v0.3.16-alpha.1).
+**Versión publicada: 0.3.18-alpha.1**, aplicación **0.3.18+27**. [Descargar Android universal, ARM64 y Windows](https://github.com/Joao-s02/rp_music/releases/tag/v0.3.18-alpha.1).
 
-[Guía vigente](docs/USO.md) · [Pruebas](docs/PRUEBAS-0.3.16.md) · [Cambios](docs/CAMBIOS-0.3.16.md) · [Documentación](docs/README.md)
+[Guía vigente](docs/USO.md) · [Pruebas](docs/PRUEBAS-0.3.18.md) · [Cambios](docs/CAMBIOS-0.3.18.md) · [Documentación](docs/README.md)
 
-## Desarrollo local 0.3.18+27
+## Novedades de 0.3.18+27
 
-Navegación Atrás de álbumes, separación/cabecera desplazable de fuentes, búsqueda reciente conservada durante la sesión y escaneo Android progresivo con caché de metadatos. [Cambios](docs/CAMBIOS-0.3.18.md) · [Pruebas y límites](docs/PRUEBAS-0.3.18.md). Compilados y publicación en preparación; sin medición física nueva de tiempos en Android.
+Navegación Atrás de álbumes, separación/cabecera desplazable de fuentes, búsqueda reciente conservada durante la sesión y escaneo Android progresivo con caché de metadatos. [Cambios](docs/CAMBIOS-0.3.18.md) · [Pruebas y límites](docs/PRUEBAS-0.3.18.md). Android universal/ARM64 y Windows publicados con siete adjuntos verificados. Análisis limpio y suite de 181 aprobadas/una optativa omitida; sin medición física nueva de tiempos en Android.
 
 ### Complemento opcional conservado desde 0.3.17
 
-Integración en desarrollo desde Letras con editores instalados por separado. [RP Edits](https://github.com/Joao-s02/rp_edits) tiene repositorio propio y APK independiente; su editor y motor audiovisual no se incluyen en RP Music. Primera versión Android en verificación, port Windows pendiente. Esto no es una nueva release publicada ni una exportación de vídeo incorporada al reproductor. Contrato y límites: [herramientas multimedia](docs/HERRAMIENTAS-MULTIMEDIA.md).
+Acceso opcional desde Letras a editores instalados por separado, conservado en el host 0.3.18. [RP Edits](https://github.com/Joao-s02/rp_edits) tiene repositorio propio y APK independiente; su editor y motor audiovisual no se incluyen en RP Music. Primera versión Android en verificación, port Windows pendiente. El editor no tiene una release publicada y su motor de exportación no está incorporado al reproductor. Contrato y límites: [herramientas multimedia](docs/HERRAMIENTAS-MULTIMEDIA.md).
 
-Comprobación local en Samsung A34/Android16: apertura desde Letras, nueve pruebas instrumentales del editor y exportación real de5s con audio/texto/marca desactivada. APK firmados instalados sin desinstalar el reproductor; no se afirma compatibilidad universal. El editor acepta fondos de vídeo de30fps en esta primera versión. Sin nueva publicación del reproductor ni release del editor.
+Antecedente del candidato 0.3.17 en Samsung A34/Android16: apertura desde Letras, nueve pruebas instrumentales del editor y exportación real de5s con audio/texto/marca desactivada. APK firmados instalados sin desinstalar el reproductor; no se afirma compatibilidad universal. El editor acepta fondos de vídeo de30fps en esta primera versión. Esta prueba histórica no valida físicamente 0.3.18; el editor sigue sin release propia.
 
 ## Novedades 0.3.16+25
 

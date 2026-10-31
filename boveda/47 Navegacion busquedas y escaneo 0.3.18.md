@@ -1,6 +1,6 @@
 ---
 tipo: entrega-y-evidencia
-estado: candidato-local
+estado: publicado-con-validacion-y-limites
 actualizado: 2026-10-31
 ---
 # Navegacion busquedas y escaneo 0.3.18
@@ -21,4 +21,10 @@ Análisis limpio (salida 0); suite completa con 181 aprobadas, cero fallidas y u
 
 ## Entrega
 
-Aplicación 0.3.18+27, tag previsto v0.3.18-alpha.1. Android universal y ARM64 normales compilados y firmados con identidad/linaje existentes, sin REQUEST_INSTALL_PACKAGES; Windows release normal compilado. Las tres operaciones finalizaron con salida 0. Sin instalación ni prueba física nueva. Publicación pendiente de empaquetado y comprobación del borrador. Universal, ARM64, Windows completo, USO/PRUEBAS/CAMBIOS/SHA256 requeridos por [[27 Publicacion de releases - contenido obligatorio]]. [Uso](../docs/USO-0.3.18.md), [cambios](../docs/CAMBIOS-0.3.18.md), [pruebas](../docs/PRUEBAS-0.3.18.md).
+Aplicación 0.3.18+27, tag v0.3.18-alpha.1. Android universal y ARM64 normales compilados y firmados con identidad/linaje existentes, sin REQUEST_INSTALL_PACKAGES; Windows release normal compilado. Las tres operaciones finalizaron con salida 0. Sin instalación ni prueba física nueva. Borrador y publicación pública comprobados. Universal, ARM64, Windows completo, USO/PRUEBAS/CAMBIOS/SHA256 requeridos por [[27 Publicacion de releases - contenido obligatorio]]. [Uso](../docs/USO-0.3.18.md), [cambios](../docs/CAMBIOS-0.3.18.md), [pruebas](../docs/PRUEBAS-0.3.18.md).
+
+## Publicación comprobada — 2026-10-31
+
+0.3.18-alpha.1 publicada, app 0.3.18+27. ReleaseID 430101996; tag/código 45a2e25bcc9707243258b1998de82ebb6a73166b. Android universal y ARM64 firmados con identidad/linaje compatibles y sin permiso de instalar paquetes; Windows completo con 32 archivos/licencias/guías. Siete adjuntos comprobados en borrador y públicamente por tamaño/SHA-256, tag al commit correcto y manifiesto descargado idéntico. Análisis limpio; suite completa 181 aprobadas/cero fallidas/una optativa omitida, salida 0. Verificación final adicional de navegación/desplazamiento/JS: 13 aprobadas, salida 0. Sin prueba física nueva, benchmark Android ni validación nueva de Play Protect. No se modificó el catálogo ni los proveedores. Detalles y pendientes: [[47 Navegacion busquedas y escaneo 0.3.18]].
+
+[Release pública](https://github.com/Joao-s02/rp_music/releases/tag/v0.3.18-alpha.1). Las fases anteriores conservan su alcance histórico.

@@ -1,25 +1,25 @@
 ---
 tipo: estado-actual
-estado: publicado-0.3.16-con-limites
-actualizado: 2026-10-29
+estado: publicado-0.3.18-con-limites
+actualizado: 2026-10-31
 ---
 # Estado del repositorio
 
-## Candidato local 0.3.18+27
+## Referencia publicada: 0.3.18
 
-Navegación Atrás en álbumes, cabecera/filas de fuentes, caché de búsqueda por sesión y descubrimiento/etiquetas cacheadas por lotes. A01 y RP Edits previos conservados; A02 no incorporada. Verificación/compilación/publicación en curso, sin medición física Android nueva. [[47 Navegacion busquedas y escaneo 0.3.18]].
+Navegación Atrás en álbumes, cabecera/filas de fuentes, caché de búsqueda por sesión y descubrimiento/etiquetas cacheadas por lotes. A01 y RP Edits previos conservados; A02 no incorporada. 0.3.18-alpha.1 publicada, app 0.3.18+27. ReleaseID 430101996; tag/código 45a2e25bcc9707243258b1998de82ebb6a73166b. Android universal y ARM64 firmados con identidad/linaje compatibles y sin permiso de instalar paquetes; Windows completo con 32 archivos/licencias/guías. Siete adjuntos comprobados en borrador y públicamente por tamaño/SHA-256, tag al commit correcto y manifiesto descargado idéntico. Análisis limpio; suite completa 181 aprobadas/cero fallidas/una optativa omitida, salida 0. Verificación final adicional de navegación/desplazamiento/JS: 13 aprobadas, salida 0. Sin prueba física nueva, benchmark Android ni validación nueva de Play Protect. No se modificó el catálogo ni los proveedores. Detalles y pendientes: [[47 Navegacion busquedas y escaneo 0.3.18]].
 
-## Candidato local A01 — recuperación de biblioteca
+## A01 incluida en 0.3.18 — recuperación de biblioteca
 
 Solo A01: carga completa validada, respaldo ante datos incompatibles y conservación del rechazado; sin copia válida, guardado bloqueado sin sobrescribir originales. Esquema 1 y otros consumidores de LocalStore conservados. RED16/6 y GREEN22; verificación independiente enfocada22/análisis limpio después de completar un insumo omitido de la copia aislada. Suite final174aprobadas/cero fallidas/una optativa omitida, exit0;36PNG previos conservados. Commit local `0f35994` en `fix/a01-recovery`, revisión nativa aprobada con acuse completado y dos recomendaciones no bloqueantes; no publicación ni prueba física/cortes de energía. Alcance, instrucciones y límites: [[03 Biblioteca y reproduccion]].
 
-## Candidato local0.3.17+26 — editor opcional
+## Antecedente local 0.3.17+26 — editor opcional
 
 Integración desde Letras con aplicaciones complementarias instaladas por separado; editor RP Edits0.1.0 en repositorio propio por petición del usuario. Contrato común preparado, adaptador Android, port del editor Windows pendiente. El motor de vídeo no se incorpora a RP Music. Desarrollo y verificaciones en [[46 Extension de letras para edits]]; la referencia publicada siguiente se conserva. Sin publicación de0.3.17 ni release del editor. Perfil de compilación moderado tras solicitud de bajar RAM, sin tareas pesadas simultáneas.
 
 Prueba posterior en A34/Android16: actualización del host sin desinstalar, nueve pruebas físicas del editor y recorrido real con APK release firmado (apertura desde Letras y MP4 de5s con audio/texto/sin marca en Descargas). Editor corregido para bucles y fotos; límites y evidencia exacta en [[46 Extension de letras para edits]]. No equivale a validación universal ni publicación.
 
-## Referencia publicada: 0.3.16
+## Antecedente publicado: 0.3.16
 
 0.3.16-alpha.1 publicada, app0.3.16+25. ReleaseID 428152288; tag/código 9aceaa2db7c9d54c764de79252bd5761895508cd. Android universal/ARM64 y Windows x64 completo32archivos/licencias/guías. Siete adjuntos verificados en borrador y públicamente por tamaño/SHA256, tag al commit correcto y manifiesto descargado idéntico. Catálogo externo b74564aaee444294580ff1aefa7a6e8f337fabcd: diez opciones y34paquetes/variantes comprobados; cliente real selecciona YouTube0.5.3, Explorador0.2.3 y Explorador JS0.1.1, con variantes anteriores preservadas. 163 pruebas aprobadas/una optativa omitida y análisis limpio; pruebas adicionales de metadatos/portadas y respaldo ante503 separadas. APK sin permiso de instalar paquetes, firma compatible. Sin prueba física nueva ni medición de latencia API3 Android; SAF/widgets/ARM64 físicos y escucha prolongada pendientes. [[45 Portadas artistas navegacion y descargas 0.3.16]].
 

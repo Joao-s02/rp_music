@@ -149,3 +149,7 @@ SourceAudioTransfer.receiveFile transmite audio al temporal; DownloadTags.mp4Fil
 ## Cierre0.3.16 publicado
 
 Explorar único, portadas/álbumes con respaldo de origen, artistas, búsqueda/indicador de álbum, descarga a disco/reintentos y diagnóstico/caché API3 publicados. Evidencia y pendientes: [[45 Portadas artistas navegacion y descargas 0.3.16]].
+
+## 0.3.18 publicada — presentación y escaneo
+
+El host conserva pantallas recientes de fuentes y JS mediante caché de sesión ligada a permisos/paquete; fuentes usan un único desplazamiento e historial por colección. Álbum local intercepta Atrás y el escaneo entrega descubrimiento incremental con metadatos cacheados y trabajo acotado. Sin cambio de motores ni proveedores. Evidencia y límites: [[47 Navegacion busquedas y escaneo 0.3.18]].

@@ -5,7 +5,7 @@ actualizado: 2026-10-29
 ---
 # Extensiones
 
-## Candidato 0.3.18 — presentación y memoria de búsqueda
+## Publicado en 0.3.18 — presentación y memoria de búsqueda
 
 El host conserva temporalmente la pantalla de fuentes Dart y JS al cambiar de sección, incluyendo borrador/resultados y desplazamiento. Caché de sesión acotada e invalidada por identidad/permisos; no se persisten búsquedas ni se inicia audio al restaurar. Fuente Dart: cabecera desplazable, filas separadas y regreso por colecciones sin red. Sin modificar proveedores, paquetes, SDK ni permisos. [[47 Navegacion busquedas y escaneo 0.3.18]].
 

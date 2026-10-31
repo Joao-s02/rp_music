@@ -5,9 +5,9 @@ actualizado: 2026-10-29
 ---
 # RP Music — red de conocimiento
 
-La bóveda conserva decisiones y evidencia para continuar el proyecto. Referencia publicada: **0.3.16-alpha.1**, aplicación **0.3.16+25**, Android y Windows. Estado actual y comprobaciones: [[10 Estado del repositorio]].
+La bóveda conserva decisiones y evidencia para continuar el proyecto. Referencia publicada: **0.3.18-alpha.1**, aplicación **0.3.18+27**, Android y Windows. Estado actual y comprobaciones: [[10 Estado del repositorio]].
 
-Nueva entrega en preparación: [[47 Navegacion busquedas y escaneo 0.3.18]].
+Entrega publicada: [[47 Navegacion busquedas y escaneo 0.3.18]].
 
 ## Empezar aquí
 
@@ -28,13 +28,13 @@ Nueva entrega en preparación: [[47 Navegacion busquedas y escaneo 0.3.18]].
 | Preguntas todavía abiertas | [[07 Preguntas e investigacion]] |
 | Marca, tema y referencias | [[15 Identidad visual e icono]] |
 | Publicaciones | [[27 Publicacion de releases - contenido obligatorio]] |
-| Última entrega y sus pruebas | [[45 Portadas artistas navegacion y descargas 0.3.16]] |
+| Última entrega y sus pruebas | [[47 Navegacion busquedas y escaneo 0.3.18]] |
 | Alerta Android y diagnóstico local | [[43 Play Protect y firma de Android]], [[44 Diagnostico local de instalacion y actualizaciones manuales]] |
 | Corrección local de Windows y YouTube | [[39 Audio Windows M4A OPUS y YouTube]] |
 
 Guías para usar, compilar y programar: [Índice de documentación](../docs/README.md). Presentación pública: [README del proyecto](../README.md).
 
-Última publicación y límites: [[45 Portadas artistas navegacion y descargas 0.3.16]].
+Última publicación y límites: [[47 Navegacion busquedas y escaneo 0.3.18]].
 
 0.3.5 publicada: [[33 Metadatos de descargas YouTube]] — letras incrustadas, búsqueda automática y nuevas descargas etiquetadas. Entrega anterior en [[32 Pruebas 0.3.3 y mejoras 0.3.4]].
 
@@ -56,11 +56,11 @@ Guías para usar, compilar y programar: [Índice de documentación](../docs/READ
 La fecha de actualización no cambia la de los hechos históricos. Abrir esta carpeta como bóveda de Obsidian; los enlaces como [[00 Inicio]] son relativos. No requieren complementos.
 
 
-Última versión publicada: [[45 Portadas artistas navegacion y descargas 0.3.16]]. Confirmación del usuario de0.3.10 conservada en [[39 Audio Windows M4A OPUS y YouTube]].
+Última versión publicada: [[47 Navegacion busquedas y escaneo 0.3.18]]. Confirmación del usuario de0.3.10 conservada en [[39 Audio Windows M4A OPUS y YouTube]].
 
 
-Última entrega publicada: [[45 Portadas artistas navegacion y descargas 0.3.16]].
+Última entrega publicada: [[47 Navegacion busquedas y escaneo 0.3.18]].
 
 Antecedente de distribución: [[43 Play Protect y firma de Android]]. Resultado posterior de instalación0.3.15 en [[44 Diagnostico local de instalacion y actualizaciones manuales]].
 
-Entrega publicada: [[45 Portadas artistas navegacion y descargas 0.3.16]]. Publicación de referencia0.3.16; consultar [[10 Estado del repositorio]] para distinguir implementación/verificación/distribución.
+Entrega publicada: [[47 Navegacion busquedas y escaneo 0.3.18]]. Publicación de referencia0.3.16; consultar [[10 Estado del repositorio]] para distinguir implementación/verificación/distribución.

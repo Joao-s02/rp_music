@@ -5,7 +5,7 @@ actualizado: 2026-10-29
 ---
 # Biblioteca y reproduccion
 
-## Candidato 0.3.18 — escaneo y navegación
+## Publicado en 0.3.18 — escaneo y navegación
 
 Álbum local intercepta Atrás para cerrar su detalle. Descubrimiento de biblioteca por lotes de 128; Android reutiliza huellas válidas antes de abrir metadatos, omite su trabajo en el ejecutor y entrega los nuevos conforme terminan. Dos lectores, formatos/permisos y conservación ante fallo intactos. A01 se conserva. Evidencia y límites en [[47 Navegacion busquedas y escaneo 0.3.18]].
 
