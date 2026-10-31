@@ -5,9 +5,19 @@ actualizado: 2026-10-29
 ---
 # Estado del repositorio
 
+## Candidato local 0.3.18+27
+
+Navegación Atrás en álbumes, cabecera/filas de fuentes, caché de búsqueda por sesión y descubrimiento/etiquetas cacheadas por lotes. A01 y RP Edits previos conservados; A02 no incorporada. Verificación/compilación/publicación en curso, sin medición física Android nueva. [[47 Navegacion busquedas y escaneo 0.3.18]].
+
 ## Candidato local A01 — recuperación de biblioteca
 
 Solo A01: carga completa validada, respaldo ante datos incompatibles y conservación del rechazado; sin copia válida, guardado bloqueado sin sobrescribir originales. Esquema 1 y otros consumidores de LocalStore conservados. RED16/6 y GREEN22; verificación independiente enfocada22/análisis limpio después de completar un insumo omitido de la copia aislada. Suite final174aprobadas/cero fallidas/una optativa omitida, exit0;36PNG previos conservados. Commit local `0f35994` en `fix/a01-recovery`, revisión nativa aprobada con acuse completado y dos recomendaciones no bloqueantes; no publicación ni prueba física/cortes de energía. Alcance, instrucciones y límites: [[03 Biblioteca y reproduccion]].
+
+## Candidato local0.3.17+26 — editor opcional
+
+Integración desde Letras con aplicaciones complementarias instaladas por separado; editor RP Edits0.1.0 en repositorio propio por petición del usuario. Contrato común preparado, adaptador Android, port del editor Windows pendiente. El motor de vídeo no se incorpora a RP Music. Desarrollo y verificaciones en [[46 Extension de letras para edits]]; la referencia publicada siguiente se conserva. Sin publicación de0.3.17 ni release del editor. Perfil de compilación moderado tras solicitud de bajar RAM, sin tareas pesadas simultáneas.
+
+Prueba posterior en A34/Android16: actualización del host sin desinstalar, nueve pruebas físicas del editor y recorrido real con APK release firmado (apertura desde Letras y MP4 de5s con audio/texto/sin marca en Descargas). Editor corregido para bucles y fotos; límites y evidencia exacta en [[46 Extension de letras para edits]]. No equivale a validación universal ni publicación.
 
 ## Referencia publicada: 0.3.16
 

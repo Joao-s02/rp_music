@@ -5,9 +5,39 @@ actualizado: 2026-10-29
 ---
 # Registro de cambios
 
+## Versión 0.3.18 — 2026-10-31
+
+Petición de cuatro mejoras acotadas a fuentes, álbumes y escaneo de raíz. Infraestructura genérica del host reutilizada; caché temporal ligada a permisos/paquete, regreso por colecciones y entrega progresiva de archivos/etiquetas. A01 preservada y proveedores/audio ajenos sin modificar. Resultados, incidencias y entrega en [[47 Navegacion busquedas y escaneo 0.3.18]].
+
 ## Corrección local A01 — recuperación de biblioteca — 2026-10-31
 
 Petición limitada a A01, contrastada con fuente actual y reproducida con datos sintéticos; el registro antiguo de otra corrección no se usó como prueba. Validación completa antes de publicar estado, respaldo semántico y conservación de rechazados `.rejected`; sin copia válida, bloqueo de guardado con aviso explícito. No se modifican canciones, esquema ni dependencias, ni A02/A06. Worker: RED16/6 exit1, GREEN22 exit0; mensaje precisado con RED21/1 y GREEN22. Diferencial de cuatro consumidores genéricos idéntico en stdout/stderr/exit,16 comprobaciones por versión. Verificador independiente: primera prueba exit1 antes de casos por package_graph omitido del inventario del padre; completado bajo autorización expresa, único nuevo test22aprobadas/exit0, análisis0/5.6s y originales sin cambios. Suite final del padre174aprobadas/cero fallidas/una optativa omitida, exit0/72s incluyendo restauración de capturas;36PNG previos conservados byte a byte. Commit `0f35994ab1457f194c8f61d3aaa1482f3cc85981` en `fix/a01-recovery`, ocho archivos/432líneas de delta; cambios previos de README/estado/registro excluidos mediante staging selectivo. Revisión nativa solo de ese commit, `review-4d60c7ffccd78bac`: aprobada, acuse completado/autoridad consumida; dos recomendaciones no bloqueantes (legibilidad/fiabilidad), sin corrección abierta. Se conservan los487archivos originales ajenos por hash y los36PNG previos (seis restaurados). Una prueba optativa omitida por falta de paquete externo; no falta de cobertura A01. Copia previa de archivos afectados en `.dart_tool/a01_recovery/before`; no usar reset global para revertir esta unidad. Evidencia en `odd/tasks/a01-recovery.md`; comportamiento y límites en [[03 Biblioteca y reproduccion]]. Sin publicación ni operación de dispositivos.
+
+## Prueba física y correcciones de RP Edits — 2026-10-30
+
+A34/Android16 conectado por el usuario. RP Music actualizado por ADB a0.3.17+26 sin desinstalar, fecha inicial conservada. Nueve pruebas instrumentales/23.937s y diez unitarias/lint aprobados tras corregir ritmo del vídeo en bucle y opacidad persistente de fotos. Media3 del editor1.11.1; fondos de vídeo30fps con comprobación inmediata. APK release firmado probado por UI: apertura desde Letras, copia local, fragmento5s, texto, marca desactivada y MP4 en Descargas verificado (5026ms,150cuadros,30fps,audio,presentación720×1280). Datos/evidencia y límites en [[46 Extension de letras para edits]]. Instrumentación/proyectos sintéticos retirados, originales conservados. Sin emulador, publicación de release ni push del reproductor.
+
+Correcciones/pruebas del editor enviadas a su repositorio privado en `66461f7`; APK corregido SHA25632a8eac6bfbee6d8df2a7c7cd2a40656631364f8029462af39f96cc094ffb94e. No se envía el vídeo con música del usuario ni datos del teléfono al repositorio.
+
+## Candidatos locales de RP Edits e integración — 2026-10-30
+
+Editor en repositorio privado propio, primer commit/push `676f7b1`; APK0.1.0 firmado~1.9MB. Diez unitarias, lint sin errores y compilación debug/release con R8 aprobados usando1536MiB/un trabajador. Host0.3.17+26: análisis final limpio y Android normal release166.2s/70.7MB firmado/verificado, sin publicar ni push del principal. Evidencia previa de seis exportaciones y165 pruebas del host conservada con su alcance. Últimos cambios instrumentales, integración entre APK finales, teléfono y Windows pendientes; no declarar versión estable. [[46 Extension de letras para edits]].
+
+La imagen API37 ignoró el límite RAM e impuso4096MiB; su cierre normal dejó el proceso vivo. Se terminó el proceso propio y se verificó ausencia de Java/QEMU/emulador y recuperación de memoria (8.9GB libres en la muestra). Sin tareas pesadas simultáneas ni compiladores persistentes. Bóveda/README revisados; capturas generadas por la suite restauradas, archivos previos del usuario conservados. Sin release publicada.
+
+## RP Edits: repositorio independiente y límite de memoria — 2026-10-30
+
+Usuario acepta APK complementario, solicita primera versión modular y repositorio propio. Creado repositorio privado https://github.com/Joao-s02/rp_edits y carpeta hermana; fuentes trasladadas fuera de rp-music-extensions. Excepción explícita registrada en [[04 Extensiones]], alcance/evidencia en [[46 Extension de letras para edits]]. Host candidato0.3.17+26, sin publicar ni push de RP Music.
+
+Usuario solicita reducir consumo RAM durante el desarrollo: se cierran el emulador y procesos propios Gradle/Kotlin/análisis (aproximadamente6GB de memoria residente liberada). Compilación del editor limitada a1536MiB/un trabajador y host a2GiB/dos trabajadores, sin paralelismo Gradle ni daemon persistente, Kotlin en proceso. En adelante una sola operación pesada a la vez. La última repetición instrumental se interrumpió para liberar memoria; no registrarla como aprobada. Compilación/editor/lint anteriores y seis exportaciones previas conservan su alcance; pruebas finales y conexión entre APK con firma compatible pendientes.
+
+## Definición del editor opcional y consulta de instalación — 2026-10-30
+
+Respuestas del usuario registradas en [[46 Extension de letras para edits]]: Android primero y soporte común preparado para Windows; fragmentos/canción completa con audio, cuatro modos de letra, sincronización editable, composición libre, textos permanentes, fondos, tres proporciones, 720p/1080p30, borradores/proyectos/plantillas y marca opcional. Se corrige el motivo: el peso del editor es aceptable siempre que sea opcional para oyentes. Investigación primaria de Media3, intents y componentes diferidos Flutter registrada; APK complementario solo propuesto. El usuario solicita explicación antes de elegir esa instalación. Sin implementación ni exportación comprobada; README revisado sin cambiar capacidades publicadas.
+
+## Idea de extensión de letras para edits — 2026-10-30
+
+Solicitud inicial y preguntas pendientes registradas en [[46 Extension de letras para edits]], enlazada desde [[04 Extensiones]]. Se conserva la decisión de extensión opcional; exportación audiovisual necesita investigación de capacidades genéricas y peso del motor. Contexto, escena existente y permisos/slots revisados; README revisado sin anunciar capacidades futuras. Sin implementación, pruebas de exportación ni publicación.
 
 ## Publicación 0.3.13 — 2026-10-28
 

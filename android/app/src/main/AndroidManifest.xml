@@ -11,6 +11,9 @@
         android:networkSecurityConfig="@xml/network_security_config"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+        <provider android:name="androidx.core.content.FileProvider" android:authorities="${applicationId}.media_tools" android:exported="false" android:grantUriPermissions="true">
+            <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/media_tool_paths" />
+        </provider>
         <provider android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.updates"
             android:exported="false" android:grantUriPermissions="true">
@@ -79,6 +82,7 @@
 
          In particular, this is used by the Flutter engine in io.flutter.plugin.text.ProcessTextPlugin. -->
     <queries>
+        <intent><action android:name="com.rpmusic.OPEN_MEDIA_PROJECT"/><data android:mimeType="application/vnd.rpmusic.project+json"/></intent>
         <intent>
             <action android:name="android.intent.action.PROCESS_TEXT"/>
             <data android:mimeType="text/plain"/>

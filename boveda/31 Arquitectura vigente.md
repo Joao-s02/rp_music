@@ -5,6 +5,10 @@ actualizado: 2026-10-29
 ---
 # Arquitectura vigente
 
+## Candidato local0.3.17: aplicaciones complementarias
+
+MediaToolRequest/MediaToolPlatform ofrecen un sobre común sin motor audiovisual en el reproductor. Android descubre actividades compatibles firmadas con la misma identidad; MediaToolsBridge prepara JSON/URI de solo lectura mediante proveedor acotado y apertura explícita desde Letras. RP Edits es una aplicación Kotlin independiente con renderer compartido preview/exportación y adaptador Media3. Elección técnica provisional para Android, no decisión del usuario sobre lenguaje. Proyecto JSON portable; UI/motor/lanzador Windows aún pendientes. [[46 Extension de letras para edits]], [contrato](../docs/HERRAMIENTAS-MULTIMEDIA.md).
+
 Corrección local0.3.10+19: factory createNativeAudioPlayer selecciona media_kit/libmpv solo en Windows; sustituye WinRT para M4A/OPUS y fuentes. Android/audio_service preservados. MusicHandler observa errores/cargas, diagnóstico redactado, cancelación y límite de carga Windows. Selección provisional y evidencia en [[39 Audio Windows M4A OPUS y YouTube]]; referencia publicada0.3.9 siguiente es antecedente hasta nueva publicación.
 
 Ampliación publicada 0.3.9+18: JavascriptScreenService coordina HTTP fuera de QuickJS; ProgramController valida etapas/estado y conserva URLs solo en memoria. ExtensionSourceService/broker admite pantallas JS autorizadas sin cambiar propietario source. network.stream verifica servidores públicos de emisoras. Cancelación y revisión de autorización descartan respuestas tardías. Pruebas/límites: [[37 Explorador y radio JavaScript]]. El mapa publicado 0.3.8 siguiente se conserva como antecedente.

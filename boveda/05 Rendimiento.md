@@ -5,6 +5,11 @@ actualizado: 2026-10-29
 ---
 # Rendimiento
 
+## Candidato 0.3.18 — carga de raíz Android
+
+Usuario informa regresión percibida con 500/900 canciones. Se reduce trabajo evitable: descubrimiento antes de completar toda la raíz, etiquetas cacheadas desde el primer lote, omisión de lecturas de metadatos válidos y lotes de actualización más amplios. Pruebas sintéticas de integridad/progreso/caché no equivalen a medir segundos en Android. Comparación física de primera pista visible/fin con caché fría/caliente pendiente. [[47 Navegacion busquedas y escaneo 0.3.18]].
+
+
 Informe0.3.9: usuario confirma nuevas extensiones funcionales en Android, pero percibe3–6s al buscar/abrir contenido y cambiar secciones API3; prioriza conservar YouTube API2. Inspección y ensayo sin red Windows no reproducen esa demora y no sustituyen medición Android. Causas por operación y mejoras todavía propuestas en [[38 Latencia de extensiones API 3]].
 
 ## Prioridad confirmada

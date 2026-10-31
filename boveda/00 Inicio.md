@@ -7,6 +7,8 @@ actualizado: 2026-10-29
 
 La bóveda conserva decisiones y evidencia para continuar el proyecto. Referencia publicada: **0.3.16-alpha.1**, aplicación **0.3.16+25**, Android y Windows. Estado actual y comprobaciones: [[10 Estado del repositorio]].
 
+Nueva entrega en preparación: [[47 Navegacion busquedas y escaneo 0.3.18]].
+
 ## Empezar aquí
 
 1. [[01 Contexto para agentes]] — reglas y mantenimiento.
@@ -21,6 +23,7 @@ La bóveda conserva decisiones y evidencia para continuar el proyecto. Referenci
 | Propósito, plataformas y alcance | [[02 Vision y decisiones]] |
 | Biblioteca, listas, metadatos y reproducción | [[03 Biblioteca y reproduccion]] |
 | Extensiones, permisos y repositorios | [[04 Extensiones]] |
+| Editor opcional de vídeos con letras | [[46 Extension de letras para edits]] |
 | Fluidez y mediciones | [[05 Rendimiento]] |
 | Preguntas todavía abiertas | [[07 Preguntas e investigacion]] |
 | Marca, tema y referencias | [[15 Identidad visual e icono]] |

@@ -9,6 +9,7 @@ actualizado: 2026-10-29
 
 | Tema | Qué falta |
 | --- | --- |
+| RP Edits | Candidato Android firmado comprobado en A34/Android16 (nueve pruebas físicas y apertura/exportación real desde Letras). Otros equipos/versiones, usos largos, vídeos fuera de30fps y port/lanzador Windows pendientes; sin release publicada. [[46 Extension de letras para edits]]. |
 | Ecualizador | Próxima extensión deseada: requisitos, puntos de integración audio/DSP, compatibilidad y pruebas. No implementado ni añadido al núcleo. |
 | Fuente en línea | Cuentas/sincronización, redes/regiones y escucha larga. Windows y navegación pública de artistas/álbumes ya entregados; regresión actual de álbum en canciones sueltas y calidad de portadas en [[45 Portadas artistas navegacion y descargas 0.3.16]]. |
 | SDK/confianza | Memoria/aislamiento, autoría/firmas, colaboración, componentes visuales amplios y métricas atribuibles. |

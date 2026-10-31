@@ -5,6 +5,15 @@ actualizado: 2026-10-29
 ---
 # Extensiones
 
+## Candidato 0.3.18 — presentación y memoria de búsqueda
+
+El host conserva temporalmente la pantalla de fuentes Dart y JS al cambiar de sección, incluyendo borrador/resultados y desplazamiento. Caché de sesión acotada e invalidada por identidad/permisos; no se persisten búsquedas ni se inicia audio al restaurar. Fuente Dart: cabecera desplazable, filas separadas y regreso por colecciones sin red. Sin modificar proveedores, paquetes, SDK ni permisos. [[47 Navegacion busquedas y escaneo 0.3.18]].
+
+
+## Idea en definición — 2026-10-30
+
+RP Edits: aplicación complementaria opcional con repositorio propio, fondos, tipografía, animaciones, textos y exportación configurable/sin marca. Candidato Android implementado y probado en A34/Android16: nueve pruebas físicas y recorrido real desde Letras con APK firmado. Motor fuera del reproductor; Windows y otros equipos pendientes, sin release publicada. Requisitos, decisión de repositorio, evidencia y límites: [[46 Extension de letras para edits]].
+
 Estado publicado0.3.11: YouTube Android/Windows0.5.0 y Explorador Android/Windows0.2.0, API2 conservada, minApp0.3.11. Metadatos por identidad de álbum, encabezados y retratos autorizados; diez opciones de catálogo y veinte paquetes/variantes verificados. Proveedores exclusivamente en repositorio externo. [[40 Gestos widgets albumes y descargas 0.3.11]]. Antecedente Windows/confirmación del usuario: [[39 Audio Windows M4A OPUS y YouTube]].
 
 2026-10-28: usuario confirma funcionamiento de Explorador musical/Radio en Android y señala latencia API3 de3–6s en búsquedas/apertura de contenido/secciones. No migrar YouTube API2 con esta experiencia; medir/optimizar antes de reconsiderarlo. No se atribuye la diferencia al lenguaje sin comparación controlada. [[38 Latencia de extensiones API 3]].
@@ -18,6 +27,8 @@ Añadir funciones y personalizar pantallas sin recompilar la app. Se aceptaron v
 Biblioteca viva: filtros combinados, acciones, listas manuales/automáticas, carátulas propias/mosaico. Nivel avanzado deseado: reemplazar reproductor, modificar aleatorio y reglas de listas. No equivale a acceso irrestricto ni a reorganizar código compilado de la base.
 
 ## Separación obligatoria de repositorios
+
+Excepción expresa del usuario, 2026-10-30: **RP Edits tiene repositorio propio** en https://github.com/Joao-s02/rp_edits (privado al crearlo) y carpeta hermana `rp_edits`. Es un APK complementario opcional; sus fuentes, recursos y pruebas no pertenecen al reproductor ni al catálogo de extensiones. La conexión genérica permanece en RP Music. [[46 Extension de letras para edits]]. La regla siguiente sigue vigente para paquetes .rpmx.
 
 **Toda nueva extensión se desarrolla/publica exclusivamente en https://github.com/Joao-s02/rp-music-extensions . Nunca en https://github.com/Joao-s02/rp_music .**
 

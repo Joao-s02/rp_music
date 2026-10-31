@@ -31,3 +31,8 @@ Fuente hasta 64 KiB, entrada hasta 4 MiB y salida hasta 512 KiB. Configuración 
 La pantalla valida la estructura antes de guardar estado. Revocar permisos o desactivar elimina acceso; respuestas tardías se descartan y tres fallos desactivan el paquete. Los datos propios se conservan para recuperación. Metadatos/estado permanecen locales; el prototipo no conecta servicios.
 
 La extensión Laboratorio JS vive exclusivamente en rp-music-extensions/previews/js-lab-0.1.0. No se integra como asset ni se publica con la app. Ver [[documentación de bóveda]](../boveda/36%20Motor%20JavaScript%20paralelo.md).
+
+
+## Pantalla reciente desde 0.3.18
+
+El host puede restaurar el árbol validado, campos y desplazamiento al volver a una pantalla de esta sesión, sin ejecutar open ni repetir acciones. Caché en memoria acotada a ocho pantallas/30min, ligada a identidad y revisión de permisos; no persiste URL ni reemplaza las verificaciones al pulsar acciones. Los programas no deben depender de open para iniciar reproducción.

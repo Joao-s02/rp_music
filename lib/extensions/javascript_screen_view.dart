@@ -24,7 +24,18 @@ class JavascriptScreenView extends StatefulWidget {
   State<JavascriptScreenView> createState() => _JavascriptScreenViewState();
 }
 
+class _JavascriptViewSnapshot {
+  _JavascriptViewSnapshot(this.view, this.fields, this.offset);
+  final Map<String, dynamic> view;
+  final Map<String, String> fields;
+  final double offset;
+}
+
 class _JavascriptScreenViewState extends State<JavascriptScreenView> {
+  late final ScrollController scroll;
+  double scrollOffset = 0;
+  late Object? cacheOwner;
+  late int cacheRevision;
   Map<String, dynamic>? view;
   final fields = <String, String>{};
   bool busy = false;
@@ -41,8 +52,22 @@ class _JavascriptScreenViewState extends State<JavascriptScreenView> {
   @override
   void initState() {
     super.initState();
+    cacheOwner = widget.programs.installed[widget.extensionId];
+    cacheRevision = widget.programs.authorizationRevision;
+    final cached = widget.programs.viewCache.read<_JavascriptViewSnapshot>(
+      widget.extensionId,
+      cacheOwner,
+      cacheRevision,
+    );
+    if (cached != null && enabled) {
+      view = cached.view;
+      fields.addAll(cached.fields);
+    }
+    scrollOffset = cached?.offset ?? 0;
+    scroll = ScrollController(initialScrollOffset: scrollOffset)
+      ..addListener(() => scrollOffset = scroll.offset);
     widget.programs.addListener(changed);
-    run();
+    if (view == null) run();
   }
 
   @override
@@ -53,6 +78,8 @@ class _JavascriptScreenViewState extends State<JavascriptScreenView> {
       busy = false;
       view = null;
       fields.clear();
+      cacheOwner = widget.programs.installed[widget.extensionId];
+      cacheRevision = widget.programs.authorizationRevision;
       service = JavascriptScreenService(
         widget.programs,
         onTiming: (phase, milliseconds) => widget.audio.recordEvent(
@@ -64,14 +91,38 @@ class _JavascriptScreenViewState extends State<JavascriptScreenView> {
   }
 
   void changed() {
-    if (mounted) {
-      setState(() {});
+    if (!mounted) return;
+    final invalidated =
+        !enabled ||
+        cacheRevision != widget.programs.authorizationRevision ||
+        !identical(cacheOwner, widget.programs.installed[widget.extensionId]);
+    if (invalidated) {
+      generation++;
+      busy = false;
+      view = null;
+      fields.clear();
+      cacheOwner = widget.programs.installed[widget.extensionId];
+      cacheRevision = widget.programs.authorizationRevision;
     }
+    setState(() {});
+    if (invalidated && enabled && view == null && !busy) run();
   }
 
   @override
   void dispose() {
+    if (enabled &&
+        view != null &&
+        cacheRevision == widget.programs.authorizationRevision &&
+        identical(cacheOwner, widget.programs.installed[widget.extensionId])) {
+      widget.programs.viewCache.save(
+        widget.extensionId,
+        cacheOwner,
+        cacheRevision,
+        _JavascriptViewSnapshot(view!, Map.of(fields), scrollOffset),
+      );
+    }
     generation++;
+    scroll.dispose();
     widget.programs.removeListener(changed);
     super.dispose();
   }
@@ -228,6 +279,8 @@ class _JavascriptScreenViewState extends State<JavascriptScreenView> {
       return const Center(child: Text('Extensión desactivada o sin permisos.'));
     }
     return SingleChildScrollView(
+      controller: scroll,
+      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,

@@ -14,11 +14,13 @@ class ScanProgress {
     this.processed,
     this.total, {
     this.discovery = false,
+    this.append = false,
   });
   final List<Track> batch;
   final int processed;
   final int total;
   final bool discovery;
+  final bool append;
 }
 
 class ScanResult {
@@ -41,6 +43,23 @@ ScanResult scanDirectory(
   final tracks = <Track>[];
   var skipped = 0;
   final pending = [directory];
+  var discovered = <Track>[];
+  var publishedDiscovery = false;
+  void publishDiscovery({bool finalBatch = false}) {
+    if (discovered.isEmpty && !finalBatch) return;
+    onProgress?.call(
+      ScanProgress(
+        List.of(discovered),
+        0,
+        finalBatch ? tracks.length : 0,
+        discovery: true,
+        append: publishedDiscovery,
+      ),
+    );
+    publishedDiscovery = true;
+    discovered = [];
+  }
+
   while (pending.isNotEmpty) {
     final current = pending.removeLast();
     List<FileSystemEntity> entries;
@@ -71,15 +90,15 @@ ScanResult scanDirectory(
             modifiedMs: stat.modified.millisecondsSinceEpoch,
           ),
         );
+        discovered.add(tracks.last);
+        if (discovered.length >= 128) publishDiscovery();
       } on FileSystemException {
         skipped++;
       }
     }
   }
+  publishDiscovery(finalBatch: true);
   tracks.sort((a, b) => a.id.compareTo(b.id));
-  onProgress?.call(
-    ScanProgress(List.of(tracks), 0, tracks.length, discovery: true),
-  );
   var batch = <Track>[];
   final watch = Stopwatch()..start();
   for (var i = 0; i < tracks.length; i++) {
@@ -121,7 +140,7 @@ ScanResult scanDirectory(
       }
     }
     batch.add(tracks[i]);
-    if (batch.length >= 32 ||
+    if (batch.length >= 128 ||
         watch.elapsedMilliseconds >= 160 ||
         i == tracks.length - 1) {
       onProgress?.call(ScanProgress(batch, i + 1, tracks.length));

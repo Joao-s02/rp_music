@@ -5,6 +5,11 @@ actualizado: 2026-10-29
 ---
 # Biblioteca y reproduccion
 
+## Candidato 0.3.18 — escaneo y navegación
+
+Álbum local intercepta Atrás para cerrar su detalle. Descubrimiento de biblioteca por lotes de 128; Android reutiliza huellas válidas antes de abrir metadatos, omite su trabajo en el ejecutor y entrega los nuevos conforme terminan. Dos lectores, formatos/permisos y conservación ante fallo intactos. A01 se conserva. Evidencia y límites en [[47 Navegacion busquedas y escaneo 0.3.18]].
+
+
 Informe Windows0.3.9 precisado por usuario: M4A/OPUS fallan; FLAC/MP4/MP3 funcionan. Corrección local0.3.10 cambia solo backend Windows y mejora diagnóstico/recuperación; pruebas nativas reales y límites en [[39 Audio Windows M4A OPUS y YouTube]]. No atribuir el fallo a toda reproducción ni a corrupción general de archivos.
 
 ## Candidato local A01 — recuperación validada

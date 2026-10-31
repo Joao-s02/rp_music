@@ -304,10 +304,13 @@ class LibraryController extends ChangeNotifier {
         cached: candidate == previousRoot ? previousTracks : const [],
         onProgress: (progress) {
           if (progress.discovery) {
-            staging.clear();
-            positions.clear();
+            if (!progress.append) {
+              staging.clear();
+              positions.clear();
+            }
+            final start = staging.length;
             staging.addAll(progress.batch);
-            for (var i = 0; i < staging.length; i++) {
+            for (var i = start; i < staging.length; i++) {
               positions[staging[i].id] = i;
             }
           } else {

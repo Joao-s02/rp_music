@@ -24,6 +24,8 @@ class MainActivity : AudioServiceActivity() {
 
     override fun configureFlutterEngine(engine: FlutterEngine) {
         super.configureFlutterEngine(engine)
+        val mediaTools = MediaToolsBridge(this, worker)
+        MethodChannel(engine.dartExecutor.binaryMessenger, "rp_music/media_tools").setMethodCallHandler(mediaTools::handle)
         val updates = AppUpdates(this, worker)
         MethodChannel(engine.dartExecutor.binaryMessenger, "rp_music/updates").setMethodCallHandler(updates::handle)
         MethodChannel(engine.dartExecutor.binaryMessenger, "rp_music/system").setMethodCallHandler { call, result ->

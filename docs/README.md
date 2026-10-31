@@ -71,3 +71,8 @@ Otras versiones están enlazadas desde el índice de la bóveda. No actualizar r
 [Probar Play Protect](PROBAR-PLAY-PROTECT-0.3.14.md) · [Firma y custodia](ANDROID-SIGNING.md) · [Informe de revisión preparado, no enviado](PLAY-PROTECT-REVIEW.md). Candidato local; análisis instalado de emulador sin alertas, teléfono original pendiente.
 
 Candidato Android 0.3.15 y comparación de Play Protect: [prueba y límites](PROBAR-PLAY-PROTECT-0.3.15.md). Aceptado en emulador; teléfono pendiente.
+
+
+## 0.3.18 en preparación
+
+[Uso](USO-0.3.18.md) · [Cambios](CAMBIOS-0.3.18.md) · [Pruebas](PRUEBAS-0.3.18.md). Navegación, caché de búsqueda y escaneo; publicación pendiente.
