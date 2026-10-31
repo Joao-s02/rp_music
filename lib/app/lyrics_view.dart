@@ -11,6 +11,8 @@ import '../domain/lyrics.dart';
 import '../playback/music_handler.dart';
 import '../lyrics/lyrics_controller.dart';
 import 'lyric_stage.dart';
+import '../platform/media_tools.dart';
+import 'media_tools_sheet.dart';
 
 class LyricsView extends StatefulWidget {
   const LyricsView({
@@ -357,6 +359,23 @@ class _LyricsViewState extends State<LyricsView> {
             : AppBar(
                 title: const Text('Letras'),
                 actions: [
+                  IconButton(
+                    tooltip: 'Crear un edit',
+                    onPressed: item == null
+                        ? null
+                        : () async {
+                            final track = widget.audio.tracks
+                                .where((track) => track.id == item.id)
+                                .firstOrNull;
+                            if (track == null) return;
+                            await showMediaTools(
+                              context,
+                              MediaToolRequest(track, lyrics?.plain ?? ''),
+                              beforeOpen: widget.audio.pause,
+                            );
+                          },
+                    icon: const Icon(Icons.movie_creation_outlined),
+                  ),
                   if (timed)
                     IconButton(
                       tooltip: 'Abrir escena',

@@ -75,6 +75,7 @@ class MusicFiles {
             map['processed'] as int,
             map['total'] as int,
             discovery: map['discovery'] as bool? ?? false,
+            append: map['append'] as bool? ?? false,
           ),
         );
       });

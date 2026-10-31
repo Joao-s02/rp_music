@@ -6,6 +6,16 @@ Reproductor Flutter para Android y Windows, ampliable mediante extensiones. Bibl
 
 [Guía vigente](docs/USO.md) · [Pruebas](docs/PRUEBAS-0.3.16.md) · [Cambios](docs/CAMBIOS-0.3.16.md) · [Documentación](docs/README.md)
 
+## Desarrollo local 0.3.18+27
+
+Navegación Atrás de álbumes, separación/cabecera desplazable de fuentes, búsqueda reciente conservada durante la sesión y escaneo Android progresivo con caché de metadatos. [Cambios](docs/CAMBIOS-0.3.18.md) · [Pruebas y límites](docs/PRUEBAS-0.3.18.md). Compilados y publicación en preparación; sin medición física nueva de tiempos en Android.
+
+### Complemento opcional conservado desde 0.3.17
+
+Integración en desarrollo desde Letras con editores instalados por separado. [RP Edits](https://github.com/Joao-s02/rp_edits) tiene repositorio propio y APK independiente; su editor y motor audiovisual no se incluyen en RP Music. Primera versión Android en verificación, port Windows pendiente. Esto no es una nueva release publicada ni una exportación de vídeo incorporada al reproductor. Contrato y límites: [herramientas multimedia](docs/HERRAMIENTAS-MULTIMEDIA.md).
+
+Comprobación local en Samsung A34/Android16: apertura desde Letras, nueve pruebas instrumentales del editor y exportación real de5s con audio/texto/marca desactivada. APK firmados instalados sin desinstalar el reproductor; no se afirma compatibilidad universal. El editor acepta fondos de vídeo de30fps en esta primera versión. Sin nueva publicación del reproductor ni release del editor.
+
 ## Novedades 0.3.16+25
 
 Publicados Android universal/ARM64 firmados y Windows completo, con siete adjuntos verificados. [Uso](docs/USO-0.3.16.md) · [Pruebas y límites](docs/PRUEBAS-0.3.16.md).

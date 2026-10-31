@@ -7,6 +7,7 @@ import android.provider.DocumentsContract
 import android.provider.MediaStore
 import android.os.Build
 import java.util.concurrent.Executors
+import java.util.concurrent.ExecutorCompletionService
 
 /** Discovery first, bounded metadata workers, and fingerprint cache reuse. */
 class LibraryScanner(private val context: Context,
@@ -19,6 +20,24 @@ class LibraryScanner(private val context: Context,
         val seen = mutableSetOf<String>()
         pending.add(DocumentsContract.getTreeDocumentId(root) to ".")
         var skipped = 0
+        var publishedDiscovery = false
+        val discovered = mutableListOf<Map<String, Any>>()
+        fun publishDiscovery(finalBatch: Boolean = false) {
+            if (discovered.isEmpty() && !finalBatch) return
+            progress(mapOf("tracks" to discovered.toList(), "processed" to 0,
+                "total" to if (finalBatch) tracks.size else 0,
+                "discovery" to true, "append" to publishedDiscovery))
+            publishedDiscovery = true
+            discovered.clear()
+        }
+        fun reusable(file: Map<String, Any>): Map<String, Any>? {
+            val old = known[file["id"]] ?: return null
+            val modified = (file["modifiedMs"] as Number).toLong()
+            return old.takeIf { old["metadataLoaded"] == true &&
+                ((old["metadataVersion"] as? Number)?.toInt() ?: 0) >= 2 && modified > 0 &&
+                (old["modifiedMs"] as? Number)?.toLong() == modified &&
+                (old["size"] as? Number)?.toLong() == (file["size"] as Number).toLong() }
+        }
         val columns = arrayOf(DocumentsContract.Document.COLUMN_DOCUMENT_ID,
             DocumentsContract.Document.COLUMN_DISPLAY_NAME, DocumentsContract.Document.COLUMN_MIME_TYPE,
             DocumentsContract.Document.COLUMN_SIZE, DocumentsContract.Document.COLUMN_LAST_MODIFIED)
@@ -42,35 +61,49 @@ class LibraryScanner(private val context: Context,
                             "artist" to "Artista desconocido", "album" to "Sin álbum", "folder" to folder,
                             "durationMs" to 0L, "size" to if (it.isNull(3)) 0L else it.getLong(3),
                             "modifiedMs" to if (it.isNull(4)) 0L else it.getLong(4)))
+                        val file = tracks.last()
+                        val ready = reusable(file) ?: file
+                        tracks[tracks.lastIndex] = ready
+                        discovered.add(ready)
+                        if (discovered.size >= 128) publishDiscovery()
                     }
                 }
             } catch (e: Exception) { if (folder == ".") throw e; skipped++ }
         }
-        progress(mapOf("tracks" to tracks.toList(), "processed" to 0, "total" to tracks.size, "discovery" to true))
-        val workers = Executors.newFixedThreadPool(2)
-        try {
-            val futures = tracks.map { file -> workers.submit<Pair<Map<String, Any>, Boolean>> {
-                val old = known[file["id"]]
-                val modified = (file["modifiedMs"] as Number).toLong()
-                if (old != null && old["metadataLoaded"] == true && (old["metadataVersion"] as? Number)?.toInt() == 2 && modified > 0 && (old["modifiedMs"] as? Number)?.toLong() == modified &&
-                    (old["size"] as? Number)?.toLong() == (file["size"] as Number).toLong()) {
-                    old to false
-                } else readTags(file)
-            } }
-            var batch = mutableListOf<Map<String, Any>>()
-            var last = System.nanoTime()
-            for (i in futures.indices) {
-                val (track, failed) = futures[i].get()
-                if (failed) skipped++
-                tracks[i] = track; batch.add(track)
-                if (batch.size >= 32 || System.nanoTime() - last >= 160_000_000L || i == futures.lastIndex) {
-                    progress(mapOf("tracks" to batch.toList(), "processed" to i + 1, "total" to tracks.size, "discovery" to false))
-                    batch = mutableListOf(); last = System.nanoTime()
+        publishDiscovery(finalBatch = true)
+        val missing = tracks.indices.filter { reusable(tracks[it]) == null }
+        if (missing.isNotEmpty()) {
+            val workers = Executors.newFixedThreadPool(2)
+            val completed = ExecutorCompletionService<TagResult>(workers)
+            try {
+                for (index in missing) {
+                    val file = tracks[index]
+                    completed.submit {
+                        val (track, failed) = readTags(file)
+                        TagResult(index, track, failed)
+                    }
                 }
-            }
-        } finally { workers.shutdownNow() }
+                var batch = mutableListOf<Map<String, Any>>()
+                var last = System.nanoTime()
+                repeat(missing.size) { finished ->
+                    val result = completed.take().get()
+                    if (result.failed) skipped++
+                    tracks[result.index] = result.track
+                    batch.add(result.track)
+                    if (batch.size >= 128 || System.nanoTime() - last >= 160_000_000L || finished == missing.lastIndex) {
+                        progress(mapOf("tracks" to batch.toList(),
+                            "processed" to tracks.size - missing.size + finished + 1,
+                            "total" to tracks.size, "discovery" to false))
+                        batch = mutableListOf()
+                        last = System.nanoTime()
+                    }
+                }
+            } finally { workers.shutdownNow() }
+        }
         return mapOf("tracks" to tracks.sortedBy { (it["title"] as String).lowercase() }, "skipped" to skipped)
     }
+
+    private data class TagResult(val index: Int, val track: Map<String, Any>, val failed: Boolean)
 
     private fun readTags(file: Map<String, Any>): Pair<Map<String, Any>, Boolean> {
         // Reuse Android's media index when the granted document can be mapped.

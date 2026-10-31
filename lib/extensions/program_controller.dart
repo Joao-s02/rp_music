@@ -7,6 +7,7 @@ import '../data/local_store.dart';
 import '../app/app_version.dart';
 import 'program_package.dart';
 import 'program_runtime.dart';
+import 'extension_view_cache.dart';
 import 'javascript_program_runtime.dart';
 import 'javascript_view_schema.dart';
 
@@ -20,9 +21,11 @@ class ProgramController extends ChangeNotifier {
   final privateData = <String, Map<String, dynamic>>{};
   // Session-only resolved audio. Never persist expiring URLs in library data.
   final screenAudio = <String, Uri>{};
+  final viewCache = ExtensionViewCache();
   int authorizationRevision = 0;
   void _invalidateScreenAudio(String id) {
     authorizationRevision++;
+    viewCache.clear();
     screenAudio.removeWhere((key, _) => key.startsWith('rpmusic-screen:$id:'));
   }
 
@@ -192,6 +195,7 @@ class ProgramController extends ChangeNotifier {
 
   Future<void> restoreBase() async {
     authorizationRevision++;
+    viewCache.clear();
     screenAudio.clear();
     owners.clear();
     for (final item in installed.values) {
@@ -331,6 +335,7 @@ class ProgramController extends ChangeNotifier {
 
   @override
   void dispose() {
+    viewCache.clear();
     _disposed = true;
     super.dispose();
   }

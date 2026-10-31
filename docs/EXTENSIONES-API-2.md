@@ -150,3 +150,8 @@ El anfitrión muestra filtros, entidades, páginas y Cargar más. Importar copia
 ## Corrección local0.3.12 de selección de letras
 
 Los candidatos separan la identidad de álbum de la selección de letras. Priorizar LRC con marcas válidas entre interpretaciones compatibles (título/artista/versión/duración); consulta alternativa si solo hay texto. Retener candidato de texto dentro del contexto64KiB para no perderlo si la alternativa falla. Duraciones de LRCLIB se leen como int/double, sin split de puntos en dart_eval. El anfitrión valida tiempos de syncedLyrics y conserva mejoras sincronizadas en caché sobre texto incrustado anterior. Sin nuevo permiso, edición de originales ni cambio de apiVersion; versiones/paquetes nuevos se distribuyen solo en repositorio externo.
+
+
+## Presentación del host desde 0.3.18
+
+Sin cambiar API ni paquetes: las fuentes conservan consulta, resultados, historial por colección y desplazamiento al cambiar de sección. Caché solo en memoria (ocho pantallas, 30min), invalidada al modificar permisos o paquetes. Las cabeceras se desplazan con la lista y Atrás vuelve por colecciones. No equivale a sesión de cuenta ni historial persistido.

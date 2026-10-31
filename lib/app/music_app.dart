@@ -592,16 +592,22 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
         )
         .toList();
     if (view == 1 && group != null) {
-      return AlbumDetailView(
-        key: ValueKey(group),
-        tracks: library.tracks.where((t) => groupKey(t) == group).toList(),
-        query: query,
-        audio: audio,
-        library: library,
-        onBack: () => setState(() => group = null),
-        menu: albumTrackMenu,
-        onSave: () => addAlbumToPlaylist(
-          filtered.where((t) => groupKey(t) == group).toList(),
+      return PopScope(
+        canPop: false,
+        onPopInvokedWithResult: (didPop, result) {
+          if (!didPop) setState(() => group = null);
+        },
+        child: AlbumDetailView(
+          key: ValueKey(group),
+          tracks: library.tracks.where((t) => groupKey(t) == group).toList(),
+          query: query,
+          audio: audio,
+          library: library,
+          onBack: () => setState(() => group = null),
+          menu: albumTrackMenu,
+          onSave: () => addAlbumToPlaylist(
+            filtered.where((t) => groupKey(t) == group).toList(),
+          ),
         ),
       );
     }
