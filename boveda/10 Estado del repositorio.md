@@ -5,6 +5,10 @@ actualizado: 2026-10-29
 ---
 # Estado del repositorio
 
+## Candidato local A01 — recuperación de biblioteca
+
+Solo A01: carga completa validada, respaldo ante datos incompatibles y conservación del rechazado; sin copia válida, guardado bloqueado sin sobrescribir originales. Esquema 1 y otros consumidores de LocalStore conservados. RED16/6 y GREEN22; verificación independiente enfocada22/análisis limpio después de completar un insumo omitido de la copia aislada. Suite final174aprobadas/cero fallidas/una optativa omitida, exit0;36PNG previos conservados. Registro Git y revisión nativa pendientes; no publicación ni prueba física/cortes de energía. Alcance, instrucciones y límites: [[03 Biblioteca y reproduccion]].
+
 ## Referencia publicada: 0.3.16
 
 0.3.16-alpha.1 publicada, app0.3.16+25. ReleaseID 428152288; tag/código 9aceaa2db7c9d54c764de79252bd5761895508cd. Android universal/ARM64 y Windows x64 completo32archivos/licencias/guías. Siete adjuntos verificados en borrador y públicamente por tamaño/SHA256, tag al commit correcto y manifiesto descargado idéntico. Catálogo externo b74564aaee444294580ff1aefa7a6e8f337fabcd: diez opciones y34paquetes/variantes comprobados; cliente real selecciona YouTube0.5.3, Explorador0.2.3 y Explorador JS0.1.1, con variantes anteriores preservadas. 163 pruebas aprobadas/una optativa omitida y análisis limpio; pruebas adicionales de metadatos/portadas y respaldo ante503 separadas. APK sin permiso de instalar paquetes, firma compatible. Sin prueba física nueva ni medición de latencia API3 Android; SAF/widgets/ARM64 físicos y escucha prolongada pendientes. [[45 Portadas artistas navegacion y descargas 0.3.16]].

@@ -7,6 +7,14 @@ actualizado: 2026-10-29
 
 Informe Windows0.3.9 precisado por usuario: M4A/OPUS fallan; FLAC/MP4/MP3 funcionan. Corrección local0.3.10 cambia solo backend Windows y mejora diagnóstico/recuperación; pruebas nativas reales y límites en [[39 Audio Windows M4A OPUS y YouTube]]. No atribuir el fallo a toda reproducción ni a corrupción general de archivos.
 
+## Candidato local A01 — recuperación validada
+
+Implementación local, no publicada: se valida la instantánea completa antes de aplicar campos; si el principal está truncado, contiene tipos/pistas inválidos o usa un esquema no admitido, se intenta el respaldo. Se conservan esquema 1, campos opcionales y referencias a pistas ausentes. Tras recuperar, guardar conserva el principal rechazado como `.rejected` (sufijo numérico si existe) y mantiene una copia válida.
+
+Si ninguna copia es válida, no se publica estado parcial y se bloquea el guardado, conservando los originales. Aviso: «No se pudo recuperar la biblioteca guardada. El guardado está bloqueado para conservar los archivos originales.» Seleccionar carpeta no desbloquea la persistencia; no se ha añadido reparación automática ni pantalla de recuperación. Los archivos musicales no se reescriben. A06 y los otros hallazgos no forman parte de esta unidad.
+
+Evidencia de esta unidad: RED con 16 aprobadas/6 fallidas; GREEN enfocado con 22 aprobadas y diferencial idéntico de cuatro consumidores genéricos de LocalStore. Verificación independiente enfocada22/exit0 y análisis limpio; primer intento detenido antes de casos por un insumo omitido de la copia, completado bajo autorización expresa. Suite completa del padre:174 aprobadas, cero fallidas y una optativa omitida, exit0; las36capturas previas conservadas byte a byte. Revisión nativa y registro Git pendientes de cierre. No prueba física ni simulación de corte de energía. Especificación y evidencia: `odd/tasks/a01-recovery.md`; instrucciones sintéticas: [guía vigente](../docs/USO.md). El informe original se conserva como antecedente, no como estado actualizado.
+
 ## Requisitos confirmados
 
 Una raíz seleccionada por el usuario con subcarpetas, cientos/miles de canciones y vistas de canciones/álbumes/artistas/carpetas. MP3, FLAC, M4A, MP4, WAV y OPUS solicitados; reconocer un archivo no garantiza cualquier códec en cualquier equipo. MP4 se usa como audio.

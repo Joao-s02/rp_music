@@ -5,6 +5,10 @@ actualizado: 2026-10-29
 ---
 # Registro de cambios
 
+## Corrección local A01 — recuperación de biblioteca — 2026-10-31
+
+Petición limitada a A01, contrastada con fuente actual y reproducida con datos sintéticos; el registro antiguo de otra corrección no se usó como prueba. Validación completa antes de publicar estado, respaldo semántico y conservación de rechazados `.rejected`; sin copia válida, bloqueo de guardado con aviso explícito. No se modifican canciones, esquema ni dependencias, ni A02/A06. Worker: RED16/6 exit1, GREEN22 exit0; mensaje precisado con RED21/1 y GREEN22. Diferencial de cuatro consumidores genéricos idéntico en stdout/stderr/exit,16 comprobaciones por versión. Verificador independiente: primera prueba exit1 antes de casos por package_graph omitido del inventario del padre; completado bajo autorización expresa, único nuevo test22aprobadas/exit0, análisis0/5.6s y originales sin cambios. Suite final del padre174aprobadas/cero fallidas/una optativa omitida, exit0/72s incluyendo restauración de capturas;36PNG previos conservados byte a byte. Registro Git y revisión nativa pendientes. Evidencia en `odd/tasks/a01-recovery.md`; comportamiento y límites en [[03 Biblioteca y reproduccion]]. Sin publicación ni operación de dispositivos.
+
 ## Publicación 0.3.13 — 2026-10-28
 
 0.3.13-alpha.1 publicada, app0.3.13+22. ReleaseID 427408912; tag/código a3f8449a83aaec7da29c5762c4adfff82bd1fbc0. Android universal/ARM64 y Windows x64 completo32 archivos/licencias/guías. Siete adjuntos verificados en borrador y por API pública: tamaños/SHA256, tag al commit correcto y manifiesto descargado idéntico. Catálogo externo ab48a631237f3bf04057b6662b8b168b94b62449: diez opciones y29 paquetes/variantes verificados byte a byte; cliente real selecciona YouTube Android/Windows0.5.2 y Explorador Android/Windows0.2.2. 164 pruebas aprobadas/una optativa omitida, análisis limpio; descarga nativa Windows con álbum Busca Una Mujer, pista5,55 líneas LRC incrustadas, reproducción y bloques mdat conservados. Android físico, escucha prolongada, valoración visual del usuario y latencia API3 Android pendientes. [[42 Albumes y extensiones con identidad RP 0.3.13]].

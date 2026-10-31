@@ -150,58 +150,94 @@ class LibraryController extends ChangeNotifier {
   ExtensionManifest? get activeExtension =>
       extensions.where((e) => e.id == activeExtensionId).firstOrNull;
 
+  bool _recoveryRequired = false;
+  static const _recoveryMessage =
+      'No se pudo recuperar la biblioteca guardada. El guardado está bloqueado para conservar los archivos originales.';
+
+  // Parse every field into detached values, including lazy collection casts,
+  // before returning the single publication step. No candidate mutates state.
+  VoidCallback _prepareSnapshot(Map<String, dynamic> json) {
+    if (json['schema'] != 1) {
+      throw const FormatException('Unsupported library schema.');
+    }
+    final nextRoot = json['root'] as String?;
+    final nextTracks = (json['tracks'] as List)
+        .map((e) => Track.fromJson(Map<String, dynamic>.from(e as Map)))
+        .toList();
+    final nextRemote = <String, Track>{};
+    for (final raw in json['remoteTracks'] as List? ?? []) {
+      final track = Track.fromJson(Map<String, dynamic>.from(raw as Map));
+      if (track.sourceId != null &&
+          track.id.startsWith('rpmusic-source:${track.sourceId}:')) {
+        nextRemote[track.id] = track;
+      }
+    }
+    final nextFavorites = (json['favorites'] as List).cast<String>().toSet();
+    final nextPlaylists = (json['playlists'] as Map).map(
+      (key, value) => MapEntry(key as String, List<String>.from(value as List)),
+    );
+    final nextExtensions = (json['extensions'] as List)
+        .map(
+          (e) => ExtensionManifest.parse(Map<String, dynamic>.from(e as Map)),
+        )
+        .toList();
+    final nextMeta = {
+      for (final entry in (json['playlistMeta'] as Map? ?? {}).entries)
+        if (entry.key is String && entry.value is Map)
+          entry.key as String: Map<String, dynamic>.from(entry.value as Map),
+    };
+    final nextActive = json['activeExtension'] as String?;
+    final nextSort =
+        TrackSort.values
+            .where((value) => value.name == json['sort'])
+            .firstOrNull ??
+        TrackSort.title;
+    final nextAscending = json['ascending'] as bool? ?? true;
+    final nextDark = json['dark'] as bool? ?? true;
+    final nextCloseToTray = json['closeToTray'] as bool? ?? true;
+    final nextVolume = ((json['volume'] as num?)?.toDouble() ?? 1).clamp(
+      0.0,
+      1.0,
+    );
+    return () {
+      root = nextRoot;
+      tracks = nextTracks;
+      remoteTracks
+        ..clear()
+        ..addAll(nextRemote);
+      favorites = nextFavorites;
+      playlists = nextPlaylists;
+      extensions = nextExtensions;
+      playlistMeta = nextMeta;
+      activeExtensionId = nextActive;
+      sort = nextSort;
+      ascending = nextAscending;
+      dark = nextDark;
+      closeToTray = nextCloseToTray;
+      volume = nextVolume;
+    };
+  }
+
   Future<void> initialize() async {
     try {
-      final json = await store.load();
-      if (json['schema'] == 1) {
-        root = json['root'] as String?;
-        tracks = (json['tracks'] as List)
-            .map((e) => Track.fromJson(Map<String, dynamic>.from(e as Map)))
-            .toList();
-        for (final raw in json['remoteTracks'] as List? ?? []) {
-          final track = Track.fromJson(Map<String, dynamic>.from(raw as Map));
-          if (track.sourceId != null &&
-              track.id.startsWith('rpmusic-source:${track.sourceId}:')) {
-            remoteTracks[track.id] = track;
-          }
-        }
-        favorites = (json['favorites'] as List).cast<String>().toSet();
-        playlists = (json['playlists'] as Map).map(
-          (key, value) =>
-              MapEntry(key as String, (value as List).cast<String>()),
-        );
-        extensions = (json['extensions'] as List)
-            .map(
-              (e) =>
-                  ExtensionManifest.parse(Map<String, dynamic>.from(e as Map)),
-            )
-            .toList();
-        playlistMeta = {
-          for (final entry in (json['playlistMeta'] as Map? ?? {}).entries)
-            if (entry.key is String && entry.value is Map)
-              entry.key as String: Map<String, dynamic>.from(
-                entry.value as Map,
-              ),
-        };
-        activeExtensionId = json['activeExtension'] as String?;
-        sort =
-            TrackSort.values
-                .where((value) => value.name == json['sort'])
-                .firstOrNull ??
-            TrackSort.title;
-        ascending = json['ascending'] as bool? ?? true;
-        dark = json['dark'] as bool? ?? true;
-        closeToTray = json['closeToTray'] as bool? ?? true;
-        volume = ((json['volume'] as num?)?.toDouble() ?? 1).clamp(0.0, 1.0);
-      }
+      VoidCallback? publish;
+      await store.loadValidated((json) => publish = _prepareSnapshot(json));
+      publish?.call();
+      _recoveryRequired = false;
     } catch (_) {
-      message = 'No se pudo recuperar la biblioteca guardada. Selecciona tu carpeta para reconstruirla.';
+      _recoveryRequired = true;
+      message = _recoveryMessage;
     }
     loading = false;
     notifyListeners();
   }
 
   Future<void> persist() async {
+    if (_recoveryRequired) {
+      message = _recoveryMessage;
+      notifyListeners();
+      return;
+    }
     final snapshot = {
       'schema': 1,
       'root': _stableTracks == null ? root : _stableRoot,
