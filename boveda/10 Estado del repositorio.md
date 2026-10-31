@@ -7,7 +7,7 @@ actualizado: 2026-10-29
 
 ## Candidato local A01 — recuperación de biblioteca
 
-Solo A01: carga completa validada, respaldo ante datos incompatibles y conservación del rechazado; sin copia válida, guardado bloqueado sin sobrescribir originales. Esquema 1 y otros consumidores de LocalStore conservados. RED16/6 y GREEN22; verificación independiente enfocada22/análisis limpio después de completar un insumo omitido de la copia aislada. Suite final174aprobadas/cero fallidas/una optativa omitida, exit0;36PNG previos conservados. Registro Git y revisión nativa pendientes; no publicación ni prueba física/cortes de energía. Alcance, instrucciones y límites: [[03 Biblioteca y reproduccion]].
+Solo A01: carga completa validada, respaldo ante datos incompatibles y conservación del rechazado; sin copia válida, guardado bloqueado sin sobrescribir originales. Esquema 1 y otros consumidores de LocalStore conservados. RED16/6 y GREEN22; verificación independiente enfocada22/análisis limpio después de completar un insumo omitido de la copia aislada. Suite final174aprobadas/cero fallidas/una optativa omitida, exit0;36PNG previos conservados. Commit local `0f35994` en `fix/a01-recovery`, revisión nativa aprobada con acuse completado y dos recomendaciones no bloqueantes; no publicación ni prueba física/cortes de energía. Alcance, instrucciones y límites: [[03 Biblioteca y reproduccion]].
 
 ## Referencia publicada: 0.3.16
 
