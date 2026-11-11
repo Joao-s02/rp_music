@@ -2,15 +2,15 @@
 
 Reproductor Flutter para Android y Windows, ampliable mediante extensiones. Biblioteca local sin cuenta ni conexión; actualizaciones y consultas en línea opcionales.
 
-**Versión publicada: 0.3.19-alpha.1**, aplicación **0.3.19+28**. [Descargar Android universal, ARM64 y Windows](https://github.com/Joao-s02/rp_music/releases/tag/v0.3.19-alpha.1).
+**Versión publicada: 0.3.20-alpha.1**, aplicación **0.3.20+29**. [Descargar Android universal, ARM64 y Windows](https://github.com/Joao-s02/rp_music/releases/tag/v0.3.20-alpha.1).
 
-[Guía vigente](docs/USO.md) · [Pruebas](docs/PRUEBAS-0.3.19.md) · [Cambios](docs/CAMBIOS-0.3.19.md) · [Documentación](docs/README.md)
+[Guía vigente](docs/USO.md) · [Pruebas](docs/PRUEBAS-0.3.20.md) · [Cambios](docs/CAMBIOS-0.3.20.md) · [Documentación](docs/README.md)
 
-## Novedades de 0.3.19
+## Novedades de 0.3.20
 
-Esta versión incluye regreso desde listas, recorte cuadrado de portadas y un menú para añadir una canción a varias listas, crear una lista o consultar sus detalles. En Canciones, la barra inferior se recoge al avanzar y reaparece al volver hacia arriba. El minirreproductor sigue accesible. El botón para actualizar la biblioteca está junto a la búsqueda. Las miniaturas recientes se reutilizan al volver a recorrer la lista.
+En pantallas compactas, la navegación inferior se recoge al recorrer la biblioteca, Favoritos, Listas y las extensiones abiertas desde Explorar. El minirreproductor queda por encima del área de navegación del teléfono. Atrás cierra el detalle o vuelve a Explorar según la pantalla.
 
-Letras usa la portada difuminada cuando está disponible y distingue voces numeradas con alineación alterna. Canciones y álbumes descargados desde extensiones comparten un destino configurable en Ajustes. Android 14 o posterior incorpora el selector de salida del sistema. Google Cast sigue pendiente. Android espera a que termine una carga antes de iniciar la última pista seleccionada en una secuencia de cambios rápidos.
+El botón **Filtrar por** abre los criterios de orden junto a la flecha ascendente/descendente. En **Ajustes → Apariencia → Vista de listas** se puede elegir entre lista y tarjetas cuadradas. La búsqueda de la biblioteca se despliega con una animación y muestra un solo conteo bajo el título. El encabezado transparente de Letras se recoge al avanzar y vuelve al desplazarse hacia arriba.
 
 ## Funciones disponibles
 
@@ -20,11 +20,11 @@ Las extensiones API 2/Dart y API 3/JavaScript se instalan por separado desde el 
 
 ## Instalación y actualización
 
-Usa la [release 0.3.19-alpha.1](https://github.com/Joao-s02/rp_music/releases/tag/v0.3.19-alpha.1). En Android, descarga el APK apropiado e instálalo desde Archivos **sin desinstalar** la versión anterior para conservar tus datos. En Windows, extrae el ZIP completo, incluidas DLL y licencias. Consulta la [guía de instalación y uso](docs/USO-0.3.19.md).
+Usa la [release 0.3.20-alpha.1](https://github.com/Joao-s02/rp_music/releases/tag/v0.3.20-alpha.1). En Android, descarga el APK apropiado e instálalo desde Archivos **sin desinstalar** la versión anterior para conservar tus datos. En Windows, extrae el ZIP completo, incluidas DLL y licencias. Consulta la [guía de instalación y uso](docs/USO-0.3.20.md).
 
 ## Verificación
 
-Android universal y ARM64 firmados y Windows x64 compilado. La suite completa aprobó 185 pruebas y omitió 1. Queda pendiente probar la actualización, las salidas de audio y Play Protect en Android físico. [Pruebas y límites](docs/PRUEBAS-0.3.19.md) · [Historial de versiones](docs/releases/README.md).
+Android universal y ARM64 firmados y Windows x64 compilado. La suite completa aprobó 188 pruebas y omitió 1. Queda pendiente probar la actualización, la navegación del sistema, la extensión de YouTube y Play Protect en Android físico. [Pruebas y límites](docs/PRUEBAS-0.3.20.md) · [Historial de versiones](docs/releases/README.md).
 
 ## Desarrollar y colaborar
 

@@ -93,6 +93,8 @@ class ScreenFixtureController extends ProgramController {
                 : 'Inicio',
           },
           {'type': 'button', 'label': 'Consultar', 'action': 'search'},
+          if (snapshot['action'] == 'search')
+            for (var i = 0; i < 30; i++) {'type': 'text', 'text': 'Tema $i'},
         ],
       },
     };
@@ -151,6 +153,55 @@ void main() {
       await programs.setGrants(package.id, {});
       await tester.pumpAndSettle();
       expect(find.text('Resultado conservado'), findsNothing);
+      await tester.pumpWidget(const SizedBox.shrink());
+      await tester.runAsync(audio.close);
+      library.dispose();
+      programs.dispose();
+    },
+  );
+
+  testWidgets(
+    'el anfitrión recoge la barra al recorrer una extensión y Atrás vuelve a Explorar',
+    (tester) async {
+      final programs = ScreenFixtureController();
+      final package = jsPackage();
+      await tester.runAsync(
+        () => programs.install(package, package.permissions),
+      );
+      final library = LibraryController(MemoryStore(), MusicFiles())
+        ..loading = false
+        ..attachPrograms(programs);
+      final audio = MusicHandler(player: FakePlayer());
+      await tester.pumpWidget(MusicApp(library: library, audio: audio));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Explorar'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.textContaining('JS ·'));
+      await tester.pumpAndSettle();
+      final screen = find.byType(JavascriptScreenView);
+      expect(screen, findsOneWidget);
+      await tester.tap(find.text('Consultar'));
+      await tester.pumpAndSettle();
+      final navigation = find.byKey(
+        const ValueKey('library-bottom-navigation'),
+      );
+      await tester.drag(
+        find
+            .descendant(
+              of: screen,
+              matching: find.byType(SingleChildScrollView),
+            )
+            .first,
+        const Offset(0, -200),
+      );
+      await tester.pumpAndSettle();
+      expect(tester.getSize(navigation).height, 0);
+      expect(await tester.binding.handlePopRoute(), isTrue);
+      await tester.pumpAndSettle();
+      expect(screen, findsNothing);
+      expect(find.text('Administrar extensiones'), findsOneWidget);
+      expect(tester.getSize(navigation).height, greaterThan(0));
+
       await tester.pumpWidget(const SizedBox.shrink());
       await tester.runAsync(audio.close);
       library.dispose();
@@ -269,6 +320,7 @@ void main() {
         ..loading = false;
       final audio = MusicHandler(player: FakePlayer());
       final service = BrowseFixture(programs);
+      var exits = 0;
       Widget screen() => MaterialApp(
         home: MediaQuery(
           data: MediaQueryData(
@@ -283,6 +335,7 @@ void main() {
               audio: audio,
               service: service,
               embedded: true,
+              onExit: () => exits++,
             ),
           ),
         ),
@@ -323,6 +376,10 @@ void main() {
       await tester.binding.handlePopRoute();
       await tester.pumpAndSettle();
       expect(find.text('Artista de prueba'), findsOneWidget);
+      expect(exits, 0);
+      await tester.binding.handlePopRoute();
+      await tester.pumpAndSettle();
+      expect(exits, 1);
       expect(service.calls, calls);
       await programs.setGrants(package.id, {});
       await tester.pumpAndSettle();

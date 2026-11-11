@@ -316,6 +316,21 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('Donde el miedo se apagó'), findsOneWidget);
       await screenshot(tester, key, 'lyrics-live-360');
+      expect(
+        tester.widget<AppBar>(find.byType(AppBar)).backgroundColor,
+        Colors.transparent,
+      );
+      tester.view.physicalSize = const Size(360, 510);
+      await tester.pumpAndSettle();
+      final lyricScroll = find.byType(SingleChildScrollView);
+      await tester.drag(lyricScroll, const Offset(0, -160));
+      await tester.pumpAndSettle();
+      expect(find.byType(AppBar).hitTestable(), findsNothing);
+      await tester.drag(lyricScroll, const Offset(0, 130));
+      await tester.pumpAndSettle();
+      expect(find.byType(AppBar).hitTestable(), findsOneWidget);
+      tester.view.physicalSize = const Size(360, 760);
+      await tester.pumpAndSettle();
       await tester.tap(find.byTooltip('Abrir escena'));
       await tester.pumpAndSettle();
       expect(find.byType(LyricScene), findsOneWidget);

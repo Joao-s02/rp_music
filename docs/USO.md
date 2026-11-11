@@ -1,6 +1,6 @@
 # Guía vigente
 
-[Instalar y usar RP Music 0.3.19](USO-0.3.19.md).
+[Instalar y usar RP Music 0.3.20](USO-0.3.20.md).
 
 ## Recuperación de biblioteca (A01), incluida en 0.3.18
 
@@ -14,4 +14,4 @@ Comprobación reproducible con datos sintéticos:
 flutter test --no-pub --reporter expanded --concurrency=1 test/library_recovery_test.dart test/core_test.dart
 ```
 
-[Pruebas y límites de la entrega](PRUEBAS-0.3.19.md).
+[Pruebas y límites de la entrega](PRUEBAS-0.3.20.md).

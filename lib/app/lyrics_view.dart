@@ -59,6 +59,7 @@ class _LyricsViewState extends State<LyricsView> {
   String? trackId, error;
   int generation = 0, active = -2;
   final scroll = ScrollController();
+  bool headerHidden = false;
   final keys = <GlobalKey>[];
   final synchronizationAttempts = <String>{};
   Future<File> file(String id) async {
@@ -271,6 +272,7 @@ class _LyricsViewState extends State<LyricsView> {
             ).createShader(rect),
             child: SingleChildScrollView(
               controller: scroll,
+              physics: const AlwaysScrollableScrollPhysics(),
               padding: const EdgeInsets.fromLTRB(16, 48, 16, 100),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -352,6 +354,7 @@ class _LyricsViewState extends State<LyricsView> {
         error = null;
         active = -2;
         following = true;
+        headerHidden = false;
         generation++;
         keys.clear();
         final expectedId = trackId;
@@ -362,51 +365,53 @@ class _LyricsViewState extends State<LyricsView> {
         }
       }
       final timed = lyrics?.lines.isNotEmpty == true;
+      final toolbar = AppBar(
+        primary: false,
+        backgroundColor: Colors.transparent,
+        surfaceTintColor: Colors.transparent,
+        scrolledUnderElevation: 0,
+        title: const Text('Letras'),
+        actions: [
+          IconButton(
+            tooltip: 'Crear un edit',
+            onPressed: item == null
+                ? null
+                : () async {
+                    final track = widget.audio.tracks
+                        .where((track) => track.id == item.id)
+                        .firstOrNull;
+                    if (track == null) return;
+                    await showMediaTools(
+                      context,
+                      MediaToolRequest(track, lyrics?.plain ?? ''),
+                      beforeOpen: widget.audio.pause,
+                    );
+                  },
+            icon: const Icon(Icons.movie_creation_outlined),
+          ),
+          if (timed)
+            IconButton(
+              tooltip: 'Abrir escena',
+              onPressed: () => setState(() {
+                scene = true;
+                chrome = true;
+              }),
+              icon: const Icon(Icons.fullscreen_rounded),
+            ),
+          if (canSearch)
+            IconButton(
+              tooltip: 'Buscar letra en línea',
+              onPressed: fetching ? null : fetch,
+              icon: const Icon(Icons.cloud_download_outlined),
+            ),
+          IconButton(
+            tooltip: 'Importar LRC o TXT',
+            onPressed: item == null ? null : import,
+            icon: const Icon(Icons.file_open_outlined),
+          ),
+        ],
+      );
       return Scaffold(
-        appBar: scene && timed
-            ? null
-            : AppBar(
-                title: const Text('Letras'),
-                actions: [
-                  IconButton(
-                    tooltip: 'Crear un edit',
-                    onPressed: item == null
-                        ? null
-                        : () async {
-                            final track = widget.audio.tracks
-                                .where((track) => track.id == item.id)
-                                .firstOrNull;
-                            if (track == null) return;
-                            await showMediaTools(
-                              context,
-                              MediaToolRequest(track, lyrics?.plain ?? ''),
-                              beforeOpen: widget.audio.pause,
-                            );
-                          },
-                    icon: const Icon(Icons.movie_creation_outlined),
-                  ),
-                  if (timed)
-                    IconButton(
-                      tooltip: 'Abrir escena',
-                      onPressed: () => setState(() {
-                        scene = true;
-                        chrome = true;
-                      }),
-                      icon: const Icon(Icons.fullscreen_rounded),
-                    ),
-                  if (canSearch)
-                    IconButton(
-                      tooltip: 'Buscar letra en línea',
-                      onPressed: fetching ? null : fetch,
-                      icon: const Icon(Icons.cloud_download_outlined),
-                    ),
-                  IconButton(
-                    tooltip: 'Importar LRC o TXT',
-                    onPressed: item == null ? null : import,
-                    icon: const Icon(Icons.file_open_outlined),
-                  ),
-                ],
-              ),
         body: SafeArea(
           child: FutureBuilder<Uint8List?>(
             key: ValueKey(item?.id),
@@ -516,120 +521,173 @@ class _LyricsViewState extends State<LyricsView> {
                           ],
                         ),
                       )
-                    : Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(24, 12, 24, 8),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  item?.title ?? 'Sin canción',
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: Theme.of(context).textTheme.titleLarge
-                                      ?.copyWith(fontWeight: FontWeight.w800),
-                                ),
-                                Text(
-                                  item?.artist ?? '',
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: Theme.of(context).textTheme.bodySmall,
-                                ),
-                                const SizedBox(height: 12),
-                                Text(
-                                  timed
-                                      ? 'SINCRONIZADA · SIGUE LA MÚSICA'
-                                      : 'LETRAS',
-                                  style: TextStyle(
-                                    fontSize: 10,
-                                    letterSpacing: 2,
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .primary,
+                    : NotificationListener<UserScrollNotification>(
+                        onNotification: (event) {
+                          if (event.depth == 0 &&
+                              event.metrics.axis == Axis.vertical &&
+                              event.direction != ScrollDirection.idle) {
+                            final hide =
+                                event.direction == ScrollDirection.reverse &&
+                                event.metrics.maxScrollExtent >
+                                    event.metrics.minScrollExtent;
+                            if (hide != headerHidden) {
+                              setState(() => headerHidden = hide);
+                            }
+                          }
+                          return false;
+                        },
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            AnimatedCrossFade(
+                              duration: MediaQuery.disableAnimationsOf(context)
+                                  ? Duration.zero
+                                  : const Duration(milliseconds: 230),
+                              sizeCurve: Curves.easeInOut,
+                              crossFadeState: headerHidden
+                                  ? CrossFadeState.showSecond
+                                  : CrossFadeState.showFirst,
+                              firstChild: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  SizedBox(
+                                    height: toolbar.preferredSize.height,
+                                    child: toolbar,
                                   ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          if (error != null)
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 24,
-                              ),
-                              child: Text(error!),
-                            ),
-                          if (fetching) const LinearProgressIndicator(),
-                          Expanded(
-                            child: lyrics == null
-                                ? Center(
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(24),
-                                      child: Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          const Text(
-                                            'Se muestran letras incrustadas o guardadas. Importa un LRC sincronizado o busca con tu extensión de letras.',
-                                          ),
-                                          const SizedBox(height: 16),
-                                          FilledButton.icon(
-                                            onPressed: item == null
-                                                ? null
-                                                : import,
-                                            icon: const Icon(
-                                              Icons.file_open_outlined,
-                                            ),
-                                            label: const Text('Importar letra'),
-                                          ),
-                                        ],
-                                      ),
+                                  Padding(
+                                    padding: const EdgeInsets.fromLTRB(
+                                      24,
+                                      12,
+                                      24,
+                                      8,
                                     ),
-                                  )
-                                : timed
-                                ? synchronized(position.data ?? Duration.zero)
-                                : SingleChildScrollView(
-                                    padding: const EdgeInsets.all(24),
                                     child: Column(
                                       crossAxisAlignment:
-                                          CrossAxisAlignment.stretch,
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          'Esta copia no incluye tiempos de sincronización.',
+                                          item?.title ?? 'Sin canción',
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .titleLarge
+                                              ?.copyWith(
+                                                fontWeight: FontWeight.w800,
+                                              ),
+                                        ),
+                                        Text(
+                                          item?.artist ?? '',
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
                                           style: Theme.of(context)
                                               .textTheme
                                               .bodySmall,
                                         ),
-                                        if (canSearch)
-                                          Align(
-                                            alignment: Alignment.centerLeft,
-                                            child: TextButton.icon(
-                                              onPressed: fetching
-                                                  ? null
-                                                  : fetch,
-                                              icon: const Icon(
-                                                Icons.auto_awesome,
-                                              ),
-                                              label: const Text(
-                                                'Buscar sincronizada',
-                                              ),
-                                            ),
-                                          ),
-                                        const SizedBox(height: 20),
-                                        SelectableText(
-                                          lyrics!.plain,
-                                          style: const TextStyle(
-                                            fontFamily: 'Plus Jakarta Sans',
-                                            fontSize: 25,
-                                            height: 1.6,
-                                            fontWeight: FontWeight.w600,
+                                        const SizedBox(height: 12),
+                                        Text(
+                                          timed
+                                              ? 'SINCRONIZADA · SIGUE LA MÚSICA'
+                                              : 'LETRAS',
+                                          style: TextStyle(
+                                            fontSize: 10,
+                                            letterSpacing: 2,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .primary,
                                           ),
                                         ),
                                       ],
                                     ),
                                   ),
-                          ),
-                        ],
+                                ],
+                              ),
+                              secondChild: const SizedBox(
+                                width: double.infinity,
+                              ),
+                            ),
+                            if (error != null)
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 24,
+                                ),
+                                child: Text(error!),
+                              ),
+                            if (fetching) const LinearProgressIndicator(),
+                            Expanded(
+                              child: lyrics == null
+                                  ? Center(
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(24),
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            const Text(
+                                              'Se muestran letras incrustadas o guardadas. Importa un LRC sincronizado o busca con tu extensión de letras.',
+                                            ),
+                                            const SizedBox(height: 16),
+                                            FilledButton.icon(
+                                              onPressed: item == null
+                                                  ? null
+                                                  : import,
+                                              icon: const Icon(
+                                                Icons.file_open_outlined,
+                                              ),
+                                              label: const Text(
+                                                'Importar letra',
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    )
+                                  : timed
+                                  ? synchronized(position.data ?? Duration.zero)
+                                  : SingleChildScrollView(
+                                      physics:
+                                          const AlwaysScrollableScrollPhysics(),
+                                      padding: const EdgeInsets.all(24),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.stretch,
+                                        children: [
+                                          Text(
+                                            'Esta copia no incluye tiempos de sincronización.',
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodySmall,
+                                          ),
+                                          if (canSearch)
+                                            Align(
+                                              alignment: Alignment.centerLeft,
+                                              child: TextButton.icon(
+                                                onPressed: fetching
+                                                    ? null
+                                                    : fetch,
+                                                icon: const Icon(
+                                                  Icons.auto_awesome,
+                                                ),
+                                                label: const Text(
+                                                  'Buscar sincronizada',
+                                                ),
+                                              ),
+                                            ),
+                                          const SizedBox(height: 20),
+                                          SelectableText(
+                                            lyrics!.plain,
+                                            style: const TextStyle(
+                                              fontFamily: 'Plus Jakarta Sans',
+                                              fontSize: 25,
+                                              height: 1.6,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                            ),
+                          ],
+                        ),
                       ),
               ),
             ),

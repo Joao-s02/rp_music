@@ -46,6 +46,7 @@ class LibraryController extends ChangeNotifier {
   List<Track> ordered(Iterable<Track> source) =>
       sortTracks(source, sort, ascending);
   bool dark = true;
+  bool playlistGrid = false;
   bool closeToTray = true;
   double volume = 1;
   String? message;
@@ -228,6 +229,7 @@ class LibraryController extends ChangeNotifier {
             .firstOrNull ??
         TrackSort.title;
     final nextAscending = json['ascending'] as bool? ?? true;
+    final nextPlaylistGrid = json['playlistGrid'] as bool? ?? false;
     final nextDark = json['dark'] as bool? ?? true;
     final nextCloseToTray = json['closeToTray'] as bool? ?? true;
     final nextVolume = ((json['volume'] as num?)?.toDouble() ?? 1).clamp(
@@ -248,6 +250,7 @@ class LibraryController extends ChangeNotifier {
       sort = nextSort;
       ascending = nextAscending;
       dark = nextDark;
+      playlistGrid = nextPlaylistGrid;
       closeToTray = nextCloseToTray;
       volume = nextVolume;
     };
@@ -293,6 +296,7 @@ class LibraryController extends ChangeNotifier {
       'sort': sort.name,
       'ascending': ascending,
       'dark': dark,
+      'playlistGrid': playlistGrid,
       'closeToTray': closeToTray,
       'volume': volume,
     };
@@ -540,6 +544,12 @@ class LibraryController extends ChangeNotifier {
   Future<void> removeMissingFromPlaylist(String name) async {
     final available = {...remoteTracks.keys, ...tracks.map((t) => t.id)};
     playlists[name]?.removeWhere((id) => !available.contains(id));
+    notifyListeners();
+    await persist();
+  }
+
+  Future<void> setPlaylistGrid(bool value) async {
+    playlistGrid = value;
     notifyListeners();
     await persist();
   }

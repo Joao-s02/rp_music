@@ -341,7 +341,8 @@ void main() {
       await tester.pump(const Duration(milliseconds: 250));
       await tester.pumpAndSettle();
       expect(find.byType(TextField), findsNothing);
-      expect(find.text('3 pistas locales'), findsOneWidget);
+      expect(find.text('Biblioteca · 3 pistas'), findsOneWidget);
+      expect(find.textContaining('pistas locales'), findsNothing);
       await tester.pumpWidget(const SizedBox.shrink());
       await tester.runAsync(audio.close);
       library.dispose();
@@ -409,6 +410,16 @@ void main() {
       await tester.pumpWidget(MusicApp(library: library, audio: audio));
       await tester.pumpAndSettle();
 
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = const Size(800, 600);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      addTearDown(tester.view.resetPhysicalSize);
+      tester.view.padding = const FakeViewPadding(bottom: 40);
+      tester.view.viewPadding = const FakeViewPadding(bottom: 40);
+      addTearDown(tester.view.resetPadding);
+      addTearDown(tester.view.resetViewPadding);
+      await tester.pumpAndSettle();
+
       final navigation = find.byKey(
         const ValueKey('library-bottom-navigation'),
       );
@@ -417,11 +428,103 @@ void main() {
       await tester.drag(songs, const Offset(0, -250));
       await tester.pumpAndSettle();
       expect(tester.getSize(navigation).height, 0);
-      expect(find.byType(PlayerPanel), findsOneWidget);
+      final player = find.byType(PlayerPanel);
+      expect(player, findsOneWidget);
+      expect(tester.getBottomLeft(player).dy, lessThanOrEqualTo(560));
       await tester.drag(songs, const Offset(0, 150));
       await tester.pumpAndSettle();
       expect(tester.getSize(navigation).height, greaterThan(0));
 
+      await tester.pumpWidget(const SizedBox.shrink());
+      await tester.runAsync(audio.close);
+      library.dispose();
+    },
+  );
+
+  testWidgets(
+    'Atrás cierra detalles de artista y carpeta y restaura la barra',
+    (tester) async {
+      final library = LibraryController(MemoryStore(), MusicFiles())
+        ..loading = false
+        ..root = 'C:/music'
+        ..tracks = List.generate(
+          40,
+          (i) => Track(
+            id: 'C:/music/Discos/$i.mp3',
+            title: 'Canción $i',
+            artist: 'Mi artista',
+            folder: 'Discos',
+          ),
+        );
+      final audio = MusicHandler(player: FakePlayer());
+      await tester.pumpWidget(MusicApp(library: library, audio: audio));
+      await tester.pumpAndSettle();
+      final navigation = find.byKey(
+        const ValueKey('library-bottom-navigation'),
+      );
+      for (final (section, title) in [
+        ('Artistas', 'Mi artista'),
+        ('Carpetas', 'Discos'),
+      ]) {
+        await tester.tap(find.text(section));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text(title));
+        await tester.pumpAndSettle();
+        await tester.drag(find.byType(ListView), const Offset(0, -220));
+        await tester.pumpAndSettle();
+        expect(tester.getSize(navigation).height, 0);
+        expect(await tester.binding.handlePopRoute(), isTrue);
+        await tester.pumpAndSettle();
+        expect(tester.getSize(navigation).height, greaterThan(0));
+        expect(find.text(title), findsOneWidget);
+        expect(find.text('Canción 0'), findsNothing);
+      }
+
+      await tester.pumpWidget(const SizedBox.shrink());
+      await tester.runAsync(audio.close);
+      library.dispose();
+    },
+  );
+
+  testWidgets(
+    'Ajustes cambia Listas a tarjetas cuadradas que se pueden abrir',
+    (tester) async {
+      final library = LibraryController(MemoryStore(), MusicFiles())
+        ..loading = false
+        ..playlists = {'Mi lista': []};
+      final audio = MusicHandler(player: FakePlayer());
+      await tester.pumpWidget(MusicApp(library: library, audio: audio));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Listas'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byTooltip('Filtrar por'));
+      await tester.pumpAndSettle();
+      await tester.tap(
+        find.widgetWithText(
+          CheckedPopupMenuItem<bool>,
+          'Cantidad de canciones',
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('Cantidad de canciones'), findsNothing);
+      await tester.tap(find.text('Ajustes'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byType(DropdownButton<bool>));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Tarjetas').last);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Listas'));
+      await tester.pumpAndSettle();
+      expect(find.byType(GridView), findsOneWidget);
+      final card = find.ancestor(
+        of: find.text('Mi lista'),
+        matching: find.byType(Card),
+      );
+      final size = tester.getSize(card);
+      expect(size.width, closeTo(size.height, 0.1));
+      await tester.tap(find.text('Mi lista'));
+      await tester.pumpAndSettle();
+      expect(find.text('LISTA LOCAL'), findsOneWidget);
       await tester.pumpWidget(const SizedBox.shrink());
       await tester.runAsync(audio.close);
       library.dispose();

@@ -1,8 +1,8 @@
 # Documentación de RP Music
 
-## Versión 0.3.19-alpha.1
+## Versión 0.3.20-alpha.1
 
-[Instalación y uso](USO.md) · [Cambios](CAMBIOS-0.3.19.md) · [Pruebas](PRUEBAS-0.3.19.md) · [Notas de publicación](RELEASE-0.3.19.md)
+[Instalación y uso](USO.md) · [Cambios](CAMBIOS-0.3.20.md) · [Pruebas](PRUEBAS-0.3.20.md) · [Notas de publicación](RELEASE-0.3.20.md)
 
 ## Desarrollo
 

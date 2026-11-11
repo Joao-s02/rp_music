@@ -23,6 +23,7 @@ class ExtensionSourceView extends StatefulWidget {
     required this.library,
     this.service,
     this.embedded = false,
+    this.onExit,
   });
   final ProgramController programs;
   final String extensionId;
@@ -30,6 +31,7 @@ class ExtensionSourceView extends StatefulWidget {
   final LibraryController library;
   final ExtensionSourceService? service;
   final bool embedded;
+  final VoidCallback? onExit;
   @override
   State<ExtensionSourceView> createState() => _ExtensionSourceViewState();
 }
@@ -844,9 +846,14 @@ class _ExtensionSourceViewState extends State<ExtensionSourceView> {
       ],
     );
     final navigable = PopScope(
-      canPop: history.isEmpty,
+      canPop: history.isEmpty && widget.onExit == null,
       onPopInvokedWithResult: (didPop, result) {
-        if (!didPop) back();
+        if (didPop) return;
+        if (history.isNotEmpty) {
+          back();
+        } else {
+          widget.onExit?.call();
+        }
       },
       child: content,
     );

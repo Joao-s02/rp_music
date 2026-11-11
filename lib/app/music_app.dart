@@ -92,6 +92,8 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
   bool hideNavigation = false;
   String? sourceDestination;
   int view = 0;
+  bool sortPlaylistsByCount = false;
+  bool playlistsAscending = true;
   String query = '';
   bool searchExpanded = false;
   final searchFocus = FocusNode();
@@ -184,6 +186,23 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
     group = null;
   });
 
+  void selectGroup(String? value) => setState(() {
+    group = value;
+    hideNavigation = false;
+  });
+
+  bool onContentScroll(UserScrollNotification event) {
+    if (event.depth == 0 &&
+        event.metrics.axis == Axis.vertical &&
+        event.direction != ScrollDirection.idle) {
+      final hide =
+          event.direction == ScrollDirection.reverse &&
+          event.metrics.maxScrollExtent > event.metrics.minScrollExtent;
+      if (hide != hideNavigation) setState(() => hideNavigation = hide);
+    }
+    return false;
+  }
+
   @override
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, size) {
@@ -201,9 +220,12 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
       final selectedIndex = selectedContribution == null ? page : 3;
       final desktop = size.maxWidth >= 850;
       final keyboard = MediaQuery.viewInsetsOf(context).bottom > 0;
-      final navigationHidden =
-          hideNavigation && page == 0 && view == 0 && sourceDestination == null;
-      return Scaffold(
+      final sourceEngine =
+          library.programs?.installed[sourceDestination]?.package.engine;
+      final hasLocalBackTarget =
+          group != null ||
+          (sourceDestination != null && sourceEngine == 'javascript');
+      final scaffold = Scaffold(
         body: SafeArea(
           child: Row(
             children: [
@@ -241,6 +263,10 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
                       padding: const EdgeInsets.fromLTRB(24, 20, 16, 8),
                       child: Row(
                         children: [
+                          if (selectedContribution != null)
+                            BackButton(
+                              onPressed: () => Navigator.maybePop(context),
+                            ),
                           if (page == 0 && sourceDestination == null) ...[
                             ClipRRect(
                               borderRadius: BorderRadius.circular(10),
@@ -273,7 +299,7 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
                                 ),
                                 if (page == 0 && sourceDestination == null)
                                   Text(
-                                    'Biblioteca · ${library.tracks.length} pistas',
+                                    'Biblioteca · ${library.tracks.length} pistas${library.scanning ? ' · Metadatos ${library.scanProcessed}/${library.scanTotal}' : ''}',
                                     style: Theme.of(context)
                                         .textTheme
                                         .bodySmall,
@@ -332,36 +358,45 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
                         ],
                       ),
                     ),
-                    if (page == 0 &&
-                        sourceDestination == null &&
-                        searchExpanded)
-                      Padding(
-                        key: const ValueKey('library-search'),
-                        padding: const EdgeInsets.fromLTRB(20, 4, 20, 12),
-                        child: TextField(
-                          key: const ValueKey('library-search-field'),
-                          controller: search,
-                          focusNode: searchFocus,
-                          decoration: const InputDecoration(
-                            prefixIcon: Icon(Icons.search),
-                            hintText: 'Buscar en tu música',
-                          ),
-                          onChanged: (value) {
-                            debounce?.cancel();
-                            debounce = Timer(
-                              const Duration(milliseconds: 180),
-                              () {
-                                if (mounted) {
-                                  setState(() {
-                                    query = value.toLowerCase().trim();
-                                    if (view != 1) group = null;
-                                  });
-                                }
-                              },
-                            );
-                          },
-                        ),
-                      ),
+                    AnimatedSize(
+                      alignment: Alignment.topCenter,
+                      duration: MediaQuery.disableAnimationsOf(context)
+                          ? Duration.zero
+                          : const Duration(milliseconds: 220),
+                      curve: Curves.easeInOut,
+                      child:
+                          page == 0 &&
+                              sourceDestination == null &&
+                              searchExpanded
+                          ? Padding(
+                              key: const ValueKey('library-search'),
+                              padding: const EdgeInsets.fromLTRB(20, 4, 20, 12),
+                              child: TextField(
+                                key: const ValueKey('library-search-field'),
+                                controller: search,
+                                focusNode: searchFocus,
+                                decoration: const InputDecoration(
+                                  prefixIcon: Icon(Icons.search),
+                                  hintText: 'Buscar en tu música',
+                                ),
+                                onChanged: (value) {
+                                  debounce?.cancel();
+                                  debounce = Timer(
+                                    const Duration(milliseconds: 180),
+                                    () {
+                                      if (mounted) {
+                                        setState(() {
+                                          query = value.toLowerCase().trim();
+                                          if (view != 1) group = null;
+                                        });
+                                      }
+                                    },
+                                  );
+                                },
+                              ),
+                            )
+                          : const SizedBox.shrink(),
+                    ),
                     if (widget.updates != null)
                       UpdateNotice(
                         updates: widget.updates!,
@@ -383,43 +418,45 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
                         ],
                       ),
                     Expanded(
-                      child: selectedContribution != null
-                          ? library
-                                        .programs!
-                                        .installed[selectedContribution.id]
-                                        ?.package
-                                        .engine ==
-                                    'javascript'
-                                ? JavascriptScreenView(
-                                    key: ValueKey(selectedContribution.id),
-                                    programs: library.programs!,
-                                    extensionId: selectedContribution.id,
-                                    library: library,
-                                    audio: widget.audio,
-                                  )
-                                : ExtensionSourceView(
-                                    key: ValueKey(selectedContribution.id),
-                                    programs: library.programs!,
-                                    extensionId: selectedContribution.id,
-                                    audio: audio,
-                                    library: library,
-                                    embedded: true,
-                                  )
-                          : switch (page) {
-                              0 => libraryView(),
-                              1 => trackList(
-                                library.tracks
-                                    .where(
-                                      (t) => library.favorites.contains(t.id),
+                      child: NotificationListener<UserScrollNotification>(
+                        onNotification:
+                            desktop ||
+                                (selectedContribution == null && page >= 3)
+                            ? null
+                            : onContentScroll,
+                        child: selectedContribution != null
+                            ? sourceEngine == 'javascript'
+                                  ? JavascriptScreenView(
+                                      key: ValueKey(selectedContribution.id),
+                                      programs: library.programs!,
+                                      extensionId: selectedContribution.id,
+                                      library: library,
+                                      audio: widget.audio,
                                     )
-                                    .toList(),
-                                empty:
-                                    'Tus canciones favoritas aparecerán aquí.',
-                              ),
-                              2 => playlistView(),
-                              3 => exploreView(),
-                              _ => settingsView(),
-                            },
+                                  : ExtensionSourceView(
+                                      key: ValueKey(selectedContribution.id),
+                                      programs: library.programs!,
+                                      extensionId: selectedContribution.id,
+                                      audio: audio,
+                                      library: library,
+                                      embedded: true,
+                                      onExit: () => navigate(3),
+                                    )
+                            : switch (page) {
+                                0 => libraryView(),
+                                1 => trackList(
+                                  library.tracks
+                                      .where(
+                                        (t) => library.favorites.contains(t.id),
+                                      )
+                                      .toList(),
+                                  empty: 'Tus canciones favoritas aparecerán aquí.',
+                                ),
+                                2 => playlistView(),
+                                3 => exploreView(),
+                                _ => settingsView(),
+                              },
+                      ),
                     ),
                     if (!keyboard)
                       Padding(
@@ -443,15 +480,15 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
                 child: AnimatedAlign(
                   key: const ValueKey('library-bottom-navigation'),
                   alignment: Alignment.topCenter,
-                  heightFactor: navigationHidden ? 0 : 1,
+                  heightFactor: hideNavigation ? 0 : 1,
                   duration: MediaQuery.disableAnimationsOf(context)
                       ? Duration.zero
                       : const Duration(milliseconds: 230),
                   curve: Curves.easeInOut,
                   child: IgnorePointer(
-                    ignoring: navigationHidden,
+                    ignoring: hideNavigation,
                     child: ExcludeSemantics(
-                      excluding: navigationHidden,
+                      excluding: hideNavigation,
                       child: NavigationBar(
                         labelBehavior:
                             NavigationDestinationLabelBehavior.alwaysShow,
@@ -469,6 +506,18 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
                   ),
                 ),
               ),
+      );
+      return PopScope(
+        canPop: !hasLocalBackTarget,
+        onPopInvokedWithResult: (didPop, _) {
+          if (didPop) return;
+          if (sourceDestination != null && sourceEngine == 'javascript') {
+            navigate(3);
+          } else if (group != null) {
+            selectGroup(null);
+          }
+        },
+        child: SafeArea(top: false, bottom: !desktop, child: scaffold),
       );
     },
   );
@@ -562,36 +611,50 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
     ),
   );
 
+  Widget orderingControls<T>({
+    required T selected,
+    required List<PopupMenuEntry<T>> options,
+    required ValueChanged<T> onSelected,
+    required bool ascending,
+    required VoidCallback toggleDirection,
+  }) => Row(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      PopupMenuButton<T>(
+        tooltip: 'Filtrar por',
+        icon: const Icon(Icons.filter_list),
+        initialValue: selected,
+        itemBuilder: (_) => options,
+        onSelected: onSelected,
+      ),
+      IconButton(
+        tooltip: ascending
+            ? 'Ascendente · cambiar a descendente'
+            : 'Descendente · cambiar a ascendente',
+        onPressed: toggleDirection,
+        icon: Icon(ascending ? Icons.arrow_upward : Icons.arrow_downward),
+      ),
+    ],
+  );
+
   Widget sortControls() => Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
-    child: Row(
-      children: [
-        const Icon(Icons.sort, size: 20),
-        const SizedBox(width: 8),
-        Expanded(
-          child: DropdownButton<TrackSort>(
-            isExpanded: true,
-            value: library.sort,
-            underline: const SizedBox.shrink(),
-            onChanged: (value) {
-              if (value != null) library.setSort(value);
-            },
-            items: [
-              for (final value in TrackSort.values)
-                DropdownMenuItem(value: value, child: Text(value.label)),
-            ],
-          ),
-        ),
-        IconButton(
-          tooltip: library.ascending
-              ? 'Ascendente · cambiar a descendente'
-              : 'Descendente · cambiar a ascendente',
-          onPressed: library.toggleSortDirection,
-          icon: Icon(
-            library.ascending ? Icons.arrow_upward : Icons.arrow_downward,
-          ),
-        ),
-      ],
+    padding: const EdgeInsets.symmetric(horizontal: 16),
+    child: Align(
+      alignment: Alignment.centerRight,
+      child: orderingControls(
+        selected: library.sort,
+        options: [
+          for (final value in TrackSort.values)
+            CheckedPopupMenuItem(
+              value: value,
+              checked: value == library.sort,
+              child: Text(value.label),
+            ),
+        ],
+        onSelected: library.setSort,
+        ascending: library.ascending,
+        toggleDirection: library.toggleSortDirection,
+      ),
     ),
   );
 
@@ -617,22 +680,16 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
         )
         .toList();
     if (view == 1 && group != null) {
-      return PopScope(
-        canPop: false,
-        onPopInvokedWithResult: (didPop, result) {
-          if (!didPop) setState(() => group = null);
-        },
-        child: AlbumDetailView(
-          key: ValueKey(group),
-          tracks: library.tracks.where((t) => groupKey(t) == group).toList(),
-          query: query,
-          audio: audio,
-          library: library,
-          onBack: () => setState(() => group = null),
-          menu: albumTrackMenu,
-          onSave: () => addAlbumToPlaylist(
-            filtered.where((t) => groupKey(t) == group).toList(),
-          ),
+      return AlbumDetailView(
+        key: ValueKey(group),
+        tracks: library.tracks.where((t) => groupKey(t) == group).toList(),
+        query: query,
+        audio: audio,
+        library: library,
+        onBack: () => selectGroup(null),
+        menu: albumTrackMenu,
+        onSave: () => addAlbumToPlaylist(
+          filtered.where((t) => groupKey(t) == group).toList(),
         ),
       );
     }
@@ -667,30 +724,15 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
             ),
           ),
         ),
-        if (MediaQuery.viewInsetsOf(context).bottom == 0)
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    '${filtered.length} pistas locales${library.scanning ? ' · Metadatos ${library.scanProcessed}/${library.scanTotal}' : ''}',
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-                ),
-                if (library.activeExtension?.randomAction == true)
-                  TextButton.icon(
-                    onPressed: filtered.isEmpty
-                        ? null
-                        : () => audio.select(
-                            filtered,
-                            Random().nextInt(filtered.length),
-                          ),
-                    icon: const Icon(Icons.casino_outlined),
-                    label: const Text('Sorpréndeme'),
-                  ),
-              ],
-            ),
+        if (MediaQuery.viewInsetsOf(context).bottom == 0 &&
+            library.activeExtension?.randomAction == true)
+          TextButton.icon(
+            onPressed: filtered.isEmpty
+                ? null
+                : () =>
+                      audio.select(filtered, Random().nextInt(filtered.length)),
+            icon: const Icon(Icons.casino_outlined),
+            label: const Text('Sorpréndeme'),
           ),
         Expanded(
           child: view == 0 ? trackList(filtered) : groupedTracks(filtered),
@@ -921,7 +963,7 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
           ListTile(
             leading: const Icon(Icons.arrow_back),
             title: Text(group!.split('\n').first),
-            onTap: () => setState(() => group = null),
+            onTap: () => selectGroup(null),
           ),
           Expanded(
             child: trackList(
@@ -982,6 +1024,7 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
                   child: InkWell(
                     onTap: () => setState(() {
                       group = key;
+                      hideNavigation = false;
                       debounce?.cancel();
                       search.clear();
                       query = '';
@@ -1087,7 +1130,7 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
             '${items.length} canciones${view == 1 ? ' · ${items.first.artist}' : ''}',
           ),
           trailing: const Icon(Icons.chevron_right),
-          onTap: () => setState(() => group = key),
+          onTap: () => selectGroup(key),
         );
       },
     );
@@ -1178,30 +1221,7 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
     return Column(
       children: [
         sortControls(),
-        Expanded(
-          child:
-              page == 0 &&
-                  view == 0 &&
-                  sourceDestination == null &&
-                  MediaQuery.sizeOf(context).width < 850
-              ? NotificationListener<UserScrollNotification>(
-                  onNotification: (event) {
-                    if (event.depth != 0 ||
-                        event.direction == ScrollDirection.idle) {
-                      return false;
-                    }
-                    final hide =
-                        event.direction == ScrollDirection.reverse &&
-                        event.metrics.maxScrollExtent > 0;
-                    if (hide != hideNavigation) {
-                      setState(() => hideNavigation = hide);
-                    }
-                    return false;
-                  },
-                  child: list,
-                )
-              : list,
-        ),
+        Expanded(child: list),
       ],
     );
   }
@@ -1210,138 +1230,224 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
     if (group != null && library.playlists.containsKey(group)) {
       final name = group!;
       final missing = library.missingInPlaylist(name);
-      return PopScope(
-        canPop: false,
-        onPopInvokedWithResult: (didPop, _) {
-          if (!didPop) setState(() => group = null);
-        },
-        child: Column(
-          children: [
+      final tracks = library.playlistTracks(name);
+      final minutes =
+          tracks.fold<int>(0, (sum, t) => sum + t.durationMs) ~/ 60000;
+      return Column(
+        children: [
+          ListTile(
+            leading: const Icon(Icons.arrow_back),
+            title: Text(group!),
+            trailing: IconButton(
+              tooltip: 'Eliminar lista',
+              onPressed: () => deletePlaylist(name),
+              icon: const Icon(Icons.delete_outline),
+            ),
+            onTap: () => selectGroup(null),
+          ),
+          if (missing > 0)
             ListTile(
-              leading: const Icon(Icons.arrow_back),
-              title: Text(group!),
-              trailing: IconButton(
-                tooltip: 'Eliminar lista',
-                onPressed: () => deletePlaylist(name),
-                icon: const Icon(Icons.delete_outline),
+              title: Text('$missing canciones no disponibles en esta carpeta'),
+              subtitle: const Text(
+                'Se conservan por si vuelves a la carpeta anterior.',
               ),
-              onTap: () => setState(() => group = null),
-            ),
-            if (missing > 0)
-              ListTile(
-                title: Text(
-                  '$missing canciones no disponibles en esta carpeta',
-                ),
-                subtitle: const Text(
-                  'Se conservan por si vuelves a la carpeta anterior.',
-                ),
-                trailing: TextButton(
-                  onPressed: library.scanning
-                      ? null
-                      : () => library.removeMissingFromPlaylist(name),
-                  child: const Text('Quitar'),
-                ),
-              ),
-            Expanded(
-              child: trackList(
-                library.playlistTracks(name),
-                playlist: name,
-                header: CollectionHeader(
-                  title: name,
-                  label: library.automaticPlaylist(name)
-                      ? (library.programs?.allowed(
-                                  library.playlistMeta[name]!['owner']
-                                      as String,
-                                  'playlists.manage',
-                                ) ==
-                                true
-                            ? 'Lista automática · activa'
-                            : 'Lista automática · guardada e inactiva')
-                      : 'LISTA LOCAL',
-                  description:
-                      '${library.playlistTracks(name).length} canciones · ${library.playlistTracks(name).fold<int>(0, (sum, t) => sum + t.durationMs) ~/ 60000} min${missing > 0 ? ' · $missing no disponibles' : ''}',
-                  artwork: (size) =>
-                      PlaylistCover(library: library, name: name, size: size),
-                  actions: [
-                    FilledButton.icon(
-                      onPressed: () {
-                        audio.shuffle = false;
-                        audio.select(library.playlistTracks(name), 0);
-                      },
-                      icon: const Icon(Icons.play_arrow),
-                      label: const Text('Reproducir'),
-                    ),
-                    FilledButton.tonalIcon(
-                      onPressed: () {
-                        final tracks = library.playlistTracks(name);
-                        if (tracks.isEmpty) return;
-                        audio.shuffle = true;
-                        audio.select(tracks, Random().nextInt(tracks.length));
-                      },
-                      icon: const Icon(Icons.shuffle),
-                      label: const Text('Aleatorio'),
-                    ),
-                    TextButton.icon(
-                      onPressed: () =>
-                          choosePlaylistCover(context, library, name),
-                      icon: const Icon(Icons.photo_outlined),
-                      label: const Text('Cambiar carátula'),
-                    ),
-                  ],
-                ),
-                empty: missing > 0
-                    ? 'Las canciones de esta lista están fuera de la carpeta actual.'
-                    : 'Añade canciones desde el menú de la biblioteca.',
+              trailing: TextButton(
+                onPressed: library.scanning
+                    ? null
+                    : () => library.removeMissingFromPlaylist(name),
+                child: const Text('Quitar'),
               ),
             ),
-          ],
-        ),
+          Expanded(
+            child: trackList(
+              tracks,
+              playlist: name,
+              header: CollectionHeader(
+                title: name,
+                label: library.automaticPlaylist(name)
+                    ? (library.programs?.allowed(
+                                library.playlistMeta[name]!['owner'] as String,
+                                'playlists.manage',
+                              ) ==
+                              true
+                          ? 'Lista automática · activa'
+                          : 'Lista automática · guardada e inactiva')
+                    : 'LISTA LOCAL',
+                description:
+                    '${tracks.length} canciones · $minutes min${missing > 0 ? ' · $missing no disponibles' : ''}',
+                artwork: (size) =>
+                    PlaylistCover(library: library, name: name, size: size),
+                actions: [
+                  FilledButton.icon(
+                    onPressed: tracks.isEmpty
+                        ? null
+                        : () {
+                            audio.shuffle = false;
+                            audio.select(library.ordered(tracks), 0);
+                          },
+                    icon: const Icon(Icons.play_arrow),
+                    label: const Text('Reproducir'),
+                  ),
+                  FilledButton.tonalIcon(
+                    onPressed: () {
+                      if (tracks.isEmpty) return;
+                      audio.shuffle = true;
+                      audio.select(
+                        library.ordered(tracks),
+                        Random().nextInt(tracks.length),
+                      );
+                    },
+                    icon: const Icon(Icons.shuffle),
+                    label: const Text('Aleatorio'),
+                  ),
+                  TextButton.icon(
+                    onPressed: () =>
+                        choosePlaylistCover(context, library, name),
+                    icon: const Icon(Icons.photo_outlined),
+                    label: const Text('Cambiar carátula'),
+                  ),
+                ],
+              ),
+              empty: missing > 0
+                  ? 'Las canciones de esta lista están fuera de la carpeta actual.'
+                  : 'Añade canciones desde el menú de la biblioteca.',
+            ),
+          ),
+        ],
       );
     }
+    final names = library.playlists.keys.toList()
+      ..sort((a, b) {
+        final countOrder = sortPlaylistsByCount
+            ? library.playlists[a]!.length.compareTo(
+                library.playlists[b]!.length,
+              )
+            : 0;
+        final order = countOrder != 0
+            ? countOrder
+            : a.toLowerCase().compareTo(b.toLowerCase());
+        return playlistsAscending ? order : -order;
+      });
     return Column(
       children: [
-        Align(
-          alignment: Alignment.centerLeft,
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: FilledButton.tonalIcon(
-              onPressed: createPlaylist,
-              icon: const Icon(Icons.add),
-              label: const Text('Crear lista'),
-            ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: Wrap(
+            alignment: WrapAlignment.spaceBetween,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            runSpacing: 4,
+            children: [
+              FilledButton.tonalIcon(
+                onPressed: createPlaylist,
+                icon: const Icon(Icons.add),
+                label: const Text('Crear lista'),
+              ),
+              orderingControls(
+                selected: sortPlaylistsByCount,
+                options: [
+                  CheckedPopupMenuItem(
+                    value: false,
+                    checked: !sortPlaylistsByCount,
+                    child: const Text('Nombre'),
+                  ),
+                  CheckedPopupMenuItem(
+                    value: true,
+                    checked: sortPlaylistsByCount,
+                    child: const Text('Cantidad de canciones'),
+                  ),
+                ],
+                onSelected: (value) =>
+                    setState(() => sortPlaylistsByCount = value),
+                ascending: playlistsAscending,
+                toggleDirection: () =>
+                    setState(() => playlistsAscending = !playlistsAscending),
+              ),
+            ],
           ),
         ),
         Expanded(
-          child: library.playlists.isEmpty
+          child: names.isEmpty
               ? empty(
                   'Crea una lista para reunir tu música.',
                   Icons.queue_music,
                 )
-              : ListView(
-                  children: [
-                    for (final entry in library.playlists.entries)
-                      ListTile(
-                        leading: PlaylistCover(
-                          library: library,
-                          name: entry.key,
-                        ),
-                        title: Text(entry.key),
-                        trailing: IconButton(
-                          tooltip: 'Eliminar lista',
-                          onPressed: () => deletePlaylist(entry.key),
-                          icon: const Icon(Icons.delete_outline),
-                        ),
-                        subtitle: Text(
-                          '${library.playlistTracks(entry.key).length} disponibles${library.missingInPlaylist(entry.key) > 0 ? ' · ${library.missingInPlaylist(entry.key)} no disponibles' : ''}',
-                        ),
-                        onTap: () => setState(() => group = entry.key),
+              : library.playlistGrid
+              ? GridView.builder(
+                  padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
+                  gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                    maxCrossAxisExtent: 220,
+                    crossAxisSpacing: 12,
+                    mainAxisSpacing: 12,
+                  ),
+                  itemCount: names.length,
+                  itemBuilder: (_, index) => playlistCard(names[index]),
+                )
+              : ListView.builder(
+                  itemCount: names.length,
+                  itemBuilder: (_, index) {
+                    final name = names[index];
+                    final missing = library.missingInPlaylist(name);
+                    return ListTile(
+                      leading: PlaylistCover(library: library, name: name),
+                      title: Text(name),
+                      trailing: playlistDeleteButton(name),
+                      subtitle: Text(
+                        '${library.playlistTracks(name).length} disponibles'
+                        '${missing > 0 ? ' · $missing no disponibles' : ''}',
                       ),
-                  ],
+                      onTap: () => selectGroup(name),
+                    );
+                  },
                 ),
         ),
       ],
     );
   }
+
+  Widget playlistDeleteButton(String name) => IconButton(
+    tooltip: 'Eliminar lista',
+    onPressed: () => deletePlaylist(name),
+    icon: const Icon(Icons.delete_outline),
+  );
+
+  Widget playlistCard(String name) => Card(
+    margin: EdgeInsets.zero,
+    clipBehavior: Clip.antiAlias,
+    child: InkWell(
+      onTap: () => selectGroup(name),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Expanded(
+            child: LayoutBuilder(
+              builder: (_, bounds) => Center(
+                child: PlaylistCover(
+                  library: library,
+                  name: name,
+                  size: bounds.maxHeight,
+                ),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    name,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                playlistDeleteButton(name),
+              ],
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
 
   Future<void> deletePlaylist(String name) async {
     final confirmed = await showDialog<bool>(
@@ -1364,7 +1470,7 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
       ),
     );
     if (confirmed != true || !mounted) return;
-    setState(() => group = null);
+    selectGroup(null);
     await library.deletePlaylist(name);
   }
 
@@ -1446,6 +1552,19 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
       const Text('Tu biblioteca, tu sonido, tu espacio.'),
       const SizedBox(height: 24),
       settingsSection('Apariencia', Icons.palette_outlined, [
+        ListTile(
+          title: const Text('Vista de listas'),
+          trailing: DropdownButton<bool>(
+            value: library.playlistGrid,
+            onChanged: (value) {
+              if (value != null) library.setPlaylistGrid(value);
+            },
+            items: const [
+              DropdownMenuItem(value: false, child: Text('Lista')),
+              DropdownMenuItem(value: true, child: Text('Tarjetas')),
+            ],
+          ),
+        ),
         SwitchListTile(
           secondary: const Icon(Icons.dark_mode_outlined),
           title: const Text('Tema oscuro'),
