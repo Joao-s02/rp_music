@@ -347,6 +347,87 @@ void main() {
       library.dispose();
     },
   );
+  testWidgets('una canción se añade a varias listas y abre sus detalles', (
+    tester,
+  ) async {
+    final library = LibraryController(MemoryStore(), MusicFiles())
+      ..loading = false
+      ..root = 'C:/music'
+      ..tracks = tracks;
+    library.playlists.addAll({'Primera': [], 'Segunda': []});
+    final audio = MusicHandler(player: FakePlayer());
+    await tester.pumpWidget(MusicApp(library: library, audio: audio));
+    await tester.pumpAndSettle();
+
+    final songMenu = find.descendant(
+      of: find.ancestor(of: find.text('Uno'), matching: find.byType(ListTile)),
+      matching: find.byTooltip('Opciones de canción'),
+    );
+    await tester.tap(songMenu);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Añadir a una lista'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Primera'));
+    await tester.pump();
+    await tester.tap(find.text('Segunda'));
+    await tester.pump();
+    await tester.tap(find.text('Crear lista'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), 'Tercera');
+    await tester.tap(find.widgetWithText(FilledButton, 'Crear'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(FilledButton, 'Añadir'));
+    await tester.pumpAndSettle();
+    expect(
+      library.playlists.keys,
+      containsAll(['Primera', 'Segunda', 'Tercera']),
+    );
+    expect(library.playlists.values, everyElement([tracks.first.id]));
+
+    await tester.tap(songMenu);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Detalles de la canción'));
+    await tester.pumpAndSettle();
+    expect(find.text('MP3'), findsOneWidget);
+
+    await tester.pumpWidget(const SizedBox.shrink());
+    await tester.runAsync(audio.close);
+    library.dispose();
+  });
+
+  testWidgets(
+    'desplazar canciones recoge la navegación y conserva el minirreproductor',
+    (tester) async {
+      final library = LibraryController(MemoryStore(), MusicFiles())
+        ..loading = false
+        ..root = 'C:/music'
+        ..tracks = List.generate(
+          60,
+          (i) => Track(id: 'C:/music/$i.mp3', title: 'Canción $i', folder: '.'),
+        );
+      final audio = MusicHandler(player: FakePlayer());
+      await tester.pumpWidget(MusicApp(library: library, audio: audio));
+      await tester.pumpAndSettle();
+
+      final navigation = find.byKey(
+        const ValueKey('library-bottom-navigation'),
+      );
+      expect(tester.getSize(navigation).height, greaterThan(0));
+      final songs = find.byType(ListView).first;
+      await tester.drag(songs, const Offset(0, -250));
+      await tester.pumpAndSettle();
+      expect(tester.getSize(navigation).height, 0);
+      expect(find.byType(PlayerPanel), findsOneWidget);
+      await tester.drag(songs, const Offset(0, 150));
+      await tester.pumpAndSettle();
+      expect(tester.getSize(navigation).height, greaterThan(0));
+
+      await tester.pumpWidget(const SizedBox.shrink());
+      await tester.runAsync(audio.close);
+      library.dispose();
+    },
+  );
+
   test(
     'cambios rápidos descartan selecciones obsoletas sin reproducirlas',
     () async {
@@ -367,6 +448,29 @@ void main() {
       await handler.close();
     },
   );
+  test(
+    'Android espera a que termine la carga nativa antes de reemplazarla',
+    () async {
+      final gate = Completer<void>();
+      final player = FakePlayer()..gate = gate;
+      final handler = MusicHandler(player: player, serializeNativeLoads: true);
+      final first = handler.select(tracks, 0);
+      await Future<void>.delayed(Duration.zero);
+      final second = handler.select(tracks, 1);
+      final third = handler.select(tracks, 2);
+      await Future<void>.delayed(Duration.zero);
+      expect(player.loaded.map((u) => u.pathSegments.last), ['uno.mp3']);
+      gate.complete();
+      await Future.wait([first, second, third]);
+      expect(player.loaded.map((u) => u.pathSegments.last), [
+        'uno.mp3',
+        'tres.mp3',
+      ]);
+      expect(player.played.map((u) => u.pathSegments.last), ['tres.mp3']);
+      await handler.close();
+    },
+  );
+
   test('pausar mientras carga impide el inicio automático posterior', () async {
     final player = FakePlayer()..gate = Completer<void>();
     final handler = MusicHandler(player: player);

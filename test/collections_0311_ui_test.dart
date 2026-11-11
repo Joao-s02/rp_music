@@ -75,6 +75,12 @@ void main() {
         await file.writeAsBytes(bytes!.buffer.asUint8List());
         image.dispose();
       });
+      await tester.binding.handlePopRoute();
+      await tester.pumpAndSettle();
+      expect(find.text('LISTA LOCAL'), findsNothing);
+      expect(find.text('Crear lista'), findsOneWidget);
+      await tester.tap(find.text('Noches favoritas').first);
+      await tester.pumpAndSettle();
       tester.platformDispatcher.textScaleFactorTestValue = 1.6;
       addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
       await tester.pumpAndSettle();

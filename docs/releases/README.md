@@ -4,6 +4,7 @@
 
 | Versión | Documentos |
 | --- | --- |
+| 0.3.19 | [Uso](../USO-0.3.19.md) · [Pruebas](../PRUEBAS-0.3.19.md) · [Cambios](../CAMBIOS-0.3.19.md) · [Notas](../RELEASE-0.3.19.md) |
 | 0.3.18 | [Uso](../USO-0.3.18.md) · [Pruebas](../PRUEBAS-0.3.18.md) · [Cambios](../CAMBIOS-0.3.18.md) · [Notas](../RELEASE-0.3.18.md) |
 | 0.3.16 | [Uso](../USO-0.3.16.md) · [Pruebas](../PRUEBAS-0.3.16.md) · [Cambios](../CAMBIOS-0.3.16.md) · [Notas](../RELEASE-0.3.16.md) |
 | 0.3.15 | [Uso](../USO-0.3.15.md) · [Pruebas](../PRUEBAS-0.3.15.md) · [Cambios](../CAMBIOS-0.3.15.md) · [Notas](../RELEASE-0.3.15.md) |

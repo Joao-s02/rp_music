@@ -14,6 +14,32 @@ void main() {
     expect(lyrics.activeAt(const Duration(seconds: 2)), 1);
     expect(lyrics.activeAt(Duration.zero), -1);
   });
+  test('LRC reconoce voces antes o después de las marcas', () {
+    final lyrics = Lyrics.parse(
+      'v1: [00:01.00]Una voz\n'
+      '[00:02.00] v2: <00:02.00>Otra <00:02.50>voz\n'
+      '[00:03.00]<00:03.00>V3: Tercera voz\n'
+      '[00:04.00]Sonido v2: en mitad de la frase',
+    );
+    expect(lyrics.lines.map((line) => line.voice), [1, 2, 3, null]);
+    expect(lyrics.lines.map((line) => line.rightAligned), [
+      false,
+      true,
+      false,
+      false,
+    ]);
+    expect(lyrics.lines.map((line) => line.text), [
+      'Una voz',
+      'Otra voz',
+      'Tercera voz',
+      'Sonido v2: en mitad de la frase',
+    ]);
+    expect(lyrics.lines[1].words.map((word) => word.time.inMilliseconds), [
+      2000,
+      2500,
+    ]);
+    expect(lyrics.lines[2].words.single.text, 'Tercera voz');
+  });
   test('texto sin marcas no se presenta sincronizado y limita tamaño', () {
     final lyrics = Lyrics.parse('Uno\nDos');
     expect(lyrics.lines, isEmpty);

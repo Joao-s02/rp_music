@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'dart:convert';
 import 'dart:io';
 
@@ -21,11 +22,15 @@ class LyricsView extends StatefulWidget {
     this.fetchLyrics,
     this.directory,
     this.controller,
+    this.loadCover,
+    this.allowRemoteCover,
   });
   final MusicHandler audio;
   final Future<String> Function()? fetchLyrics;
   final Future<Directory> Function()? directory;
   final LyricsController? controller;
+  final Future<Uint8List?> Function(String)? loadCover;
+  final bool Function(String)? allowRemoteCover;
   @override
   State<LyricsView> createState() => _LyricsViewState();
 }
@@ -50,6 +55,7 @@ class _LyricsViewState extends State<LyricsView> {
 
   bool scene = false, chrome = true, following = true;
   Lyrics? lyrics;
+  Future<Uint8List?>? cover;
   String? trackId, error;
   int generation = 0, active = -2;
   final scroll = ScrollController();
@@ -338,6 +344,9 @@ class _LyricsViewState extends State<LyricsView> {
       final item = snapshot.data;
       if (trackId != item?.id) {
         trackId = item?.id;
+        cover = item == null || item.id.startsWith('rpmusic-source:')
+            ? null
+            : widget.loadCover?.call(item.id);
         lyrics = null;
         fetching = false;
         error = null;
@@ -399,201 +408,230 @@ class _LyricsViewState extends State<LyricsView> {
                 ],
               ),
         body: SafeArea(
-          child: StreamBuilder<Duration>(
-            stream: widget.audio.player.positionStream,
-            initialData: widget.audio.player.position,
-            builder: (context, position) => LyricBackdrop(
-              position: position.data ?? Duration.zero,
-              child: scene && timed
-                  ? GestureDetector(
-                      behavior: HitTestBehavior.opaque,
-                      onTap: () => setState(() => chrome = !chrome),
-                      child: Stack(
-                        children: [
-                          Positioned.fill(
-                            child: LyricScene(
-                              lyrics: lyrics!,
-                              position: position.data ?? Duration.zero,
-                              title: item?.title ?? '',
-                              artist: item?.artist ?? '',
-                            ),
-                          ),
-                          if (chrome)
-                            Positioned(
-                              top: 8,
-                              left: 12,
-                              right: 12,
-                              child: Row(
-                                children: [
-                                  IconButton(
-                                    tooltip: 'Salir de escena',
-                                    onPressed: () =>
-                                        setState(() => scene = false),
-                                    icon: const Icon(
-                                      Icons.fullscreen_exit_rounded,
-                                    ),
-                                  ),
-                                  const Spacer(),
-                                  const Flexible(
-                                    child: Text(
-                                      'Toca el fondo para ocultar controles',
-                                      style: TextStyle(fontSize: 11),
-                                    ),
-                                  ),
-                                ],
+          child: FutureBuilder<Uint8List?>(
+            key: ValueKey(item?.id),
+            future: cover,
+            builder: (context, image) => StreamBuilder<Duration>(
+              stream: widget.audio.player.positionStream,
+              initialData: widget.audio.player.position,
+              builder: (context, position) => LyricBackdrop(
+                position: position.data ?? Duration.zero,
+                cover: image.data != null
+                    ? ResizeImage(MemoryImage(image.data!), width: 256)
+                    : switch (item?.artUri) {
+                        final uri? when uri.scheme == 'file' => ResizeImage(
+                          FileImage(File.fromUri(uri)),
+                          width: 256,
+                        ),
+                        final uri?
+                            when (uri.scheme == 'https' ||
+                                    uri.scheme == 'http') &&
+                                item?.extras?['sourceId'] is String &&
+                                widget.allowRemoteCover?.call(
+                                      item!.extras!['sourceId'] as String,
+                                    ) ==
+                                    true =>
+                          ResizeImage(NetworkImage(uri.toString()), width: 256),
+                        _ => null,
+                      },
+                child: scene && timed
+                    ? GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTap: () => setState(() => chrome = !chrome),
+                        child: Stack(
+                          children: [
+                            Positioned.fill(
+                              child: LyricScene(
+                                lyrics: lyrics!,
+                                position: position.data ?? Duration.zero,
+                                title: item?.title ?? '',
+                                artist: item?.artist ?? '',
                               ),
                             ),
-                          if (chrome)
-                            Positioned(
-                              bottom: 16,
-                              left: 0,
-                              right: 0,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  IconButton(
-                                    tooltip: 'Anterior',
-                                    onPressed: widget.audio.skipToPrevious,
-                                    icon: const Icon(Icons.skip_previous),
-                                  ),
-                                  StreamBuilder(
-                                    stream:
-                                        widget.audio.player.playerStateStream,
-                                    builder: (context, _) => IconButton.filled(
-                                      tooltip: widget.audio.player.playing
-                                          ? 'Pausar'
-                                          : 'Reproducir',
+                            if (chrome)
+                              Positioned(
+                                top: 8,
+                                left: 12,
+                                right: 12,
+                                child: Row(
+                                  children: [
+                                    IconButton(
+                                      tooltip: 'Salir de escena',
                                       onPressed: () =>
-                                          widget.audio.player.playing
-                                          ? widget.audio.pause()
-                                          : widget.audio.play(),
-                                      icon: Icon(
-                                        widget.audio.player.playing
-                                            ? Icons.pause
-                                            : Icons.play_arrow,
+                                          setState(() => scene = false),
+                                      icon: const Icon(
+                                        Icons.fullscreen_exit_rounded,
                                       ),
                                     ),
-                                  ),
-                                  IconButton(
-                                    tooltip: 'Siguiente',
-                                    onPressed: widget.audio.skipToNext,
-                                    icon: const Icon(Icons.skip_next),
-                                  ),
-                                ],
-                              ),
-                            ),
-                        ],
-                      ),
-                    )
-                  : Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(24, 12, 24, 8),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                item?.title ?? 'Sin canción',
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: Theme.of(context).textTheme.titleLarge
-                                    ?.copyWith(fontWeight: FontWeight.w800),
-                              ),
-                              Text(
-                                item?.artist ?? '',
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: Theme.of(context).textTheme.bodySmall,
-                              ),
-                              const SizedBox(height: 12),
-                              Text(
-                                timed
-                                    ? 'SINCRONIZADA · SIGUE LA MÚSICA'
-                                    : 'LETRAS',
-                                style: TextStyle(
-                                  fontSize: 10,
-                                  letterSpacing: 2,
-                                  color: Theme.of(context).colorScheme.primary,
+                                    const Spacer(),
+                                    const Flexible(
+                                      child: Text(
+                                        'Toca el fondo para ocultar controles',
+                                        style: TextStyle(fontSize: 11),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
-                            ],
-                          ),
+                            if (chrome)
+                              Positioned(
+                                bottom: 16,
+                                left: 0,
+                                right: 0,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    IconButton(
+                                      tooltip: 'Anterior',
+                                      onPressed: widget.audio.skipToPrevious,
+                                      icon: const Icon(Icons.skip_previous),
+                                    ),
+                                    StreamBuilder(
+                                      stream:
+                                          widget.audio.player.playerStateStream,
+                                      builder: (context, _) =>
+                                          IconButton.filled(
+                                            tooltip: widget.audio.player.playing
+                                                ? 'Pausar'
+                                                : 'Reproducir',
+                                            onPressed: () =>
+                                                widget.audio.player.playing
+                                                ? widget.audio.pause()
+                                                : widget.audio.play(),
+                                            icon: Icon(
+                                              widget.audio.player.playing
+                                                  ? Icons.pause
+                                                  : Icons.play_arrow,
+                                            ),
+                                          ),
+                                    ),
+                                    IconButton(
+                                      tooltip: 'Siguiente',
+                                      onPressed: widget.audio.skipToNext,
+                                      icon: const Icon(Icons.skip_next),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                          ],
                         ),
-                        if (error != null)
+                      )
+                    : Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
                           Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 24),
-                            child: Text(error!),
+                            padding: const EdgeInsets.fromLTRB(24, 12, 24, 8),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  item?.title ?? 'Sin canción',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: Theme.of(context).textTheme.titleLarge
+                                      ?.copyWith(fontWeight: FontWeight.w800),
+                                ),
+                                Text(
+                                  item?.artist ?? '',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: Theme.of(context).textTheme.bodySmall,
+                                ),
+                                const SizedBox(height: 12),
+                                Text(
+                                  timed
+                                      ? 'SINCRONIZADA · SIGUE LA MÚSICA'
+                                      : 'LETRAS',
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    letterSpacing: 2,
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .primary,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                        if (fetching) const LinearProgressIndicator(),
-                        Expanded(
-                          child: lyrics == null
-                              ? Center(
-                                  child: Padding(
+                          if (error != null)
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 24,
+                              ),
+                              child: Text(error!),
+                            ),
+                          if (fetching) const LinearProgressIndicator(),
+                          Expanded(
+                            child: lyrics == null
+                                ? Center(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(24),
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          const Text(
+                                            'Se muestran letras incrustadas o guardadas. Importa un LRC sincronizado o busca con tu extensión de letras.',
+                                          ),
+                                          const SizedBox(height: 16),
+                                          FilledButton.icon(
+                                            onPressed: item == null
+                                                ? null
+                                                : import,
+                                            icon: const Icon(
+                                              Icons.file_open_outlined,
+                                            ),
+                                            label: const Text('Importar letra'),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  )
+                                : timed
+                                ? synchronized(position.data ?? Duration.zero)
+                                : SingleChildScrollView(
                                     padding: const EdgeInsets.all(24),
                                     child: Column(
-                                      mainAxisSize: MainAxisSize.min,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.stretch,
                                       children: [
-                                        const Text(
-                                          'Se muestran letras incrustadas o guardadas. Importa un LRC sincronizado o busca con tu extensión de letras.',
+                                        Text(
+                                          'Esta copia no incluye tiempos de sincronización.',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodySmall,
                                         ),
-                                        const SizedBox(height: 16),
-                                        FilledButton.icon(
-                                          onPressed: item == null
-                                              ? null
-                                              : import,
-                                          icon: const Icon(
-                                            Icons.file_open_outlined,
+                                        if (canSearch)
+                                          Align(
+                                            alignment: Alignment.centerLeft,
+                                            child: TextButton.icon(
+                                              onPressed: fetching
+                                                  ? null
+                                                  : fetch,
+                                              icon: const Icon(
+                                                Icons.auto_awesome,
+                                              ),
+                                              label: const Text(
+                                                'Buscar sincronizada',
+                                              ),
+                                            ),
                                           ),
-                                          label: const Text('Importar letra'),
+                                        const SizedBox(height: 20),
+                                        SelectableText(
+                                          lyrics!.plain,
+                                          style: const TextStyle(
+                                            fontFamily: 'Plus Jakarta Sans',
+                                            fontSize: 25,
+                                            height: 1.6,
+                                            fontWeight: FontWeight.w600,
+                                          ),
                                         ),
                                       ],
                                     ),
                                   ),
-                                )
-                              : timed
-                              ? synchronized(position.data ?? Duration.zero)
-                              : SingleChildScrollView(
-                                  padding: const EdgeInsets.all(24),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.stretch,
-                                    children: [
-                                      Text(
-                                        'Esta copia no incluye tiempos de sincronización.',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodySmall,
-                                      ),
-                                      if (canSearch)
-                                        Align(
-                                          alignment: Alignment.centerLeft,
-                                          child: TextButton.icon(
-                                            onPressed: fetching ? null : fetch,
-                                            icon: const Icon(
-                                              Icons.auto_awesome,
-                                            ),
-                                            label: const Text(
-                                              'Buscar sincronizada',
-                                            ),
-                                          ),
-                                        ),
-                                      const SizedBox(height: 20),
-                                      SelectableText(
-                                        lyrics!.plain,
-                                        style: const TextStyle(
-                                          fontFamily: 'Plus Jakarta Sans',
-                                          fontSize: 25,
-                                          height: 1.6,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                        ),
-                      ],
-                    ),
+                          ),
+                        ],
+                      ),
+              ),
             ),
           ),
         ),

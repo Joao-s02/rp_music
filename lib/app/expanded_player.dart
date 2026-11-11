@@ -1,7 +1,11 @@
+import 'dart:io';
+
+import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:audio_service/audio_service.dart';
 
 import '../playback/music_handler.dart';
+import '../domain/track.dart';
 import 'library_controller.dart';
 import 'music_app.dart' show Artwork;
 import 'scrolling_title.dart';
@@ -26,6 +30,32 @@ class ExpandedPlayer extends StatefulWidget {
 }
 
 class _ExpandedPlayerState extends State<ExpandedPlayer> {
+  final outputRoutes = Platform.isAndroid
+      ? const EventChannel('rp_music/audio_output/route')
+            .receiveBroadcastStream()
+      : null;
+
+  Future<void> showAudioOutput() async {
+    var opened = false;
+    try {
+      opened =
+          await const MethodChannel('rp_music/audio_output')
+              .invokeMethod<bool>('show') ??
+          false;
+    } on PlatformException {
+      // The system may decline to show a dialog when the app loses focus.
+    } on MissingPluginException {
+      // This version of Android does not expose the system selector.
+    }
+    if (!opened && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('El selector de Android no está disponible.'),
+        ),
+      );
+    }
+  }
+
   MusicHandler get audio => widget.audio;
   LibraryController get library => widget.library;
   String time(int ms) =>
@@ -58,59 +88,6 @@ class _ExpandedPlayerState extends State<ExpandedPlayer> {
       ),
     ),
   );
-  void details(MediaItem? item) {
-    final track = audio.tracks.where((t) => t.id == item?.id).firstOrNull;
-    showModalBottomSheet<void>(
-      context: context,
-      showDragHandle: true,
-      isScrollControlled: true,
-      builder: (context) => SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(
-                'Detalles de la canción',
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-              const SizedBox(height: 16),
-              for (final entry in <String, String>{
-                'Título': item?.title ?? 'Sin canción',
-                'Artistas': track?.artists.join(', ') ?? item?.artist ?? '—',
-                'Álbum': item?.album ?? '—',
-                'Fuente':
-                    item?.extras?['sourceName'] as String? ?? 'Audio local',
-                'Formato': track?.format ?? 'Audio',
-                if (item?.duration != null)
-                  'Duración': time(item!.duration!.inMilliseconds),
-                if (track != null && track.size > 0)
-                  'Tamaño': '${(track.size / 1048576).toStringAsFixed(1)} MB',
-                if (track != null && track.sourceId == null)
-                  'Ubicación': track.id,
-              }.entries)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 14),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        entry.key,
-                        style: Theme.of(context).textTheme.labelMedium,
-                      ),
-                      const SizedBox(height: 4),
-                      SelectableText(entry.value),
-                    ],
-                  ),
-                ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) => ListenableBuilder(
     listenable: library,
@@ -222,9 +199,35 @@ class _ExpandedPlayerState extends State<ExpandedPlayer> {
                 Expanded(
                   child: Align(
                     alignment: Alignment.centerRight,
-                    child: badge(
-                      local ? Icons.graphic_eq : Icons.cloud_outlined,
-                      source,
+                    child: StreamBuilder<dynamic>(
+                      stream: outputRoutes,
+                      builder: (context, snapshot) {
+                        final route = snapshot.data;
+                        if (route is! Map) {
+                          return badge(
+                            local ? Icons.graphic_eq : Icons.cloud_outlined,
+                            source,
+                          );
+                        }
+                        final name = route['name'] as String? ?? '';
+                        final icon = switch (route['icon']) {
+                          'phone' => Icons.smartphone,
+                          'headphones' => Icons.headphones,
+                          'bluetooth' => Icons.bluetooth_audio,
+                          'tv' => Icons.tv,
+                          _ => Icons.speaker_outlined,
+                        };
+                        return ActionChip(
+                          tooltip: 'Cambiar salida de audio',
+                          avatar: Icon(icon, size: 18),
+                          label: Text(
+                            name.isEmpty ? 'Salida de audio' : name,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          onPressed: showAudioOutput,
+                        );
+                      },
                     ),
                   ),
                 ),
@@ -321,7 +324,7 @@ class _ExpandedPlayerState extends State<ExpandedPlayer> {
                     color: colors.primary,
                   ),
                   label: const Text('Detalles'),
-                  onPressed: () => details(item),
+                  onPressed: () => showSongDetails(context, track, item: item),
                 ),
                 _PlayerAction(
                   dense: dense,
@@ -334,6 +337,13 @@ class _ExpandedPlayerState extends State<ExpandedPlayer> {
                             builder: (_) => LyricsView(
                               audio: audio,
                               controller: library.lyrics,
+                              loadCover: library.files.thumbnail,
+                              allowRemoteCover: (id) =>
+                                  library.programs?.allowed(
+                                    id,
+                                    'network.http',
+                                  ) ==
+                                  true,
                               fetchLyrics:
                                   track?.sourceId != null &&
                                       library.programs != null
@@ -528,6 +538,70 @@ class _PlayerAction extends StatelessWidget {
                 ),
             ],
           ),
+        ),
+      ),
+    ),
+  );
+}
+
+Future<void> showSongDetails(
+  BuildContext context,
+  Track? track, {
+  MediaItem? item,
+}) async {
+  final duration = item?.duration?.inMilliseconds ?? track?.durationMs ?? 0;
+  return showModalBottomSheet<void>(
+    context: context,
+    showDragHandle: true,
+    isScrollControlled: true,
+    builder: (context) => SafeArea(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              'Detalles de la canción',
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            const SizedBox(height: 16),
+            for (final entry in <String, String>{
+              'Título': item?.title ?? track?.title ?? 'Sin canción',
+              'Artistas': track?.artists.join(', ') ?? item?.artist ?? '—',
+              'Álbum': item?.album ?? track?.album ?? '—',
+              'Fuente':
+                  item?.extras?['sourceName'] as String? ??
+                  track?.sourceName ??
+                  'Audio local',
+              'Formato': track?.format ?? 'Audio',
+              if (duration > 0)
+                'Duración':
+                    '${duration ~/ 60000}:${(duration ~/ 1000 % 60).toString().padLeft(2, '0')}',
+              if (track != null && track.trackNumber > 0)
+                'Pista': '${track.trackNumber}',
+              if (track != null && track.discNumber > 0)
+                'Disco': '${track.discNumber}',
+              if (track != null && track.size > 0)
+                'Tamaño': '${(track.size / 1048576).toStringAsFixed(1)} MB',
+              if (track != null && track.sourceId == null)
+                'Ubicación': track.id,
+            }.entries)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 14),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      entry.key,
+                      style: Theme.of(context).textTheme.labelMedium,
+                    ),
+                    const SizedBox(height: 4),
+                    SelectableText(entry.value),
+                  ],
+                ),
+              ),
+          ],
         ),
       ),
     ),

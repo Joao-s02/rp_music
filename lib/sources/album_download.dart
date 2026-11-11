@@ -1,13 +1,13 @@
 import 'dart:io';
 import 'dart:async';
 
-import 'package:file_picker/file_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../domain/track.dart';
 import 'download_context.dart';
+import 'download_folder.dart';
 import 'download_enrichment.dart';
 import 'extension_source_service.dart';
 import 'source_audio_transfer.dart';
@@ -70,16 +70,9 @@ class AlbumDownload extends ChangeNotifier {
     running = true;
     notifyListeners();
     try {
-      const channel = MethodChannel('rp_music/library');
-      final folder =
-          destination ??
-          (chooseFolder != null
-              ? await chooseFolder!()
-              : Platform.isAndroid
-              ? await channel.invokeMethod<String>('chooseDownloadFolder')
-              : await FilePicker.getDirectoryPath(
-                  dialogTitle: 'Carpeta para el álbum',
-                ));
+      final folder = chooseFolder != null
+          ? destination ?? await chooseFolder!()
+          : await DownloadFolder.choose();
       if (folder == null || cancelled) {
         cancelled = true;
         return;
@@ -168,47 +161,17 @@ class AlbumDownload extends ChangeNotifier {
           final safe = downloadName('${album.album} - ${enriched.title}');
           final name =
               '${(i + 1).toString().padLeft(2, '0')} - ${safe.substring(0, safe.length.clamp(0, 140))}.$extension';
-          if (Platform.isAndroid) {
-            await channel.invokeMethod<String>('writeDownload', {
-              'folder': folder,
-              'name': name,
-              if (enriched.file != null)
-                'path': enriched.file!.path
-              else
-                'bytes': enriched.bytes,
-              'mime': enriched.mime,
-            });
-          } else {
-            var target = File('$folder/$name');
-            var suffix = 1;
-            while (await target.exists()) {
-              target = File(
-                '$folder/${name.substring(0, name.lastIndexOf('.'))} (${suffix++}).$extension',
-              );
-            }
-            final temporary = File(
-              '${target.path}.${DateTime.now().microsecondsSinceEpoch}.part',
-            );
-            try {
-              if (enriched.file != null) {
-                final sink = temporary.openWrite();
-                try {
-                  await sink.addStream(enriched.file!.openRead());
-                  await sink.flush();
-                } finally {
-                  await sink.close();
-                }
-              } else {
-                await temporary.writeAsBytes(enriched.bytes, flush: true);
-              }
-              if (stopped()) {
-                cancelled = true;
-                break;
-              }
-              await temporary.rename(target.path);
-            } finally {
-              if (await temporary.exists()) await temporary.delete();
-            }
+          final written = await DownloadFolder.write(
+            folder,
+            name: name,
+            mime: enriched.mime,
+            bytes: enriched.bytes,
+            file: enriched.file,
+            cancelled: stopped,
+          );
+          if (!written) {
+            cancelled = true;
+            break;
           }
           savedIndices.add(i);
           saved++;

@@ -1,10 +1,9 @@
-import 'package:file_picker/file_picker.dart';
-
 import '../domain/track.dart';
 import 'extension_source_service.dart';
 import 'source_audio_transfer.dart';
 import 'download_enrichment.dart';
 import 'download_context.dart';
+import 'download_folder.dart';
 
 class SourceDownload {
   static Future<({bool saved, String? notice})> save(
@@ -14,6 +13,20 @@ class SourceDownload {
   }) async {
     final id = track.sourceId;
     final package = service.programs.installed[id]?.package;
+    bool stopped() =>
+        id == null ||
+        package == null ||
+        !service.available(id) ||
+        service.programs.installed[id]?.package != package ||
+        !service.programs.allowed(id, 'storage.download');
+    if (stopped()) {
+      throw const FormatException('Fuente desactivada o permiso retirado.');
+    }
+    final folder = await DownloadFolder.choose();
+    if (folder == null) return (saved: false, notice: null);
+    if (stopped()) {
+      throw const FormatException('Fuente desactivada o permiso retirado.');
+    }
     final bytes = await SourceAudioTransfer.receive(track, service);
     final enriched = await DownloadEnrichment.apply(
       track,
@@ -21,14 +34,8 @@ class SourceDownload {
       bytes.$2,
       service,
       albumContext: albumContext,
+      cancelled: stopped,
     );
-    if (id == null ||
-        package == null ||
-        !service.available(id) ||
-        service.programs.installed[id]?.package != package ||
-        !service.programs.allowed(id, 'storage.download')) {
-      throw const FormatException('Fuente desactivada o permiso retirado.');
-    }
     final name = enriched.title
         .replaceAll(RegExp(r'[<>:"/\\|?*\x00-\x1f]'), '_')
         .trim();
@@ -37,13 +44,17 @@ class SourceDownload {
         : enriched.mime.contains('mpeg')
         ? 'mp3'
         : 'm4a';
-    final path = await FilePicker.saveFile(
-      dialogTitle: 'Guardar canción',
-      fileName:
+    final written = await DownloadFolder.write(
+      folder,
+      name:
           '${name.isEmpty ? 'Canción' : name.substring(0, name.length.clamp(0, 100))}.$extension',
+      mime: enriched.mime,
       bytes: enriched.bytes,
-      mimeType: enriched.mime,
+      cancelled: stopped,
     );
-    return (saved: path != null, notice: enriched.notice);
+    if (!written) {
+      throw const FormatException('Fuente desactivada o permiso retirado.');
+    }
+    return (saved: true, notice: enriched.notice);
   }
 }

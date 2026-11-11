@@ -46,6 +46,7 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
   Future<void> _operations = Future.value();
   int _generation = 0;
   bool _loading = false;
+  final bool _serializeNativeLoads;
   Completer<Duration?>? _pendingLoadFailure;
   void _interruptPendingLoad() {
     final pending = _pendingLoadFailure;
@@ -85,7 +86,9 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
     this.sessionStore,
     this.artworkLoader,
     this.onEmptyPlay,
-  }) : player = player ?? createNativeAudioPlayer() {
+    bool? serializeNativeLoads,
+  }) : _serializeNativeLoads = serializeNativeLoads ?? Platform.isAndroid,
+       player = player ?? createNativeAudioPlayer() {
     if (sessionStore != null) {
       _checkpointTimer = Timer.periodic(const Duration(seconds: 5), (_) {
         if (this.player.playing && !_loading) unawaited(saveSession());
@@ -234,7 +237,7 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
       'Selección de pista: $selected/${tracks.length}; autoplay=$autoplay',
     );
     final generation = ++_generation;
-    _interruptPendingLoad();
+    if (!_serializeNativeLoads) _interruptPendingLoad();
     _loading = true;
     _playIntent = autoplay;
     final operation = _operations.then((_) async {
@@ -272,21 +275,23 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
         }
         loadWatch.reset();
         final failure = Completer<Duration?>();
-        _pendingLoadFailure = failure;
+        if (!_serializeNativeLoads) _pendingLoadFailure = failure;
         Duration? duration;
         try {
-          final loading = Future.any<Duration?>([
-            player.setAudioSource(
-              online?.source ??
-                  AudioSource.uri(
-                    track.id.startsWith('content://')
-                        ? Uri.parse(track.id)
-                        : Uri.file(track.id),
-                  ),
-              initialPosition: initialPosition,
-            ),
-            failure.future,
-          ]);
+          // Android emits an unscoped error when a native load is aborted.
+          // Let the current load settle before starting its replacement.
+          final nativeLoad = player.setAudioSource(
+            online?.source ??
+                AudioSource.uri(
+                  track.id.startsWith('content://')
+                      ? Uri.parse(track.id)
+                      : Uri.file(track.id),
+                ),
+            initialPosition: initialPosition,
+          );
+          final loading = _serializeNativeLoads
+              ? nativeLoad
+              : Future.any<Duration?>([nativeLoad, failure.future]);
           duration = await (Platform.isWindows
               ? loading.timeout(const Duration(seconds: 30))
               : loading);

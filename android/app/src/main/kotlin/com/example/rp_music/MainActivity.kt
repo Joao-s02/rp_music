@@ -21,9 +21,23 @@ class MainActivity : AudioServiceActivity() {
     private var downloadPicker: MethodChannel.Result? = null
     private var notificationRequest: MethodChannel.Result? = null
     private val worker = Executors.newSingleThreadExecutor()
+    private val artworkWorker = Executors.newFixedThreadPool(2)
+    private val downloadPreferences by lazy { getSharedPreferences("downloads", MODE_PRIVATE) }
+
+    private fun canWriteDownloads(uri: Uri): Boolean {
+        if (contentResolver.persistedUriPermissions.none { it.uri == uri && it.isWritePermission }) return false
+        val parent = android.provider.DocumentsContract.buildDocumentUriUsingTree(
+            uri, android.provider.DocumentsContract.getTreeDocumentId(uri)
+        )
+        return contentResolver.query(parent, arrayOf(android.provider.DocumentsContract.Document.COLUMN_FLAGS),
+            null, null, null)?.use {
+            it.moveToFirst() && (it.getInt(0) and android.provider.DocumentsContract.Document.FLAG_DIR_SUPPORTS_CREATE) != 0
+        } == true
+    }
 
     override fun configureFlutterEngine(engine: FlutterEngine) {
         super.configureFlutterEngine(engine)
+        registerAudioOutput(this, engine.dartExecutor.binaryMessenger)
         val mediaTools = MediaToolsBridge(this, worker)
         MethodChannel(engine.dartExecutor.binaryMessenger, "rp_music/media_tools").setMethodCallHandler(mediaTools::handle)
         val updates = AppUpdates(this, worker)
@@ -137,7 +151,7 @@ class MainActivity : AudioServiceActivity() {
                     "ensureWritable" -> {
                         val root = Uri.parse(call.argument<String>("root")!!)
                         if (contentResolver.persistedUriPermissions.any { it.uri == root && it.isWritePermission }) result.success(true)
-                        else if (writeRequest != null || picker != null) result.error("busy", "Selector abierto", null)
+                        else if (writeRequest != null || picker != null || downloadPicker != null) result.error("busy", "Selector abierto", null)
                         else {
                             writeRequest = result; writeRoot = root
                             try {
@@ -152,7 +166,7 @@ class MainActivity : AudioServiceActivity() {
                         }
                     }
                     "chooseRoot" -> {
-                        if (picker != null || writeRequest != null) result.error("busy", "Selector abierto", null)
+                        if (picker != null || writeRequest != null || downloadPicker != null) result.error("busy", "Selector abierto", null)
                         else {
                             picker = result
                             try {
@@ -167,8 +181,13 @@ class MainActivity : AudioServiceActivity() {
                             }
                         }
                     }
+                    "savedDownloadFolder" -> worker.execute {
+                        val uri = downloadPreferences.getString("folder", null)?.let(Uri::parse)
+                        val valid = uri != null && runCatching { canWriteDownloads(uri) }.getOrDefault(false)
+                        runOnUiThread { result.success(if (valid) uri.toString() else null) }
+                    }
                     "chooseDownloadFolder" -> {
-                        if (downloadPicker != null) result.error("busy", "Selector abierto", null)
+                        if (downloadPicker != null || picker != null || writeRequest != null) result.error("busy", "Selector abierto", null)
                         else {
                             downloadPicker = result
                             try { startActivityForResult(Intent(Intent.ACTION_OPEN_DOCUMENT_TREE).apply {
@@ -236,11 +255,26 @@ class MainActivity : AudioServiceActivity() {
                             runOnUiThread { result.success(null) }
                         } finally { retriever.release() }
                     }
-                    "artwork" -> worker.execute {
+                    "artwork" -> artworkWorker.execute {
                         val retriever = MediaMetadataRetriever()
                         try {
                             retriever.setDataSource(this, Uri.parse(call.argument<String>("id")!!))
-                            val bytes = retriever.embeddedPicture
+                            val original = retriever.embeddedPicture
+                            val bytes = if (original != null && call.argument<Boolean>("thumbnail") == true) {
+                                val options = android.graphics.BitmapFactory.Options().apply { inJustDecodeBounds = true }
+                                android.graphics.BitmapFactory.decodeByteArray(original, 0, original.size, options)
+                                var sample = 1
+                                while (maxOf(options.outWidth, options.outHeight) / sample > 256) sample *= 2
+                                options.inJustDecodeBounds = false
+                                options.inSampleSize = sample
+                                android.graphics.BitmapFactory.decodeByteArray(original, 0, original.size, options)?.let { bitmap ->
+                                    try {
+                                        java.io.ByteArrayOutputStream().use { output ->
+                                            if (bitmap.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, output)) output.toByteArray() else null
+                                        }
+                                    } finally { bitmap.recycle() }
+                                }
+                            } else original
                             runOnUiThread { result.success(bytes) }
                         } catch (e: Exception) {
                             runOnUiThread { result.success(null) }
@@ -249,6 +283,11 @@ class MainActivity : AudioServiceActivity() {
                     else -> result.notImplemented()
                 }
             }
+    }
+
+    override fun onDestroy() {
+        artworkWorker.shutdown()
+        super.onDestroy()
     }
 
     private fun notificationsEnabled(): Boolean = if (Build.VERSION.SDK_INT >= 24) {
@@ -273,6 +312,8 @@ class MainActivity : AudioServiceActivity() {
             if (resultCode != Activity.RESULT_OK || uri == null) { pending.success(null); return }
             try {
                 contentResolver.takePersistableUriPermission(uri, data!!.flags and (Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION))
+                check(contentResolver.persistedUriPermissions.any { it.uri == uri && it.isWritePermission })
+                downloadPreferences.edit().putString("folder", uri.toString()).apply()
                 pending.success(uri.toString())
             } catch (e: Exception) { pending.error("permission", "No se pudo conservar acceso de descarga", null) }
             return

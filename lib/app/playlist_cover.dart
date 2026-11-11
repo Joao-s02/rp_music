@@ -50,17 +50,38 @@ Future<void> choosePlaylistCover(
     ui.ImageDescriptor? descriptor;
     ui.Codec? codec;
     ui.Image? image;
+    ui.Image? square;
     try {
       descriptor = await ui.ImageDescriptor.encoded(buffer);
       if (descriptor.width > 12000 || descriptor.height > 12000) {
         throw const FormatException('La imagen tiene demasiados píxeles.');
       }
+      final landscape = descriptor.width >= descriptor.height;
       codec = await descriptor.instantiateCodec(
-        targetWidth: 512,
-        targetHeight: 512,
+        targetWidth: !landscape && descriptor.width > 512 ? 512 : null,
+        targetHeight: landscape && descriptor.height > 512 ? 512 : null,
       );
       image = (await codec.getNextFrame()).image;
-      final png = await image.toByteData(format: ui.ImageByteFormat.png);
+      final side = image.width < image.height ? image.width : image.height;
+      final recorder = ui.PictureRecorder();
+      Canvas(recorder).drawImageRect(
+        image,
+        Rect.fromLTWH(
+          (image.width - side) / 2,
+          (image.height - side) / 2,
+          side.toDouble(),
+          side.toDouble(),
+        ),
+        const Rect.fromLTWH(0, 0, 512, 512),
+        Paint()..filterQuality = FilterQuality.medium,
+      );
+      final picture = recorder.endRecording();
+      try {
+        square = await picture.toImage(512, 512);
+      } finally {
+        picture.dispose();
+      }
+      final png = await square.toByteData(format: ui.ImageByteFormat.png);
       final directory = Directory(
         '${library.store.directory.path}/playlist_covers',
       );
@@ -71,6 +92,7 @@ Future<void> choosePlaylistCover(
       await file.writeAsBytes(png!.buffer.asUint8List(), flush: true);
       await library.setPlaylistCover(name, file.path);
     } finally {
+      square?.dispose();
       image?.dispose();
       codec?.dispose();
       descriptor?.dispose();

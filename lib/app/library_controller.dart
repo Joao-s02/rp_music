@@ -61,6 +61,41 @@ class LibraryController extends ChangeNotifier {
     value.addListener(notifyListeners);
   }
 
+  final _thumbnails = <(String, int), Future<Uint8List?>>{};
+  final _thumbnailSizes = <(String, int), int>{};
+  int _thumbnailBytes = 0;
+
+  Future<Uint8List?> thumbnail(String id, int modifiedMs) {
+    final key = (id, modifiedMs);
+    final existing = _thumbnails.remove(key);
+    if (existing != null) {
+      _thumbnails[key] = existing;
+      return existing;
+    }
+    final request = _readThumbnail(key);
+    _thumbnails[key] = request;
+    return request;
+  }
+
+  Future<Uint8List?> _readThumbnail((String, int) key) async {
+    try {
+      final bytes = await files.thumbnail(key.$1);
+      final size = bytes?.length ?? 0;
+      _thumbnailSizes[key] = size;
+      _thumbnailBytes += size;
+      while (_thumbnailSizes.length > 192 ||
+          _thumbnailBytes > 12 * 1024 * 1024) {
+        final oldest = _thumbnails.keys.firstWhere(_thumbnailSizes.containsKey);
+        _thumbnails.remove(oldest);
+        _thumbnailBytes -= _thumbnailSizes.remove(oldest)!;
+      }
+      return bytes;
+    } catch (_) {
+      _thumbnails.remove(key);
+      return null;
+    }
+  }
+
   bool automaticPlaylist(String name) =>
       playlistMeta[name]?['owner'] is String &&
       playlistMeta[name]?['rule'] is Map;
@@ -444,6 +479,35 @@ class LibraryController extends ChangeNotifier {
     await persist();
     notifyListeners();
     return playlists[name]!.length - before;
+  }
+
+  Future<void> addSongToPlaylists(
+    String id,
+    Set<String> names, {
+    String? newName,
+  }) async {
+    if (!tracks.any((track) => track.id == id) &&
+        !remoteTracks.containsKey(id)) {
+      throw const FormatException('La canción ya no está disponible.');
+    }
+    if (names.any(
+      (name) => !playlists.containsKey(name) || automaticPlaylist(name),
+    )) {
+      throw const FormatException('Una de las listas ya no está disponible.');
+    }
+    if (newName != null &&
+        (newName.trim().isEmpty ||
+            newName.length > 80 ||
+            playlists.containsKey(newName))) {
+      throw const FormatException('Elige un nombre nuevo para la lista.');
+    }
+    for (final name in names) {
+      final ids = playlists[name]!;
+      if (!ids.contains(id)) ids.add(id);
+    }
+    if (newName != null) playlists[newName] = [id];
+    await persist();
+    notifyListeners();
   }
 
   Future<void> addToPlaylist(String name, String id) async {

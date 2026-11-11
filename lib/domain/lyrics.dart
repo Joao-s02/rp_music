@@ -6,11 +6,14 @@ class LyricLine {
     this.text, {
     this.words = const [],
     this.leadingText = '',
+    this.voice,
   });
   final Duration time;
   final String text;
   final List<LyricWord> words;
   final String leadingText;
+  final int? voice;
+  bool get rightAligned => voice?.isEven ?? false;
 }
 
 class LyricWord {
@@ -34,11 +37,23 @@ class Lyrics {
       caseSensitive: false,
     ).firstMatch(text);
     final offset = int.tryParse(offsetMatch?.group(1) ?? '') ?? 0;
+    final voiceMark = RegExp(r'\s*v([1-9]\d*)\s*:\s*', caseSensitive: false);
+    final wordStamp = RegExp(r'<(\d{1,3}):([0-5]\d)(?:[.:](\d{1,3}))?>');
     for (final row in text.split(RegExp(r'\r?\n'))) {
       final matches = stamp.allMatches(row).toList();
       if (matches.isEmpty) continue;
-      final content = row.substring(matches.last.end).trim();
-      final wordStamp = RegExp(r'<(\d{1,3}):([0-5]\d)(?:[.:](\d{1,3}))?>');
+      var content = row.substring(matches.last.end).trim();
+      final initialWordStamp = wordStamp.matchAsPrefix(content);
+      final markOffset = initialWordStamp?.end ?? 0;
+      final contentVoice = voiceMark.matchAsPrefix(content, markOffset);
+      final voice = contentVoice ?? voiceMark.matchAsPrefix(row);
+      if (contentVoice != null) {
+        content = content.replaceRange(
+          contentVoice.start,
+          contentVoice.end,
+          '',
+        );
+      }
       final wordMatches = wordStamp.allMatches(content).toList();
       final words = content.replaceAll(wordStamp, '').trim();
       final timedWords = <LyricWord>[];
@@ -75,6 +90,7 @@ class Lyrics {
             Duration(milliseconds: ms < 0 ? 0 : ms),
             words,
             words: timedWords,
+            voice: int.tryParse(voice?.group(1) ?? ''),
             leadingText: timedWords.isNotEmpty
                 ? content.substring(0, wordMatches.first.start)
                 : '',

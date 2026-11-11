@@ -5,12 +5,14 @@ import 'album_detail_view.dart';
 import 'track_swipe.dart';
 import 'collection_header.dart';
 import '../sources/artist_portraits.dart';
+import '../sources/download_folder.dart';
 
 import 'dart:async';
 import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart' show ScrollDirection;
 
 import '../domain/track.dart';
 import '../sources/extension_source_service.dart';
@@ -87,6 +89,7 @@ class MusicHome extends StatefulWidget {
 
 class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
   int page = 0;
+  bool hideNavigation = false;
   String? sourceDestination;
   int view = 0;
   String query = '';
@@ -168,6 +171,7 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
 
   void navigate(int value) => setState(() {
     searchFocus.unfocus();
+    hideNavigation = false;
     final entries = extensionDestinations(
       library.programs,
       Platform.operatingSystem,
@@ -197,6 +201,8 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
       final selectedIndex = selectedContribution == null ? page : 3;
       final desktop = size.maxWidth >= 850;
       final keyboard = MediaQuery.viewInsetsOf(context).bottom > 0;
+      final navigationHidden =
+          hideNavigation && page == 0 && view == 0 && sourceDestination == null;
       return Scaffold(
         body: SafeArea(
           child: Row(
@@ -285,6 +291,7 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
                               ),
                               onPressed: () {
                                 setState(() {
+                                  hideNavigation = false;
                                   searchExpanded = !searchExpanded;
                                   if (!searchExpanded) {
                                     debounce?.cancel();
@@ -303,7 +310,7 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
                                 }
                               },
                             ),
-                          if (page == 0 && sourceDestination == null && desktop)
+                          if (page == 0 && sourceDestination == null)
                             IconButton(
                               onPressed:
                                   library.scanning || library.root == null
@@ -432,17 +439,35 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
         ),
         bottomNavigationBar: desktop || keyboard
             ? null
-            : NavigationBar(
-                labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-                selectedIndex: selectedIndex,
-                onDestinationSelected: navigate,
-                destinations: [
-                  for (var i = 0; i < labels.length; i++)
-                    NavigationDestination(
-                      icon: Icon(icons[i]),
-                      label: labels[i],
+            : ClipRect(
+                child: AnimatedAlign(
+                  key: const ValueKey('library-bottom-navigation'),
+                  alignment: Alignment.topCenter,
+                  heightFactor: navigationHidden ? 0 : 1,
+                  duration: MediaQuery.disableAnimationsOf(context)
+                      ? Duration.zero
+                      : const Duration(milliseconds: 230),
+                  curve: Curves.easeInOut,
+                  child: IgnorePointer(
+                    ignoring: navigationHidden,
+                    child: ExcludeSemantics(
+                      excluding: navigationHidden,
+                      child: NavigationBar(
+                        labelBehavior:
+                            NavigationDestinationLabelBehavior.alwaysShow,
+                        selectedIndex: selectedIndex,
+                        onDestinationSelected: navigate,
+                        destinations: [
+                          for (var i = 0; i < labels.length; i++)
+                            NavigationDestination(
+                              icon: Icon(icons[i]),
+                              label: labels[i],
+                            ),
+                        ],
+                      ),
                     ),
-                ],
+                  ),
+                ),
               ),
       );
     },
@@ -613,31 +638,6 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
     }
     return Column(
       children: [
-        if (MediaQuery.viewInsetsOf(context).bottom == 0)
-          Container(
-            margin: const EdgeInsets.fromLTRB(24, 8, 24, 0),
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surfaceContainerHigh,
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: ListTile(
-              leading: Icon(
-                Icons.folder_special_outlined,
-                color: Theme.of(context).colorScheme.primary,
-              ),
-              title: const Text('Música local'),
-              subtitle: Text(
-                '${library.root} · ${library.tracks.length} pistas',
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-              trailing: IconButton(
-                tooltip: 'Escanear',
-                onPressed: library.scanning ? null : () => library.refresh(),
-                icon: const Icon(Icons.sync),
-              ),
-            ),
-          ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: SizedBox(
@@ -657,6 +657,7 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
                       label: Text(label),
                       selected: view == i,
                       onSelected: (_) => setState(() {
+                        hideNavigation = false;
                         view = i;
                         group = null;
                       }),
@@ -776,20 +777,25 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
     }
   }
 
-  Widget albumTrackMenu(Track track) => track.sourceId != null
-      ? const SizedBox(width: 8)
-      : PopupMenuButton<String>(
-          tooltip: 'Opciones de canción',
-          onSelected: (value) {
-            if (value == 'favorite') {
+  Widget albumTrackMenu(Track track) => trackMenu(track, favorite: true);
+
+  Widget trackMenu(Track track, {bool favorite = false}) =>
+      PopupMenuButton<String>(
+        tooltip: 'Opciones de canción',
+        onSelected: (value) {
+          switch (value) {
+            case 'favorite':
               library.toggleFavorite(track.id);
-            } else if (value == 'delete') {
+            case 'playlist':
+              addSongToPlaylists(track);
+            case 'details':
+              showSongDetails(context, track);
+            case 'delete':
               deleteTrack(track);
-            } else {
-              library.addToPlaylist(value.substring(5), track.id);
-            }
-          },
-          itemBuilder: (_) => [
+          }
+        },
+        itemBuilder: (_) => [
+          if (favorite && track.sourceId == null)
             PopupMenuItem(
               value: 'favorite',
               child: Text(
@@ -798,17 +804,110 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
                     : 'Añadir a favoritos',
               ),
             ),
-            for (final name in library.playlists.keys.where(
-              (name) => !library.automaticPlaylist(name),
-            ))
-              PopupMenuItem(value: 'list:$name', child: Text('Añadir a $name')),
+          if (track.sourceId == null ||
+              library.remoteTracks.containsKey(track.id))
+            const PopupMenuItem(
+              value: 'playlist',
+              child: Text('Añadir a una lista'),
+            ),
+          const PopupMenuItem(
+            value: 'details',
+            child: Text('Detalles de la canción'),
+          ),
+          if (track.sourceId == null)
             PopupMenuItem(
               value: 'delete',
               enabled: !library.scanning && !library.deleting,
               child: const Text('Eliminar del dispositivo'),
             ),
+        ],
+      );
+
+  Future<void> addSongToPlaylists(Track track) async {
+    final names = library.playlists.keys
+        .where((name) => !library.automaticPlaylist(name))
+        .toList();
+    final selected = <String>{};
+    String? newName;
+    String? validation;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, update) => AlertDialog(
+          title: const Text('Añadir a una lista'),
+          scrollable: true,
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              for (final name in names)
+                CheckboxListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: Text(name),
+                  value:
+                      selected.contains(name) ||
+                      (library.playlists[name]?.contains(track.id) ?? false),
+                  onChanged:
+                      (library.playlists[name]?.contains(track.id) ?? false)
+                      ? null
+                      : (checked) => update(() {
+                          if (checked == true) {
+                            selected.add(name);
+                          } else {
+                            selected.remove(name);
+                          }
+                        }),
+                ),
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: const Icon(Icons.add),
+                title: Text(newName ?? 'Crear lista'),
+                onTap: () async {
+                  final name = await showDialog<String>(
+                    context: context,
+                    builder: (_) => const _PlaylistDialog(),
+                  );
+                  if (!context.mounted || name == null) return;
+                  final clean = name.trim();
+                  update(() {
+                    if (clean.isEmpty ||
+                        clean.length > 80 ||
+                        library.playlists.containsKey(clean)) {
+                      validation = 'Elige un nombre nuevo para la lista.';
+                    } else {
+                      newName = clean;
+                      validation = null;
+                    }
+                  });
+                },
+              ),
+              if (validation != null) Text(validation!),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancelar'),
+            ),
+            FilledButton(
+              onPressed: selected.isEmpty && newName == null
+                  ? null
+                  : () => Navigator.pop(context, true),
+              child: const Text('Añadir'),
+            ),
           ],
-        );
+        ),
+      ),
+    );
+    if (!mounted || confirmed != true) return;
+    try {
+      await library.addSongToPlaylists(track.id, selected, newName: newName);
+    } on FormatException catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(error.message.toString())));
+      }
+    }
+  }
 
   String groupKey(Track t) => switch (view) {
     1 => t.albumKey,
@@ -1028,7 +1127,11 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
             selected: current.data?.id == track.id,
             selectedTileColor: Theme.of(context).colorScheme.primary
                 .withValues(alpha: 0.06),
-            leading: Artwork(id: track.id, library: library),
+            leading: Artwork(
+              id: track.id,
+              library: library,
+              modifiedMs: track.modifiedMs,
+            ),
             title: Text(
               track.title,
               maxLines: 1,
@@ -1059,35 +1162,7 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
                     onPressed: () =>
                         library.removeFromPlaylist(playlist, track.id),
                   ),
-                PopupMenuButton<String>(
-                  tooltip: 'Opciones de canción',
-                  onSelected: (value) {
-                    if (value == 'delete') {
-                      deleteTrack(track);
-                    } else {
-                      library.addToPlaylist(value.substring(5), track.id);
-                    }
-                  },
-                  itemBuilder: (_) => [
-                    for (final name in library.playlists.keys.where(
-                      (name) => !library.automaticPlaylist(name),
-                    ))
-                      PopupMenuItem(
-                        value: 'list:$name',
-                        child: Text('Añadir a $name'),
-                      ),
-                    const PopupMenuDivider(),
-                    PopupMenuItem(
-                      value: 'delete',
-                      enabled: !library.scanning && !library.deleting,
-                      child: const ListTile(
-                        contentPadding: EdgeInsets.zero,
-                        leading: Icon(Icons.delete_outline),
-                        title: Text('Eliminar del dispositivo'),
-                      ),
-                    ),
-                  ],
-                ),
+                trackMenu(track),
               ],
             ),
           ),
@@ -1103,7 +1178,30 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
     return Column(
       children: [
         sortControls(),
-        Expanded(child: list),
+        Expanded(
+          child:
+              page == 0 &&
+                  view == 0 &&
+                  sourceDestination == null &&
+                  MediaQuery.sizeOf(context).width < 850
+              ? NotificationListener<UserScrollNotification>(
+                  onNotification: (event) {
+                    if (event.depth != 0 ||
+                        event.direction == ScrollDirection.idle) {
+                      return false;
+                    }
+                    final hide =
+                        event.direction == ScrollDirection.reverse &&
+                        event.metrics.maxScrollExtent > 0;
+                    if (hide != hideNavigation) {
+                      setState(() => hideNavigation = hide);
+                    }
+                    return false;
+                  },
+                  child: list,
+                )
+              : list,
+        ),
       ],
     );
   }
@@ -1112,83 +1210,92 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
     if (group != null && library.playlists.containsKey(group)) {
       final name = group!;
       final missing = library.missingInPlaylist(name);
-      return Column(
-        children: [
-          ListTile(
-            leading: const Icon(Icons.arrow_back),
-            title: Text(group!),
-            trailing: IconButton(
-              tooltip: 'Eliminar lista',
-              onPressed: () => deletePlaylist(name),
-              icon: const Icon(Icons.delete_outline),
-            ),
-            onTap: () => setState(() => group = null),
-          ),
-          if (missing > 0)
+      return PopScope(
+        canPop: false,
+        onPopInvokedWithResult: (didPop, _) {
+          if (!didPop) setState(() => group = null);
+        },
+        child: Column(
+          children: [
             ListTile(
-              title: Text('$missing canciones no disponibles en esta carpeta'),
-              subtitle: const Text(
-                'Se conservan por si vuelves a la carpeta anterior.',
+              leading: const Icon(Icons.arrow_back),
+              title: Text(group!),
+              trailing: IconButton(
+                tooltip: 'Eliminar lista',
+                onPressed: () => deletePlaylist(name),
+                icon: const Icon(Icons.delete_outline),
               ),
-              trailing: TextButton(
-                onPressed: library.scanning
-                    ? null
-                    : () => library.removeMissingFromPlaylist(name),
-                child: const Text('Quitar'),
+              onTap: () => setState(() => group = null),
+            ),
+            if (missing > 0)
+              ListTile(
+                title: Text(
+                  '$missing canciones no disponibles en esta carpeta',
+                ),
+                subtitle: const Text(
+                  'Se conservan por si vuelves a la carpeta anterior.',
+                ),
+                trailing: TextButton(
+                  onPressed: library.scanning
+                      ? null
+                      : () => library.removeMissingFromPlaylist(name),
+                  child: const Text('Quitar'),
+                ),
+              ),
+            Expanded(
+              child: trackList(
+                library.playlistTracks(name),
+                playlist: name,
+                header: CollectionHeader(
+                  title: name,
+                  label: library.automaticPlaylist(name)
+                      ? (library.programs?.allowed(
+                                  library.playlistMeta[name]!['owner']
+                                      as String,
+                                  'playlists.manage',
+                                ) ==
+                                true
+                            ? 'Lista automática · activa'
+                            : 'Lista automática · guardada e inactiva')
+                      : 'LISTA LOCAL',
+                  description:
+                      '${library.playlistTracks(name).length} canciones · ${library.playlistTracks(name).fold<int>(0, (sum, t) => sum + t.durationMs) ~/ 60000} min${missing > 0 ? ' · $missing no disponibles' : ''}',
+                  artwork: (size) =>
+                      PlaylistCover(library: library, name: name, size: size),
+                  actions: [
+                    FilledButton.icon(
+                      onPressed: () {
+                        audio.shuffle = false;
+                        audio.select(library.playlistTracks(name), 0);
+                      },
+                      icon: const Icon(Icons.play_arrow),
+                      label: const Text('Reproducir'),
+                    ),
+                    FilledButton.tonalIcon(
+                      onPressed: () {
+                        final tracks = library.playlistTracks(name);
+                        if (tracks.isEmpty) return;
+                        audio.shuffle = true;
+                        audio.select(tracks, Random().nextInt(tracks.length));
+                      },
+                      icon: const Icon(Icons.shuffle),
+                      label: const Text('Aleatorio'),
+                    ),
+                    TextButton.icon(
+                      onPressed: () =>
+                          choosePlaylistCover(context, library, name),
+                      icon: const Icon(Icons.photo_outlined),
+                      label: const Text('Cambiar carátula'),
+                    ),
+                  ],
+                ),
+                empty: missing > 0
+                    ? 'Las canciones de esta lista están fuera de la carpeta actual.'
+                    : 'Añade canciones desde el menú de la biblioteca.',
               ),
             ),
-          Expanded(
-            child: trackList(
-              library.playlistTracks(name),
-              playlist: name,
-              header: CollectionHeader(
-                title: name,
-                label: library.automaticPlaylist(name)
-                    ? (library.programs?.allowed(
-                                library.playlistMeta[name]!['owner'] as String,
-                                'playlists.manage',
-                              ) ==
-                              true
-                          ? 'Lista automática · activa'
-                          : 'Lista automática · guardada e inactiva')
-                    : 'LISTA LOCAL',
-                description:
-                    '${library.playlistTracks(name).length} canciones · ${library.playlistTracks(name).fold<int>(0, (sum, t) => sum + t.durationMs) ~/ 60000} min${missing > 0 ? ' · $missing no disponibles' : ''}',
-                artwork: (size) =>
-                    PlaylistCover(library: library, name: name, size: size),
-                actions: [
-                  FilledButton.icon(
-                    onPressed: () {
-                      audio.shuffle = false;
-                      audio.select(library.playlistTracks(name), 0);
-                    },
-                    icon: const Icon(Icons.play_arrow),
-                    label: const Text('Reproducir'),
-                  ),
-                  FilledButton.tonalIcon(
-                    onPressed: () {
-                      final tracks = library.playlistTracks(name);
-                      if (tracks.isEmpty) return;
-                      audio.shuffle = true;
-                      audio.select(tracks, Random().nextInt(tracks.length));
-                    },
-                    icon: const Icon(Icons.shuffle),
-                    label: const Text('Aleatorio'),
-                  ),
-                  TextButton.icon(
-                    onPressed: () =>
-                        choosePlaylistCover(context, library, name),
-                    icon: const Icon(Icons.photo_outlined),
-                    label: const Text('Cambiar carátula'),
-                  ),
-                ],
-              ),
-              empty: missing > 0
-                  ? 'Las canciones de esta lista están fuera de la carpeta actual.'
-                  : 'Añade canciones desde el menú de la biblioteca.',
-            ),
-          ),
-        ],
+          ],
+        ),
       );
     }
     return Column(
@@ -1457,6 +1564,29 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
           subtitle: Text('Tu biblioteca permanece en este dispositivo.'),
         ),
       ]),
+      ListTile(
+        leading: const Icon(Icons.folder_outlined),
+        title: const Text('Carpeta de descargas'),
+        subtitle: const Text('Cambiar el destino de canciones y álbumes'),
+        onTap: () async {
+          try {
+            final folder = await DownloadFolder.choose(change: true);
+            if (folder != null && mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Carpeta de descargas guardada.')),
+              );
+            }
+          } catch (_) {
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('No se pudo guardar la carpeta de descargas.'),
+                ),
+              );
+            }
+          }
+        },
+      ),
       if (widget.updates != null)
         UpdateSettings(
           updates: widget.updates!,
@@ -2014,8 +2144,10 @@ class Artwork extends StatefulWidget {
     required this.id,
     required this.library,
     this.size = 44,
+    this.modifiedMs,
   });
   final String? id;
+  final int? modifiedMs;
   final double size;
   final LibraryController library;
   @override
@@ -2024,22 +2156,65 @@ class Artwork extends StatefulWidget {
 
 class _ArtworkState extends State<Artwork> {
   Future<Uint8List?>? image;
+  ScrollPosition? deferredPosition;
+  bool initialized = false;
+
   @override
-  void initState() {
-    super.initState();
-    load();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!initialized) {
+      initialized = true;
+      load();
+    }
   }
 
   @override
   void didUpdateWidget(Artwork old) {
     super.didUpdateWidget(old);
-    if (old.id != widget.id) load();
+    if (old.id != widget.id ||
+        old.modifiedMs != widget.modifiedMs ||
+        old.library != widget.library) {
+      load();
+    }
   }
 
-  void load() {
-    image = widget.id == null || ExtensionSourceService.remote(widget.id!)
-        ? null
-        : widget.library.files.artwork(widget.id!);
+  void clearDeferredLoad() {
+    deferredPosition?.isScrollingNotifier.removeListener(resumeLoad);
+    deferredPosition = null;
+  }
+
+  void resumeLoad() {
+    if (deferredPosition?.isScrollingNotifier.value == false) {
+      setState(() => load(defer: false));
+    }
+  }
+
+  void load({bool defer = true}) {
+    clearDeferredLoad();
+    image = null;
+    final id = widget.id;
+    if (id == null || ExtensionSourceService.remote(id)) return;
+    final modifiedMs = widget.modifiedMs;
+    if (modifiedMs == null) {
+      image = widget.library.files.artwork(id);
+      return;
+    }
+
+    if (defer && Scrollable.recommendDeferredLoadingForContext(context)) {
+      final position = Scrollable.maybeOf(context)?.position;
+      if (position != null && position.isScrollingNotifier.value) {
+        deferredPosition = position;
+        position.isScrollingNotifier.addListener(resumeLoad);
+        return;
+      }
+    }
+    image = widget.library.thumbnail(id, modifiedMs);
+  }
+
+  @override
+  void dispose() {
+    clearDeferredLoad();
+    super.dispose();
   }
 
   @override
@@ -2062,6 +2237,7 @@ class _ArtworkState extends State<Artwork> {
               errorBuilder: (_, e, s) => const Icon(Icons.album_outlined),
             )
           : FutureBuilder(
+              key: ValueKey((widget.id, widget.modifiedMs)),
               future: image,
               builder: (context, snapshot) => snapshot.data == null
                   ? const ColoredBox(

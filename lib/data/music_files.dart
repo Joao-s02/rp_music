@@ -141,6 +141,13 @@ class MusicFiles {
     return value == null ? null : Uri.parse(value);
   }
 
+  Future<Uint8List?> thumbnail(String id) => Platform.isAndroid
+      ? _channel.invokeMethod<Uint8List>('artwork', {
+          'id': id,
+          'thumbnail': true,
+        })
+      : artwork(id);
+
   Future<Uint8List?> artwork(String id) async {
     if (Platform.isAndroid) {
       return _channel.invokeMethod<Uint8List>('artwork', {'id': id});

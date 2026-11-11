@@ -1,3 +1,4 @@
+import 'dart:ui' as ui;
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -5,7 +6,13 @@ import 'package:flutter/material.dart';
 import '../domain/lyrics.dart';
 
 class LyricBackdrop extends StatelessWidget {
-  const LyricBackdrop({super.key, required this.position, required this.child});
+  const LyricBackdrop({
+    super.key,
+    required this.position,
+    required this.child,
+    this.cover,
+  });
+  final ImageProvider? cover;
   final Duration position;
   final Widget child;
   @override
@@ -54,6 +61,29 @@ class LyricBackdrop extends StatelessWidget {
               ),
             ),
           ),
+          if (cover != null)
+            Positioned.fill(
+              child: ClipRect(
+                child: ImageFiltered(
+                  imageFilter: ui.ImageFilter.blur(
+                    sigmaX: 26,
+                    sigmaY: 26,
+                    tileMode: ui.TileMode.clamp,
+                  ),
+                  child: Image(
+                    image: cover!,
+                    fit: BoxFit.cover,
+                    color:
+                        (dark
+                                ? const Color(0xff090b16)
+                                : const Color(0xfff6f3fd))
+                            .withValues(alpha: .76),
+                    colorBlendMode: BlendMode.srcATop,
+                    errorBuilder: (_, _, _) => const SizedBox.shrink(),
+                  ),
+                ),
+              ),
+            ),
           Material(type: MaterialType.transparency, child: child),
         ],
       ),
@@ -94,15 +124,23 @@ class LyricPhrase extends StatelessWidget {
             ]
           : null,
     );
+    final alignment = line.rightAligned
+        ? Alignment.centerRight
+        : Alignment.centerLeft;
+    final textAlign = line.rightAligned ? TextAlign.right : TextAlign.left;
     return AnimatedScale(
       scale: active ? 1 : .96,
-      alignment: Alignment.centerLeft,
+      alignment: alignment,
       duration: MediaQuery.disableAnimationsOf(context)
           ? Duration.zero
           : const Duration(milliseconds: 420),
       curve: Curves.easeOutCubic,
       child: line.words.isEmpty || !active
-          ? Text(line.text.isEmpty ? '♪' : line.text, style: style)
+          ? Text(
+              line.text.isEmpty ? '♪' : line.text,
+              style: style,
+              textAlign: textAlign,
+            )
           : Text.rich(
               TextSpan(
                 children: [
@@ -120,6 +158,7 @@ class LyricPhrase extends StatelessWidget {
                   ),
                 ],
               ),
+              textAlign: textAlign,
             ),
     );
   }
@@ -176,6 +215,9 @@ class LyricScene extends StatelessWidget {
                             padding: const EdgeInsets.only(bottom: 28),
                             child: Text(
                               lyrics.lines[selected - 1].text,
+                              textAlign: lyrics.lines[selected - 1].rightAligned
+                                  ? TextAlign.right
+                                  : TextAlign.left,
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
@@ -204,7 +246,9 @@ class LyricScene extends StatelessWidget {
                               ),
                           child: Align(
                             key: ValueKey(selected),
-                            alignment: Alignment.centerLeft,
+                            alignment: line.rightAligned
+                                ? Alignment.centerRight
+                                : Alignment.centerLeft,
                             child: LyricPhrase(
                               line: line,
                               position: position,
@@ -217,6 +261,9 @@ class LyricScene extends StatelessWidget {
                         if (selected + 1 < lyrics.lines.length)
                           Text(
                             lyrics.lines[selected + 1].text,
+                            textAlign: lyrics.lines[selected + 1].rightAligned
+                                ? TextAlign.right
+                                : TextAlign.left,
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
