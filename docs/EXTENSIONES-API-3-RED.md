@@ -33,7 +33,7 @@ Sin network.stream, el dominio debe estar declarado. Con network.stream, URL HTT
 
 Resoluciones se guardan solo en memoria (hasta 100 entradas). Reinstalar/desactivar/cambiar permisos/volver a base invalida audio propio; reiniciar exige seleccionar otra vez desde la pantalla. Favoritas pueden conservar IDs/datos públicos, renovando URL antes de escuchar. Cancelar durante carga de audio la detiene. Las pantallas no sustituyen al propietario de Fuente.
 
-Extensiones/paquetes específicos exclusivamente en rp-music-extensions/previews/js-music-0.1.0, fuera de assets/adjuntos de app. Evidencia en [bóveda](../boveda/37%20Explorador%20y%20radio%20JavaScript.md).
+Extensiones/paquetes específicos exclusivamente en rp-music-extensions/previews/js-music-0.1.0, fuera de assets/adjuntos de app.
 
 ## Adición local0.3.16: caché pública optativa
 

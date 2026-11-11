@@ -14,4 +14,4 @@ Comprobación reproducible con datos sintéticos:
 flutter test --no-pub --reporter expanded --concurrency=1 test/library_recovery_test.dart test/core_test.dart
 ```
 
-Resultados y límites del candidato: [Biblioteca y reproducción](../boveda/03%20Biblioteca%20y%20reproduccion.md).
+[Pruebas y límites de la entrega](PRUEBAS-0.3.18.md).

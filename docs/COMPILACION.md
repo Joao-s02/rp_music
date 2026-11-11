@@ -2,7 +2,7 @@
 
 Desarrollo local0.3.10: Windows usa just_audio_media_kit/libmpv mediante createNativeAudioPlayer; Android conserva su backend. El paquete media_kit_libs_windows_audio descarga una DLL nativa en compilación; incluirla, su plugin y third_party/windows_audio (avisos/licencias) en el ZIP completo. No reutilizar la antigua DLL just_audio_windows_plus_plugin.dll como motor activo. Pruebas/artefactos y límites en [[39 Audio Windows M4A OPUS y YouTube]] y docs/PROBAR-WINDOWS-0.3.10.md.
 
-Guía de desarrollo actual. Versión de app en pubspec.yaml y lib/app/app_version.dart; contrastar ambas antes de empaquetar. [Índice de documentación](README.md) · [Arquitectura vigente](../boveda/31%20Arquitectura%20vigente.md).
+Guía de desarrollo actual. Versión de app en pubspec.yaml y lib/app/app_version.dart; contrastar ambas antes de empaquetar. [Índice de documentación](README.md).
 
 ## Java para Android
 
@@ -78,7 +78,7 @@ Para pruebas nativas consultar integration_test; Android de fuente recibe un paq
 
 Universal: build/app/outputs/flutter-apk/app-release.apk. ARM64: app-arm64-v8a-release.apk en la misma carpeta. Windows: build/windows/x64/runner/Release completo. No distribuir solo el EXE ni sobrescribir una copia de pruebas que se deba conservar. Comprobar firmas, ABI/versión, recursos, ZIP y hashes después de cerrar las guías. La firma actual es de desarrollo, no una firma definitiva de tienda.
 
-Publicar exige autorización y el contenido de la [política de releases](../boveda/27%20Publicacion%20de%20releases%20-%20contenido%20obligatorio.md). Los comandos de build no publican nada por sí solos. La sonda con código 7 descrita antes es un antecedente del actualizador de 0.2.4, no el número que deba usarse hoy.
+Publicar exige autorización y preparar Android universal, Android ARM64, Windows completo, USO, PRUEBAS, CAMBIOS y SHA256SUMS. Los comandos de build no publican nada por sí solos. La sonda con código 7 descrita antes es un antecedente del actualizador de 0.2.4, no el número que deba usarse hoy.
 
 
 ## Trabajo local0.3.11+20

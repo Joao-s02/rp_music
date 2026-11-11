@@ -26,4 +26,4 @@ Spotify está cancelado. Se retiró del catálogo **local**; el catálogo remoto
 
 Lectura Android mediante permisos de carpeta: copia temporal privada de hasta 256 MiB y 30 segundos, borrada tras leer. Letras hasta 256 KiB. SYLT soportado con marcas en milisegundos, sin compresión/cifrado. Otras variantes y archivos concretos necesitan validación. Las letras comunitarias pueden faltar o corresponder a otra edición; el sistema filtra candidatos pero no garantiza cualquier canción.
 
-Estado y verificaciones: [nota de implementación](../boveda/33%20Metadatos%20de%20descargas%20YouTube.md). Extensiones y candidatos pertenecen exclusivamente a [rp-music-extensions](https://github.com/Joao-s02/rp-music-extensions).
+Estado y verificaciones: nota de implementación (nota local). Extensiones y candidatos pertenecen exclusivamente a [rp-music-extensions](https://github.com/Joao-s02/rp-music-extensions).

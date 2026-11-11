@@ -27,4 +27,4 @@ Los paquetes de YouTube y Explorador se instalan por separado desde los candidat
 
 Android físico: actualización conservando datos, ARM64, SAF/SD/exportación, widgets/launcher, escucha prolongada y latencia API3. No hay garantía universal de álbum/foto/letra para todas las canciones. Publicación requiere otra autorización.
 
-Contexto detallado: [nota45 de la bóveda](../boveda/45%20Portadas%20artistas%20navegacion%20y%20descargas%200.3.16.md).
+Contexto detallado: nota45 de la bóveda (nota local).

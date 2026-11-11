@@ -35,4 +35,4 @@ En Ajustes → Diagnóstico multimedia ahora aparecen el último error nativo de
 3. Repetir la radio que tardaba~30s; anotar emisora/red/tiempo hasta sonido. Conservar diagnóstico si la demora persiste.
 4. Verificar favoritos/listas/letras/carpeta conservados. No convertir ni borrar archivos para estas pruebas.
 
-Evidencia y límites actuales: [bóveda](../boveda/39%20Audio%20Windows%20M4A%20OPUS%20y%20YouTube.md). Android físico y escucha prolongada en varios equipos pendientes.
+Evidencia y límites actuales: bóveda (nota local). Android físico y escucha prolongada en varios equipos pendientes.

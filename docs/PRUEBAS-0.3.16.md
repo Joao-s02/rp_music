@@ -27,7 +27,7 @@ Los paquetes YouTube0.5.3/Explorador0.2.3 y Explorador JS0.1.1 se instalan por s
 
 Android físico: actualización conservando datos, ARM64, SAF/SD/exportación, widgets/launcher, escucha prolongada y latencia API3. No hay garantía universal de álbum/foto/letra para todas las canciones. Publicación autorizada por el usuario; comprobar los archivos descargados con SHA256SUMS.txt.
 
-Contexto detallado: [nota45 de la bóveda](../boveda/45%20Portadas%20artistas%20navegacion%20y%20descargas%200.3.16.md).
+Contexto detallado: nota45 de la bóveda (nota local).
 
 ## Cierre local de compilación y comprobaciones
 

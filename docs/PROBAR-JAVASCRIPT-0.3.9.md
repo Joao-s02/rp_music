@@ -34,4 +34,4 @@ Guarda hasta 30 favoritas privadas (sujeto a espacio). Mis favoritas funciona pa
 - Desactivar la extensión mientras suena: debe detenerse el audio correspondiente.
 - Cortar conexión: debe aparecer un error recuperable; no un falso resultado nuevo.
 
-No confundir resolución HTTP de audio con escucha nativa. Registrar plataforma/dispositivo, función y resultado. [Evidencia técnica y pendientes](../boveda/37%20Explorador%20y%20radio%20JavaScript.md).
+No confundir resolución HTTP de audio con escucha nativa. Registrar plataforma/dispositivo, función y resultado. Evidencia técnica y pendientes (nota local).

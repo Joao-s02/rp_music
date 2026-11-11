@@ -1,8 +1,8 @@
 # Contexto obligatorio del proyecto
 
-Antes de proponer arquitectura o modificar el proyecto, leer `boveda/00 Inicio.md`, `boveda/01 Contexto para agentes.md` y las notas relacionadas con la tarea.
+En una copia con bóveda local, antes de proponer arquitectura o modificar el proyecto, leer `boveda/00 Inicio.md`, `boveda/01 Contexto para agentes.md` y las notas relacionadas con la tarea.
 
-La bóveda es la fuente de contexto mantenida del proyecto. Las instrucciones actuales del usuario tienen prioridad. El código alfa y `arquitectura-reproductor-flutter.md` son antecedentes, no decisiones vigentes por defecto.
+Desde un clon sin bóveda, empezar por README.md y docs/README.md. La bóveda es la fuente de contexto mantenida del proyecto. Las instrucciones actuales del usuario tienen prioridad. El código alfa y `arquitectura-reproductor-flutter.md` son antecedentes, no decisiones vigentes por defecto.
 
 En cada trabajo que aporte contexto importante, actualizar las notas afectadas y `boveda/09 Registro de cambios.md` antes de terminar. Registrar decisiones, motivos, resultados de verificaciones, límites y pendientes. Distinguir requisitos confirmados, propuestas, investigación e implementación comprobada. No afirmar que algo está implementado solo por estar documentado.
 

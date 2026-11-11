@@ -1,6 +1,6 @@
 # Arquitectura técnica y plan de implementación
 
-> Documento histórico: sus propuestas no son la especificación vigente. La entrevista posterior se consolida en [la bóveda de contexto](boveda/00%20Inicio.md). Consultarla antes de usar esta arquitectura; paquetes, alcance web y planificación de extensiones deben reevaluarse.
+> Documento histórico: sus propuestas no son la especificación vigente. La entrevista posterior se consolida en la bóveda de contexto (nota local). Consultarla antes de usar esta arquitectura; paquetes, alcance web y planificación de extensiones deben reevaluarse.
 
 ## Reproductor musical Flutter local-first para Windows, Android y web
 

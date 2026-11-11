@@ -13,6 +13,6 @@ Para comprobar la variante, copiar el segundo APK a Descargas y abrirlo desde Ar
 
 Las descargas de música y las extensiones no se eliminan. El cambio afecta a la actualización de la propia aplicación: abre la página oficial para descargar la versión siguiente y después instalarla desde Archivos.
 
-Verificación del código: 166 pruebas aprobadas, una opcional omitida y análisis sin incidencias. Esto no constituye un veredicto de Play Protect. Evidencia y estado: [Diagnóstico local](../boveda/44%20Diagnostico%20local%20de%20instalacion%20y%20actualizaciones%20manuales.md).
+Verificación del código: 166 pruebas aprobadas, una opcional omitida y análisis sin incidencias. Esto no constituye un veredicto de Play Protect. Evidencia y estado: Diagnóstico local (nota local).
 
 El modo sin instalador es ahora el predeterminado. `-NoDirectInstaller:$false` y `RP_ANDROID_NO_DIRECT_INSTALLER=false` permiten reproducir exclusivamente el control diagnóstico. Copia del APK aceptado sin modificar: `dist/RP-Music-0.3.15-android.apk`.
