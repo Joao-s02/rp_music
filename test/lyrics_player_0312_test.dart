@@ -229,7 +229,13 @@ void main() {
           child: MaterialApp(
             debugShowCheckedModeBanner: false,
             theme: musicTheme(Brightness.dark, null),
-            home: LyricsView(audio: audio, controller: controller),
+            home: LyricsView(
+              audio: audio,
+              controller: controller,
+              loadCover: (_) async => (await rootBundle.load(
+                'assets/branding/rp-music-variant-a.png',
+              )).buffer.asUint8List(),
+            ),
           ),
         ),
       );
@@ -247,6 +253,11 @@ void main() {
       player.positions.add(const Duration(seconds: 4));
       await tester.pumpAndSettle();
       expect(find.text('Donde el miedo se apagó'), findsOneWidget);
+      expect(
+        tester.widget<LyricSongHeader>(find.byType(LyricSongHeader)).cover,
+        isNotNull,
+      );
+      expect(find.text('SINCRONIZADA · SIGUE LA MÚSICA'), findsNothing);
       await screenshot(tester, key, 'lyrics-live-360');
       expect(
         tester.widget<AppBar>(find.byType(AppBar)).backgroundColor,
@@ -265,8 +276,14 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.byTooltip('Abrir escena'));
       await tester.pumpAndSettle();
-      expect(find.byType(LyricScene), findsOneWidget);
-      await tester.tapAt(const Offset(330, 500));
+      expect(find.byType(LyricSongHeader), findsOneWidget);
+      expect(
+        tester.widget<LyricSongHeader>(find.byType(LyricSongHeader)).cover,
+        isNotNull,
+      );
+      expect(find.byType(LyricPhrase), findsWidgets);
+      expect(find.text('SINCRONIZADA · SIGUE LA MÚSICA'), findsNothing);
+      await tester.tapAt(const Offset(350, 500));
       await tester.pumpAndSettle();
       expect(find.byTooltip('Salir de escena'), findsNothing);
       await screenshot(tester, key, 'lyrics-scene-360');

@@ -152,10 +152,8 @@ class _ExpandedPlayerState extends State<ExpandedPlayer> {
                       onPressed: item == null || !local
                           ? null
                           : () => library.toggleFavorite(item.id),
-                      icon: Icon(
-                        library.favorites.contains(item?.id)
-                            ? Icons.favorite_rounded
-                            : Icons.favorite_border_rounded,
+                      icon: ThemeFavoriteIcon(
+                        selected: library.favorites.contains(item?.id),
                       ),
                       color: colors.primary,
                     ),
@@ -278,7 +276,9 @@ class _ExpandedPlayerState extends State<ExpandedPlayer> {
                         child: IconButton.filled(
                           tooltip: playing ? 'Pausar' : 'Reproducir',
                           style: IconButton.styleFrom(
-                            minimumSize: Size.square(dense ? 56 : 64),
+                            fixedSize: Size.square(dense ? 56 : 64),
+                            padding: EdgeInsets.zero,
+                            alignment: Alignment.center,
                             iconSize: dense ? 32 : 36,
                           ),
                           onPressed: item == null
@@ -328,7 +328,8 @@ class _ExpandedPlayerState extends State<ExpandedPlayer> {
               children: [
                 _PlayerAction(
                   dense: dense,
-                  avatar: Icon(
+                  avatar: ThemeIcon(
+                    'details',
                     Icons.info_outline,
                     size: 18,
                     color: colors.primary,
@@ -338,7 +339,11 @@ class _ExpandedPlayerState extends State<ExpandedPlayer> {
                 ),
                 _PlayerAction(
                   dense: dense,
-                  avatar: const Icon(Icons.lyrics_outlined, size: 18),
+                  avatar: const ThemeIcon(
+                    'lyrics',
+                    Icons.lyrics_outlined,
+                    size: 18,
+                  ),
                   label: const Text('Letras'),
                   onPressed: item == null
                       ? null
@@ -354,7 +359,8 @@ class _ExpandedPlayerState extends State<ExpandedPlayer> {
                 ),
                 _PlayerAction(
                   dense: dense,
-                  avatar: Icon(
+                  avatar: ThemeIcon(
+                    'queue',
                     Icons.queue_music,
                     size: 18,
                     color: colors.primary,
@@ -364,7 +370,11 @@ class _ExpandedPlayerState extends State<ExpandedPlayer> {
                 ),
                 _PlayerAction(
                   dense: dense,
-                  avatar: const Icon(Icons.volume_up_outlined, size: 20),
+                  avatar: const ThemeIcon(
+                    'volume',
+                    Icons.volume_up_outlined,
+                    size: 20,
+                  ),
                   label: const Text('Volumen'),
                   onPressed: volume,
                 ),
@@ -372,8 +382,10 @@ class _ExpandedPlayerState extends State<ExpandedPlayer> {
             );
             final timeline = StreamBuilder(
               stream: audio.player.positionStream,
+              initialData: audio.player.position,
               builder: (context, position) => StreamBuilder(
                 stream: audio.player.durationStream,
+                initialData: audio.mediaItem.value?.duration,
                 builder: (context, duration) {
                   final total =
                       duration.data?.inMilliseconds ??

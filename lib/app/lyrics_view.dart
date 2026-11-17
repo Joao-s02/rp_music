@@ -1,3 +1,5 @@
+import '../themes/theme_library.dart';
+
 import 'dart:typed_data';
 import 'dart:convert';
 import 'dart:io';
@@ -149,6 +151,14 @@ class _LyricsViewState extends State<LyricsView> {
     generation++;
     scroll.dispose();
     super.dispose();
+  }
+
+  ImageProvider? songCover(Uint8List? bytes, Uri? uri) {
+    if (bytes != null) return ResizeImage(MemoryImage(bytes), width: 256);
+    if (uri?.scheme == 'file') {
+      return ResizeImage(FileImage(File.fromUri(uri!)), width: 256);
+    }
+    return null;
   }
 
   Widget synchronized(Duration position) {
@@ -326,6 +336,8 @@ class _LyricsViewState extends State<LyricsView> {
               onPressed: () => setState(() {
                 scene = true;
                 chrome = true;
+                active = -2;
+                following = true;
               }),
               icon: const Icon(Icons.fullscreen_rounded),
             ),
@@ -346,15 +358,7 @@ class _LyricsViewState extends State<LyricsView> {
               initialData: widget.audio.player.position,
               builder: (context, position) => LyricBackdrop(
                 position: position.data ?? Duration.zero,
-                cover: image.data != null
-                    ? ResizeImage(MemoryImage(image.data!), width: 256)
-                    : switch (item?.artUri) {
-                        final uri? when uri.scheme == 'file' => ResizeImage(
-                          FileImage(File.fromUri(uri)),
-                          width: 256,
-                        ),
-                        _ => null,
-                      },
+                cover: songCover(image.data, item?.artUri),
                 child: scene && timed
                     ? GestureDetector(
                         behavior: HitTestBehavior.opaque,
@@ -362,11 +366,39 @@ class _LyricsViewState extends State<LyricsView> {
                         child: Stack(
                           children: [
                             Positioned.fill(
-                              child: LyricScene(
-                                lyrics: lyrics!,
-                                position: position.data ?? Duration.zero,
-                                title: item?.title ?? '',
-                                artist: item?.artist ?? '',
+                              child: AnimatedPadding(
+                                duration:
+                                    MediaQuery.disableAnimationsOf(context)
+                                    ? Duration.zero
+                                    : const Duration(milliseconds: 230),
+                                curve: Curves.easeInOutCubic,
+                                padding: EdgeInsets.only(
+                                  top: chrome ? 64 : 16,
+                                  bottom: chrome ? 80 : 16,
+                                ),
+                                child: Column(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 24,
+                                        vertical: 12,
+                                      ),
+                                      child: LyricSongHeader(
+                                        title: item?.title ?? 'Sin canción',
+                                        artist: item?.artist ?? '',
+                                        cover: songCover(
+                                          image.data,
+                                          item?.artUri,
+                                        ),
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: synchronized(
+                                        position.data ?? Duration.zero,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                             if (chrome)
@@ -378,8 +410,11 @@ class _LyricsViewState extends State<LyricsView> {
                                   children: [
                                     IconButton(
                                       tooltip: 'Salir de escena',
-                                      onPressed: () =>
-                                          setState(() => scene = false),
+                                      onPressed: () => setState(() {
+                                        scene = false;
+                                        active = -2;
+                                        following = true;
+                                      }),
                                       icon: const Icon(
                                         Icons.fullscreen_exit_rounded,
                                       ),
@@ -405,7 +440,10 @@ class _LyricsViewState extends State<LyricsView> {
                                     IconButton(
                                       tooltip: 'Anterior',
                                       onPressed: widget.audio.skipToPrevious,
-                                      icon: const Icon(Icons.skip_previous),
+                                      icon: const ThemeIcon(
+                                        'previous',
+                                        Icons.skip_previous,
+                                      ),
                                     ),
                                     StreamBuilder(
                                       stream:
@@ -429,7 +467,10 @@ class _LyricsViewState extends State<LyricsView> {
                                     IconButton(
                                       tooltip: 'Siguiente',
                                       onPressed: widget.audio.skipToNext,
-                                      icon: const Icon(Icons.skip_next),
+                                      icon: const ThemeIcon(
+                                        'next',
+                                        Icons.skip_next,
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -477,43 +518,13 @@ class _LyricsViewState extends State<LyricsView> {
                                       24,
                                       8,
                                     ),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          item?.title ?? 'Sin canción',
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .titleLarge
-                                              ?.copyWith(
-                                                fontWeight: FontWeight.w800,
-                                              ),
-                                        ),
-                                        Text(
-                                          item?.artist ?? '',
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodySmall,
-                                        ),
-                                        const SizedBox(height: 12),
-                                        Text(
-                                          timed
-                                              ? 'SINCRONIZADA · SIGUE LA MÚSICA'
-                                              : 'LETRAS',
-                                          style: TextStyle(
-                                            fontSize: 10,
-                                            letterSpacing: 2,
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .primary,
-                                          ),
-                                        ),
-                                      ],
+                                    child: LyricSongHeader(
+                                      title: item?.title ?? 'Sin canción',
+                                      artist: item?.artist ?? '',
+                                      cover: songCover(
+                                        image.data,
+                                        item?.artUri,
+                                      ),
                                     ),
                                   ),
                                 ],
@@ -539,7 +550,7 @@ class _LyricsViewState extends State<LyricsView> {
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
                                             const Text(
-                                              'Se muestran letras incrustadas o guardadas. Importa un LRC sincronizado o busca con tu extensión de letras.',
+                                              'Se muestran letras incrustadas o guardadas. Importa un archivo LRC o TXT.',
                                             ),
                                             const SizedBox(height: 16),
                                             FilledButton.icon(

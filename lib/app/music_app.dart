@@ -1,3 +1,4 @@
+import '../artists/artist_portraits.dart';
 import 'pulse_surface.dart';
 import 'scrolling_title.dart';
 import 'expanded_player.dart';
@@ -53,27 +54,7 @@ class MusicApp extends StatelessWidget {
         theme: musicTheme(Brightness.light, null, appearance: theme),
         darkTheme: musicTheme(Brightness.dark, null, appearance: theme),
         themeMode: library.dark ? ThemeMode.dark : ThemeMode.light,
-        builder: (context, child) {
-          final appearance = Theme.of(context).extension<MusicAppearance>();
-          final background = appearance?.images['background'];
-          if (background == null) return child!;
-          return Stack(
-            fit: StackFit.expand,
-            children: [
-              Image.memory(
-                background,
-                fit: BoxFit.cover,
-                excludeFromSemantics: true,
-                errorBuilder: (_, _, _) => const SizedBox.shrink(),
-              ),
-              ColoredBox(
-                color: Theme.of(context).colorScheme.surface
-                    .withValues(alpha: .88),
-              ),
-              child!,
-            ],
-          );
-        },
+        builder: (context, child) => ThemeBackdrop(child: child!),
         home: MusicHome(
           library: library,
           audio: audio,
@@ -113,6 +94,20 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
   String? group;
   Timer? debounce;
   StreamSubscription<String>? errors;
+  StreamSubscription? _coverWarmup;
+
+  Future<void> warmCover() async {
+    final id = audio.mediaItem.value?.id;
+    if (id == null) return;
+    final bytes = await library.artwork(id);
+    if (!mounted || audio.mediaItem.value?.id != id || bytes == null) return;
+    await precacheImage(
+      ResizeImage.resizeIfNeeded(600, null, MemoryImage(bytes)),
+      context,
+      onError: (Object error, StackTrace? stack) {},
+    );
+  }
+
   final search = TextEditingController();
   LibraryController get library => widget.library;
   MusicHandler get audio => widget.audio;
@@ -141,6 +136,7 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    _coverWarmup = audio.mediaItem.listen((_) => unawaited(warmCover()));
     errors = audio.errors.stream.listen((text) {
       if (mounted) {
         ScaffoldMessenger.of(context)
@@ -152,6 +148,7 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    _coverWarmup?.cancel();
     errors?.cancel();
     debounce?.cancel();
     search.dispose();
@@ -197,9 +194,6 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
     builder: (context, size) {
       final desktop = size.maxWidth >= 850;
       final keyboard = MediaQuery.viewInsetsOf(context).bottom > 0;
-      final decoration = Theme.of(context)
-          .extension<MusicAppearance>()
-          ?.images['decoration'];
       final scaffold = Scaffold(
         body: SafeArea(
           child: Row(
@@ -234,110 +228,115 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
               Expanded(
                 child: Column(
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(24, 20, 16, 8),
-                      child: Row(
-                        children: [
-                          if (page == 0) ...[
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(10),
-                              child: decoration == null
-                                  ? Image.asset(
-                                      'assets/branding/rp-music-variant-a.png',
-                                      width: 36,
-                                      height: 36,
-                                    )
-                                  : Image.memory(
-                                      decoration,
-                                      width: 36,
-                                      height: 36,
-                                      excludeFromSemantics: true,
-                                      errorBuilder: (_, _, _) => Image.asset(
-                                        'assets/branding/rp-music-variant-a.png',
-                                        width: 36,
-                                        height: 36,
-                                      ),
-                                    ),
-                            ),
-                            const SizedBox(width: 10),
-                          ],
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  page == 0
-                                      ? (view == 1 && group != null
-                                            ? 'Detalle de álbum'
-                                            : 'RP Music')
-                                      : labels[page],
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: desktop
-                                      ? Theme.of(context)
-                                            .textTheme
-                                            .headlineMedium
-                                      : Theme.of(context).textTheme.titleLarge,
+                    ClipRect(
+                      child: AnimatedAlign(
+                        alignment: Alignment.topCenter,
+                        heightFactor: !desktop && page == 2 && hideNavigation
+                            ? 0
+                            : 1,
+                        duration: MediaQuery.disableAnimationsOf(context)
+                            ? Duration.zero
+                            : const Duration(milliseconds: 180),
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(24, 20, 16, 8),
+                          child: Row(
+                            children: [
+                              if (page == 0) ...[
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(10),
+                                  child: const ThemeBrand(),
                                 ),
-                                if (page == 0)
-                                  Text(
-                                    'Biblioteca · ${library.tracks.length} pistas${library.scanning ? ' · Metadatos ${library.scanProcessed}/${library.scanTotal}' : ''}',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodySmall,
-                                  ),
+                                const SizedBox(width: 10),
                               ],
-                            ),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      page == 0
+                                          ? (view == 1 && group != null
+                                                ? 'Detalle de álbum'
+                                                : 'RP Music')
+                                          : labels[page],
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: desktop
+                                          ? Theme.of(context)
+                                                .textTheme
+                                                .headlineMedium
+                                          : Theme.of(context)
+                                                .textTheme
+                                                .titleLarge,
+                                    ),
+                                    if (page == 0)
+                                      Text(
+                                        'Biblioteca · ${library.tracks.length} pistas${library.scanning ? ' · Metadatos ${library.scanProcessed}/${library.scanTotal}' : ''}',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodySmall,
+                                      ),
+                                  ],
+                                ),
+                              ),
+                              if (page == 0)
+                                IconButton(
+                                  tooltip: searchExpanded
+                                      ? 'Cerrar búsqueda'
+                                      : 'Buscar',
+                                  icon: searchExpanded
+                                      ? const Icon(Icons.close)
+                                      : const ThemeIcon('search', Icons.search),
+                                  onPressed: () {
+                                    setState(() {
+                                      hideNavigation = false;
+                                      searchExpanded = !searchExpanded;
+                                      if (!searchExpanded) {
+                                        debounce?.cancel();
+                                        search.clear();
+                                        query = '';
+                                      }
+                                    });
+                                    if (searchExpanded) {
+                                      WidgetsBinding.instance
+                                          .addPostFrameCallback((_) {
+                                            if (mounted) {
+                                              searchFocus.requestFocus();
+                                            }
+                                          });
+                                    } else {
+                                      searchFocus.unfocus();
+                                    }
+                                  },
+                                ),
+                              if (page == 0)
+                                IconButton(
+                                  onPressed:
+                                      library.scanning || library.root == null
+                                      ? null
+                                      : () => library.refresh(),
+                                  tooltip: 'Actualizar biblioteca',
+                                  icon: const ThemeIcon(
+                                    'refresh',
+                                    Icons.refresh,
+                                  ),
+                                ),
+                              if (page == 0 && desktop)
+                                FilledButton.tonalIcon(
+                                  onPressed:
+                                      library.scanning || library.choosing
+                                      ? null
+                                      : library.chooseRoot,
+                                  icon: const ThemeIcon(
+                                    'folder',
+                                    Icons.folder_open,
+                                  ),
+                                  label: Text(
+                                    desktop ? 'Elegir carpeta' : 'Carpeta',
+                                  ),
+                                ),
+                            ],
                           ),
-                          if (page == 0)
-                            IconButton(
-                              tooltip: searchExpanded
-                                  ? 'Cerrar búsqueda'
-                                  : 'Buscar',
-                              icon: Icon(
-                                searchExpanded ? Icons.close : Icons.search,
-                              ),
-                              onPressed: () {
-                                setState(() {
-                                  hideNavigation = false;
-                                  searchExpanded = !searchExpanded;
-                                  if (!searchExpanded) {
-                                    debounce?.cancel();
-                                    search.clear();
-                                    query = '';
-                                  }
-                                });
-                                if (searchExpanded) {
-                                  WidgetsBinding.instance.addPostFrameCallback((
-                                    _,
-                                  ) {
-                                    if (mounted) searchFocus.requestFocus();
-                                  });
-                                } else {
-                                  searchFocus.unfocus();
-                                }
-                              },
-                            ),
-                          if (page == 0)
-                            IconButton(
-                              onPressed:
-                                  library.scanning || library.root == null
-                                  ? null
-                                  : () => library.refresh(),
-                              tooltip: 'Actualizar biblioteca',
-                              icon: const Icon(Icons.refresh),
-                            ),
-                          if (page == 0 && desktop)
-                            FilledButton.tonalIcon(
-                              onPressed: library.scanning || library.choosing
-                                  ? null
-                                  : library.chooseRoot,
-                              icon: const Icon(Icons.folder_open),
-                              label: Text(
-                                desktop ? 'Elegir carpeta' : 'Carpeta',
-                              ),
-                            ),
-                        ],
+                        ),
                       ),
                     ),
                     AnimatedSize(
@@ -355,7 +354,7 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
                                 controller: search,
                                 focusNode: searchFocus,
                                 decoration: const InputDecoration(
-                                  prefixIcon: Icon(Icons.search),
+                                  prefixIcon: ThemeIcon('search', Icons.search),
                                   hintText: 'Buscar en tu música',
                                 ),
                                 onChanged: (value) {
@@ -529,7 +528,7 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
     children: [
       PopupMenuButton<T>(
         tooltip: 'Filtrar por',
-        icon: const Icon(Icons.filter_list),
+        icon: const ThemeIcon('filter', Icons.filter_list),
         initialValue: selected,
         itemBuilder: (_) => options,
         onSelected: onSelected,
@@ -539,29 +538,34 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
             ? 'Ascendente · cambiar a descendente'
             : 'Descendente · cambiar a ascendente',
         onPressed: toggleDirection,
-        icon: Icon(ascending ? Icons.arrow_upward : Icons.arrow_downward),
+        icon: ThemeIcon(
+          ascending ? 'sortAscending' : 'sortDescending',
+          ascending ? Icons.arrow_upward : Icons.arrow_downward,
+        ),
       ),
     ],
+  );
+
+  Widget trackOrderingControls() => orderingControls(
+    selected: library.sort,
+    options: [
+      for (final value in TrackSort.values)
+        CheckedPopupMenuItem(
+          value: value,
+          checked: value == library.sort,
+          child: Text(value.label),
+        ),
+    ],
+    onSelected: library.setSort,
+    ascending: library.ascending,
+    toggleDirection: library.toggleSortDirection,
   );
 
   Widget sortControls() => Padding(
     padding: const EdgeInsets.symmetric(horizontal: 16),
     child: Align(
       alignment: Alignment.centerRight,
-      child: orderingControls(
-        selected: library.sort,
-        options: [
-          for (final value in TrackSort.values)
-            CheckedPopupMenuItem(
-              value: value,
-              checked: value == library.sort,
-              child: Text(value.label),
-            ),
-        ],
-        onSelected: library.setSort,
-        ascending: library.ascending,
-        toggleDirection: library.toggleSortDirection,
-      ),
+      child: trackOrderingControls(),
     ),
   );
 
@@ -667,7 +671,10 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
                     children: [
                       for (final name in names)
                         ListTile(
-                          leading: const Icon(Icons.playlist_add),
+                          leading: const ThemeIcon(
+                            'playlistAdd',
+                            Icons.playlist_add,
+                          ),
                           title: Text(name),
                           onTap: () => Navigator.pop(context, (name, false)),
                         ),
@@ -675,7 +682,7 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
                   ),
                 ),
                 ListTile(
-                  leading: const Icon(Icons.add),
+                  leading: const ThemeIcon('add', Icons.add),
                   title: const Text('Crear nueva lista'),
                   onTap: () => Navigator.pop(context, (null, true)),
                 ),
@@ -717,6 +724,7 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
   Widget trackMenu(Track track, {bool favorite = false}) =>
       PopupMenuButton<String>(
         tooltip: 'Opciones de canción',
+        icon: const ThemeIcon('more', Icons.more_vert),
         onSelected: (value) {
           switch (value) {
             case 'favorite':
@@ -792,7 +800,7 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
                 ),
               ListTile(
                 contentPadding: EdgeInsets.zero,
-                leading: const Icon(Icons.add),
+                leading: const ThemeIcon('add', Icons.add),
                 title: Text(newName ?? 'Crear lista'),
                 onTap: () async {
                   final name = await showDialog<String>(
@@ -852,7 +860,7 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
       return Column(
         children: [
           ListTile(
-            leading: const Icon(Icons.arrow_back),
+            leading: const ThemeIcon('back', Icons.arrow_back),
             title: Text(group!.split('\n').first),
             onTap: () => selectGroup(null),
           ),
@@ -980,16 +988,43 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
       );
     }
     return ListView.builder(
-      itemCount: keys.length,
+      itemCount: keys.length + (view == 2 ? 1 : 0),
       itemBuilder: (context, index) {
+        if (view == 2) {
+          if (index == 0) {
+            return SwitchListTile(
+              key: const ValueKey('artist-photo-consent'),
+              title: const Text('Fotos de artistas'),
+              subtitle: const Text(
+                'Al activar, se consultan el nombre y una canción en Deezer; Wikimedia sirve de respaldo por nombre. Las fotos se guardan en este dispositivo.',
+              ),
+              value: library.artistPhotosEnabled,
+              onChanged: library.setArtistPhotosEnabled,
+            );
+          }
+          index--;
+        }
         final key = keys[index];
         final items = groups[key]!;
         return ListTile(
-          leading: Icon(switch (view) {
-            1 => Icons.album_outlined,
-            2 => Icons.person_outline,
-            _ => Icons.folder_outlined,
-          }),
+          leading: view == 2 && library.artistPhotosEnabled
+              ? ArtistPhoto(
+                  artist: key,
+                  portraits: library.portraits,
+                  trackTitle: items.isEmpty ? null : items.first.title,
+                )
+              : ThemeIcon(
+                  view == 2
+                      ? 'artist'
+                      : view == 1
+                      ? 'album'
+                      : 'folder',
+                  view == 2
+                      ? Icons.person_outline
+                      : view == 1
+                      ? Icons.album_outlined
+                      : Icons.folder_outlined,
+                ),
           title: Text(
             key.split('\n').first == '.'
                 ? 'Carpeta raíz'
@@ -1009,6 +1044,7 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
     List<Track> tracks, {
     String? playlist,
     Widget? header,
+    bool showSort = true,
     String empty =
         'No hay canciones. Actualiza la carpeta o cambia tu búsqueda.',
   }) {
@@ -1034,6 +1070,7 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
         final track = tracks[index];
         final tile = StreamBuilder(
           stream: audio.mediaItem,
+          initialData: audio.mediaItem.value,
           builder: (context, current) => ListTile(
             selected: current.data?.id == track.id,
             selectedTileColor: Theme.of(context).colorScheme.primary
@@ -1060,16 +1097,17 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
                 IconButton(
                   tooltip: 'Favorito',
                   onPressed: () => library.toggleFavorite(track.id),
-                  icon: Icon(
-                    library.favorites.contains(track.id)
-                        ? Icons.favorite
-                        : Icons.favorite_border,
+                  icon: ThemeFavoriteIcon(
+                    selected: library.favorites.contains(track.id),
                   ),
                 ),
                 if (playlist != null && !library.automaticPlaylist(playlist))
                   IconButton(
                     tooltip: 'Quitar de la lista',
-                    icon: const Icon(Icons.playlist_remove),
+                    icon: const ThemeIcon(
+                      'playlistRemove',
+                      Icons.playlist_remove,
+                    ),
                     onPressed: () =>
                         library.removeFromPlaylist(playlist, track.id),
                   ),
@@ -1078,12 +1116,16 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
             ),
           ),
         );
-        return tile;
+        return Material(
+          color: Colors.transparent,
+          clipBehavior: Clip.hardEdge,
+          child: tile,
+        );
       },
     );
     return Column(
       children: [
-        sortControls(),
+        if (showSort) sortControls(),
         Expanded(child: list),
       ],
     );
@@ -1099,12 +1141,37 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
       return Column(
         children: [
           ListTile(
-            leading: const Icon(Icons.arrow_back),
-            title: Text(group!),
-            trailing: IconButton(
-              tooltip: 'Eliminar lista',
-              onPressed: () => deletePlaylist(name),
-              icon: const Icon(Icons.delete_outline),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+            minLeadingWidth: 24,
+            horizontalTitleGap: 8,
+            leading: const ThemeIcon('back', Icons.arrow_back),
+            title: Text(group!, maxLines: 1, overflow: TextOverflow.ellipsis),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                trackOrderingControls(),
+                PopupMenuButton<String>(
+                  tooltip: 'Opciones de la lista',
+                  icon: const ThemeIcon('more', Icons.more_vert),
+                  onSelected: (value) {
+                    if (value == 'cover') {
+                      choosePlaylistCover(context, library, name);
+                    } else {
+                      deletePlaylist(name);
+                    }
+                  },
+                  itemBuilder: (_) => const [
+                    PopupMenuItem(
+                      value: 'cover',
+                      child: Text('Cambiar carátula'),
+                    ),
+                    PopupMenuItem(
+                      value: 'delete',
+                      child: Text('Eliminar lista'),
+                    ),
+                  ],
+                ),
+              ],
             ),
             onTap: () => selectGroup(null),
           ),
@@ -1125,6 +1192,7 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
             child: trackList(
               tracks,
               playlist: name,
+              showSort: false,
               header: CollectionHeader(
                 title: name,
                 label: library.automaticPlaylist(name)
@@ -1134,8 +1202,15 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
                     '${tracks.length} canciones · $minutes min${missing > 0 ? ' · $missing no disponibles' : ''}',
                 artwork: (size) =>
                     PlaylistCover(library: library, name: name, size: size),
+                equalActions: true,
                 actions: [
                   FilledButton.icon(
+                    style: FilledButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 12,
+                      ),
+                    ),
                     onPressed: tracks.isEmpty
                         ? null
                         : () {
@@ -1146,6 +1221,12 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
                     label: const Text('Reproducir'),
                   ),
                   FilledButton.tonalIcon(
+                    style: FilledButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 12,
+                      ),
+                    ),
                     onPressed: () {
                       if (tracks.isEmpty) return;
                       audio.shuffle = true;
@@ -1156,12 +1237,6 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
                     },
                     icon: const ThemeIcon('shuffle', Icons.shuffle),
                     label: const Text('Aleatorio'),
-                  ),
-                  TextButton.icon(
-                    onPressed: () =>
-                        choosePlaylistCover(context, library, name),
-                    icon: const Icon(Icons.photo_outlined),
-                    label: const Text('Cambiar carátula'),
                   ),
                 ],
               ),
@@ -1187,39 +1262,53 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
       });
     return Column(
       children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          child: Wrap(
-            alignment: WrapAlignment.spaceBetween,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            runSpacing: 4,
-            children: [
-              FilledButton.tonalIcon(
-                onPressed: createPlaylist,
-                icon: const Icon(Icons.add),
-                label: const Text('Crear lista'),
-              ),
-              orderingControls(
-                selected: sortPlaylistsByCount,
-                options: [
-                  CheckedPopupMenuItem(
-                    value: false,
-                    checked: !sortPlaylistsByCount,
-                    child: const Text('Nombre'),
+        ClipRect(
+          child: AnimatedAlign(
+            key: const ValueKey('playlist-tools'),
+            alignment: Alignment.topCenter,
+            heightFactor:
+                hideNavigation && MediaQuery.sizeOf(context).width < 850
+                ? 0
+                : 1,
+            duration: MediaQuery.disableAnimationsOf(context)
+                ? Duration.zero
+                : const Duration(milliseconds: 180),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Wrap(
+                alignment: WrapAlignment.spaceBetween,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                runSpacing: 4,
+                children: [
+                  FilledButton.tonalIcon(
+                    onPressed: createPlaylist,
+                    icon: const ThemeIcon('add', Icons.add),
+                    label: const Text('Crear lista'),
                   ),
-                  CheckedPopupMenuItem(
-                    value: true,
-                    checked: sortPlaylistsByCount,
-                    child: const Text('Cantidad de canciones'),
+                  orderingControls(
+                    selected: sortPlaylistsByCount,
+                    options: [
+                      CheckedPopupMenuItem(
+                        value: false,
+                        checked: !sortPlaylistsByCount,
+                        child: const Text('Nombre'),
+                      ),
+                      CheckedPopupMenuItem(
+                        value: true,
+                        checked: sortPlaylistsByCount,
+                        child: const Text('Cantidad de canciones'),
+                      ),
+                    ],
+                    onSelected: (value) =>
+                        setState(() => sortPlaylistsByCount = value),
+                    ascending: playlistsAscending,
+                    toggleDirection: () => setState(
+                      () => playlistsAscending = !playlistsAscending,
+                    ),
                   ),
                 ],
-                onSelected: (value) =>
-                    setState(() => sortPlaylistsByCount = value),
-                ascending: playlistsAscending,
-                toggleDirection: () =>
-                    setState(() => playlistsAscending = !playlistsAscending),
               ),
-            ],
+            ),
           ),
         ),
         Expanded(
@@ -1264,7 +1353,7 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
   Widget playlistDeleteButton(String name) => IconButton(
     tooltip: 'Eliminar lista',
     onPressed: () => deletePlaylist(name),
-    icon: const Icon(Icons.delete_outline),
+    icon: const ThemeIcon('delete', Icons.delete_outline),
   );
 
   Widget playlistCard(String name) => Card(
@@ -1444,38 +1533,76 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
           [
             ListenableBuilder(
               listenable: widget.notifications!,
-              builder: (context, _) => Column(
-                children: [
-                  ListTile(
-                    title: const Text('Notificaciones de reproducción'),
-                    subtitle: Text(
-                      widget.notifications!.enabled == true
-                          ? 'Permiso concedido. Los controles dependen también del servicio multimedia.'
-                          : 'Android no permite notificaciones. Revisa sus ajustes.',
-                    ),
-                  ),
-                  FilledButton.tonalIcon(
-                    onPressed: () => widget.notifications!.request(),
-                    icon: const Icon(Icons.notifications_active_outlined),
-                    label: const Text('Solicitar permiso'),
-                  ),
-                  OutlinedButton.icon(
-                    onPressed: widget.notifications!.openSettings,
-                    icon: const Icon(Icons.notifications_outlined),
-                    label: const Text('Abrir ajustes de notificaciones'),
-                  ),
-                  OutlinedButton.icon(
-                    onPressed: () =>
-                        widget.notifications!.openBatterySettings(),
-                    icon: const Icon(Icons.battery_saver_outlined),
-                    label: const Text('Revisar restricciones de batería'),
-                  ),
-                  OutlinedButton.icon(
-                    onPressed: showPlaybackDiagnostics,
-                    icon: const Icon(Icons.monitor_heart_outlined),
-                    label: const Text('Diagnóstico multimedia'),
-                  ),
-                ],
+              builder: (context, _) => LayoutBuilder(
+                builder: (context, bounds) {
+                  var buttonHeight = 48.0;
+                  for (final label in [
+                    'Solicitar permiso',
+                    'Abrir ajustes de notificaciones',
+                    'Revisar restricciones de batería',
+                    'Diagnóstico multimedia',
+                  ]) {
+                    final painter = TextPainter(
+                      text: TextSpan(
+                        text: label,
+                        style: Theme.of(context).textTheme.labelLarge,
+                      ),
+                      textDirection: Directionality.of(context),
+                      textScaler: MediaQuery.textScalerOf(context),
+                    )..layout(maxWidth: max(1, bounds.maxWidth - 80));
+                    buttonHeight = max(buttonHeight, painter.height + 24);
+                    painter.dispose();
+                  }
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      ListTile(
+                        title: const Text('Notificaciones de reproducción'),
+                        subtitle: Text(
+                          widget.notifications!.enabled == true
+                              ? 'Permiso concedido. Los controles dependen también del servicio multimedia.'
+                              : 'Android no permite notificaciones. Revisa sus ajustes.',
+                        ),
+                      ),
+                      SizedBox(
+                        height: buttonHeight,
+                        child: FilledButton.tonalIcon(
+                          onPressed: () => widget.notifications!.request(),
+                          icon: const Icon(Icons.notifications_active_outlined),
+                          label: const Text('Solicitar permiso'),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      SizedBox(
+                        height: buttonHeight,
+                        child: OutlinedButton.icon(
+                          onPressed: widget.notifications!.openSettings,
+                          icon: const Icon(Icons.notifications_outlined),
+                          label: const Text('Abrir ajustes de notificaciones'),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      SizedBox(
+                        height: buttonHeight,
+                        child: OutlinedButton.icon(
+                          onPressed: () =>
+                              widget.notifications!.openBatterySettings(),
+                          icon: const Icon(Icons.battery_saver_outlined),
+                          label: const Text('Revisar restricciones de batería'),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      SizedBox(
+                        height: buttonHeight,
+                        child: OutlinedButton.icon(
+                          onPressed: showPlaybackDiagnostics,
+                          icon: const Icon(Icons.monitor_heart_outlined),
+                          label: const Text('Diagnóstico multimedia'),
+                        ),
+                      ),
+                    ],
+                  );
+                },
               ),
             ),
           ],
@@ -1509,7 +1636,7 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
         ]),
       settingsSection('Biblioteca', Icons.library_music_outlined, [
         ListTile(
-          leading: const Icon(Icons.folder_open),
+          leading: const ThemeIcon('folder', Icons.folder_open),
           title: const Text('Carpeta de música'),
           subtitle: Text(library.root ?? 'Sin seleccionar'),
         ),
@@ -1517,7 +1644,7 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
           onPressed: library.scanning || library.choosing || library.deleting
               ? null
               : library.chooseRoot,
-          icon: const Icon(Icons.folder_open),
+          icon: const ThemeIcon('folder', Icons.folder_open),
           label: const Text('Cambiar carpeta'),
         ),
         if (Platform.isAndroid)
@@ -1609,44 +1736,43 @@ class _PlayerPanelState extends State<PlayerPanel> {
   void openPlayer() => Navigator.of(context).push<void>(
     MaterialPageRoute(
       fullscreenDialog: true,
-      builder: (context) => Scaffold(
-        appBar: AppBar(
-          title: Row(
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: Image.asset(
-                  'assets/branding/rp-music-variant-a.png',
-                  width: 32,
-                  height: 32,
+      builder: (context) => ThemeBackdrop(
+        opaque: true,
+        child: Scaffold(
+          appBar: AppBar(
+            title: Row(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: const ThemeBrand(size: 32),
                 ),
-              ),
-              const SizedBox(width: 12),
-              const Expanded(
-                child: Text(
-                  'Ahora suena',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+                const SizedBox(width: 12),
+                const Expanded(
+                  child: Text(
+                    'Ahora suena',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
+            leading: IconButton(
+              tooltip: 'Cerrar reproductor',
+              onPressed: () => Navigator.pop(context),
+              icon: const ThemeIcon('back', Icons.arrow_back),
+            ),
           ),
-          leading: IconButton(
-            tooltip: 'Cerrar reproductor',
-            onPressed: () => Navigator.pop(context),
-            icon: const Icon(Icons.arrow_back),
-          ),
-        ),
-        body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Center(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 720),
-                child: PlayerPanel(
-                  audio: audio,
-                  library: library,
-                  expanded: true,
+          body: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 720),
+                  child: PlayerPanel(
+                    audio: audio,
+                    library: library,
+                    expanded: true,
+                  ),
                 ),
               ),
             ),
@@ -1659,6 +1785,7 @@ class _PlayerPanelState extends State<PlayerPanel> {
   @override
   Widget build(BuildContext context) => StreamBuilder(
     stream: audio.mediaItem,
+    initialData: audio.mediaItem.value,
     builder: (context, item) {
       final track = item.data;
       if (widget.expanded) {
@@ -1738,10 +1865,8 @@ class _PlayerPanelState extends State<PlayerPanel> {
                         onPressed: track == null
                             ? null
                             : () => library.toggleFavorite(track.id),
-                        icon: Icon(
-                          library.favorites.contains(track?.id)
-                              ? Icons.favorite
-                              : Icons.favorite_border,
+                        icon: ThemeFavoriteIcon(
+                          selected: library.favorites.contains(track?.id),
                         ),
                       ),
                       StreamBuilder(
@@ -1889,7 +2014,7 @@ class _PlayerPanelState extends State<PlayerPanel> {
                               ),
                             ),
                           ),
-                    icon: const Icon(Icons.queue_music),
+                    icon: const ThemeIcon('queue', Icons.queue_music),
                   ),
                 ],
               ),
@@ -2041,7 +2166,7 @@ class _ArtworkState extends State<Artwork> {
     if (id == null) return;
     final modifiedMs = widget.modifiedMs;
     if (modifiedMs == null) {
-      image = widget.library.files.artwork(id);
+      image = widget.library.artwork(id);
       return;
     }
 
@@ -2071,17 +2196,20 @@ class _ArtworkState extends State<Artwork> {
       child: FutureBuilder(
         key: ValueKey((widget.id, widget.modifiedMs)),
         future: image,
+        initialData: widget.modifiedMs == null
+            ? widget.library.cachedArtwork(widget.id)
+            : null,
         builder: (context, snapshot) => snapshot.data == null
             ? const ColoredBox(
                 color: Color(0xff272a32),
-                child: Icon(Icons.album_outlined),
+                child: ThemeIcon('album', Icons.album_outlined),
               )
             : Image.memory(
                 snapshot.data!,
                 fit: BoxFit.cover,
                 cacheWidth: widget.size > 100 ? 600 : 128,
                 errorBuilder: (_, error, stack) =>
-                    const Icon(Icons.album_outlined),
+                    const ThemeIcon('album', Icons.album_outlined),
               ),
       ),
     ),

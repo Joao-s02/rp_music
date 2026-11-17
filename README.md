@@ -2,9 +2,15 @@
 
 Reproductor local para Android y Windows. Abre tu biblioteca y escucha música sin cuenta ni conexión.
 
-**Versión 0.4.0**, aplicación **0.4.0+30**. [Descargar Android universal, ARM64 y Windows](https://github.com/Joao-s02/rp_music/releases/tag/v0.4.0).
+**Versión 0.4.1**, aplicación **0.4.1+35**. [Descargar Android universal, ARM64 y Windows](https://github.com/Joao-s02/rp_music/releases/tag/v0.4.1).
 
-[Instalación y uso](docs/USO-0.4.0.md) · [Pruebas](docs/PRUEBAS-0.4.0.md) · [Cambios](docs/CAMBIOS-0.4.0.md) · [Documentación](docs/README.md)
+[Instalación y uso](docs/USO-0.4.1.md) · [Pruebas](docs/PRUEBAS-0.4.1.md) · [Cambios](docs/CAMBIOS-0.4.1.md) · [Documentación](docs/README.md)
+
+## Novedades de 0.4.1
+
+Se corrigen la transición del reproductor con fondos personalizados, la reutilización de carátulas y el resaltado al desplazar. Miku revisión 2 amplía iconos y centra los controles. Listas agrupa filtros/acciones; Temas ofrece secciones desplegables y revisiones compatibles; Letras comparte movimiento en ambos modos y muestra carátula junto al título.
+
+Las fotos son opcionales y se activan en Artistas. Al cargar una foto se consultan el nombre y una canción en Deezer, con Wikimedia de respaldo por nombre. No se envían archivos ni audio. Se conserva la procedencia y la caché privada; una coincidencia ausente o dudosa muestra el icono de respaldo. [Datos enviados y uso](docs/USO-0.4.1.md#fotos-de-artistas-y-conexión).
 
 ## Novedades de 0.4.0
 
@@ -16,11 +22,11 @@ Biblioteca por carpetas, álbumes y artistas, búsqueda, favoritos, listas y por
 
 ## Instalación y actualización
 
-En Android, instala el APK apropiado sobre la app existente para conservar tus datos. En Windows, extrae el ZIP completo, incluidas DLL y licencias. [Guía de uso](docs/USO-0.4.0.md).
+En Android, instala el APK apropiado sobre la app existente para conservar tus datos. En Windows, extrae el ZIP completo, incluidas DLL y licencias. [Guía de uso](docs/USO-0.4.1.md).
 
 ## Verificación
 
-120 pruebas automatizadas aprobadas y análisis limpio. Android universal/ARM64 firmados y Windows x64 compilado y empaquetado para distribución. Instalación y actualización reales, Play Protect, audífonos y escucha prolongada pendientes. [Pruebas y límites](docs/PRUEBAS-0.4.0.md).
+138 pruebas automatizadas aprobadas y análisis limpio. Android universal/ARM64 firmados y Windows x64 compilado y empaquetado con sus dependencias. Instalación, fluidez, Play Protect y escucha prolongada finales pendientes de validación física. [Pruebas y límites](docs/PRUEBAS-0.4.1.md).
 
 ## Desarrollar y colaborar
 

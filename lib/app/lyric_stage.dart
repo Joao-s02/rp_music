@@ -164,136 +164,57 @@ class LyricPhrase extends StatelessWidget {
   }
 }
 
-class LyricScene extends StatelessWidget {
-  const LyricScene({
+/// Song identity shared by both lyrics modes.
+class LyricSongHeader extends StatelessWidget {
+  const LyricSongHeader({
     super.key,
-    required this.lyrics,
-    required this.position,
     required this.title,
     required this.artist,
+    this.cover,
   });
-  final Lyrics lyrics;
-  final Duration position;
   final String title, artist;
+  final ImageProvider? cover;
   @override
-  Widget build(BuildContext context) {
-    final index = lyrics.activeAt(position);
-    final selected = index.clamp(0, lyrics.lines.length - 1);
-    final line = lyrics.lines[selected];
-    final reduce = MediaQuery.disableAnimationsOf(context);
-    return LayoutBuilder(
-      builder: (context, box) {
-        final font = math.min(60.0, box.maxWidth < 500 ? 38.0 : 52.0);
-        return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 28),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const SizedBox(height: 60),
-              Text(
-                title,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.labelLarge,
-              ),
-              Text(
-                artist,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.labelSmall,
-              ),
-              Expanded(
-                child: Center(
-                  child: SingleChildScrollView(
-                    physics: const ClampingScrollPhysics(),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        if (selected > 0)
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 28),
-                            child: Text(
-                              lyrics.lines[selected - 1].text,
-                              textAlign: lyrics.lines[selected - 1].rightAligned
-                                  ? TextAlign.right
-                                  : TextAlign.left,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontSize: font * .52,
-                                fontWeight: FontWeight.w700,
-                                color: Theme.of(context).colorScheme.onSurface
-                                    .withValues(alpha: .22),
-                              ),
-                            ),
-                          ),
-                        AnimatedSwitcher(
-                          duration: reduce
-                              ? Duration.zero
-                              : const Duration(milliseconds: 460),
-                          switchInCurve: Curves.easeOutCubic,
-                          transitionBuilder: (child, animation) =>
-                              FadeTransition(
-                                opacity: animation,
-                                child: SlideTransition(
-                                  position: Tween<Offset>(
-                                    begin: const Offset(0, .12),
-                                    end: Offset.zero,
-                                  ).animate(animation),
-                                  child: child,
-                                ),
-                              ),
-                          child: Align(
-                            key: ValueKey(selected),
-                            alignment: line.rightAligned
-                                ? Alignment.centerRight
-                                : Alignment.centerLeft,
-                            child: LyricPhrase(
-                              line: line,
-                              position: position,
-                              active: index >= 0,
-                              size: font,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 24),
-                        if (selected + 1 < lyrics.lines.length)
-                          Text(
-                            lyrics.lines[selected + 1].text,
-                            textAlign: lyrics.lines[selected + 1].rightAligned
-                                ? TextAlign.right
-                                : TextAlign.left,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              fontSize: font * .52,
-                              fontWeight: FontWeight.w700,
-                              color: Theme.of(context).colorScheme.onSurface
-                                  .withValues(alpha: .32),
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
+  Widget build(BuildContext context) => Row(
+    children: [
+      ClipRRect(
+        borderRadius: BorderRadius.circular(10),
+        child: SizedBox.square(
+          dimension: 48,
+          child: cover == null
+              ? ColoredBox(
+                  color: Theme.of(context).colorScheme.surfaceContainerHigh,
+                  child: const Icon(Icons.music_note),
+                )
+              : Image(
+                  image: cover!,
+                  fit: BoxFit.cover,
+                  gaplessPlayback: true,
+                  errorBuilder: (_, _, _) => const Icon(Icons.music_note),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 32),
-                child: Text(
-                  'RP MUSIC',
-                  style: TextStyle(
-                    letterSpacing: 5,
-                    fontSize: 10,
-                    color: Theme.of(context).colorScheme.onSurface
-                        .withValues(alpha: .3),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
+        ),
+      ),
+      const SizedBox(width: 12),
+      Expanded(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.titleMedium
+                  ?.copyWith(fontWeight: FontWeight.w800),
+            ),
+            Text(
+              artist,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+          ],
+        ),
+      ),
+    ],
+  );
 }

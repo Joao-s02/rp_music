@@ -117,6 +117,9 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
+      expect(find.text('Importar tema'), findsNothing);
+      await tester.tap(find.text('Descargados'));
+      await tester.pumpAndSettle();
       expect(find.text('Importar tema'), findsOneWidget);
       expect(find.text('Minimalista'), findsWidgets);
       expect(tester.takeException(), isNull);

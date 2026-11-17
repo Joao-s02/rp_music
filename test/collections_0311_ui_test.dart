@@ -63,7 +63,13 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('LISTA LOCAL'), findsOneWidget);
       expect(find.text('Reproducir'), findsWidgets);
+      expect(find.text('Cambiar carátula'), findsNothing);
+      await tester.tap(find.byTooltip('Opciones de la lista'));
+      await tester.pumpAndSettle();
       expect(find.text('Cambiar carátula'), findsOneWidget);
+      expect(find.text('Eliminar lista'), findsOneWidget);
+      await tester.binding.handlePopRoute();
+      await tester.pumpAndSettle();
       expect(tester.takeException(), isNull);
       await tester.runAsync(() async {
         final boundary =

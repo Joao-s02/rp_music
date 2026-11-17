@@ -17,3 +17,8 @@ Las versiones anteriores a 0.4.0 usaban el catálogo histórico [rp-music-extens
 ## Versiones anteriores
 
 El [historial por versión](releases/README.md) reúne las guías, pruebas y notas de cada entrega en sus rutas originales.
+
+
+## RP Music 0.4.1
+
+[Uso](USO-0.4.1.md) · [Cambios](CAMBIOS-0.4.1.md) · [Pruebas](PRUEBAS-0.4.1.md) · [Release](RELEASE-0.4.1.md)

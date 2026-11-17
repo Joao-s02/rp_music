@@ -12,10 +12,12 @@ class CollectionHeader extends StatelessWidget {
     required this.artwork,
     required this.description,
     required this.actions,
+    this.equalActions = false,
   });
   final String title, label, description;
   final Widget Function(double) artwork;
   final List<Widget> actions;
+  final bool equalActions;
   @override
   Widget build(BuildContext context) => PulseSurface(
     inset: const EdgeInsets.all(20),
@@ -57,12 +59,25 @@ class CollectionHeader extends StatelessWidget {
           const SizedBox(height: 8),
           Text(description, textAlign: TextAlign.center),
           const SizedBox(height: 18),
-          Wrap(
-            alignment: WrapAlignment.center,
-            spacing: 8,
-            runSpacing: 8,
-            children: actions,
-          ),
+          if (equalActions)
+            IntrinsicHeight(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  for (var i = 0; i < actions.length; i++) ...[
+                    if (i > 0) const SizedBox(width: 8),
+                    Expanded(child: actions[i]),
+                  ],
+                ],
+              ),
+            )
+          else
+            Wrap(
+              alignment: WrapAlignment.center,
+              spacing: 8,
+              runSpacing: 8,
+              children: actions,
+            ),
         ],
       ),
     ),

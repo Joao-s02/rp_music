@@ -653,7 +653,12 @@ void main() {
       await tester.runAsync(library.themes.initialize);
       await tester.tap(find.byIcon(Icons.palette_outlined).first);
       await tester.pumpAndSettle();
+      expect(find.text('Importar tema'), findsNothing);
+      await tester.tap(find.text('Descargados'));
+      await tester.pumpAndSettle();
       expect(find.text('Importar tema'), findsOneWidget);
+      await tester.tap(find.text('Catálogo'));
+      await tester.pumpAndSettle();
       expect(find.text('Minimalista'), findsOneWidget);
       await tester.tap(find.byIcon(Icons.settings_outlined).last);
       await tester.pumpAndSettle(

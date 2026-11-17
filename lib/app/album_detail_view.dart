@@ -1,3 +1,4 @@
+import '../themes/theme_library.dart';
 import 'album_sleeve.dart';
 import 'pulse_surface.dart';
 import 'now_playing_bars.dart';
@@ -111,7 +112,7 @@ class _AlbumDetailViewState extends State<AlbumDetailView> {
                   alignment: Alignment.centerLeft,
                   child: TextButton.icon(
                     onPressed: widget.onBack,
-                    icon: const Icon(Icons.arrow_back),
+                    icon: const ThemeIcon('back', Icons.arrow_back),
                     label: const Text('Álbumes'),
                   ),
                 ),
@@ -222,7 +223,7 @@ class _AlbumDetailViewState extends State<AlbumDetailView> {
                               widget.audio.shuffle = false;
                               widget.audio.select(tracks, 0);
                             },
-                            icon: const Icon(Icons.play_arrow),
+                            icon: const ThemeIcon('play', Icons.play_arrow),
                             label: const Text('Reproducir'),
                           ),
                           FilledButton.tonalIcon(
@@ -239,7 +240,10 @@ class _AlbumDetailViewState extends State<AlbumDetailView> {
                           IconButton.filledTonal(
                             onPressed: widget.onSave,
                             tooltip: 'Añadir álbum a una lista',
-                            icon: const Icon(Icons.playlist_add),
+                            icon: const ThemeIcon(
+                              'playlistAdd',
+                              Icons.playlist_add,
+                            ),
                           ),
                         ],
                       ),

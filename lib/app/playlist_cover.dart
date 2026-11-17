@@ -1,3 +1,5 @@
+import '../themes/theme_library.dart';
+
 import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
@@ -19,7 +21,7 @@ Future<void> choosePlaylistCover(
         mainAxisSize: MainAxisSize.min,
         children: [
           ListTile(
-            leading: const Icon(Icons.photo_outlined),
+            leading: const ThemeIcon('playlistCover', Icons.photo_outlined),
             title: const Text('Elegir imagen propia'),
             onTap: () => Navigator.pop(context, 'image'),
           ),
@@ -132,7 +134,8 @@ class _PlaylistCoverState extends State<PlaylistCover> {
   Widget placeholder() => ColoredBox(
     color: Theme.of(context).colorScheme.secondaryContainer,
     child: Center(
-      child: Icon(
+      child: ThemeIcon(
+        'queue',
         Icons.queue_music,
         color: Theme.of(context).colorScheme.onSecondaryContainer,
       ),

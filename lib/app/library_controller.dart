@@ -1,3 +1,7 @@
+import 'dart:io';
+
+import '../artists/artist_portraits.dart';
+
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
@@ -30,6 +34,7 @@ class LibraryController extends ChangeNotifier {
   bool dark = true;
   bool playlistGrid = false;
   bool closeToTray = true;
+  bool artistPhotosEnabled = false;
   double volume = 1;
   String? message;
   Set<String> favorites = {};
@@ -39,6 +44,50 @@ class LibraryController extends ChangeNotifier {
     LocalStore(store.directory, baseName: 'themes'),
   );
   LyricsController? lyrics;
+  ArtistPortraits? _portraits;
+  ArtistPortraits get portraits => _portraits ??= ArtistPortraits(
+    Directory('${store.directory.path}/artist_portraits'),
+  );
+
+  final _artwork = <String, Future<Uint8List?>>{};
+  final _artworkValues = <String, Uint8List>{};
+
+  String _artworkKey(String id) {
+    final track = tracks.where((track) => track.id == id).firstOrNull;
+    return '$id:${track?.modifiedMs}:${track?.size}';
+  }
+
+  Uint8List? cachedArtwork(String? id) =>
+      id == null ? null : _artworkValues[_artworkKey(id)];
+
+  Future<Uint8List?> artwork(String id) {
+    final key = _artworkKey(id);
+    return _artwork.putIfAbsent(key, () async {
+      try {
+        final bytes = await files.artwork(id);
+        if (bytes != null && bytes.length <= 8 * 1024 * 1024) {
+          _artworkValues[key] = bytes;
+        }
+        while (_artworkValues.length > 8 ||
+            _artworkValues.values.fold<int>(
+                  0,
+                  (sum, value) => sum + value.length,
+                ) >
+                16 * 1024 * 1024) {
+          final first = _artworkValues.keys.first;
+          _artworkValues.remove(first);
+          _artwork.remove(first);
+        }
+        while (_artwork.length > 16) {
+          _artwork.remove(_artwork.keys.first);
+        }
+        return bytes;
+      } catch (_) {
+        _artwork.remove(key);
+        return null;
+      }
+    });
+  }
 
   final _thumbnails = <(String, int), Future<Uint8List?>>{};
   final _thumbnailSizes = <(String, int), int>{};
@@ -134,6 +183,7 @@ class LibraryController extends ChangeNotifier {
     final nextAscending = json['ascending'] as bool? ?? true;
     final nextPlaylistGrid = json['playlistGrid'] as bool? ?? false;
     final nextDark = json['dark'] as bool? ?? true;
+    final nextArtistPhotos = json['artistPhotosEnabled'] == true;
     final nextCloseToTray = json['closeToTray'] as bool? ?? true;
     final nextVolume = ((json['volume'] as num?)?.toDouble() ?? 1).clamp(
       0.0,
@@ -149,6 +199,7 @@ class LibraryController extends ChangeNotifier {
       ascending = nextAscending;
       dark = nextDark;
       playlistGrid = nextPlaylistGrid;
+      artistPhotosEnabled = nextArtistPhotos;
       closeToTray = nextCloseToTray;
       volume = nextVolume;
     };
@@ -186,6 +237,7 @@ class LibraryController extends ChangeNotifier {
       'dark': dark,
       'playlistGrid': playlistGrid,
       'closeToTray': closeToTray,
+      'artistPhotosEnabled': artistPhotosEnabled,
       'volume': volume,
     };
     try {
@@ -435,6 +487,16 @@ class LibraryController extends ChangeNotifier {
     await persist();
   }
 
+  Future<void> setArtistPhotosEnabled(bool value) async {
+    artistPhotosEnabled = value;
+    if (!value) {
+      _portraits?.dispose();
+      _portraits = null;
+    }
+    notifyListeners();
+    await persist();
+  }
+
   Future<void> setPlaylistGrid(bool value) async {
     playlistGrid = value;
     notifyListeners();
@@ -460,6 +522,7 @@ class LibraryController extends ChangeNotifier {
 
   @override
   void dispose() {
+    _portraits?.dispose();
     themes.dispose();
     lyrics?.dispose();
     super.dispose();
