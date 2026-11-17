@@ -1,30 +1,26 @@
 # RP Music
 
-Reproductor Flutter para Android y Windows, ampliable mediante extensiones. Biblioteca local sin cuenta ni conexión; actualizaciones y consultas en línea opcionales.
+Reproductor local para Android y Windows. Abre tu biblioteca y escucha música sin cuenta ni conexión.
 
-**Versión publicada: 0.3.20-alpha.1**, aplicación **0.3.20+29**. [Descargar Android universal, ARM64 y Windows](https://github.com/Joao-s02/rp_music/releases/tag/v0.3.20-alpha.1).
+**Versión 0.4.0**, aplicación **0.4.0+30**. [Descargar Android universal, ARM64 y Windows](https://github.com/Joao-s02/rp_music/releases/tag/v0.4.0).
 
-[Guía vigente](docs/USO.md) · [Pruebas](docs/PRUEBAS-0.3.20.md) · [Cambios](docs/CAMBIOS-0.3.20.md) · [Documentación](docs/README.md)
+[Instalación y uso](docs/USO-0.4.0.md) · [Pruebas](docs/PRUEBAS-0.4.0.md) · [Cambios](docs/CAMBIOS-0.4.0.md) · [Documentación](docs/README.md)
 
-## Novedades de 0.3.20
+## Novedades de 0.4.0
 
-En pantallas compactas, la navegación inferior se recoge al recorrer la biblioteca, Favoritos, Listas y las extensiones abiertas desde Explorar. El minirreproductor queda por encima del área de navegación del teléfono. Atrás cierra el detalle o vuelve a Explorar según la pantalla.
+RP Music se centra en la escucha de tu biblioteca local. Temas sustituye Explorar en la navegación y permite importar o descargar colores, fondos e iconos para toda la app. [Catálogo, guía y plantilla de temas](https://github.com/Joao-s02/rp-music-themes).
 
-El botón **Filtrar por** abre los criterios de orden junto a la flecha ascendente/descendente. En **Ajustes → Apariencia → Vista de listas** se puede elegir entre lista y tarjetas cuadradas. La búsqueda de la biblioteca se despliega con una animación y muestra un solo conteo bajo el título. El encabezado transparente de Letras se recoge al avanzar y vuelve al desplazarse hacia arriba.
+Se retiran las extensiones, incluidas YouTube, Radio y la búsqueda de letras por internet. Se conservan las letras incrustadas y los LRC/TXT importados. La actualización limpia las letras privadas con marca de origen en línea y convierte las listas automáticas en listas locales editables.
 
-## Funciones disponibles
-
-Biblioteca local por carpetas, álbumes y artistas; búsqueda, favoritos, listas y carátulas; cola de reproducción, aleatorio/repetición y restauración sin iniciar audio. Letras incrustadas y LRC/TXT; sincronización por línea y por palabra cuando el archivo aporta esos tiempos. Reproductor adaptable, controles multimedia y widgets Android. Windows utiliza libmpv y tiene evidencia nativa de M4A/OPUS y YouTube desde 0.3.10.
-
-Las extensiones API 2/Dart y API 3/JavaScript se instalan por separado desde el catálogo de [rp-music-extensions](https://github.com/Joao-s02/rp-music-extensions), con permisos explícitos. YouTube/Explorador permiten búsqueda, navegación pública, importación como copias locales y descargas según la variante. Radio y Letras locales son opciones independientes. Las letras automáticas de música local usan caché privada; no reescriben los archivos del usuario. Sin cuenta/sincronización online implementada ni soporte web.
+Biblioteca por carpetas, álbumes y artistas, búsqueda, favoritos, listas y portadas. Cola, aleatorio, repetición y restauración sin iniciar audio. Letras sincronizadas según las marcas del archivo, controles multimedia y widgets Android.
 
 ## Instalación y actualización
 
-Usa la [release 0.3.20-alpha.1](https://github.com/Joao-s02/rp_music/releases/tag/v0.3.20-alpha.1). En Android, descarga el APK apropiado e instálalo desde Archivos **sin desinstalar** la versión anterior para conservar tus datos. En Windows, extrae el ZIP completo, incluidas DLL y licencias. Consulta la [guía de instalación y uso](docs/USO-0.3.20.md).
+En Android, instala el APK apropiado sobre la app existente para conservar tus datos. En Windows, extrae el ZIP completo, incluidas DLL y licencias. [Guía de uso](docs/USO-0.4.0.md).
 
 ## Verificación
 
-Android universal y ARM64 firmados y Windows x64 compilado. La suite completa aprobó 188 pruebas y omitió 1. Queda pendiente probar la actualización, la navegación del sistema, la extensión de YouTube y Play Protect en Android físico. [Pruebas y límites](docs/PRUEBAS-0.3.20.md) · [Historial de versiones](docs/releases/README.md).
+120 pruebas automatizadas aprobadas y análisis limpio. Android universal/ARM64 firmados y Windows x64 compilado y empaquetado para distribución. Instalación y actualización reales, Play Protect, audífonos y escucha prolongada pendientes. [Pruebas y límites](docs/PRUEBAS-0.4.0.md).
 
 ## Desarrollar y colaborar
 

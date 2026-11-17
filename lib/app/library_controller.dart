@@ -1,15 +1,12 @@
 import 'dart:convert';
-import 'dart:io';
 
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 
 import '../data/local_store.dart';
 import '../data/music_files.dart';
-import '../domain/extension_manifest.dart';
 import '../domain/track.dart';
 import '../domain/track_sort.dart';
-import '../extensions/program_controller.dart';
+import '../themes/theme_library.dart';
 import '../lyrics/lyrics_controller.dart';
 
 class LibraryController extends ChangeNotifier {
@@ -17,21 +14,6 @@ class LibraryController extends ChangeNotifier {
   final LocalStore store;
   final MusicFiles files;
   List<Track> tracks = [];
-  final Map<String, Track> remoteTracks = {};
-  void rememberRemoteTracks(List<Track> values) {
-    for (final track in values) {
-      remoteTracks[track.id] = track;
-    }
-    final pinned = {...favorites, ...playlists.values.expand((ids) => ids)};
-    final removable = remoteTracks.keys
-        .where((id) => !pinned.contains(id))
-        .toList();
-    for (final id in removable) {
-      if (remoteTracks.length <= 2000) break;
-      remoteTracks.remove(id);
-    }
-  }
-
   List<Track>? _stableTracks;
   String? _stableRoot;
   String? root;
@@ -53,14 +35,10 @@ class LibraryController extends ChangeNotifier {
   Set<String> favorites = {};
   Map<String, List<String>> playlists = {};
   Map<String, Map<String, dynamic>> playlistMeta = {};
-  ProgramController? programs;
+  late final themes = ThemeLibrary(
+    LocalStore(store.directory, baseName: 'themes'),
+  );
   LyricsController? lyrics;
-  VoidCallback? refreshPrograms;
-  void notifyProgramsReady() => notifyListeners();
-  void attachPrograms(ProgramController value) {
-    programs = value;
-    value.addListener(notifyListeners);
-  }
 
   final _thumbnails = <(String, int), Future<Uint8List?>>{};
   final _thumbnailSizes = <(String, int), int>{};
@@ -111,64 +89,6 @@ class LibraryController extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> importSourcePlaylist(String name, List<Track> values) async {
-    final clean = name.trim();
-    if (clean.isEmpty ||
-        clean.length > 80 ||
-        playlists.containsKey(clean) ||
-        values.isEmpty ||
-        values.length > 10000 ||
-        values.any(
-          (t) =>
-              t.sourceId == null ||
-              !t.id.startsWith('rpmusic-source:${t.sourceId}:'),
-        )) {
-      throw const FormatException(
-        'Elige un nombre nuevo y una colección válida.',
-      );
-    }
-    // A detached snapshot: no remote playlist link or signed audio URL is stored.
-    playlists[clean] = values.map((t) => t.id).toList();
-    rememberRemoteTracks(values);
-    await persist();
-    notifyListeners();
-  }
-
-  Future<void> createSmartPlaylist(
-    String name,
-    String owner,
-    Map<String, dynamic> rule,
-    List<String> ids,
-  ) async {
-    final clean = name.trim();
-    if (clean.isEmpty || clean.length > 80 || playlists.containsKey(clean)) {
-      throw const FormatException('Elige un nombre nuevo para la lista.');
-    }
-    playlists[clean] = ids.toSet().toList();
-    playlistMeta[clean] = {
-      'owner': owner,
-      'rule': jsonDecode(jsonEncode(rule)),
-    };
-    await persist();
-    notifyListeners();
-    refreshPrograms?.call();
-  }
-
-  Future<void> updateSmartPlaylist(
-    String name,
-    String owner,
-    List<String> ids,
-  ) async {
-    if (!playlists.containsKey(name) || playlistMeta[name]?['owner'] != owner) {
-      return;
-    }
-    final clean = ids.toSet().toList();
-    if (listEquals(playlists[name], clean)) return;
-    playlists[name] = clean;
-    await persist();
-    notifyListeners();
-  }
-
   Future<void> setPlaylistCover(String name, String? path) async {
     if (!playlists.containsKey(name)) return;
     final meta = playlistMeta.putIfAbsent(name, () => {});
@@ -180,11 +100,6 @@ class LibraryController extends ChangeNotifier {
     await persist();
     notifyListeners();
   }
-
-  List<ExtensionManifest> extensions = [];
-  String? activeExtensionId;
-  ExtensionManifest? get activeExtension =>
-      extensions.where((e) => e.id == activeExtensionId).firstOrNull;
 
   bool _recoveryRequired = false;
   static const _recoveryMessage =
@@ -200,29 +115,17 @@ class LibraryController extends ChangeNotifier {
     final nextTracks = (json['tracks'] as List)
         .map((e) => Track.fromJson(Map<String, dynamic>.from(e as Map)))
         .toList();
-    final nextRemote = <String, Track>{};
-    for (final raw in json['remoteTracks'] as List? ?? []) {
-      final track = Track.fromJson(Map<String, dynamic>.from(raw as Map));
-      if (track.sourceId != null &&
-          track.id.startsWith('rpmusic-source:${track.sourceId}:')) {
-        nextRemote[track.id] = track;
-      }
-    }
     final nextFavorites = (json['favorites'] as List).cast<String>().toSet();
     final nextPlaylists = (json['playlists'] as Map).map(
       (key, value) => MapEntry(key as String, List<String>.from(value as List)),
     );
-    final nextExtensions = (json['extensions'] as List)
-        .map(
-          (e) => ExtensionManifest.parse(Map<String, dynamic>.from(e as Map)),
-        )
-        .toList();
     final nextMeta = {
       for (final entry in (json['playlistMeta'] as Map? ?? {}).entries)
         if (entry.key is String && entry.value is Map)
-          entry.key as String: Map<String, dynamic>.from(entry.value as Map),
+          entry.key as String: (Map<String, dynamic>.from(entry.value as Map)
+            ..remove('owner')
+            ..remove('rule')),
     };
-    final nextActive = json['activeExtension'] as String?;
     final nextSort =
         TrackSort.values
             .where((value) => value.name == json['sort'])
@@ -239,14 +142,9 @@ class LibraryController extends ChangeNotifier {
     return () {
       root = nextRoot;
       tracks = nextTracks;
-      remoteTracks
-        ..clear()
-        ..addAll(nextRemote);
       favorites = nextFavorites;
       playlists = nextPlaylists;
-      extensions = nextExtensions;
       playlistMeta = nextMeta;
-      activeExtensionId = nextActive;
       sort = nextSort;
       ascending = nextAscending;
       dark = nextDark;
@@ -280,19 +178,9 @@ class LibraryController extends ChangeNotifier {
       'schema': 1,
       'root': _stableTracks == null ? root : _stableRoot,
       'tracks': (_stableTracks ?? tracks).map((e) => e.toJson()).toList(),
-      'remoteTracks': remoteTracks.values
-          .where(
-            (t) =>
-                favorites.contains(t.id) ||
-                playlists.values.any((ids) => ids.contains(t.id)),
-          )
-          .map((t) => t.toJson())
-          .toList(),
       'favorites': favorites.toList(),
       'playlistMeta': jsonDecode(jsonEncode(playlistMeta)),
       'playlists': playlists.map((k, v) => MapEntry(k, List<String>.of(v))),
-      'extensions': extensions.map((e) => e.toJson()).toList(),
-      'activeExtension': activeExtensionId,
       'sort': sort.name,
       'ascending': ascending,
       'dark': dark,
@@ -474,7 +362,7 @@ class LibraryController extends ChangeNotifier {
     if (!playlists.containsKey(name) || automaticPlaylist(name)) {
       throw const FormatException('Elige una lista manual existente.');
     }
-    final available = {...remoteTracks.keys, ...tracks.map((t) => t.id)};
+    final available = tracks.map((t) => t.id).toSet();
     final before = playlists[name]!.length;
     playlists[name] = {
       ...playlists[name]!,
@@ -490,8 +378,7 @@ class LibraryController extends ChangeNotifier {
     Set<String> names, {
     String? newName,
   }) async {
-    if (!tracks.any((track) => track.id == id) &&
-        !remoteTracks.containsKey(id)) {
+    if (!tracks.any((track) => track.id == id)) {
       throw const FormatException('La canción ya no está disponible.');
     }
     if (names.any(
@@ -524,7 +411,7 @@ class LibraryController extends ChangeNotifier {
   }
 
   List<Track> playlistTracks(String name) {
-    final byId = {...remoteTracks, for (final track in tracks) track.id: track};
+    final byId = {for (final track in tracks) track.id: track};
     return [
       for (final id in playlists[name] ?? <String>[])
         if (byId[id] != null) byId[id]!,
@@ -542,7 +429,7 @@ class LibraryController extends ChangeNotifier {
   }
 
   Future<void> removeMissingFromPlaylist(String name) async {
-    final available = {...remoteTracks.keys, ...tracks.map((t) => t.id)};
+    final available = tracks.map((t) => t.id).toSet();
     playlists[name]?.removeWhere((id) => !available.contains(id));
     notifyListeners();
     await persist();
@@ -571,55 +458,10 @@ class LibraryController extends ChangeNotifier {
     await persist();
   }
 
-  Future<void> activateExtension(String? id) async {
-    activeExtensionId = id;
-    notifyListeners();
-    await persist();
-  }
-
-  Future<void> removeExtension(String id) async {
-    extensions.removeWhere((e) => e.id == id);
-    if (activeExtensionId == id) activeExtensionId = null;
-    notifyListeners();
-    await persist();
-  }
-
-  Future<void> installDeclarative(ExtensionManifest extension) async {
-    extensions.removeWhere((item) => item.id == extension.id);
-    extensions.add(extension);
-    notifyListeners();
-    await persist();
-  }
-
-  Future<void> importExtension() async {
-    try {
-      final file = await FilePicker.pickFile();
-      if (file?.path == null) return;
-      final source = File(file!.path!);
-      if (await source.length() > 65536) {
-        throw const FormatException('El archivo supera 64 KB.');
-      }
-      final extension = ExtensionManifest.parse(
-        jsonDecode(await source.readAsString()) as Map<String, dynamic>,
-      );
-      // Explicit import is also explicit acceptance of a replacement/update.
-      extensions.removeWhere((e) => e.id == extension.id);
-      extensions.add(extension);
-      notifyListeners();
-      await persist();
-    } on FormatException catch (e) {
-      message = e.message;
-      notifyListeners();
-    } catch (_) {
-      message = 'No se pudo importar la extensión. Usa un manifiesto JSON compatible.';
-      notifyListeners();
-    }
-  }
-
   @override
   void dispose() {
+    themes.dispose();
     lyrics?.dispose();
-    programs?.removeListener(notifyListeners);
     super.dispose();
   }
 }

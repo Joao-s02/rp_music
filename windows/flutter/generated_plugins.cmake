@@ -3,7 +3,6 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
-  flutter_qjs_next
   media_kit_libs_windows_audio
 )
 

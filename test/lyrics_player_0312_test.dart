@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:convert';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
@@ -17,20 +16,14 @@ import 'package:rp_music/app/now_playing_bars.dart';
 import 'package:rp_music/app/volume_control.dart';
 import 'package:rp_music/app/track_swipe.dart';
 import 'package:rp_music/data/music_files.dart';
-import 'package:rp_music/data/embedded_lyrics.dart';
 import 'package:rp_music/domain/lyrics.dart';
 import 'package:rp_music/domain/track.dart';
-import 'package:rp_music/extensions/program_controller.dart';
-import 'package:rp_music/extensions/program_package.dart';
 import 'package:rp_music/lyrics/lyrics_controller.dart';
 import 'package:rp_music/playback/music_handler.dart';
-import 'package:rp_music/sources/download_enrichment.dart';
 
 import 'playback_and_ui_test.dart' show FakePlayer, MemoryStore;
 import 'lyrics_view_test.dart' show PositionPlayer;
-import 'lyrics_and_tags_035_test.dart' show LyricsService, ReadOnlyFiles, box;
-import 'program_system_test.dart' show Registry;
-import 'extension_source_test.dart' show cloudPackage;
+import 'lyrics_and_tags_035_test.dart' show ReadOnlyFiles;
 
 const verses =
     '[00:00]La noche deja luces\n[00:03]Donde el miedo se apagó\n[00:06]Mi voz cruza el cielo\n[00:09]Y vuelve a brillar';
@@ -57,66 +50,6 @@ void main() {
       await (FontLoader(e.key)..addFont(rootBundle.load(e.value))).load();
     }
   });
-  test(
-    'LRC real se incrusta y se conserva por delante de texto plano al reabrir',
-    () async {
-      final dir = await Directory.systemTemp.createTemp('rp_lyrics_0312_');
-      final programs = ProgramController(Registry());
-      final base = cloudPackage();
-      final p = ProgramPackage.parse({
-        ...base.toJson(),
-        'permissions': [...base.permissions, 'storage.download'],
-      });
-      programs.installed[p.id] = InstalledProgram(
-        p,
-        p.permissions,
-        enabled: true,
-      );
-      programs.owners['source'] = p.id;
-      final service = LyricsService(programs)
-        ..result = {
-          'syncedLyrics': verses,
-          'plainLyrics': 'Texto sin tiempos',
-          'complete': true,
-        };
-      try {
-        final audio = Uint8List.fromList([
-          ...box('ftyp', ascii.encode('M4A \x00\x00\x00\x00M4A ')),
-          ...box('moov', []),
-          ...box('mdat', [1, 2, 3]),
-        ]);
-        final result = await DownloadEnrichment.apply(
-          Track(
-            id: 'rpmusic-source:${p.id}:a',
-            sourceId: p.id,
-            title: 'A',
-            folder: '.',
-          ),
-          audio,
-          'audio/mp4',
-          service,
-        );
-        final file = File('${dir.path}/a.m4a')..writeAsBytesSync(result.bytes);
-        expect(Lyrics.parse(EmbeddedLyrics.read(file)!).lines.length, 4);
-        final track = Track(id: file.path, title: 'A', folder: '.');
-        final files = ReadOnlyFiles()..text = 'Texto incrustado anterior';
-        var controller = LyricsController(dir, files, programs);
-        await controller.save(track.id, verses, track: track);
-        controller.dispose();
-        controller = LyricsController(dir, files, programs);
-        expect(
-          (await controller.ensure(track))!
-              .activeAt(const Duration(seconds: 7)),
-          2,
-        );
-        controller.dispose();
-        expect(files.text, 'Texto incrustado anterior');
-      } finally {
-        programs.dispose();
-        await dir.delete(recursive: true);
-      }
-    },
-  );
   test('Enhanced LRC solo resalta palabras con tiempos explícitos', () {
     final parsed = Lyrics.parse('[00:01]<00:01>La <00:02>noche <00:03>brilla');
     expect(parsed.lines.single.text, 'La noche brilla');
@@ -276,7 +209,6 @@ void main() {
       final dir = (await tester.runAsync(
         () => Directory.systemTemp.createTemp('rp_stage_'),
       ))!;
-      final programs = ProgramController(Registry());
       final player = PositionPlayer();
       final audio = MusicHandler(player: player);
       await audio.select([
@@ -287,7 +219,7 @@ void main() {
           folder: '.',
         ),
       ], 0);
-      final controller = LyricsController(dir, ReadOnlyFiles(), programs);
+      final controller = LyricsController(dir, ReadOnlyFiles());
       await tester.runAsync(() => controller.save('/demo.mp3', verses));
       await tester.runAsync(() => controller.ensure(audio.tracks.single));
       final key = GlobalKey();
@@ -345,7 +277,6 @@ void main() {
       await tester.pumpWidget(const SizedBox());
       await tester.runAsync(audio.close);
       controller.dispose();
-      programs.dispose();
       await tester.runAsync(() => dir.delete(recursive: true));
     },
   );

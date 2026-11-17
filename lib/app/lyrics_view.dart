@@ -19,18 +19,14 @@ class LyricsView extends StatefulWidget {
   const LyricsView({
     super.key,
     required this.audio,
-    this.fetchLyrics,
     this.directory,
     this.controller,
     this.loadCover,
-    this.allowRemoteCover,
   });
   final MusicHandler audio;
-  final Future<String> Function()? fetchLyrics;
   final Future<Directory> Function()? directory;
   final LyricsController? controller;
   final Future<Uint8List?> Function(String)? loadCover;
-  final bool Function(String)? allowRemoteCover;
   @override
   State<LyricsView> createState() => _LyricsViewState();
 }
@@ -61,7 +57,6 @@ class _LyricsViewState extends State<LyricsView> {
   final scroll = ScrollController();
   bool headerHidden = false;
   final keys = <GlobalKey>[];
-  final synchronizationAttempts = <String>{};
   Future<File> file(String id) async {
     final root =
         await (widget.directory?.call() ?? getApplicationSupportDirectory());
@@ -76,15 +71,6 @@ class _LyricsViewState extends State<LyricsView> {
         final track = widget.audio.tracks.where((t) => t.id == id).firstOrNull;
         if (track != null) await controller.ensure(track);
         if (mounted && current == generation) refresh();
-        if (track != null &&
-            mounted &&
-            current == generation &&
-            controller.values[id]?.lines.isEmpty == true &&
-            controller.canFetch(track) &&
-            synchronizationAttempts.add(id)) {
-          await controller.ensure(track, forceNetwork: true);
-          if (mounted && current == generation) refresh();
-        }
         return;
       }
       final target = await file(id);
@@ -157,54 +143,6 @@ class _LyricsViewState extends State<LyricsView> {
   }
 
   bool fetching = false;
-  Future<void> fetch() async {
-    final controller = widget.controller;
-    if (controller != null) {
-      final track = widget.audio.tracks
-          .where((t) => t.id == trackId)
-          .firstOrNull;
-      if (track != null) await controller.ensure(track, forceNetwork: true);
-      return;
-    }
-    final callback = widget.fetchLyrics;
-    final id = trackId;
-    if (callback == null || id == null || fetching) return;
-    final current = ++generation;
-    setState(() {
-      fetching = true;
-      error = null;
-    });
-    try {
-      final text = await callback();
-      if (!mounted || current != generation) return;
-      if (text.trim().isEmpty) {
-        throw const FormatException(
-          'No hay letra disponible para esta canción.',
-        );
-      }
-      final value = Lyrics.parse(text);
-      if (lyrics?.lines.isNotEmpty == true && value.lines.isEmpty) {
-        throw const FormatException(
-          'Se conserva la letra sincronizada; el proveedor solo devolvió texto.',
-        );
-      }
-      final target = await file(id);
-      await target.parent.create(recursive: true);
-      await target.writeAsString(text, flush: true);
-      if (mounted && current == generation) setLyrics(value);
-    } catch (e) {
-      if (mounted && current == generation) {
-        setState(
-          () => error = e is FormatException
-              ? e.message.toString()
-              : 'No se pudo consultar la letra.',
-        );
-      }
-    } finally {
-      if (mounted && current == generation) setState(() => fetching = false);
-    }
-  }
-
   @override
   void dispose() {
     widget.controller?.removeListener(refresh);
@@ -212,13 +150,6 @@ class _LyricsViewState extends State<LyricsView> {
     scroll.dispose();
     super.dispose();
   }
-
-  bool get canSearch =>
-      widget.fetchLyrics != null ||
-      widget.controller != null &&
-          widget.audio.tracks.any(
-            (t) => t.id == trackId && widget.controller!.canFetch(t),
-          );
 
   Widget synchronized(Duration position) {
     final selected = lyrics!.activeAt(position);
@@ -398,12 +329,6 @@ class _LyricsViewState extends State<LyricsView> {
               }),
               icon: const Icon(Icons.fullscreen_rounded),
             ),
-          if (canSearch)
-            IconButton(
-              tooltip: 'Buscar letra en línea',
-              onPressed: fetching ? null : fetch,
-              icon: const Icon(Icons.cloud_download_outlined),
-            ),
           IconButton(
             tooltip: 'Importar LRC o TXT',
             onPressed: item == null ? null : import,
@@ -428,15 +353,6 @@ class _LyricsViewState extends State<LyricsView> {
                           FileImage(File.fromUri(uri)),
                           width: 256,
                         ),
-                        final uri?
-                            when (uri.scheme == 'https' ||
-                                    uri.scheme == 'http') &&
-                                item?.extras?['sourceId'] is String &&
-                                widget.allowRemoteCover?.call(
-                                      item!.extras!['sourceId'] as String,
-                                    ) ==
-                                    true =>
-                          ResizeImage(NetworkImage(uri.toString()), width: 256),
                         _ => null,
                       },
                 child: scene && timed
@@ -657,21 +573,6 @@ class _LyricsViewState extends State<LyricsView> {
                                                 .textTheme
                                                 .bodySmall,
                                           ),
-                                          if (canSearch)
-                                            Align(
-                                              alignment: Alignment.centerLeft,
-                                              child: TextButton.icon(
-                                                onPressed: fetching
-                                                    ? null
-                                                    : fetch,
-                                                icon: const Icon(
-                                                  Icons.auto_awesome,
-                                                ),
-                                                label: const Text(
-                                                  'Buscar sincronizada',
-                                                ),
-                                              ),
-                                            ),
                                           const SizedBox(height: 20),
                                           SelectableText(
                                             lyrics!.plain,

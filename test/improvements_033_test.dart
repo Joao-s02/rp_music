@@ -10,16 +10,11 @@ import 'package:rp_music/app/music_app.dart';
 import 'package:rp_music/app/music_theme.dart';
 import 'package:rp_music/app/expanded_player.dart';
 import 'package:rp_music/data/music_files.dart';
+import 'package:rp_music/data/local_store.dart';
 import 'package:rp_music/domain/track.dart';
 import 'package:rp_music/playback/music_handler.dart';
-import 'package:rp_music/extensions/program_controller.dart';
-import 'package:rp_music/extensions/program_manager_view.dart';
-import 'package:rp_music/extensions/program_package.dart';
-import 'package:rp_music/extensions/extension_navigation.dart';
 
 import 'playback_and_ui_test.dart' show FakePlayer, MemoryStore;
-import 'program_system_test.dart' show Registry;
-import 'extension_source_test.dart' show cloudPackage;
 
 const tracks = [
   Track(
@@ -70,12 +65,10 @@ void main() {
   test('anterior recorre historial real y siguiente recupera avance antes de aleatorio', () async {
     final player = FakePlayer();
     final audio = MusicHandler(player: player);
-    var choices = 0;
     audio.shuffle = true;
-    audio.chooseNext = (_, _) async => ++choices == 1 ? 2 : 1;
     await audio.select(tracks, 0);
-    await audio.skipToNext();
-    await audio.skipToNext();
+    await audio.select(tracks, 2);
+    await audio.select(tracks, 1);
     expect(audio.index, 1);
     player.currentPosition = const Duration(seconds: 20);
     await audio.skipToPrevious();
@@ -84,7 +77,6 @@ void main() {
     expect(audio.index, 0);
     await audio.skipToNext();
     expect(audio.index, 2);
-    expect(choices, 2);
     await audio.select(tracks, 1);
     await audio.removeTrack(tracks[2].id);
     await audio.skipToPrevious();
@@ -94,7 +86,9 @@ void main() {
   test(
     'historial se restaura y cambiar cola no revive canciones anteriores',
     () async {
-      final store = Registry();
+      final directory = await Directory.systemTemp.createTemp('rp_history_');
+      addTearDown(() => directory.delete(recursive: true));
+      final store = LocalStore(directory, baseName: 'session');
       final first = MusicHandler(player: FakePlayer(), sessionStore: store);
       await first.select(tracks, 0);
       await first.select(tracks, 2);
@@ -281,90 +275,4 @@ void main() {
       library.dispose();
     });
   }
-  testWidgets(
-    'selector conserva visible el filtro de artista guardado antes de separar nombres',
-    (tester) async {
-      final programs = ProgramController(Registry());
-      final package = ProgramPackage(
-        'test.filters',
-        'Filtros de prueba',
-        '1.0.0',
-        'Fixture genérico',
-        "String run(String request) => '{}';",
-        {'library.read', 'storage.private'},
-        {'library'},
-        false,
-      );
-      programs.installed[package.id] = InstalledProgram(
-        package,
-        package.permissions,
-        enabled: true,
-      );
-      programs.owners['library'] = package.id;
-      programs.privateData[package.id] = {
-        'filters': {'artist': 'Uno, Dos'},
-      };
-      final library = LibraryController(MemoryStore(), MusicFiles())
-        ..loading = false
-        ..root = '/music'
-        ..tracks = tracks;
-      library.attachPrograms(programs);
-      final audio = MusicHandler(player: FakePlayer());
-      await tester.pumpWidget(MusicApp(library: library, audio: audio));
-      await tester.tap(find.text('Filtros combinados'));
-      await tester.pump(const Duration(milliseconds: 1));
-      final dropdown = tester.widget<DropdownButtonFormField<String>>(
-        find.byType(DropdownButtonFormField<String>).first,
-      );
-      expect(dropdown.initialValue, 'Uno, Dos');
-      expect(tester.takeException(), isNull);
-      await tester.pumpWidget(const SizedBox());
-      await tester.runAsync(audio.close);
-      library.dispose();
-      programs.dispose();
-    },
-  );
-  testWidgets(
-    'fuente con acceso propio usa icono del tema y no ofrece abrir desde tarjeta',
-    (tester) async {
-      final package = cloudPackage();
-      final map = package.toJson();
-      final config = Map<String, dynamic>.from(map['sourceConfig'] as Map);
-      config['navigation'] = {
-        'label': 'Nube',
-        'icon': 'playOutline',
-        'color': '#47EFE0',
-      };
-      map['sourceConfig'] = config;
-      final programs = ProgramController(Registry());
-      await tester.runAsync(
-        () => programs.install(ProgramPackage.parse(map), package.permissions),
-      );
-      final library = LibraryController(MemoryStore(), MusicFiles())
-        ..loading = false;
-      library.attachPrograms(programs);
-      final audio = MusicHandler(player: FakePlayer());
-      await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: ProgramManagerView(library: library, audio: audio),
-          ),
-        ),
-      );
-      await tester.pumpAndSettle();
-      expect(find.text('Abrir Nube de prueba'), findsNothing);
-      await tester.pumpWidget(
-        MaterialApp(
-          home: ExtensionNavigationIcon(
-            extensionDestinations(programs, 'windows').single,
-          ),
-        ),
-      );
-      expect(find.byIcon(Icons.smart_display_outlined), findsOneWidget);
-      await tester.pumpWidget(const SizedBox());
-      await tester.runAsync(audio.close);
-      library.dispose();
-      programs.dispose();
-    },
-  );
 }

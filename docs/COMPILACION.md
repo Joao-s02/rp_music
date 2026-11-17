@@ -67,7 +67,7 @@ Ejecutar secuencialmente en la raíz, ajustando dispositivo y herramientas del e
 ```powershell
 flutter pub get
 flutter analyze --no-pub
-flutter test --no-pub
+flutter test --no-pub --dart-define=RP_MUSIC_THEME_CATALOG=
 flutter build apk --release
 # Conservar/copiar el universal antes de generar la variante:
 flutter build apk --release --split-per-abi --target-platform android-arm64

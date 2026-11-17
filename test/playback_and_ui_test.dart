@@ -650,17 +650,11 @@ void main() {
       );
       expect(find.text('Tu biblioteca está en silencio'), findsOneWidget);
       expect(find.text('Elegir carpeta'), findsWidgets);
-      await tester.tap(find.byIcon(Icons.explore_outlined).last);
+      await tester.runAsync(library.themes.initialize);
+      await tester.tap(find.byIcon(Icons.palette_outlined).first);
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Administrar extensiones'));
-      await tester.pumpAndSettle(
-        const Duration(milliseconds: 100),
-        EnginePhase.sendSemanticsUpdate,
-        const Duration(seconds: 5),
-      );
-      expect(find.text('Importar extensión'), findsOneWidget);
-      await tester.pageBack();
-      await tester.pumpAndSettle();
+      expect(find.text('Importar tema'), findsOneWidget);
+      expect(find.text('Minimalista'), findsOneWidget);
       await tester.tap(find.byIcon(Icons.settings_outlined).last);
       await tester.pumpAndSettle(
         const Duration(milliseconds: 100),

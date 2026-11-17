@@ -1,5 +1,7 @@
 # Historial de versiones
 
+- 0.4.0 — [Cambios](../CAMBIOS-0.4.0.md), [uso](../USO-0.4.0.md), [pruebas](../PRUEBAS-0.4.0.md) y [release](../RELEASE-0.4.0.md).
+
 [Guía vigente](../USO.md) · [Binarios publicados](https://github.com/Joao-s02/rp_music/releases)
 
 | Versión | Documentos |

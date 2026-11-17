@@ -15,9 +15,6 @@ import 'playback/playback_config.dart';
 import 'platform/android_notifications.dart';
 import 'platform/desktop_lifecycle.dart';
 import 'updates/update_controller.dart';
-import 'extensions/program_controller.dart';
-import 'sources/extension_source_broker.dart';
-import 'extensions/program_coordinator.dart';
 import 'lyrics/lyrics_controller.dart';
 
 Future<void> main() async {
@@ -78,26 +75,22 @@ Future<void> main() async {
     });
     unawaited(updates.initialize());
     await controller.initialize();
-    final programs = ProgramController(
-      LocalStore(Directory('${directory.path}/v3'), baseName: 'extensions'),
-    );
-    try {
-      await programs.initialize();
-    } catch (_) {
+    for (final name in [
+      'extensions.json',
+      'extensions.backup.json',
+      'extensions.pending.json',
+    ]) {
+      final oldRegistry = File('${directory.path}/v3/$name');
       try {
-        await programs.restoreBase();
-      } catch (_) {
-        /* Keep playback available even if registry storage fails. */
+        if (await oldRegistry.exists()) await oldRegistry.delete();
+      } on FileSystemException {
+        // Playback remains available and cleanup is retried on the next launch.
       }
-      programs.message =
-          'Se inició en modo base por un registro de extensiones dañado.';
     }
-    controller.attachPrograms(programs);
-    controller.lyrics = LyricsController(directory, controller.files, programs)
-      ..follow(handler);
-    ExtensionSourceBroker(programs, handler);
-    ProgramCoordinator(controller, programs, handler);
-    controller.notifyProgramsReady();
+    final lyrics = LyricsController(directory, controller.files);
+    await lyrics.purgeOnlineCache();
+    controller.lyrics = lyrics..follow(handler);
+    unawaited(controller.themes.initialize().catchError((Object _) {}));
     await handler.setAppVolume(controller.volume);
     if (Platform.isWindows) {
       await DesktopLifecycle(

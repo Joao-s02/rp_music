@@ -1,14 +1,20 @@
 import 'package:flutter/material.dart';
 
-ThemeData musicTheme(Brightness brightness, int? accent) {
+import '../themes/theme_library.dart';
+
+ThemeData musicTheme(
+  Brightness brightness,
+  int? accent, {
+  MusicAppearance? appearance,
+}) {
   final dark = brightness == Brightness.dark;
   var colors = ColorScheme.fromSeed(
-    seedColor: Color(accent ?? 0xff47efe0),
+    seedColor: Color(appearance?.accent ?? accent ?? 0xff47efe0),
     brightness: brightness,
   );
-  if (dark) {
+  if (dark && appearance == null) {
     colors = colors.copyWith(
-      primary: Color(accent ?? 0xff47efe0),
+      primary: Color(appearance?.accent ?? accent ?? 0xff47efe0),
       onPrimary: const Color(0xff003733),
       secondary: const Color(0xffd0bcff),
       surface: const Color(0xff10131a),
@@ -22,13 +28,31 @@ ThemeData musicTheme(Brightness brightness, int? accent) {
       outlineVariant: const Color(0xff3b4a47),
     );
   }
+  final palette = appearance?.colors ?? const <String, Color>{};
+  colors = colors.copyWith(
+    primary: palette['primary'],
+    onPrimary: palette['onPrimary'],
+    secondary: palette['secondary'],
+    onSecondary: palette['onSecondary'],
+    surface: palette['surface'],
+    onSurface: palette['onSurface'],
+    onSurfaceVariant: palette['onSurfaceVariant'],
+    outline: palette['outline'],
+    surfaceContainer: palette['surfaceContainer'],
+    surfaceContainerLow: palette['surfaceContainerLow'],
+    surfaceContainerLowest: palette['surfaceContainerLowest'],
+  );
   final base = ThemeData(
     colorScheme: colors,
     fontFamily: 'Inter',
     useMaterial3: true,
   );
   return base.copyWith(
-    scaffoldBackgroundColor: colors.surface,
+    extensions: [?appearance],
+    scaffoldBackgroundColor:
+        appearance?.images.containsKey('background') == true
+        ? Colors.transparent
+        : colors.surface,
     textTheme: base.textTheme.copyWith(
       headlineMedium: base.textTheme.headlineMedium?.copyWith(
         fontFamily: 'Plus Jakarta Sans',

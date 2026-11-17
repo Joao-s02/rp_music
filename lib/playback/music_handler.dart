@@ -72,11 +72,6 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
   bool _playIntent = false;
   List<Track> tracks = [];
   int index = -1;
-  Future<int?> Function(List<Track>, int)? chooseNext;
-  Future<({AudioSource source, Uri? artwork})> Function(Track)?
-  onlineSourceLoader;
-  bool Function(Track)? onlineAllowed;
-  bool _online(Track track) => track.sourceId != null;
   final List<String> _previousTracks = [], _forwardTracks = [];
   String? _loadedTrackId;
   bool shuffle = false;
@@ -252,28 +247,9 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
         queue.add(nextQueue);
       }
       mediaItem.add(_mediaItem(track));
-      if (!_online(track)) unawaited(_loadArtwork(track, generation));
+      unawaited(_loadArtwork(track, generation));
       try {
-        ({AudioSource source, Uri? artwork})? online;
         final loadWatch = Stopwatch()..start();
-        if (_online(track)) {
-          if (onlineSourceLoader == null ||
-              onlineAllowed?.call(track) != true) {
-            throw StateError('Online source unavailable');
-          }
-          online = await onlineSourceLoader!(track);
-          recordEvent(
-            'Resolución de fuente: ${loadWatch.elapsedMilliseconds} ms',
-          );
-          if (generation != _generation || _shuttingDown) return;
-          if (onlineAllowed?.call(track) != true) {
-            throw StateError('Permission revoked');
-          }
-          if (online.artwork != null) {
-            mediaItem.add(_mediaItem(track).copyWith(artUri: online.artwork));
-          }
-        }
-        loadWatch.reset();
         final failure = Completer<Duration?>();
         if (!_serializeNativeLoads) _pendingLoadFailure = failure;
         Duration? duration;
@@ -281,12 +257,11 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
           // Android emits an unscoped error when a native load is aborted.
           // Let the current load settle before starting its replacement.
           final nativeLoad = player.setAudioSource(
-            online?.source ??
-                AudioSource.uri(
-                  track.id.startsWith('content://')
-                      ? Uri.parse(track.id)
-                      : Uri.file(track.id),
-                ),
+            AudioSource.uri(
+              track.id.startsWith('content://')
+                  ? Uri.parse(track.id)
+                  : Uri.file(track.id),
+            ),
             initialPosition: initialPosition,
           );
           final loading = _serializeNativeLoads
@@ -328,9 +303,7 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
           await player.stop();
           recordEvent('Error al cargar pista: índice=$index');
           errors.add(
-            _online(track)
-                ? 'No se pudo reproducir «${track.title}». Revisa la conexión y los permisos; el servicio puede rechazar esta canción.'
-                : 'El motor de audio no pudo cargar «${track.title}». Consulta el diagnóstico en Ajustes.',
+            'El motor de audio no pudo cargar «${track.title}». Consulta el diagnóstico en Ajustes.',
           );
         }
       }
@@ -398,10 +371,6 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
     if (_shuttingDown) return;
     if (index < 0) await onEmptyPlay?.call();
     if (_shuttingDown || index < 0) return;
-    if (_online(tracks[index]) && onlineAllowed?.call(tracks[index]) != true) {
-      errors.add('La fuente está desactivada o sin permiso.');
-      return;
-    }
     _playIntent = true;
     if (_loading) return;
     try {
@@ -426,12 +395,6 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
 
   @override
   Future<void> seek(Duration position) async {
-    if (index >= 0 &&
-        index < tracks.length &&
-        _online(tracks[index]) &&
-        onlineAllowed?.call(tracks[index]) != true) {
-      return;
-    }
     await player.seek(position);
     if (sessionStore != null) {
       _seekCheckpoint?.cancel();
@@ -539,24 +502,9 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
       await select(tracks, target, recordHistory: false);
       return;
     }
-    final generation = _generation;
-    int? custom;
-    if (shuffle && chooseNext != null) {
-      try {
-        custom = await chooseNext!(tracks, index);
-      } catch (_) {
-        /* Keep native shuffle available. */
-      }
-      if (generation != _generation || _shuttingDown) return;
-      if (custom != null && (custom < 0 || custom >= tracks.length)) {
-        custom = null;
-      }
-    }
-    final next =
-        custom ??
-        (shuffle && tracks.length > 1
-            ? (index + 1 + Random().nextInt(tracks.length - 1)) % tracks.length
-            : (index + 1) % tracks.length);
+    final next = shuffle && tracks.length > 1
+        ? (index + 1 + Random().nextInt(tracks.length - 1)) % tracks.length
+        : (index + 1) % tracks.length;
     await select(tracks, next);
   }
 

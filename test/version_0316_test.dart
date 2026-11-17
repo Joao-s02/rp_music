@@ -7,8 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:rp_music/data/download_tags.dart';
 import 'package:rp_music/domain/track.dart';
-import 'package:rp_music/extensions/javascript_screen_service.dart';
-import 'package:rp_music/extensions/program_controller.dart';
 import 'package:rp_music/app/album_detail_view.dart';
 import 'package:rp_music/app/library_controller.dart';
 import 'package:rp_music/app/now_playing_bars.dart';
@@ -16,8 +14,6 @@ import 'package:rp_music/data/music_files.dart';
 import 'package:rp_music/playback/music_handler.dart';
 
 import 'fragmented_download_tags_test.dart' show atom, fragment;
-import 'javascript_network_test.dart' show networkPackage;
-import 'program_system_test.dart' show Registry;
 import 'playback_and_ui_test.dart' show FakePlayer, MemoryStore;
 
 void main() {
@@ -91,38 +87,6 @@ void main() {
       expect(await tagged.length(), greaterThan(await file.length()));
     },
   );
-
-  test('caché pública evita segunda red y se invalida con permisos', () async {
-    final programs = ProgramController(Registry());
-    addTearDown(programs.dispose);
-    final p = networkPackage(
-      code: "function run(i){if(i.stage==='start')return {request:{url:'https://example.com/page',cacheSeconds:60},next:'result'};return {view:{type:'text',text:'ok'}};}",
-    );
-    await programs.install(p, p.permissions);
-    var calls = 0;
-    final phases = <String>[];
-    final service = JavascriptScreenService(
-      programs,
-      onTiming: (phase, ms) => phases.add(phase),
-      transport: (_, p) async {
-        calls++;
-        return {'status': 200, 'body': '{}'};
-      },
-    );
-    await service.run(p.id, {'action': 'search'});
-    await service.run(p.id, {'action': 'back'});
-    expect(calls, 1);
-    expect(phases, contains('red desde caché'));
-    await programs.setGrants(p.id, {'navigation.add'});
-    await expectLater(
-      service.run(p.id, {'action': 'back'}),
-      throwsFormatException,
-    );
-    await programs.setGrants(p.id, p.permissions.toSet());
-    await programs.setEnabled(p.id, true);
-    await service.run(p.id, {'action': 'back'});
-    expect(calls, 2);
-  });
 
   testWidgets(
     'búsqueda de álbum conserva cabecera y anima solo la pista actual',

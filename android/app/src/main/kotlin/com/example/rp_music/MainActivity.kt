@@ -18,22 +18,10 @@ class MainActivity : AudioServiceActivity() {
     private var writeRequest: MethodChannel.Result? = null
     private var writeRoot: Uri? = null
     private var picker: MethodChannel.Result? = null
-    private var downloadPicker: MethodChannel.Result? = null
     private var notificationRequest: MethodChannel.Result? = null
     private val worker = Executors.newSingleThreadExecutor()
     private val artworkWorker = Executors.newFixedThreadPool(2)
-    private val downloadPreferences by lazy { getSharedPreferences("downloads", MODE_PRIVATE) }
 
-    private fun canWriteDownloads(uri: Uri): Boolean {
-        if (contentResolver.persistedUriPermissions.none { it.uri == uri && it.isWritePermission }) return false
-        val parent = android.provider.DocumentsContract.buildDocumentUriUsingTree(
-            uri, android.provider.DocumentsContract.getTreeDocumentId(uri)
-        )
-        return contentResolver.query(parent, arrayOf(android.provider.DocumentsContract.Document.COLUMN_FLAGS),
-            null, null, null)?.use {
-            it.moveToFirst() && (it.getInt(0) and android.provider.DocumentsContract.Document.FLAG_DIR_SUPPORTS_CREATE) != 0
-        } == true
-    }
 
     override fun configureFlutterEngine(engine: FlutterEngine) {
         super.configureFlutterEngine(engine)
@@ -151,7 +139,7 @@ class MainActivity : AudioServiceActivity() {
                     "ensureWritable" -> {
                         val root = Uri.parse(call.argument<String>("root")!!)
                         if (contentResolver.persistedUriPermissions.any { it.uri == root && it.isWritePermission }) result.success(true)
-                        else if (writeRequest != null || picker != null || downloadPicker != null) result.error("busy", "Selector abierto", null)
+                        else if (writeRequest != null || picker != null) result.error("busy", "Selector abierto", null)
                         else {
                             writeRequest = result; writeRoot = root
                             try {
@@ -166,7 +154,7 @@ class MainActivity : AudioServiceActivity() {
                         }
                     }
                     "chooseRoot" -> {
-                        if (picker != null || writeRequest != null || downloadPicker != null) result.error("busy", "Selector abierto", null)
+                        if (picker != null || writeRequest != null) result.error("busy", "Selector abierto", null)
                         else {
                             picker = result
                             try {
@@ -179,46 +167,6 @@ class MainActivity : AudioServiceActivity() {
                                 picker = null
                                 result.error("picker", "No se pudo abrir el selector", null)
                             }
-                        }
-                    }
-                    "savedDownloadFolder" -> worker.execute {
-                        val uri = downloadPreferences.getString("folder", null)?.let(Uri::parse)
-                        val valid = uri != null && runCatching { canWriteDownloads(uri) }.getOrDefault(false)
-                        runOnUiThread { result.success(if (valid) uri.toString() else null) }
-                    }
-                    "chooseDownloadFolder" -> {
-                        if (downloadPicker != null || picker != null || writeRequest != null) result.error("busy", "Selector abierto", null)
-                        else {
-                            downloadPicker = result
-                            try { startActivityForResult(Intent(Intent.ACTION_OPEN_DOCUMENT_TREE).apply {
-                                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION)
-                            }, 813) } catch (e: Exception) { downloadPicker = null; result.error("picker", "No se pudo abrir el selector", null) }
-                        }
-                    }
-                    "writeDownload" -> worker.execute {
-                        var created: Uri? = null
-                        try {
-                            val root = Uri.parse(call.argument<String>("folder")!!)
-                            val parent = android.provider.DocumentsContract.buildDocumentUriUsingTree(root, android.provider.DocumentsContract.getTreeDocumentId(root))
-                            val name = call.argument<String>("name")!!
-                            check(name.length <= 180 && name.none { it == '/' || it.code == 92 || it.code < 32 })
-                            val path = call.argument<String>("path")
-                            val source = path?.let { java.io.File(it).canonicalFile }
-                            val bytes = if (source == null) call.argument<ByteArray>("bytes")!! else null
-                            if (source != null) {
-                                check(source.path.startsWith(cacheDir.canonicalPath + java.io.File.separator))
-                                check(source.isFile && source.length() <= 544L * 1024 * 1024)
-                            } else check(bytes!!.size <= 64 * 1024 * 1024)
-                            created = android.provider.DocumentsContract.createDocument(contentResolver, parent, call.argument<String>("mime")!!, name)
-                            check(created != null)
-                            contentResolver.openOutputStream(created!!, "w")!!.use { output ->
-                                if (source != null) source.inputStream().use { it.copyTo(output, 64 * 1024) }
-                                else output.write(bytes!!)
-                            }
-                            runOnUiThread { result.success(created.toString()) }
-                        } catch (e: Exception) {
-                            created?.let { try { android.provider.DocumentsContract.deleteDocument(contentResolver, it) } catch (_: Exception) {} }
-                            runOnUiThread { result.error("write", "No se pudo guardar la descarga", null) }
                         }
                     }
                     "scan" -> worker.execute {
@@ -305,19 +253,6 @@ class MainActivity : AudioServiceActivity() {
     @Deprecated("Uses the platform document picker result")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == 813) {
-            val pending = downloadPicker ?: return
-            downloadPicker = null
-            val uri = data?.data
-            if (resultCode != Activity.RESULT_OK || uri == null) { pending.success(null); return }
-            try {
-                contentResolver.takePersistableUriPermission(uri, data!!.flags and (Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION))
-                check(contentResolver.persistedUriPermissions.any { it.uri == uri && it.isWritePermission })
-                downloadPreferences.edit().putString("folder", uri.toString()).apply()
-                pending.success(uri.toString())
-            } catch (e: Exception) { pending.error("permission", "No se pudo conservar acceso de descarga", null) }
-            return
-        }
         if (requestCode == 812) {
             val pending = writeRequest ?: return
             val root = writeRoot

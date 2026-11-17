@@ -20,7 +20,13 @@ Map<String, dynamic> snapshot() => {
   'playlists': {
     'Viaje': ['song', 'ausente'],
   },
-  'extensions': <dynamic>[],
+  'extensions': [
+    {'id': 'legacy.invalid'},
+  ],
+  'activeExtension': 'legacy.invalid',
+  'remoteTracks': [
+    {'id': 'legacy.remote'},
+  ],
 };
 
 class CountingStore extends LocalStore {
@@ -50,15 +56,14 @@ void expectRecovered(LibraryController library) {
   expect(library.message, isNull);
   expect(library.root, 'respaldo');
   expect(library.tracks.map((t) => t.id), ['song']);
-  expect(library.remoteTracks, isEmpty);
+
   expect(library.favorites, {'song', 'ausente'});
   expect(library.playlists, {
     'Viaje': ['song', 'ausente'],
   });
   expect(library.playlistTracks('Viaje').single.id, 'song');
   expect(library.missingInPlaylist('Viaje'), 1);
-  expect(library.extensions, isEmpty);
-  expect(library.activeExtensionId, isNull);
+
   expect(library.playlistMeta, isEmpty);
   expect(library.volume, 1);
   expect(library.closeToTray, isTrue);
@@ -152,12 +157,11 @@ void main() {
       expect(library.message, recoveryMessage);
       expect(library.root, isNull);
       expect(library.tracks, isEmpty);
-      expect(library.remoteTracks, isEmpty);
+
       expect(library.favorites, isEmpty);
       expect(library.playlists, isEmpty);
       expect(library.playlistMeta, isEmpty);
-      expect(library.extensions, isEmpty);
-      expect(library.activeExtensionId, isNull);
+
       expect(library.volume, 1);
       await library.setDark(false);
       await library.persist();
@@ -213,6 +217,27 @@ void main() {
     await library.setDark(false);
     expect(store.saves, 1);
     expect(store.value['dark'], isFalse);
+    expect(store.value, isNot(contains('extensions')));
+    expect(store.value, isNot(contains('remoteTracks')));
     expect(directory.listSync(), isEmpty);
   });
+  test(
+    'las listas antiguas se convierten en listas locales editables',
+    () async {
+      final store = MemoryStore(directory);
+      store.value['playlistMeta'] = {
+        'Viaje': {
+          'owner': 'old.extension',
+          'rule': {'artist': 'Uno'},
+          'cover': 'cover.png',
+        },
+      };
+      final library = LibraryController(store, MusicFiles());
+      addTearDown(library.dispose);
+      await library.initialize();
+      expect(library.playlists['Viaje'], ['song', 'ausente']);
+      expect(library.automaticPlaylist('Viaje'), isFalse);
+      expect(library.playlistMeta['Viaje'], {'cover': 'cover.png'});
+    },
+  );
 }

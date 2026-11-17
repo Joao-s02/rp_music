@@ -8,17 +8,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:rp_music/app/album_detail_view.dart';
 import 'package:rp_music/app/music_theme.dart';
 import 'package:rp_music/app/library_controller.dart';
-import 'package:rp_music/app/music_app.dart';
 import 'package:rp_music/data/music_files.dart';
 import 'package:rp_music/domain/track.dart';
 import 'package:rp_music/playback/music_handler.dart';
-import 'package:rp_music/extensions/program_controller.dart';
-import 'package:rp_music/sources/extension_source_view.dart';
-import 'package:rp_music/sources/extension_source_service.dart';
 
 import 'playback_and_ui_test.dart' show MemoryStore, FakePlayer;
-import 'program_system_test.dart' show Registry;
-import 'extension_source_test.dart' show cloudPackage;
 
 void main() {
   setUpAll(() async {
@@ -113,81 +107,4 @@ void main() {
       library.dispose();
     });
   }
-  testWidgets(
-    'fuente respeta barra del sistema y muestra nombre del servicio',
-    (tester) async {
-      tester.view.physicalSize = const Size(360, 800);
-      tester.view.devicePixelRatio = 1;
-      addTearDown(tester.view.resetPhysicalSize);
-      addTearDown(tester.view.resetDevicePixelRatio);
-      final programs = ProgramController(Registry());
-      final p = cloudPackage();
-      await tester.runAsync(() => programs.install(p, p.permissions));
-      final library = LibraryController(MemoryStore(), MusicFiles())
-        ..loading = false;
-      final audio = MusicHandler(player: FakePlayer());
-      await tester.pumpWidget(
-        MaterialApp(
-          home: MediaQuery(
-            data: const MediaQueryData(
-              size: Size(360, 800),
-              padding: EdgeInsets.only(bottom: 48),
-            ),
-            child: ExtensionSourceView(
-              programs: programs,
-              extensionId: p.id,
-              audio: audio,
-              library: library,
-              service: ExtensionSourceService(programs, platform: 'android'),
-            ),
-          ),
-        ),
-      );
-      await tester.pumpAndSettle();
-      final player = find.byType(PlayerPanel);
-      expect(tester.getBottomRight(player).dy, lessThanOrEqualTo(752));
-      expect(find.text('Nube de prueba'), findsOneWidget);
-      expect(tester.takeException(), isNull);
-      await tester.pumpWidget(const SizedBox());
-      await tester.runAsync(audio.close);
-      library.dispose();
-      programs.dispose();
-    },
-  );
-  testWidgets(
-    'acceso de extensión abre su pantalla y desaparece al desactivar',
-    (tester) async {
-      tester.view.physicalSize = const Size(360, 800);
-      tester.view.devicePixelRatio = 1;
-      addTearDown(tester.view.resetPhysicalSize);
-      addTearDown(tester.view.resetDevicePixelRatio);
-      final programs = ProgramController(Registry());
-      final package = cloudPackage();
-      await tester.runAsync(
-        () => programs.install(package, package.permissions),
-      );
-      final library = LibraryController(MemoryStore(), MusicFiles())
-        ..loading = false;
-      library.attachPrograms(programs);
-      final audio = MusicHandler(player: FakePlayer());
-      await tester.pumpWidget(MusicApp(library: library, audio: audio));
-      await tester.pumpAndSettle();
-      expect(find.byType(NavigationDestination), findsNWidgets(5));
-      await tester.tap(find.text('Explorar').last);
-      await tester.pumpAndSettle();
-      await tester.tap(find.byIcon(Icons.cloud_outlined).last);
-      await tester.pumpAndSettle();
-      expect(find.byType(ExtensionSourceView), findsOneWidget);
-      expect(find.byType(PlayerPanel), findsOneWidget);
-      await tester.runAsync(() => programs.setEnabled(package.id, false));
-      await tester.pumpAndSettle();
-      expect(find.byType(NavigationDestination), findsNWidgets(5));
-      expect(find.byType(ExtensionSourceView), findsNothing);
-      expect(tester.takeException(), isNull);
-      await tester.pumpWidget(const SizedBox());
-      await tester.runAsync(audio.close);
-      library.dispose();
-      programs.dispose();
-    },
-  );
 }

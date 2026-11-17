@@ -13,7 +13,7 @@ import 'volume_control.dart';
 import 'track_swipe.dart';
 import 'lyrics_view.dart';
 import 'playback_queue.dart';
-import '../sources/extension_source_service.dart';
+import '../themes/theme_library.dart';
 
 class ExpandedPlayer extends StatefulWidget {
   const ExpandedPlayer({
@@ -249,7 +249,7 @@ class _ExpandedPlayerState extends State<ExpandedPlayer> {
                             setState(() => audio.shuffle = !audio.shuffle);
                             audio.saveSession();
                           },
-                          icon: const Icon(Icons.shuffle),
+                          icon: const ThemeIcon('shuffle', Icons.shuffle),
                           color: audio.shuffle ? colors.primary : null,
                         ),
                       ),
@@ -257,7 +257,10 @@ class _ExpandedPlayerState extends State<ExpandedPlayer> {
                         child: IconButton(
                           tooltip: 'Anterior',
                           onPressed: item == null ? null : audio.skipToPrevious,
-                          icon: const Icon(Icons.skip_previous_rounded),
+                          icon: const ThemeIcon(
+                            'previous',
+                            Icons.skip_previous_rounded,
+                          ),
                           iconSize: 32,
                         ),
                       ),
@@ -281,7 +284,8 @@ class _ExpandedPlayerState extends State<ExpandedPlayer> {
                           onPressed: item == null
                               ? null
                               : () => playing ? audio.pause() : audio.play(),
-                          icon: Icon(
+                          icon: ThemeIcon(
+                            playing ? 'pause' : 'play',
                             playing
                                 ? Icons.pause_rounded
                                 : Icons.play_arrow_rounded,
@@ -292,7 +296,10 @@ class _ExpandedPlayerState extends State<ExpandedPlayer> {
                         child: IconButton(
                           tooltip: 'Siguiente',
                           onPressed: item == null ? null : audio.skipToNext,
-                          icon: const Icon(Icons.skip_next_rounded),
+                          icon: const ThemeIcon(
+                            'next',
+                            Icons.skip_next_rounded,
+                          ),
                           iconSize: 32,
                         ),
                       ),
@@ -304,7 +311,10 @@ class _ExpandedPlayerState extends State<ExpandedPlayer> {
                             setState(() => audio.repeat = !audio.repeat);
                             audio.saveSession();
                           },
-                          icon: const Icon(Icons.repeat_one_rounded),
+                          icon: const ThemeIcon(
+                            'repeat',
+                            Icons.repeat_one_rounded,
+                          ),
                           color: audio.repeat ? colors.primary : null,
                         ),
                       ),
@@ -338,62 +348,6 @@ class _ExpandedPlayerState extends State<ExpandedPlayer> {
                               audio: audio,
                               controller: library.lyrics,
                               loadCover: library.files.thumbnail,
-                              allowRemoteCover: (id) =>
-                                  library.programs?.allowed(
-                                    id,
-                                    'network.http',
-                                  ) ==
-                                  true,
-                              fetchLyrics:
-                                  track?.sourceId != null &&
-                                      library.programs != null
-                                  ? () async {
-                                      final selected = audio.tracks
-                                          .where(
-                                            (t) =>
-                                                t.id ==
-                                                audio.mediaItem.value?.id,
-                                          )
-                                          .firstOrNull;
-                                      if (selected?.sourceId == null) {
-                                        throw const FormatException(
-                                          'Esta canción no dispone de proveedor de letras en línea.',
-                                        );
-                                      }
-                                      final result =
-                                          await ExtensionSourceService(
-                                            library.programs!,
-                                          ).invoke(
-                                            selected!.sourceId!,
-                                            'lyrics',
-                                            {
-                                              'title': selected.title,
-                                              'artist': selected.artist,
-                                              'album': selected.album,
-                                              'durationMs':
-                                                  audio
-                                                      .mediaItem
-                                                      .value
-                                                      ?.duration
-                                                      ?.inMilliseconds ??
-                                                  selected.durationMs,
-                                            },
-                                          );
-                                      final synced = result['syncedLyrics'];
-                                      final text =
-                                          synced is String &&
-                                              synced.trim().isNotEmpty
-                                          ? synced
-                                          : result['plainLyrics'] ?? '';
-                                      if (text is! String ||
-                                          text.length > 262144) {
-                                        throw const FormatException(
-                                          'Respuesta de letras incompatible.',
-                                        );
-                                      }
-                                      return text;
-                                    }
-                                  : null,
                             ),
                           ),
                         ),

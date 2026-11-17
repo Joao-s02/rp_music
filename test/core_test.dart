@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -6,7 +5,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:rp_music/app/library_controller.dart';
 import 'package:rp_music/data/local_store.dart';
 import 'package:rp_music/data/music_files.dart';
-import 'package:rp_music/domain/extension_manifest.dart';
 import 'package:rp_music/domain/track.dart';
 
 class FakeFiles extends MusicFiles {
@@ -256,49 +254,4 @@ void main() {
       restored.dispose();
     },
   );
-
-  Map<String, dynamic> example() =>
-      jsonDecode(File('examples/extensions/descubrir.json').readAsStringSync())
-          as Map<String, dynamic>;
-  test('ejemplo instalable conserva pantalla y acción al serializar', () {
-    final extension = ExtensionManifest.parse(example());
-    final restored = ExtensionManifest.parse(extension.toJson());
-    expect(restored.layout, 'cards');
-    expect(restored.randomAction, isTrue);
-    expect(restored.accent, 0xffc6b5ed);
-  });
-  test('rechaza extensiones con permisos, acciones o API no admitidos', () {
-    for (final change in [
-      {
-        'permissions': ['filesystem'],
-      },
-      {
-        'actions': ['execute'],
-      },
-      {'apiVersion': 2},
-      {
-        'screen': {'layout': 'html', 'accent': '#ffffff'},
-      },
-      {'id': '../escape'},
-    ]) {
-      expect(
-        () => ExtensionManifest.parse({...example(), ...change}),
-        throwsFormatException,
-      );
-    }
-  });
-  test('selección de extensión y retorno a base son persistentes', () async {
-    final controller = LibraryController(LocalStore(temporary), FakeFiles());
-    await controller.initialize();
-    controller.extensions.add(ExtensionManifest.parse(example()));
-    await controller.activateExtension('rp.descubrir');
-    final restored = LibraryController(LocalStore(temporary), FakeFiles());
-    await restored.initialize();
-    expect(restored.activeExtension?.id, 'rp.descubrir');
-    await restored.removeExtension('rp.descubrir');
-    expect(restored.activeExtension, isNull);
-    expect(restored.extensions, isEmpty);
-    controller.dispose();
-    restored.dispose();
-  });
 }
