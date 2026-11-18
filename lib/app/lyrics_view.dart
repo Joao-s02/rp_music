@@ -354,7 +354,7 @@ class _LyricsViewState extends State<LyricsView> {
             key: ValueKey(item?.id),
             future: cover,
             builder: (context, image) => StreamBuilder<Duration>(
-              stream: widget.audio.player.positionStream,
+              stream: widget.audio.positionStream,
               initialData: widget.audio.player.position,
               builder: (context, position) => LyricBackdrop(
                 position: position.data ?? Duration.zero,
@@ -446,8 +446,9 @@ class _LyricsViewState extends State<LyricsView> {
                                       ),
                                     ),
                                     StreamBuilder(
-                                      stream:
-                                          widget.audio.player.playerStateStream,
+                                      stream: widget.audio.playerStateStream,
+                                      initialData:
+                                          widget.audio.player.playerState,
                                       builder: (context, _) =>
                                           IconButton.filled(
                                             tooltip: widget.audio.player.playing

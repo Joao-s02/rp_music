@@ -40,7 +40,19 @@ class FakePlayer implements AudioPlayer {
   FakePlayer({this.liveStates = false});
   final bool liveStates;
   final states = StreamController<PlayerState>.broadcast();
+  final processingStates = StreamController<ProcessingState>.broadcast();
   final calls = <String>[];
+  ProcessingState? simulatedProcessingState;
+  void complete() {
+    simulatedProcessingState = ProcessingState.completed;
+    processingStates.add(ProcessingState.completed);
+  }
+
+  @override
+  Duration? get duration =>
+      current == null ? null : const Duration(seconds: 30);
+  @override
+  PlayerState get playerState => PlayerState(playing, processingState);
   double currentVolume = 1;
   bool isPlaying = false;
   final loaded = <Uri>[];
@@ -63,7 +75,8 @@ class FakePlayer implements AudioPlayer {
 
   @override
   ProcessingState get processingState =>
-      current == null ? ProcessingState.idle : ProcessingState.ready;
+      simulatedProcessingState ??
+      (current == null ? ProcessingState.idle : ProcessingState.ready);
   @override
   Duration get bufferedPosition => Duration.zero;
   @override
@@ -73,7 +86,7 @@ class FakePlayer implements AudioPlayer {
   @override
   Stream<PlayerException> get errorStream => const Stream.empty();
   @override
-  Stream<ProcessingState> get processingStateStream => const Stream.empty();
+  Stream<ProcessingState> get processingStateStream => processingStates.stream;
   @override
   Stream<Duration> get positionStream => Stream.value(Duration.zero);
   @override
@@ -92,6 +105,7 @@ class FakePlayer implements AudioPlayer {
     int? initialIndex,
     Duration? initialPosition,
   }) async {
+    simulatedProcessingState = null;
     current = (audioSource as UriAudioSource).uri;
     currentPosition = initialPosition ?? Duration.zero;
     loaded.add(current!);
@@ -124,6 +138,7 @@ class FakePlayer implements AudioPlayer {
   Future<void> dispose() async {
     calls.add('dispose');
     unawaited(states.close());
+    unawaited(processingStates.close());
   }
 
   @override
@@ -360,11 +375,8 @@ void main() {
     await tester.pumpWidget(MusicApp(library: library, audio: audio));
     await tester.pumpAndSettle();
 
-    final songMenu = find.descendant(
-      of: find.ancestor(of: find.text('Uno'), matching: find.byType(ListTile)),
-      matching: find.byTooltip('Opciones de canción'),
-    );
-    await tester.tap(songMenu);
+    final song = find.text('Uno');
+    await tester.longPress(song);
     await tester.pumpAndSettle();
     await tester.tap(find.text('Añadir a una lista'));
     await tester.pumpAndSettle();
@@ -385,7 +397,7 @@ void main() {
     );
     expect(library.playlists.values, everyElement([tracks.first.id]));
 
-    await tester.tap(songMenu);
+    await tester.longPress(song);
     await tester.pumpAndSettle();
     await tester.tap(find.text('Detalles de la canción'));
     await tester.pumpAndSettle();

@@ -1,7 +1,7 @@
 name: rp_music
 description: Reproductor local con temas para Android y Windows.
 publish_to: none
-version: 0.4.2+36
+version: 0.4.3+37
 environment:
   sdk: ^3.13.5
 dependencies:

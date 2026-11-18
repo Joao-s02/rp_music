@@ -222,7 +222,8 @@ class _ExpandedPlayerState extends State<ExpandedPlayer> {
               ],
             );
             final controls = StreamBuilder(
-              stream: audio.player.playerStateStream,
+              stream: audio.playerStateStream,
+              initialData: audio.player.playerState,
               builder: (context, state) {
                 final playing = state.data?.playing ?? audio.player.playing;
                 return Padding(
@@ -370,11 +371,12 @@ class _ExpandedPlayerState extends State<ExpandedPlayer> {
               ],
             );
             final timeline = StreamBuilder(
-              stream: audio.player.positionStream,
+              stream: audio.positionStream,
               initialData: audio.player.position,
               builder: (context, position) => StreamBuilder(
-                stream: audio.player.durationStream,
-                initialData: audio.mediaItem.value?.duration,
+                stream: audio.durationStream,
+                initialData:
+                    audio.player.duration ?? audio.mediaItem.value?.duration,
                 builder: (context, duration) {
                   final total =
                       duration.data?.inMilliseconds ??

@@ -21,7 +21,7 @@ class AlbumDetailView extends StatefulWidget {
     required this.library,
     required this.onBack,
     required this.onSave,
-    required this.menu,
+    this.menu,
     this.query = '',
     this.onTrackContext,
     this.onEnqueue,
@@ -30,7 +30,7 @@ class AlbumDetailView extends StatefulWidget {
   final MusicHandler audio;
   final LibraryController library;
   final VoidCallback onBack, onSave;
-  final Widget Function(Track) menu;
+  final Widget Function(Track)? menu;
   final String query;
   final void Function(Track, Offset)? onTrackContext;
   final void Function(List<Track>, bool)? onEnqueue;
@@ -382,8 +382,9 @@ class _AlbumDetailViewState extends State<AlbumDetailView> {
                             width: 26,
                             child: selected
                                 ? StreamBuilder(
-                                    stream:
-                                        widget.audio.player.playerStateStream,
+                                    stream: widget.audio.playerStateStream,
+                                    initialData:
+                                        widget.audio.player.playerState,
                                     builder: (context, state) => NowPlayingBars(
                                       playing:
                                           state.data?.playing ??
@@ -465,7 +466,7 @@ class _AlbumDetailViewState extends State<AlbumDetailView> {
                                 size: 21,
                               ),
                             ),
-                          widget.menu(track),
+                          if (widget.menu case final menu?) menu(track),
                         ],
                       ),
                     ),

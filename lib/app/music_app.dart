@@ -595,9 +595,7 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
         audio: audio,
         library: library,
         onBack: () => selectGroup(null),
-        menu: albumTrackMenu,
-        onTrackContext: (track, position) =>
-            openTrackMenu(track, position, favorite: true),
+        onTrackContext: (track, _) => openTrackMenu(track, favorite: true),
         onEnqueue: (tracks, next) => enqueueTracks(tracks, next: next),
         onSave: () => addAlbumToPlaylist(
           filtered.where((t) => groupKey(t) == group).toList(),
@@ -723,8 +721,6 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
     }
   }
 
-  Widget albumTrackMenu(Track track) => trackMenu(track, favorite: true);
-
   void enqueueTracks(List<Track> tracks, {required bool next}) {
     final undo = audio.enqueue(tracks, next: next);
     if (undo == null) return;
@@ -740,26 +736,46 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
       );
   }
 
-  Future<void> openTrackMenu(
-    Track track,
-    Offset position, {
-    bool favorite = false,
-  }) async {
-    final action = await showTrackContextMenu(
-      context,
-      position,
-      trackOptions(track, favorite),
+  Future<void> openTrackMenu(Track track, {bool favorite = false}) async {
+    final action = await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        scrollable: true,
+        title: Row(
+          children: [
+            Artwork(id: track.id, library: library),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(track.title),
+                  Text(
+                    track.artist,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            for (final option in trackOptions(track, favorite))
+              ListTile(
+                enabled: option.enabled,
+                title: option.child,
+                onTap: option.enabled
+                    ? () => Navigator.pop(context, option.value)
+                    : null,
+              ),
+          ],
+        ),
+      ),
     );
     if (mounted && action != null) runTrackAction(track, action);
   }
-
-  Widget trackMenu(Track track, {bool favorite = false}) =>
-      PopupMenuButton<String>(
-        tooltip: 'Opciones de canción',
-        icon: const ThemeIcon('more', Icons.more_vert),
-        onSelected: (action) => runTrackAction(track, action),
-        itemBuilder: (_) => trackOptions(track, favorite),
-      );
 
   void runTrackAction(Track track, String value) {
     switch (value) {
@@ -778,7 +794,7 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
     }
   }
 
-  List<PopupMenuEntry<String>> trackOptions(Track track, bool favorite) => [
+  List<PopupMenuItem<String>> trackOptions(Track track, bool favorite) => [
     const PopupMenuItem(
       value: 'queue-next',
       child: Text('Reproducir a continuación'),
@@ -1045,22 +1061,8 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
       );
     }
     return ListView.builder(
-      itemCount: keys.length + (view == 2 ? 1 : 0),
+      itemCount: keys.length,
       itemBuilder: (context, index) {
-        if (view == 2) {
-          if (index == 0) {
-            return SwitchListTile(
-              key: const ValueKey('artist-photo-consent'),
-              title: const Text('Fotos de artistas'),
-              subtitle: const Text(
-                'Al activar, se consultan el nombre y una canción en Deezer; Wikimedia sirve de respaldo por nombre. Las fotos se guardan en este dispositivo.',
-              ),
-              value: library.artistPhotosEnabled,
-              onChanged: library.setArtistPhotosEnabled,
-            );
-          }
-          index--;
-        }
         final key = keys[index];
         final items = groups[key]!;
         return ListTile(
@@ -1168,7 +1170,6 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
                     onPressed: () =>
                         library.removeFromPlaylist(playlist, track.id),
                   ),
-                trackMenu(track),
               ],
             ),
           ),
@@ -1177,7 +1178,7 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
           color: Colors.transparent,
           clipBehavior: Clip.hardEdge,
           child: TrackContextRegion(
-            open: (position) => openTrackMenu(track, position),
+            open: (_) => openTrackMenu(track),
             child: tile,
           ),
         );
@@ -1569,6 +1570,15 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
       const Text('Tu biblioteca, tu sonido, tu espacio.'),
       const SizedBox(height: 24),
       settingsSection('Apariencia', Icons.palette_outlined, [
+        SwitchListTile(
+          key: const ValueKey('artist-photo-consent'),
+          title: const Text('Fotos de artistas'),
+          subtitle: const Text(
+            'Al activar, se consultan el nombre y una canción en Deezer; Wikimedia sirve de respaldo por nombre. Las fotos se guardan en este dispositivo.',
+          ),
+          value: library.artistPhotosEnabled,
+          onChanged: library.setArtistPhotosEnabled,
+        ),
         ListTile(
           title: const Text('Vista de listas'),
           trailing: DropdownButton<bool>(
@@ -1589,6 +1599,36 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
           value: library.dark,
           onChanged: library.setDark,
         ),
+      ]),
+      settingsSection('Reproducción', Icons.headphones_outlined, [
+        SwitchListTile(
+          title: const Text('Fundido entre canciones'),
+          subtitle: const Text(
+            'Mezcla las pistas cuando avanzan automáticamente.',
+          ),
+          value: audio.crossfadeSeconds > 0,
+          onChanged: (enabled) {
+            setState(() => unawaited(audio.setCrossfade(enabled: enabled)));
+          },
+        ),
+        if (audio.crossfadeSeconds > 0)
+          ListTile(
+            title: Text('Duración: ${audio.crossfadeLength} s'),
+            subtitle: Slider(
+              min: 1,
+              max: 12,
+              divisions: 11,
+              value: audio.crossfadeLength.toDouble(),
+              label: '${audio.crossfadeLength} s',
+              onChanged: (value) {
+                setState(
+                  () => unawaited(
+                    audio.setCrossfade(enabled: true, seconds: value.round()),
+                  ),
+                );
+              },
+            ),
+          ),
       ]),
       if (Platform.isWindows)
         SwitchListTile(
@@ -1880,9 +1920,10 @@ class _PlayerPanelState extends State<PlayerPanel> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 StreamBuilder(
-                  stream: audio.player.positionStream,
+                  stream: audio.positionStream,
                   builder: (context, position) => StreamBuilder(
-                    stream: audio.player.durationStream,
+                    stream: audio.durationStream,
+                    initialData: audio.player.duration,
                     builder: (context, duration) {
                       final total = duration.data?.inMilliseconds ?? 0;
                       return LinearProgressIndicator(
@@ -1943,7 +1984,8 @@ class _PlayerPanelState extends State<PlayerPanel> {
                         ),
                       ),
                       StreamBuilder(
-                        stream: audio.player.playerStateStream,
+                        stream: audio.playerStateStream,
+                        initialData: audio.player.playerState,
                         builder: (context, state) => IconButton.filled(
                           tooltip: audio.player.playing
                               ? 'Pausar'
@@ -2034,7 +2076,8 @@ class _PlayerPanelState extends State<PlayerPanel> {
                     icon: const ThemeIcon('previous', Icons.skip_previous),
                   ),
                   StreamBuilder(
-                    stream: audio.player.playerStateStream,
+                    stream: audio.playerStateStream,
+                    initialData: audio.player.playerState,
                     builder: (context, snapshot) {
                       final playing = snapshot.data?.playing ?? false;
                       return IconButton.filled(
@@ -2094,9 +2137,10 @@ class _PlayerPanelState extends State<PlayerPanel> {
                 ],
               ),
               StreamBuilder(
-                stream: audio.player.positionStream,
+                stream: audio.positionStream,
                 builder: (context, position) => StreamBuilder(
-                  stream: audio.player.durationStream,
+                  stream: audio.durationStream,
+                  initialData: audio.player.duration,
                   builder: (context, duration) {
                     final total = duration.data?.inMilliseconds ?? 0;
                     final current = (position.data?.inMilliseconds ?? 0).clamp(

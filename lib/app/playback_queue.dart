@@ -4,7 +4,6 @@ import '../playback/music_handler.dart';
 import 'library_controller.dart';
 import 'music_app.dart' show Artwork;
 import 'now_playing_bars.dart';
-import '../themes/theme_library.dart';
 
 Future<void> showPlaybackQueue(
   BuildContext context,
@@ -67,6 +66,11 @@ Future<T?> showTrackContextMenu<T>(
     context: context,
     position: RelativeRect.fromSize(point & Size.zero, overlay.size),
     items: items,
+    color: Theme.of(context).colorScheme.surfaceContainerHigh,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(16),
+      side: BorderSide(color: Theme.of(context).colorScheme.outlineVariant),
+    ),
   );
 }
 
@@ -174,7 +178,8 @@ class _PlaybackQueueState extends State<PlaybackQueue> {
                 key: ValueKey('queue-track-${audio.index}'),
                 selected: true,
                 trailing: StreamBuilder(
-                  stream: audio.player.playerStateStream,
+                  stream: audio.playerStateStream,
+                  initialData: audio.player.playerState,
                   builder: (_, state) => NowPlayingBars(
                     playing: state.data?.playing ?? audio.player.playing,
                   ),
@@ -306,30 +311,16 @@ class _PlaybackQueueState extends State<PlaybackQueue> {
                               overflow: TextOverflow.ellipsis,
                             ),
                             onTap: () => audio.playQueueEntry(entry),
-                            trailing: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                PopupMenuButton<_QueueAction>(
-                                  tooltip: 'Opciones de canción',
-                                  icon: const ThemeIcon(
-                                    'more',
-                                    Icons.more_vert,
-                                  ),
-                                  itemBuilder: (_) => options,
-                                  onSelected: choose,
+                            trailing: ReorderableDragStartListener(
+                              index: i,
+                              child: const Tooltip(
+                                message: 'Arrastra para reordenar',
+                                child: SizedBox(
+                                  width: 44,
+                                  height: 48,
+                                  child: Icon(Icons.drag_handle),
                                 ),
-                                ReorderableDragStartListener(
-                                  index: i,
-                                  child: const Tooltip(
-                                    message: 'Arrastra para reordenar',
-                                    child: SizedBox(
-                                      width: 44,
-                                      height: 48,
-                                      child: Icon(Icons.drag_handle),
-                                    ),
-                                  ),
-                                ),
-                              ],
+                              ),
                             ),
                           ),
                         );

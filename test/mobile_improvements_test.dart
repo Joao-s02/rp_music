@@ -77,7 +77,7 @@ void main() {
     final audio = MusicHandler(player: FakePlayer());
     await tester.pumpWidget(MusicApp(library: library, audio: audio));
     await tester.pumpAndSettle();
-    await tester.tap(find.byTooltip('Opciones de canción').first);
+    await tester.longPress(find.text(a.title));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Eliminar del dispositivo'));
     await tester.pumpAndSettle();
@@ -85,7 +85,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(files.deleted, isEmpty);
     expect(library.tracks.length, 2);
-    await tester.tap(find.byTooltip('Opciones de canción').first);
+    await tester.longPress(find.text(a.title));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Eliminar del dispositivo'));
     await tester.pumpAndSettle();

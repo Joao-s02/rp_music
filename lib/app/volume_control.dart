@@ -21,8 +21,8 @@ class _VolumeControlState extends State<VolumeControl> {
   double _lastAudible = 1;
   @override
   Widget build(BuildContext context) => StreamBuilder<double>(
-    stream: widget.audio.player.volumeStream,
-    initialData: widget.audio.player.volume,
+    stream: widget.audio.volumeStream,
+    initialData: widget.audio.appVolume,
     builder: (context, snapshot) {
       final volume = (snapshot.data ?? 1).clamp(0.0, 1.0);
       return Row(

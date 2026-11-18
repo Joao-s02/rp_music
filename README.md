@@ -2,11 +2,17 @@
 
 Reproductor local para Android y Windows. Abre tu biblioteca y escucha música sin cuenta ni conexión.
 
-**Versión 0.4.1**, aplicación **0.4.1+35**. [Descargar Android universal, ARM64 y Windows](https://github.com/Joao-s02/rp_music/releases/tag/v0.4.1).
+**Versión 0.4.2**, aplicación **0.4.2+36**. [Descargar Android universal, ARM64 y Windows](https://github.com/Joao-s02/rp_music/releases/tag/v0.4.2).
 
-[Instalación y uso](docs/USO-0.4.1.md) · [Pruebas](docs/PRUEBAS-0.4.1.md) · [Cambios](docs/CAMBIOS-0.4.1.md) · [Documentación](docs/README.md)
+[Instalación y uso](docs/USO-0.4.2.md) · [Pruebas](docs/PRUEBAS-0.4.2.md) · [Cambios](docs/CAMBIOS-0.4.2.md) · [Documentación](docs/README.md)
 
-## En preparación: 0.4.2
+## En preparación: 0.4.3
+
+Menús de canción renovados, fotos de artistas en Ajustes y fundido configurable entre canciones.
+
+[Uso](docs/USO-0.4.3.md) · [Cambios](docs/CAMBIOS-0.4.3.md) · [Pruebas](docs/PRUEBAS-0.4.3.md)
+
+## Cola editable desde 0.4.2
 
 La cola editable muestra el orden real de reproducción, incluso en aleatorio. Añade canciones o colecciones a continuación o al final. Mantén pulsada una canción en Android o haz clic derecho en Windows para abrir sus acciones. Desde la cola puedes arrastrar, quitar y deshacer cambios sin interrumpir la canción actual.
 

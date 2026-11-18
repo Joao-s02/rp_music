@@ -840,7 +840,7 @@ void main() {
     await dir.delete(recursive: true);
   });
 
-  testWidgets('Artistas explica y permite activar o retirar la consulta', (
+  testWidgets('Ajustes permite activar o retirar las fotos de artistas', (
     tester,
   ) async {
     final library = LibraryController(MemoryStore(), CoverFiles())
@@ -860,16 +860,28 @@ void main() {
     await tester.tap(find.text('Artistas'));
     await tester.pumpAndSettle();
     expect(find.byType(ArtistPhoto), findsNothing);
+    await tester.tap(find.text('Ajustes'));
+    await tester.pumpAndSettle();
     final toggle = find.byKey(const ValueKey('artist-photo-consent'));
     expect(tester.widget<SwitchListTile>(toggle).value, isFalse);
     await tester.tap(toggle);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Biblioteca').first);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Artistas'));
     await tester.pumpAndSettle();
     expect(find.byType(ArtistPhoto), findsOneWidget);
     expect(
       tester.widget<ArtistPhoto>(find.byType(ArtistPhoto)).trackTitle,
       'Referencia',
     );
+    await tester.tap(find.text('Ajustes'));
+    await tester.pumpAndSettle();
     await tester.tap(toggle);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Biblioteca').first);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Artistas'));
     await tester.pumpAndSettle();
     expect(find.byType(ArtistPhoto), findsNothing);
     expect(library.artistPhotosEnabled, isFalse);

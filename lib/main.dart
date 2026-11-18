@@ -58,6 +58,7 @@ Future<void> main() async {
       handler.observeSystemErrors(AudioService.asyncError);
     }
     await handler.configureSession();
+    await handler.loadCrossfadeSettings();
     final notifications = Platform.isAndroid ? AndroidNotifications() : null;
     final updates = UpdateController(
       LocalStore(Directory('${directory.path}/v2'), baseName: 'updates'),

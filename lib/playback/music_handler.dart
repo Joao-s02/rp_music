@@ -12,7 +12,235 @@ import '../data/local_store.dart';
 import 'native_audio_player.dart';
 
 class MusicHandler extends BaseAudioHandler with SeekHandler {
-  final AudioPlayer player;
+  AudioPlayer _player;
+  final AudioPlayer Function() _createCrossfadePlayer;
+  AudioPlayer get player => _player;
+  final _playerSubscriptions = <StreamSubscription<dynamic>>[];
+  final _positions = StreamController<Duration>.broadcast();
+  final _durations = StreamController<Duration?>.broadcast();
+  final _states = StreamController<PlayerState>.broadcast();
+  final _volumes = StreamController<double>.broadcast();
+  Stream<Duration> get positionStream => _positions.stream;
+  Stream<Duration?> get durationStream => _durations.stream;
+  Stream<PlayerState> get playerStateStream => _states.stream;
+  Stream<double> get volumeStream => _volumes.stream;
+  double get appVolume => _appVolume;
+
+  double _appVolume = 1;
+  int crossfadeSeconds = 0;
+  int crossfadeLength = 5;
+  Timer? _crossfadeTimer;
+  AudioPlayer? _incoming;
+  int? _incomingEntry;
+  bool _incomingReady = false;
+  bool _incomingStarted = false;
+  int? _failedCrossfadeEntry;
+  double _fadeProgress = 0;
+
+  late final LocalStore? _playbackSettings = sessionStore == null
+      ? null
+      : LocalStore(sessionStore!.directory, baseName: 'playback-settings');
+
+  Future<void> loadCrossfadeSettings() async {
+    final settings = await _playbackSettings?.load();
+    final length = settings?['crossfadeLength'];
+    crossfadeLength = length is int ? length.clamp(1, 12) : 5;
+    if (!_shuttingDown) _setCrossfade(settings?['crossfadeEnabled'] == true);
+  }
+
+  Future<void> setCrossfade({required bool enabled, int? seconds}) async {
+    if (seconds != null) crossfadeLength = seconds.clamp(1, 12);
+    _setCrossfade(enabled);
+    try {
+      await _playbackSettings?.save({
+        'crossfadeEnabled': enabled,
+        'crossfadeLength': crossfadeLength,
+      });
+    } catch (error) {
+      recordEvent(
+        'Error al guardar el ajuste de fundido: ${error.runtimeType}',
+      );
+      if (!_shuttingDown) {
+        errors.add('No se pudo guardar el ajuste de fundido.');
+      }
+    }
+  }
+
+  void _setCrossfade(bool enabled) {
+    _cancelCrossfade();
+    _failedCrossfadeEntry = null;
+    crossfadeSeconds = enabled ? crossfadeLength : 0;
+    _refreshCrossfadeTimer();
+  }
+
+  void _refreshCrossfadeTimer() {
+    if (crossfadeSeconds > 0 && player.playing && !_shuttingDown) {
+      _crossfadeTimer ??= Timer.periodic(
+        const Duration(milliseconds: 50),
+        (_) => _tickCrossfade(),
+      );
+    } else {
+      _crossfadeTimer?.cancel();
+      _crossfadeTimer = null;
+    }
+  }
+
+  void _cancelCrossfade() {
+    final incoming = _incoming;
+    if (incoming == null) return;
+    _incoming = null;
+    _incomingEntry = null;
+    _incomingReady = false;
+    _incomingStarted = false;
+    _fadeProgress = 0;
+    unawaited(incoming.dispose().catchError((Object _) {}));
+    _setPlayerVolume(player, _appVolume);
+  }
+
+  void _setPlayerVolume(AudioPlayer target, double value) {
+    unawaited(target.setVolume(value).catchError((Object _) {}));
+  }
+
+  bool get _canCrossfade =>
+      !_shuttingDown &&
+      !_loading &&
+      crossfadeSeconds > 0 &&
+      !repeat &&
+      _playIntent &&
+      player.playing &&
+      index >= 0 &&
+      index + 1 < tracks.length;
+
+  void _tickCrossfade() {
+    final duration = player.duration;
+    if (!_canCrossfade ||
+        duration == null ||
+        player.processingState != ProcessingState.ready) {
+      if (player.processingState != ProcessingState.completed) {
+        _cancelCrossfade();
+      }
+      return;
+    }
+    final nextEntry = _entries[index + 1];
+    final remaining = duration - player.position;
+    final fade = Duration(seconds: crossfadeSeconds);
+    // Leave short tracks intact and avoid overlapping most of either track.
+    if (duration <= fade * 2 || remaining > fade + const Duration(seconds: 4)) {
+      _cancelCrossfade();
+      return;
+    }
+    if (_incomingEntry != nextEntry) _cancelCrossfade();
+    if (_failedCrossfadeEntry == nextEntry) return;
+    if (_incoming == null && remaining > fade) {
+      unawaited(_prepareCrossfade(nextEntry, tracks[index + 1], fade));
+      return;
+    }
+    final incoming = _incoming;
+    if (incoming == null || !_incomingReady || remaining > fade) return;
+    if (!_incomingStarted) {
+      if (remaining < fade - const Duration(milliseconds: 300)) {
+        _cancelCrossfade();
+        return;
+      }
+      _incomingStarted = true;
+      unawaited(
+        incoming.play().catchError((Object error) {
+          if (identical(_incoming, incoming)) {
+            _failedCrossfadeEntry = nextEntry;
+            _cancelCrossfade();
+          }
+        }),
+      );
+    }
+    if (incoming.processingState != ProcessingState.ready) {
+      _fadeProgress = 0;
+      _updateFadeVolumes();
+      return;
+    }
+    _fadeProgress = (1 - remaining.inMilliseconds / fade.inMilliseconds).clamp(
+      0.0,
+      1.0,
+    );
+    _updateFadeVolumes();
+  }
+
+  void _updateFadeVolumes() {
+    _setPlayerVolume(player, _appVolume * (1 - _fadeProgress));
+    final incoming = _incoming;
+    if (incoming != null) {
+      _setPlayerVolume(incoming, _appVolume * _fadeProgress);
+    }
+  }
+
+  Future<void> _prepareCrossfade(int entry, Track track, Duration fade) async {
+    AudioPlayer? incoming;
+    try {
+      incoming = _createCrossfadePlayer();
+      _incoming = incoming;
+      _incomingEntry = entry;
+      await incoming.setVolume(0);
+      if (!identical(_incoming, incoming)) return;
+      final duration = await incoming
+          .setAudioSource(_sourceFor(track))
+          .timeout(const Duration(seconds: 10));
+      if (!identical(_incoming, incoming)) return;
+      if (duration != null && duration > fade * 2) {
+        _incomingReady = true;
+        return;
+      }
+    } catch (error) {
+      if (!identical(_incoming, incoming)) return;
+      recordEvent('Preparación del fundido fallida: ${error.runtimeType}');
+    }
+    _failedCrossfadeEntry = entry;
+    _cancelCrossfade();
+  }
+
+  AudioSource _sourceFor(Track track) => AudioSource.uri(
+    track.id.startsWith('content://')
+        ? Uri.parse(track.id)
+        : Uri.file(track.id),
+  );
+
+  bool _finishCrossfade() {
+    final incoming = _incoming;
+    if (!_canCrossfade ||
+        incoming == null ||
+        !_incomingStarted ||
+        incoming.processingState != ProcessingState.ready ||
+        !incoming.playing ||
+        incoming.position == Duration.zero ||
+        _incomingEntry != _entries[index + 1]) {
+      _cancelCrossfade();
+      return false;
+    }
+    final outgoing = player;
+    _incoming = null;
+    _incomingEntry = null;
+    _incomingReady = false;
+    _incomingStarted = false;
+    _failedCrossfadeEntry = null;
+    _fadeProgress = 0;
+    _player = incoming;
+    if (_loadedEntry case final entry?) {
+      _previousTracks.add(entry);
+      if (_previousTracks.length > 300) _previousTracks.removeAt(0);
+    }
+    index++;
+    _loadedEntry = _entries[index];
+    _forwardTracks.clear();
+    final track = tracks[index];
+    final generation = ++_generation;
+    mediaItem.add(_mediaItem(track).copyWith(duration: player.duration));
+    _observePlayer();
+    _setPlayerVolume(player, _appVolume);
+    unawaited(outgoing.dispose().catchError((Object _) {}));
+    unawaited(_loadArtwork(track, generation));
+    _publish();
+    unawaited(saveSession());
+    return true;
+  }
+
   final Future<void> Function()? onEmptyPlay;
   final Future<Uri?> Function(String)? artworkLoader;
   final LocalStore? sessionStore;
@@ -122,6 +350,11 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
   }
 
   void _queueChanged() {
+    if (_incomingEntry != null &&
+        (index + 1 >= _entries.length ||
+            _incomingEntry != _entries[index + 1])) {
+      _cancelCrossfade();
+    }
     queue.add(tracks.map(_mediaItem).toList());
     _publish();
     unawaited(saveSession());
@@ -268,29 +501,52 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
     this.artworkLoader,
     this.onEmptyPlay,
     bool? serializeNativeLoads,
+    AudioPlayer Function()? crossfadePlayerFactory,
   }) : _serializeNativeLoads = serializeNativeLoads ?? Platform.isAndroid,
-       player = player ?? createNativeAudioPlayer() {
+       _createCrossfadePlayer =
+           crossfadePlayerFactory ?? createNativeAudioPlayer,
+       _player = player ?? createNativeAudioPlayer() {
     if (sessionStore != null) {
       _checkpointTimer = Timer.periodic(const Duration(seconds: 5), (_) {
         if (this.player.playing && !_loading) unawaited(saveSession());
       });
     }
-    _subscriptions.add(this.player.playerStateStream.listen((_) => _publish()));
-    _subscriptions.add(
-      this.player.playbackEventStream.listen(
-        (_) => _publish(),
-        onError: _handlePlaybackError,
-      ),
-    );
-    _subscriptions.add(this.player.errorStream.listen(_handlePlaybackError));
-    _subscriptions.add(
-      this.player.processingStateStream.listen((state) {
-        if (state == ProcessingState.completed && !_loading) {
-          unawaited(_advance());
-        }
-      }),
-    );
+    _appVolume = this.player.volume;
+    _observePlayer();
   }
+
+  void _observePlayer() {
+    for (final subscription in _playerSubscriptions) {
+      unawaited(subscription.cancel());
+    }
+    _playerSubscriptions
+      ..clear()
+      ..add(player.positionStream.listen(_positions.add))
+      ..add(player.durationStream.listen(_durations.add))
+      ..add(
+        player.playerStateStream.listen((state) {
+          _states.add(state);
+          if (!state.playing) _cancelCrossfade();
+          _refreshCrossfadeTimer();
+          _publish();
+        }),
+      )
+      ..add(
+        player.playbackEventStream.listen(
+          (_) => _publish(),
+          onError: _handlePlaybackError,
+        ),
+      )
+      ..add(player.errorStream.listen(_handlePlaybackError))
+      ..add(
+        player.processingStateStream.listen((state) {
+          if (state == ProcessingState.completed && !_loading) {
+            if (!_finishCrossfade()) unawaited(_advance());
+          }
+        }),
+      );
+  }
+
   void observeSystemErrors(Stream<Object> source) {
     _subscriptions.add(
       source.listen((error) {
@@ -404,6 +660,8 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
   }) {
     if (_shuttingDown) return Future.value();
     if (selected < 0 || selected >= source.length) return Future.value();
+    _cancelCrossfade();
+    _failedCrossfadeEntry = null;
     final sameQueue =
         preserveQueue ||
         (source.length == tracks.length &&
@@ -467,11 +725,7 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
           // Android emits an unscoped error when a native load is aborted.
           // Let the current load settle before starting its replacement.
           final nativeLoad = player.setAudioSource(
-            AudioSource.uri(
-              track.id.startsWith('content://')
-                  ? Uri.parse(track.id)
-                  : Uri.file(track.id),
-            ),
+            _sourceFor(track),
             initialPosition: initialPosition,
           );
           final loading = _serializeNativeLoads
@@ -547,6 +801,7 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
     };
     _previousTracks.removeWhere(removed.contains);
     _forwardTracks.removeWhere(removed.contains);
+    if (removed.contains(_incomingEntry)) _cancelCrossfade();
     if (removed.contains(_loadedEntry)) _loadedEntry = null;
     final remaining = tracks.where((t) => t.id != id).toList();
     if (current == id) {
@@ -615,6 +870,7 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
   @override
   Future<void> pause() {
     _playIntent = false;
+    _cancelCrossfade();
     recordEvent('Pausa solicitada');
     return player.pause().then((_) {
       _publish();
@@ -624,6 +880,7 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
 
   @override
   Future<void> seek(Duration position) async {
+    _cancelCrossfade();
     await player.seek(position);
     if (sessionStore != null) {
       _seekCheckpoint?.cancel();
@@ -747,6 +1004,7 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
 
   @override
   Future<void> stop() async {
+    _cancelCrossfade();
     ++_generation;
     _interruptPendingLoad();
     _playIntent = false;
@@ -806,13 +1064,18 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
     );
   }
 
-  Future<void> setAppVolume(double value) =>
-      player.setVolume(value.clamp(0.0, 1.0));
+  Future<void> setAppVolume(double value) async {
+    _appVolume = value.clamp(0.0, 1.0);
+    _volumes.add(_appVolume);
+    _updateFadeVolumes();
+  }
 
   Future<void> close() => _closing ??= _closeInternal();
 
   Future<void> _closeInternal() async {
     _shuttingDown = true;
+    _crossfadeTimer?.cancel();
+    _cancelCrossfade();
     _checkpointTimer?.cancel();
     _seekCheckpoint?.cancel();
     ++_generation;
@@ -825,11 +1088,15 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
     await player.stop();
     if (_loading) await _operations;
     _closed = true;
-    for (final subscription in _subscriptions) {
+    for (final subscription in [..._subscriptions, ..._playerSubscriptions]) {
       // Cancellation stops delivery immediately; do not wait on UI stream clocks.
       unawaited(subscription.cancel());
     }
     await player.dispose();
+    unawaited(_positions.close());
+    unawaited(_durations.close());
+    unawaited(_states.close());
+    unawaited(_volumes.close());
     // Error observers must not hold the native player/window open on exit.
     unawaited(errors.close());
   }

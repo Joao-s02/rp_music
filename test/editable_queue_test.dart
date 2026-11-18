@@ -21,6 +21,44 @@ List<String> pending(MusicHandler audio) =>
     audio.tracks.skip(audio.index + 1).map((track) => track.title).toList();
 
 void main() {
+  testWidgets(
+    'el fundido usa el siguiente efectivo y lo promueve sin recargar',
+    (tester) async {
+      final outgoing = FakePlayer(liveStates: true);
+      final incoming = FakePlayer(liveStates: true);
+      final audio = MusicHandler(
+        player: outgoing,
+        crossfadePlayerFactory: () => incoming,
+      );
+      await audio.select(tracks.take(3).toList(), 0);
+      audio.enqueue([tracks[3]], next: true);
+      await audio.setCrossfade(enabled: true);
+      outgoing.currentPosition = const Duration(seconds: 23);
+      await tester.pump(const Duration(milliseconds: 50));
+      expect(incoming.loaded.single.path, '/D.mp3');
+      outgoing.currentPosition = const Duration(seconds: 25);
+      await tester.pump(const Duration(milliseconds: 50));
+      expect(incoming.playing, isTrue);
+      outgoing.currentPosition = const Duration(milliseconds: 27500);
+      incoming.currentPosition = const Duration(milliseconds: 2500);
+      await tester.pump(const Duration(milliseconds: 50));
+      expect(outgoing.volume, closeTo(.5, .001));
+      expect(incoming.volume, closeTo(.5, .001));
+
+      outgoing.complete();
+      await tester.pump();
+      expect(audio.player, same(incoming));
+      expect(audio.mediaItem.value?.title, 'D');
+      expect(incoming.loaded, hasLength(1));
+      expect(incoming.volume, 1);
+      expect(incoming.position, const Duration(milliseconds: 2500));
+      await audio.skipToNext();
+      expect(audio.mediaItem.value?.title, 'B');
+      expect(incoming.position, Duration.zero);
+      await audio.close();
+    },
+  );
+
   testWidgets('pulsación larga y clic derecho comparten acciones de cola', (
     tester,
   ) async {
