@@ -144,7 +144,7 @@ void main() {
     });
   }
   testWidgets(
-    'cola abre centrada en la pista actual con anterior/siguiente e indicador vivo',
+    'cola muestra la pista actual sobre las pendientes con indicador vivo',
     (tester) async {
       final player = FakePlayer(liveStates: true);
       final audio = MusicHandler(player: player);
@@ -170,7 +170,7 @@ void main() {
       );
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 400));
-      for (final i in [77, 78, 79]) {
+      for (final i in [78, 79, 80]) {
         expect(find.text('Pista $i').hitTestable(), findsOneWidget);
       }
       final queue = tester.getRect(
@@ -179,7 +179,7 @@ void main() {
       final current = tester.getRect(
         find.byKey(const ValueKey('queue-track-78')),
       );
-      expect((queue.center.dy - current.center.dy).abs(), lessThan(3));
+      expect(current.bottom, lessThanOrEqualTo(queue.top));
       final bar = find
           .descendant(
             of: find.byType(NowPlayingBars),

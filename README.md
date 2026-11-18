@@ -6,6 +6,12 @@ Reproductor local para Android y Windows. Abre tu biblioteca y escucha música s
 
 [Instalación y uso](docs/USO-0.4.1.md) · [Pruebas](docs/PRUEBAS-0.4.1.md) · [Cambios](docs/CAMBIOS-0.4.1.md) · [Documentación](docs/README.md)
 
+## En preparación: 0.4.2
+
+La cola editable muestra el orden real de reproducción, incluso en aleatorio. Añade canciones o colecciones a continuación o al final. Mantén pulsada una canción en Android o haz clic derecho en Windows para abrir sus acciones. Desde la cola puedes arrastrar, quitar y deshacer cambios sin interrumpir la canción actual.
+
+[Uso de la cola](docs/USO-0.4.2.md) · [Cambios](docs/CAMBIOS-0.4.2.md) · [Pruebas](docs/PRUEBAS-0.4.2.md)
+
 ## Novedades de 0.4.1
 
 Se corrigen la transición del reproductor con fondos personalizados, la reutilización de carátulas y el resaltado al desplazar. Miku revisión 2 amplía iconos y centra los controles. Listas agrupa filtros/acciones; Temas ofrece secciones desplegables y revisiones compatibles; Letras comparte movimiento en ambos modos y muestra carátula junto al título.

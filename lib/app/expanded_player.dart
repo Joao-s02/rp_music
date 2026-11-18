@@ -60,17 +60,7 @@ class _ExpandedPlayerState extends State<ExpandedPlayer> {
   LibraryController get library => widget.library;
   String time(int ms) =>
       '${ms ~/ 60000}:${(ms ~/ 1000 % 60).toString().padLeft(2, '0')}';
-  void queue() => showModalBottomSheet<void>(
-    context: context,
-    showDragHandle: true,
-    isScrollControlled: true,
-    builder: (context) => SafeArea(
-      child: SizedBox(
-        height: MediaQuery.sizeOf(context).height * .72,
-        child: PlaybackQueue(audio: audio),
-      ),
-    ),
-  );
+  void queue() => showPlaybackQueue(context, audio, library);
   void volume() => showModalBottomSheet<void>(
     context: context,
     showDragHandle: true,
@@ -281,9 +271,8 @@ class _ExpandedPlayerState extends State<ExpandedPlayer> {
                             alignment: Alignment.center,
                             iconSize: dense ? 32 : 36,
                           ),
-                          onPressed: item == null
-                              ? null
-                              : () => playing ? audio.pause() : audio.play(),
+                          onPressed: () =>
+                              playing ? audio.pause() : audio.play(),
                           icon: ThemeIcon(
                             playing ? 'pause' : 'play',
                             playing
@@ -366,7 +355,7 @@ class _ExpandedPlayerState extends State<ExpandedPlayer> {
                     color: colors.primary,
                   ),
                   label: const Text('Cola'),
-                  onPressed: item == null ? null : queue,
+                  onPressed: queue,
                 ),
                 _PlayerAction(
                   dense: dense,

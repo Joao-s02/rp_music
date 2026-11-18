@@ -1,103 +1,344 @@
-import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
 
 import '../playback/music_handler.dart';
+import 'library_controller.dart';
+import 'music_app.dart' show Artwork;
 import 'now_playing_bars.dart';
+import '../themes/theme_library.dart';
+
+Future<void> showPlaybackQueue(
+  BuildContext context,
+  MusicHandler audio,
+  LibraryController library,
+) async {
+  if (MediaQuery.sizeOf(context).width >= 850) {
+    await showGeneralDialog<void>(
+      context: context,
+      barrierDismissible: true,
+      barrierLabel: 'Cerrar cola',
+      pageBuilder: (context, _, _) => Align(
+        alignment: Alignment.centerRight,
+        child: SafeArea(
+          child: SizedBox(
+            width: 420,
+            child: ScaffoldMessenger(
+              child: Scaffold(
+                body: PlaybackQueue(
+                  audio: audio,
+                  library: library,
+                  onClose: () => Navigator.pop(context),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    return;
+  }
+  await showModalBottomSheet<void>(
+    context: context,
+    showDragHandle: true,
+    isScrollControlled: true,
+    builder: (context) => SafeArea(
+      child: SizedBox(
+        height: MediaQuery.sizeOf(context).height * .72,
+        child: ScaffoldMessenger(
+          child: Scaffold(
+            body: PlaybackQueue(audio: audio, library: library),
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
+enum _QueueAction { next, up, down, remove }
+
+Future<T?> showTrackContextMenu<T>(
+  BuildContext context,
+  Offset position,
+  List<PopupMenuEntry<T>> items,
+) {
+  final overlay =
+      Navigator.of(context).overlay!.context.findRenderObject()! as RenderBox;
+  final point = overlay.globalToLocal(position);
+  return showMenu<T>(
+    context: context,
+    position: RelativeRect.fromSize(point & Size.zero, overlay.size),
+    items: items,
+  );
+}
+
+class TrackContextRegion extends StatelessWidget {
+  const TrackContextRegion({
+    super.key,
+    required this.open,
+    required this.child,
+  });
+  final ValueChanged<Offset> open;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => GestureDetector(
+    behavior: HitTestBehavior.opaque,
+    onLongPressStart: (details) => open(details.globalPosition),
+    onSecondaryTapUp: (details) => open(details.globalPosition),
+    child: child,
+  );
+}
 
 class PlaybackQueue extends StatefulWidget {
-  const PlaybackQueue({super.key, required this.audio});
+  const PlaybackQueue({
+    super.key,
+    required this.audio,
+    this.library,
+    this.onClose,
+  });
   final MusicHandler audio;
+  final LibraryController? library;
+  final VoidCallback? onClose;
+
   @override
   State<PlaybackQueue> createState() => _PlaybackQueueState();
 }
 
 class _PlaybackQueueState extends State<PlaybackQueue> {
-  final scroll = ScrollController();
-  (int, double, double)? centered;
-  @override
-  void dispose() {
-    scroll.dispose();
-    super.dispose();
-  }
+  MusicHandler get audio => widget.audio;
+  LibraryController? get library => widget.library;
+  VoidCallback? get onClose => widget.onClose;
+  List<int>? dragOrder;
 
   @override
   Widget build(BuildContext context) => StreamBuilder(
-    stream: widget.audio.mediaItem,
-    initialData: widget.audio.mediaItem.value,
-    builder: (context, _) => Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(16),
-          child: Text(
-            'Cola en curso',
-            style: Theme.of(context).textTheme.titleLarge,
-          ),
-        ),
-        Expanded(
-          child: LayoutBuilder(
-            builder: (context, box) {
-              final extent = math.max(
-                76.0,
-                36 + MediaQuery.textScalerOf(context).scale(28),
-              );
-              final index = widget.audio.index;
-              final placement = (index, extent, box.maxHeight);
-              if (centered != placement) {
-                centered = placement;
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  if (!mounted || !scroll.hasClients) return;
-                  scroll.jumpTo(
-                    (index * extent - (box.maxHeight - extent) / 2).clamp(
-                      0.0,
-                      scroll.position.maxScrollExtent,
-                    ),
-                  );
-                });
-              }
-              return ListView.builder(
-                key: const ValueKey('playback-queue'),
-                controller: scroll,
-                itemExtent: extent,
-                itemCount: widget.audio.tracks.length,
-                itemBuilder: (context, i) => ListTile(
-                  key: ValueKey('queue-track-$i'),
-                  selected: i == index,
-                  selectedTileColor: Theme.of(context).colorScheme.primary
-                      .withValues(alpha: .08),
-                  leading: i == index
-                      ? StreamBuilder(
-                          stream: widget.audio.player.playerStateStream,
-                          builder: (context, state) => NowPlayingBars(
-                            playing:
-                                state.data?.playing ??
-                                widget.audio.player.playing,
-                          ),
-                        )
-                      : SizedBox(
-                          width: 26,
-                          child: Text('${i + 1}', textAlign: TextAlign.center),
-                        ),
-                  title: Text(
-                    widget.audio.tracks[i].title,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  subtitle: Text(
-                    widget.audio.tracks[i].artist,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  onTap: () {
-                    widget.audio.skipToQueueItem(i);
-                    Navigator.pop(context);
-                  },
+    stream: audio.queue,
+    builder: (context, _) => StreamBuilder(
+      stream: audio.mediaItem,
+      builder: (context, _) {
+        final start = audio.index + 1;
+        final entries = [
+          for (var i = start; i < audio.tracks.length; i++)
+            audio.queueEntryAt(i),
+        ];
+        final history = audio.playbackHistory.take(20).toList();
+        final historySection = ExpansionTile(
+          title: const Text('Escuchadas recientemente'),
+          children: [
+            for (final track in history)
+              ListTile(
+                title: Text(
+                  track.title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-              );
-            },
-          ),
-        ),
-      ],
+                subtitle: Text(
+                  track.artist,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+          ],
+        );
+        final current = audio.index >= 0 ? audio.tracks[audio.index] : null;
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            ListTile(
+              title: const Text('Cola en curso'),
+              subtitle: audio.shuffle ? const Text('Aleatorio activado') : null,
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  PopupMenuButton<bool>(
+                    tooltip: 'Opciones de la cola',
+                    enabled: entries.isNotEmpty,
+                    onSelected: (_) => audio.clearPending(),
+                    itemBuilder: (_) => const [
+                      PopupMenuItem(
+                        value: true,
+                        child: Text('Vaciar pendientes'),
+                      ),
+                    ],
+                  ),
+                  if (onClose != null)
+                    IconButton(
+                      tooltip: 'Cerrar cola',
+                      onPressed: onClose,
+                      icon: const Icon(Icons.close),
+                    ),
+                ],
+              ),
+            ),
+            if (current != null)
+              ListTile(
+                key: ValueKey('queue-track-${audio.index}'),
+                selected: true,
+                trailing: StreamBuilder(
+                  stream: audio.player.playerStateStream,
+                  builder: (_, state) => NowPlayingBars(
+                    playing: state.data?.playing ?? audio.player.playing,
+                  ),
+                ),
+                leading: library == null
+                    ? const Icon(Icons.graphic_eq)
+                    : Artwork(id: current.id, library: library!),
+                title: Text(
+                  current.title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                subtitle: Text(
+                  'Sonando ahora · ${current.artist}',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            const Padding(
+              padding: EdgeInsets.fromLTRB(16, 12, 16, 4),
+              child: Text('A continuación'),
+            ),
+            Expanded(
+              child: entries.isEmpty
+                  ? ListView(
+                      children: [
+                        const ListTile(
+                          title: Text('No hay canciones pendientes'),
+                        ),
+                        if (history.isNotEmpty) historySection,
+                      ],
+                    )
+                  : ReorderableListView.builder(
+                      key: const ValueKey('playback-queue'),
+                      buildDefaultDragHandles: false,
+                      footer: history.isEmpty ? null : historySection,
+                      itemCount: entries.length,
+                      onReorderStart: (_) => dragOrder = entries,
+                      onReorderItem: (from, to) {
+                        final order = dragOrder ?? entries;
+                        dragOrder = null;
+                        if (from < order.length && to < order.length) {
+                          audio.movePendingRelative(
+                            order[from],
+                            order[to],
+                            after: from < to,
+                          );
+                        }
+                      },
+                      itemBuilder: (context, i) {
+                        final entry = entries[i];
+                        final track = audio.tracks[start + i];
+                        final options = [
+                          const PopupMenuItem(
+                            value: _QueueAction.next,
+                            child: Text('Mover a continuación'),
+                          ),
+                          PopupMenuItem(
+                            value: _QueueAction.up,
+                            enabled: i > 0,
+                            child: const Text('Subir'),
+                          ),
+                          PopupMenuItem(
+                            value: _QueueAction.down,
+                            enabled: i + 1 < entries.length,
+                            child: const Text('Bajar'),
+                          ),
+                          const PopupMenuItem(
+                            value: _QueueAction.remove,
+                            child: Text('Quitar de la cola'),
+                          ),
+                        ];
+                        void choose(_QueueAction action) {
+                          switch (action) {
+                            case _QueueAction.next:
+                              audio.movePendingNext(entry);
+                            case _QueueAction.up:
+                              audio.movePendingRelative(entry, entries[i - 1]);
+                            case _QueueAction.down:
+                              audio.movePendingRelative(
+                                entry,
+                                entries[i + 1],
+                                after: true,
+                              );
+                            case _QueueAction.remove:
+                              final undo = audio.removePending(entry);
+                              if (undo == null) return;
+                              ScaffoldMessenger.of(context)
+                                ..hideCurrentSnackBar()
+                                ..showSnackBar(
+                                  SnackBar(
+                                    content: const Text(
+                                      'Canción quitada de la cola',
+                                    ),
+                                    action: SnackBarAction(
+                                      label: 'Deshacer',
+                                      onPressed: undo,
+                                    ),
+                                  ),
+                                );
+                          }
+                        }
+
+                        return TrackContextRegion(
+                          key: ValueKey('queue-entry-$entry'),
+                          open: (position) async {
+                            final action = await showTrackContextMenu(
+                              context,
+                              position,
+                              options,
+                            );
+                            if (context.mounted && action != null) {
+                              choose(action);
+                            }
+                          },
+                          child: ListTile(
+                            key: ValueKey('queue-track-${start + i}'),
+                            leading: library == null
+                                ? null
+                                : Artwork(id: track.id, library: library!),
+                            title: Text(
+                              track.title,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            subtitle: Text(
+                              track.artist,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            onTap: () => audio.playQueueEntry(entry),
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                PopupMenuButton<_QueueAction>(
+                                  tooltip: 'Opciones de canción',
+                                  icon: const ThemeIcon(
+                                    'more',
+                                    Icons.more_vert,
+                                  ),
+                                  itemBuilder: (_) => options,
+                                  onSelected: choose,
+                                ),
+                                ReorderableDragStartListener(
+                                  index: i,
+                                  child: const Tooltip(
+                                    message: 'Arrastra para reordenar',
+                                    child: SizedBox(
+                                      width: 44,
+                                      height: 48,
+                                      child: Icon(Icons.drag_handle),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+            ),
+          ],
+        );
+      },
     ),
   );
 }

@@ -1,3 +1,4 @@
+import 'playback_queue.dart';
 import '../artists/artist_portraits.dart';
 import 'pulse_surface.dart';
 import 'scrolling_title.dart';
@@ -595,6 +596,9 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
         library: library,
         onBack: () => selectGroup(null),
         menu: albumTrackMenu,
+        onTrackContext: (track, position) =>
+            openTrackMenu(track, position, favorite: true),
+        onEnqueue: (tracks, next) => enqueueTracks(tracks, next: next),
         onSave: () => addAlbumToPlaylist(
           filtered.where((t) => groupKey(t) == group).toList(),
         ),
@@ -721,48 +725,90 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
 
   Widget albumTrackMenu(Track track) => trackMenu(track, favorite: true);
 
+  void enqueueTracks(List<Track> tracks, {required bool next}) {
+    final undo = audio.enqueue(tracks, next: next);
+    if (undo == null) return;
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          action: SnackBarAction(label: 'Deshacer', onPressed: undo),
+          content: Text(
+            next ? 'Añadido a continuación' : 'Añadido al final de la cola',
+          ),
+        ),
+      );
+  }
+
+  Future<void> openTrackMenu(
+    Track track,
+    Offset position, {
+    bool favorite = false,
+  }) async {
+    final action = await showTrackContextMenu(
+      context,
+      position,
+      trackOptions(track, favorite),
+    );
+    if (mounted && action != null) runTrackAction(track, action);
+  }
+
   Widget trackMenu(Track track, {bool favorite = false}) =>
       PopupMenuButton<String>(
         tooltip: 'Opciones de canción',
         icon: const ThemeIcon('more', Icons.more_vert),
-        onSelected: (value) {
-          switch (value) {
-            case 'favorite':
-              library.toggleFavorite(track.id);
-            case 'playlist':
-              addSongToPlaylists(track);
-            case 'details':
-              showSongDetails(context, track);
-            case 'delete':
-              deleteTrack(track);
-          }
-        },
-        itemBuilder: (_) => [
-          if (favorite && track.sourceId == null)
-            PopupMenuItem(
-              value: 'favorite',
-              child: Text(
-                library.favorites.contains(track.id)
-                    ? 'Quitar de favoritos'
-                    : 'Añadir a favoritos',
-              ),
-            ),
-          const PopupMenuItem(
-            value: 'playlist',
-            child: Text('Añadir a una lista'),
-          ),
-          const PopupMenuItem(
-            value: 'details',
-            child: Text('Detalles de la canción'),
-          ),
-          if (track.sourceId == null)
-            PopupMenuItem(
-              value: 'delete',
-              enabled: !library.scanning && !library.deleting,
-              child: const Text('Eliminar del dispositivo'),
-            ),
-        ],
+        onSelected: (action) => runTrackAction(track, action),
+        itemBuilder: (_) => trackOptions(track, favorite),
       );
+
+  void runTrackAction(Track track, String value) {
+    switch (value) {
+      case 'queue-next':
+        enqueueTracks([track], next: true);
+      case 'queue-end':
+        enqueueTracks([track], next: false);
+      case 'favorite':
+        library.toggleFavorite(track.id);
+      case 'playlist':
+        addSongToPlaylists(track);
+      case 'details':
+        showSongDetails(context, track);
+      case 'delete':
+        deleteTrack(track);
+    }
+  }
+
+  List<PopupMenuEntry<String>> trackOptions(Track track, bool favorite) => [
+    const PopupMenuItem(
+      value: 'queue-next',
+      child: Text('Reproducir a continuación'),
+    ),
+    const PopupMenuItem(
+      value: 'queue-end',
+      child: Text('Añadir al final de la cola'),
+    ),
+
+    if (favorite && track.sourceId == null)
+      PopupMenuItem(
+        value: 'favorite',
+        child: Text(
+          library.favorites.contains(track.id)
+              ? 'Quitar de favoritos'
+              : 'Añadir a favoritos',
+        ),
+      ),
+    const PopupMenuItem(value: 'playlist', child: Text('Añadir a una lista')),
+    const PopupMenuItem(
+      value: 'details',
+      child: Text('Detalles de la canción'),
+    ),
+    if (track.sourceId == null)
+      PopupMenuItem(
+        value: 'delete',
+        enabled: !library.scanning && !library.deleting,
+        child: const Text('Eliminar del dispositivo'),
+      ),
+  ];
 
   Future<void> addSongToPlaylists(Track track) async {
     final names = library.playlists.keys
@@ -857,28 +903,39 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
   };
   Widget groupedTracks(List<Track> tracks) {
     if (group != null) {
+      final grouped = tracks
+          .where(
+            (track) => view == 2
+                ? track.artists.any(
+                    (name) => Track.artistKey(name) == Track.artistKey(group!),
+                  )
+                : groupKey(track) == group,
+          )
+          .toList();
       return Column(
         children: [
           ListTile(
             leading: const ThemeIcon('back', Icons.arrow_back),
             title: Text(group!.split('\n').first),
             onTap: () => selectGroup(null),
-          ),
-          Expanded(
-            child: trackList(
-              tracks
-                  .where(
-                    (t) => view == 2
-                        ? t.artists.any(
-                            (name) =>
-                                Track.artistKey(name) ==
-                                Track.artistKey(group!),
-                          )
-                        : groupKey(t) == group,
-                  )
-                  .toList(),
+            trailing: PopupMenuButton<bool>(
+              tooltip: 'Opciones de cola de la colección',
+              enabled: grouped.isNotEmpty,
+              onSelected: (next) =>
+                  enqueueTracks(library.ordered(grouped), next: next),
+              itemBuilder: (_) => const [
+                PopupMenuItem(
+                  value: true,
+                  child: Text('Reproducir a continuación'),
+                ),
+                PopupMenuItem(
+                  value: false,
+                  child: Text('Añadir al final de la cola'),
+                ),
+              ],
             ),
           ),
+          Expanded(child: trackList(grouped)),
         ],
       );
     }
@@ -1119,7 +1176,10 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
         return Material(
           color: Colors.transparent,
           clipBehavior: Clip.hardEdge,
-          child: tile,
+          child: TrackContextRegion(
+            open: (position) => openTrackMenu(track, position),
+            child: tile,
+          ),
         );
       },
     );
@@ -1154,13 +1214,26 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
                   tooltip: 'Opciones de la lista',
                   icon: const ThemeIcon('more', Icons.more_vert),
                   onSelected: (value) {
-                    if (value == 'cover') {
+                    if (value == 'queue-next' || value == 'queue-end') {
+                      enqueueTracks(
+                        library.ordered(tracks),
+                        next: value == 'queue-next',
+                      );
+                    } else if (value == 'cover') {
                       choosePlaylistCover(context, library, name);
                     } else {
                       deletePlaylist(name);
                     }
                   },
                   itemBuilder: (_) => const [
+                    PopupMenuItem(
+                      value: 'queue-next',
+                      child: Text('Reproducir a continuación'),
+                    ),
+                    PopupMenuItem(
+                      value: 'queue-end',
+                      child: Text('Añadir al final de la cola'),
+                    ),
                     PopupMenuItem(
                       value: 'cover',
                       child: Text('Cambiar carátula'),
@@ -1875,11 +1948,9 @@ class _PlayerPanelState extends State<PlayerPanel> {
                           tooltip: audio.player.playing
                               ? 'Pausar'
                               : 'Reproducir',
-                          onPressed: track == null
-                              ? null
-                              : () => audio.player.playing
-                                    ? audio.pause()
-                                    : audio.play(),
+                          onPressed: () => audio.player.playing
+                              ? audio.pause()
+                              : audio.play(),
                           icon: ThemeIcon(
                             audio.player.playing ? 'pause' : 'play',
                             audio.player.playing
@@ -1974,9 +2045,7 @@ class _PlayerPanelState extends State<PlayerPanel> {
                               )
                             : null,
                         tooltip: playing ? 'Pausar' : 'Reproducir',
-                        onPressed: track == null
-                            ? null
-                            : () => playing ? audio.pause() : audio.play(),
+                        onPressed: () => playing ? audio.pause() : audio.play(),
                         icon: ThemeIcon(
                           playing ? 'pause' : 'play',
                           playing ? Icons.pause : Icons.play_arrow,
@@ -1997,23 +2066,7 @@ class _PlayerPanelState extends State<PlayerPanel> {
                     ),
                   IconButton(
                     tooltip: 'Ver cola',
-                    onPressed: track == null
-                        ? null
-                        : () => showModalBottomSheet<void>(
-                            context: context,
-                            builder: (_) => ListView.builder(
-                              itemCount: audio.tracks.length,
-                              itemBuilder: (context, i) => ListTile(
-                                selected: i == audio.index,
-                                title: Text(audio.tracks[i].title),
-                                subtitle: Text(audio.tracks[i].artist),
-                                onTap: () {
-                                  audio.select(audio.tracks, i);
-                                  Navigator.pop(context);
-                                },
-                              ),
-                            ),
-                          ),
+                    onPressed: () => showPlaybackQueue(context, audio, library),
                     icon: const ThemeIcon('queue', Icons.queue_music),
                   ),
                 ],

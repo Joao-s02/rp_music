@@ -1,3 +1,4 @@
+import 'playback_queue.dart';
 import '../themes/theme_library.dart';
 import 'album_sleeve.dart';
 import 'pulse_surface.dart';
@@ -22,6 +23,8 @@ class AlbumDetailView extends StatefulWidget {
     required this.onSave,
     required this.menu,
     this.query = '',
+    this.onTrackContext,
+    this.onEnqueue,
   });
   final List<Track> tracks;
   final MusicHandler audio;
@@ -29,6 +32,8 @@ class AlbumDetailView extends StatefulWidget {
   final VoidCallback onBack, onSave;
   final Widget Function(Track) menu;
   final String query;
+  final void Function(Track, Offset)? onTrackContext;
+  final void Function(List<Track>, bool)? onEnqueue;
   @override
   State<AlbumDetailView> createState() => _AlbumDetailViewState();
 }
@@ -237,6 +242,22 @@ class _AlbumDetailViewState extends State<AlbumDetailView> {
                             icon: const Icon(Icons.shuffle),
                             label: const Text('Aleatorio'),
                           ),
+                          if (widget.onEnqueue != null)
+                            PopupMenuButton<bool>(
+                              tooltip: 'Opciones de cola del álbum',
+                              onSelected: (next) =>
+                                  widget.onEnqueue!(tracks, next),
+                              itemBuilder: (_) => const [
+                                PopupMenuItem(
+                                  value: true,
+                                  child: Text('Reproducir a continuación'),
+                                ),
+                                PopupMenuItem(
+                                  value: false,
+                                  child: Text('Añadir al final de la cola'),
+                                ),
+                              ],
+                            ),
                           IconButton.filledTonal(
                             onPressed: widget.onSave,
                             tooltip: 'Añadir álbum a una lista',
@@ -336,7 +357,7 @@ class _AlbumDetailViewState extends State<AlbumDetailView> {
                 final selected = current.data?.id == track.id;
                 final favorite = widget.library.favorites.contains(track.id);
                 final codec = format(track);
-                return Container(
+                final row = Container(
                   margin: const EdgeInsets.fromLTRB(20, 0, 20, 8),
                   decoration: BoxDecoration(
                     color: selected
@@ -450,6 +471,13 @@ class _AlbumDetailViewState extends State<AlbumDetailView> {
                     ),
                   ),
                 );
+                return widget.onTrackContext == null
+                    ? row
+                    : TrackContextRegion(
+                        open: (position) =>
+                            widget.onTrackContext!(track, position),
+                        child: row,
+                      );
               },
             ),
             const SliverToBoxAdapter(child: SizedBox(height: 16)),

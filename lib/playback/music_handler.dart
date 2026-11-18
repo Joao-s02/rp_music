@@ -5,6 +5,7 @@ import 'dart:math';
 import 'package:audio_service/audio_service.dart';
 import 'package:audio_session/audio_session.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:flutter/foundation.dart' show VoidCallback;
 
 import '../domain/track.dart';
 import '../data/local_store.dart';
@@ -72,9 +73,194 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
   bool _playIntent = false;
   List<Track> tracks = [];
   int index = -1;
-  final List<String> _previousTracks = [], _forwardTracks = [];
-  String? _loadedTrackId;
-  bool shuffle = false;
+  final List<int> _previousTracks = [], _forwardTracks = [];
+  int? _loadedEntry;
+  bool _shuffle = false;
+  bool get shuffle => _shuffle;
+  set shuffle(bool value) {
+    if (value == _shuffle) return;
+    _shuffle = value;
+    _arrangePending();
+    _queueChanged();
+  }
+
+  int _nextEntry = 0;
+  List<int> _entries = [];
+  final List<int> _originalOrder = [];
+  final Set<int> _playNext = {};
+  int queueEntryAt(int position) => _entries[position];
+  Iterable<Track> get playbackHistory sync* {
+    for (final entry in _previousTracks.reversed) {
+      final position = _entries.indexOf(entry);
+      if (position >= 0) yield tracks[position];
+    }
+  }
+
+  void _arrangePending() {
+    final start = index + 1;
+    if (start >= tracks.length) return;
+    final pending = {
+      for (var i = start; i < tracks.length; i++) _entries[i]: tracks[i],
+    };
+    final regular = _originalOrder
+        .where((id) => pending.containsKey(id) && !_playNext.contains(id))
+        .toList();
+    if (_shuffle) regular.shuffle();
+    _replacePending([
+      ..._entries.skip(start).where(_playNext.contains),
+      ...regular,
+    ], pending);
+  }
+
+  void _replacePending(List<int> order, Map<int, Track> pending) {
+    final start = index + 1;
+    tracks = List.unmodifiable([
+      ...tracks.take(start),
+      ...order.map((id) => pending[id]!),
+    ]);
+    _entries = [..._entries.take(start), ...order];
+  }
+
+  void _queueChanged() {
+    queue.add(tracks.map(_mediaItem).toList());
+    _publish();
+    unawaited(saveSession());
+  }
+
+  VoidCallback? enqueue(List<Track> additions, {bool next = false}) {
+    if (_shuttingDown || additions.isEmpty) return null;
+    final position = next ? index + 1 : tracks.length;
+    final newEntries = [for (final _ in additions) _nextEntry++];
+    tracks = List.unmodifiable([
+      ...tracks.take(position),
+      ...additions,
+      ...tracks.skip(position),
+    ]);
+    _entries.insertAll(position, newEntries);
+    if (next) {
+      _playNext.addAll(newEntries);
+      final following = position + newEntries.length;
+      final target = following < _entries.length
+          ? _originalOrder.indexOf(_entries[following])
+          : _originalOrder.length;
+      _originalOrder.insertAll(target, newEntries);
+    } else {
+      _originalOrder.addAll(newEntries);
+    }
+    _forwardTracks.clear();
+    _queueChanged();
+    final session = _queueGeneration;
+    return () {
+      if (_queueGeneration != session || _shuttingDown) return;
+      final added = newEntries.toSet();
+      final removed = _entries.skip(index + 1).where(added.contains).toSet();
+      _discardPending(removed);
+    };
+  }
+
+  void movePending(int entry, int position) {
+    final from = _entries.indexOf(entry);
+    if (from <= index ||
+        from < 0 ||
+        position <= index ||
+        position >= tracks.length) {
+      return;
+    }
+    final updated = tracks.toList();
+    final track = updated.removeAt(from);
+    updated.insert(position, track);
+    tracks = List.unmodifiable(updated);
+    _entries.removeAt(from);
+    _entries.insert(position, entry);
+    _playNext.remove(entry);
+    _originalOrder.remove(entry);
+    final next = position + 1;
+    _originalOrder.insert(
+      next < _entries.length
+          ? _originalOrder.indexOf(_entries[next])
+          : _originalOrder.length,
+      entry,
+    );
+    _forwardTracks.clear();
+    _queueChanged();
+  }
+
+  void movePendingRelative(int entry, int anchor, {bool after = false}) {
+    final from = _entries.indexOf(entry);
+    final to = _entries.indexOf(anchor);
+    if (from <= index || to <= index || from < 0 || to < 0 || entry == anchor) {
+      return;
+    }
+    movePending(entry, to + (after ? 1 : 0) - (from < to ? 1 : 0));
+  }
+
+  Future<void> playQueueEntry(int entry) =>
+      skipToQueueItem(_entries.indexOf(entry));
+
+  void movePendingNext(int entry) {
+    if (_entries.indexOf(entry) <= index || !_entries.contains(entry)) return;
+    movePending(entry, index + 1);
+    _playNext.add(entry);
+    _queueChanged();
+  }
+
+  void Function()? removePending(int entry) {
+    final position = _entries.indexOf(entry);
+    if (position <= index || position < 0) return null;
+    final track = tracks[position];
+    final successor = position + 1 < _entries.length
+        ? _entries[position + 1]
+        : null;
+    final wasNext = _playNext.remove(entry);
+    final originalPosition = _originalOrder.indexOf(entry);
+    final session = _queueGeneration;
+    tracks = List.unmodifiable(tracks.toList()..removeAt(position));
+    _entries.removeAt(position);
+    _originalOrder.remove(entry);
+    _forwardTracks.clear();
+    _queueChanged();
+    return () {
+      if (_queueGeneration != session ||
+          _entries.contains(entry) ||
+          _shuttingDown) {
+        return;
+      }
+      final successorPosition = successor == null
+          ? -1
+          : _entries.indexOf(successor);
+      final target = successorPosition > index
+          ? successorPosition
+          : position.clamp(index + 1, tracks.length);
+      tracks = List.unmodifiable(tracks.toList()..insert(target, track));
+      _entries.insert(target, entry);
+      _originalOrder.insert(
+        originalPosition.clamp(0, _originalOrder.length),
+        entry,
+      );
+      if (wasNext) _playNext.add(entry);
+      _queueChanged();
+    };
+  }
+
+  void clearPending() {
+    _queueGeneration++;
+    _discardPending(_entries.skip(index + 1).toSet());
+  }
+
+  void _discardPending(Set<int> removed) {
+    if (removed.isEmpty) return;
+    tracks = List.unmodifiable([
+      for (var i = 0; i < tracks.length; i++)
+        if (!removed.contains(_entries[i])) tracks[i],
+    ]);
+    _entries.removeWhere(removed.contains);
+    _originalOrder.removeWhere(removed.contains);
+    _playNext.removeAll(removed);
+    _forwardTracks.clear();
+    _queueChanged();
+  }
+
+  int _queueGeneration = 0;
   bool repeat = false;
   MusicHandler({
     AudioPlayer? player,
@@ -213,21 +399,45 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
     bool autoplay = true,
     Duration initialPosition = Duration.zero,
     bool recordHistory = true,
+    bool preserveQueue = false,
+    bool continueOnError = false,
   }) {
     if (_shuttingDown) return Future.value();
     if (selected < 0 || selected >= source.length) return Future.value();
     final sameQueue =
-        source.length == tracks.length &&
-        Iterable<int>.generate(source.length)
-            .every((i) => source[i].id == tracks[i].id);
+        preserveQueue ||
+        (source.length == tracks.length &&
+            Iterable<int>.generate(source.length)
+                .every((i) => source[i].id == tracks[i].id));
+    if (sameQueue && !preserveQueue) tracks = List.unmodifiable(source);
     if (!sameQueue) {
+      _queueGeneration++;
       _previousTracks.clear();
       _forwardTracks.clear();
-      _loadedTrackId = null;
+      _loadedEntry = null;
+      tracks = List.unmodifiable(source);
+      _entries = [for (final _ in source) _nextEntry++];
+      _originalOrder
+        ..clear()
+        ..addAll(_entries);
+      _playNext.clear();
     }
-    tracks = List.unmodifiable(source);
     index = selected;
+    if (!sameQueue && shuffle) {
+      final pending = {
+        for (var i = 0; i < tracks.length; i++)
+          if (i != selected) _entries[i]: tracks[i],
+      };
+      final order = pending.keys.toList()..shuffle();
+      tracks = List.unmodifiable([
+        tracks[selected],
+        ...order.map((id) => pending[id]!),
+      ]);
+      _entries = [_entries[selected], ...order];
+      index = 0;
+    }
     final track = tracks[index];
+    final entry = _entries[index];
     recordEvent(
       'Selección de pista: $selected/${tracks.length}; autoplay=$autoplay',
     );
@@ -279,14 +489,12 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
           'Carga del motor de audio: ${loadWatch.elapsedMilliseconds} ms',
         );
         if (generation == _generation && !_shuttingDown) {
-          if (recordHistory &&
-              _loadedTrackId != null &&
-              _loadedTrackId != track.id) {
-            _previousTracks.add(_loadedTrackId!);
+          if (recordHistory && _loadedEntry != null && _loadedEntry != entry) {
+            _previousTracks.add(_loadedEntry!);
             if (_previousTracks.length > 300) _previousTracks.removeAt(0);
             _forwardTracks.clear();
           }
-          _loadedTrackId = track.id;
+          _loadedEntry = entry;
           _loading = false;
           if (duration != null) {
             mediaItem.add(mediaItem.value!.copyWith(duration: duration));
@@ -305,6 +513,9 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
           errors.add(
             'El motor de audio no pudo cargar «${track.title}». Consulta el diagnóstico en Ajustes.',
           );
+          if (continueOnError && index + 1 < tracks.length) {
+            unawaited(skipToNext());
+          }
         }
       }
     });
@@ -327,14 +538,23 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
   }
 
   Future<void> removeTrack(String id) async {
-    _previousTracks.removeWhere((value) => value == id);
-    _forwardTracks.removeWhere((value) => value == id);
-    if (_loadedTrackId == id) _loadedTrackId = null;
-    final current = mediaItem.value?.id;
+    _queueGeneration++;
+    final current = index >= 0 ? tracks[index].id : null;
+    final currentEntry = index >= 0 ? _entries[index] : null;
+    final removed = {
+      for (var i = 0; i < tracks.length; i++)
+        if (tracks[i].id == id) _entries[i],
+    };
+    _previousTracks.removeWhere(removed.contains);
+    _forwardTracks.removeWhere(removed.contains);
+    if (removed.contains(_loadedEntry)) _loadedEntry = null;
     final remaining = tracks.where((t) => t.id != id).toList();
     if (current == id) {
       await stop();
       tracks = remaining;
+      _entries.removeWhere(removed.contains);
+      _originalOrder.removeWhere(removed.contains);
+      _playNext.removeAll(removed);
       index = -1;
       mediaItem.add(null);
       queue.add(remaining.map(_mediaItem).toList());
@@ -345,7 +565,10 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
       });
     } else {
       tracks = remaining;
-      index = tracks.indexWhere((t) => t.id == current);
+      _entries.removeWhere(removed.contains);
+      _originalOrder.removeWhere(removed.contains);
+      _playNext.removeAll(removed);
+      index = _entries.indexOf(currentEntry ?? -1);
       queue.add(tracks.map(_mediaItem).toList());
       _publish();
       await saveSession();
@@ -358,7 +581,7 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
       unawaited(play());
       return;
     }
-    if (index + 1 < tracks.length || shuffle) {
+    if (index + 1 < tracks.length) {
       await skipToNext();
     } else {
       await pause();
@@ -369,7 +592,13 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
   @override
   Future<void> play() async {
     if (_shuttingDown) return;
-    if (index < 0) await onEmptyPlay?.call();
+    if (index < 0) {
+      if (tracks.isNotEmpty) {
+        await select(tracks, 0, preserveQueue: true);
+        return;
+      }
+      await onEmptyPlay?.call();
+    }
     if (_shuttingDown || index < 0) return;
     _playIntent = true;
     if (_loading) return;
@@ -406,22 +635,22 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
   }
 
   Future<void> saveSession({Duration? position}) async {
-    if (_closed ||
-        sessionStore == null ||
-        index < 0 ||
-        index >= tracks.length ||
-        _loading) {
+    if (_closed || sessionStore == null || index >= tracks.length || _loading) {
       return;
     }
     final snapshot = <String, dynamic>{
       'schema': 1,
       'ids': tracks.map((t) => t.id).toList(),
-      'current': tracks[index].id,
+      'current': index < 0 ? null : tracks[index].id,
+      'currentEntry': index < 0 ? null : _entries[index],
+      'entries': List<int>.of(_entries),
+      'originalOrder': List<int>.of(_originalOrder),
+      'playNext': _playNext.toList(),
       'positionMs': (position ?? player.position).inMilliseconds,
       'shuffle': shuffle,
       'repeat': repeat,
-      'previous': List<String>.of(_previousTracks),
-      'forward': List<String>.of(_forwardTracks),
+      'previous': List<int>.of(_previousTracks),
+      'forward': List<int>.of(_forwardTracks),
     };
     try {
       await sessionStore!.save(snapshot);
@@ -434,39 +663,80 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
     if (sessionStore == null || _generation != 0) return;
     try {
       final saved = await sessionStore!.load();
-      if (saved['schema'] != 1 || _generation != 0) return;
+      if (saved['schema'] != 1 || _generation != 0 || _entries.isNotEmpty) {
+        return;
+      }
       final byId = {for (final t in library) t.id: t};
-      final queue = [
-        for (final id in (saved['ids'] as List))
-          if (byId[id] != null) byId[id]!,
-      ];
-      final selected = queue.indexWhere((t) => t.id == saved['current']);
-      if (selected < 0) return;
-      shuffle = saved['shuffle'] as bool? ?? false;
+      final ids = saved['ids'] as List;
+      final stored = saved['entries'];
+      final entries =
+          stored is List &&
+              stored.length == ids.length &&
+              stored.every((id) => id is int) &&
+              stored.toSet().length == ids.length
+          ? stored.cast<int>()
+          : List<int>.generate(ids.length, (i) => i);
+      final availableEntries = {
+        for (var i = 0; i < ids.length; i++) entries[i]: ?byId[ids[i]],
+      };
+      final restored = availableEntries.values.toList();
+      final currentEntry = saved['currentEntry'];
+      final selected = currentEntry is int
+          ? availableEntries.keys.toList().indexOf(currentEntry)
+          : restored.indexWhere((t) => t.id == saved['current']);
+      if (restored.isEmpty) return;
+      _shuffle = saved['shuffle'] as bool? ?? false;
       repeat = saved['repeat'] as bool? ?? false;
+      tracks = List.unmodifiable(restored);
+      _entries = availableEntries.keys.toList();
+      _nextEntry = _entries.reduce(max) + 1;
+      final order = saved['originalOrder'];
+      _originalOrder.addAll({
+        if (order is List)
+          ...order.whereType<int>().where(availableEntries.containsKey),
+        ..._entries,
+      });
+      final pinned = saved['playNext'];
+      if (pinned is List) {
+        _playNext.addAll(
+          pinned.whereType<int>().where(availableEntries.containsKey),
+        );
+      }
+      if (stored == null && shuffle) {
+        index = selected;
+        _arrangePending();
+      }
+      if (selected < 0) {
+        _queueChanged();
+        return;
+      }
       var position = (saved['positionMs'] as num?)?.toInt() ?? 0;
       if (position < 0) position = 0;
-      final duration = queue[selected].durationMs;
+      final duration = restored[selected].durationMs;
       if (duration > 0 && position >= duration) position = 0;
       await select(
-        queue,
+        tracks,
         selected,
+        preserveQueue: true,
         autoplay: false,
         initialPosition: Duration(milliseconds: position),
         recordHistory: false,
       );
-      final available = queue.map((t) => t.id).toSet();
       for (final pair in [
         (saved['previous'], _previousTracks),
         (saved['forward'], _forwardTracks),
       ]) {
-        if (pair.$1 is List) {
-          pair.$2.addAll(
-            (pair.$1 as List)
-                .whereType<String>()
-                .where(available.contains)
-                .take(300),
-          );
+        if (pair.$1 case final List history) {
+          for (final value in history.take(300)) {
+            if (value is int && availableEntries.containsKey(value)) {
+              pair.$2.add(value);
+            } else if (value is String) {
+              final position = restored.indexWhere(
+                (track) => track.id == value,
+              );
+              if (position >= 0) pair.$2.add(_entries[position]);
+            }
+          }
         }
       }
       await saveSession();
@@ -496,16 +766,14 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
     if (tracks.isEmpty) return;
     while (_forwardTracks.isNotEmpty) {
       final id = _forwardTracks.removeLast();
-      final target = tracks.indexWhere((t) => t.id == id);
-      if (target < 0) continue;
-      if (_loadedTrackId != null) _previousTracks.add(_loadedTrackId!);
+      final target = _entries.indexOf(id);
+      if (target < 0 || target != index + 1) continue;
+      if (_loadedEntry case final entry?) _previousTracks.add(entry);
       await select(tracks, target, recordHistory: false);
       return;
     }
-    final next = shuffle && tracks.length > 1
-        ? (index + 1 + Random().nextInt(tracks.length - 1)) % tracks.length
-        : (index + 1) % tracks.length;
-    await select(tracks, next);
+    if (index + 1 >= tracks.length) return;
+    await select(tracks, index + 1, preserveQueue: true, continueOnError: true);
   }
 
   @override
@@ -513,10 +781,22 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
     if (tracks.isEmpty) return;
     while (_previousTracks.isNotEmpty) {
       final id = _previousTracks.removeLast();
-      final target = tracks.indexWhere((t) => t.id == id);
+      final target = _entries.indexOf(id);
       if (target < 0) continue;
-      if (_loadedTrackId != null) _forwardTracks.add(_loadedTrackId!);
-      await select(tracks, target, recordHistory: false);
+      if (_loadedEntry case final entry?) {
+        _forwardTracks.add(entry);
+        final current = _entries.indexOf(entry);
+        if (current >= 0 && current != target + 1) {
+          final reordered = tracks.toList();
+          final track = reordered.removeAt(current);
+          _entries.removeAt(current);
+          final destination = _entries.indexOf(id) + 1;
+          reordered.insert(destination, track);
+          _entries.insert(destination, entry);
+          tracks = List.unmodifiable(reordered);
+        }
+      }
+      await select(tracks, _entries.indexOf(id), recordHistory: false);
       return;
     }
     await select(
