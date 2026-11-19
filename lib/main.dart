@@ -104,6 +104,8 @@ Future<void> main() async {
     }
     await handler.restoreSession(controller.tracks);
     playbackReady.complete();
+    unawaited(controller.warmLibraryThumbnails());
+    unawaited(controller.refresh());
     if (Platform.isAndroid) {
       try {
         await const MethodChannel('rp_music/system')

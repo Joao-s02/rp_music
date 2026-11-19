@@ -2,9 +2,15 @@
 
 Reproductor local para Android y Windows. Abre tu biblioteca y escucha música sin cuenta ni conexión.
 
-**Versión disponible 0.4.3**, aplicación **0.4.3+37**. [Descargar Android universal, ARM64 y Windows](https://github.com/Joao-s02/rp_music/releases/tag/v0.4.3).
+**Versión disponible 0.4.4**, aplicación **0.4.4+38**. [Descargar Android universal, ARM64 y Windows](https://github.com/Joao-s02/rp_music/releases/tag/v0.4.4).
 
-[Instalación y uso](docs/USO-0.4.3.md) · [Pruebas](docs/PRUEBAS-0.4.3.md) · [Cambios](docs/CAMBIOS-0.4.3.md) · [Documentación](docs/README.md)
+[Instalación y uso](docs/USO-0.4.4.md) · [Pruebas](docs/PRUEBAS-0.4.4.md) · [Cambios](docs/CAMBIOS-0.4.4.md) · [Documentación](docs/README.md)
+
+## RP Music 0.4.5
+
+Menú del reproductor con ecualizador y temporizador, gestos de cola y detalles, cabeceras compactas y menú contextual de listas. La biblioteca comprueba cambios al arrancar y reutiliza miniaturas guardadas.
+
+[Uso](docs/USO-0.4.5.md) · [Cambios](docs/CAMBIOS-0.4.5.md) · [Pruebas](docs/PRUEBAS-0.4.5.md)
 
 ## RP Music 0.4.3
 

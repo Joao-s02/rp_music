@@ -1349,10 +1349,30 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
     _updateFadeVolumes();
   }
 
+  Timer? _sleepTimer;
+  DateTime? _sleepDeadline;
+
+  Duration? get sleepTimerRemaining =>
+      _sleepDeadline?.difference(DateTime.now());
+
+  void setSleepTimer(Duration? duration) {
+    _sleepTimer?.cancel();
+    _sleepTimer = null;
+    _sleepDeadline = null;
+    if (duration == null || duration <= Duration.zero || _shuttingDown) return;
+    _sleepDeadline = DateTime.now().add(duration);
+    _sleepTimer = Timer(duration, () {
+      _sleepDeadline = null;
+      _sleepTimer = null;
+      unawaited(pause());
+    });
+  }
+
   Future<void> close() => _closing ??= _closeInternal();
 
   Future<void> _closeInternal() async {
     _shuttingDown = true;
+    setSleepTimer(null);
     _crossfadeTimer?.cancel();
     _cancelCrossfade();
     _checkpointTimer?.cancel();

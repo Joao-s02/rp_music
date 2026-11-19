@@ -13,7 +13,7 @@ import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart' show ScrollDirection;
+import 'package:flutter/rendering.dart' show ScrollCacheExtent, ScrollDirection;
 
 import '../domain/track.dart';
 import '../domain/track_sort.dart';
@@ -174,6 +174,20 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
     group = null;
   });
 
+  void openPlayingAlbum(Track track) {
+    debounce?.cancel();
+    search.clear();
+    searchFocus.unfocus();
+    setState(() {
+      page = 0;
+      view = 1;
+      group = track.albumKey;
+      query = '';
+      searchExpanded = false;
+      hideNavigation = false;
+    });
+  }
+
   void selectGroup(String? value) => setState(() {
     group = value;
     hideNavigation = false;
@@ -236,17 +250,24 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
                             ? const ValueKey('playlist-tools')
                             : null,
                         alignment: Alignment.topCenter,
-                        heightFactor: !desktop && page == 2 && hideNavigation
+                        heightFactor:
+                            page == 2 &&
+                                (group != null || (!desktop && hideNavigation))
                             ? 0
                             : 1,
                         duration: MediaQuery.disableAnimationsOf(context)
                             ? Duration.zero
                             : const Duration(milliseconds: 180),
                         child: Padding(
-                          padding: const EdgeInsets.fromLTRB(24, 20, 16, 8),
+                          padding: EdgeInsets.fromLTRB(
+                            desktop ? 24 : 12,
+                            desktop ? 20 : 4,
+                            desktop ? 16 : 4,
+                            4,
+                          ),
                           child: Row(
                             children: [
-                              if (page == 0) ...[
+                              if (page == 0 && desktop) ...[
                                 ClipRRect(
                                   borderRadius: BorderRadius.circular(10),
                                   child: const ThemeBrand(),
@@ -446,7 +467,11 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
                           desktop ? 20 : 12,
                           8,
                         ),
-                        child: PlayerPanel(audio: audio, library: library),
+                        child: PlayerPanel(
+                          audio: audio,
+                          library: library,
+                          onOpenAlbum: openPlayingAlbum,
+                        ),
                       ),
                   ],
                 ),
@@ -589,23 +614,26 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
   }) => PopupMenuButton<VoidCallback>(
     tooltip: 'Ordenar',
     icon: const ThemeIcon('filter', Icons.filter_list),
+    constraints: const BoxConstraints(
+      minWidth: 160,
+      maxWidth: 220,
+      maxHeight: 272,
+    ),
     onSelected: (action) => action(),
     itemBuilder: (_) => [
       for (final option in options)
         CheckedPopupMenuItem(
           value: () => onSelected(option.value as T),
           checked: option.checked,
+          height: 40,
           child: option.child,
         ),
       const PopupMenuDivider(),
-      for (final direction in [true, false])
-        CheckedPopupMenuItem(
-          value: () {
-            if (direction != ascending) toggleDirection();
-          },
-          checked: direction == ascending,
-          child: Text(direction ? 'Ascendente' : 'Descendente'),
-        ),
+      PopupMenuItem(
+        value: toggleDirection,
+        height: 40,
+        child: Text(ascending ? 'Descendente' : 'Ascendente'),
+      ),
     ],
   );
 
@@ -741,16 +769,11 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
   void enqueueTracks(List<Track> tracks, {required bool next}) {
     final undo = audio.enqueue(tracks, next: next);
     if (undo == null) return;
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(
-        SnackBar(
-          action: SnackBarAction(label: 'Deshacer', onPressed: undo),
-          content: Text(
-            next ? 'Añadido a continuación' : 'Añadido al final de la cola',
-          ),
-        ),
-      );
+    showQueueUndo(
+      context,
+      next ? 'Añadido a continuación' : 'Añadido a la cola',
+      undo,
+    );
   }
 
   Future<void> openTrackMenu(Track track, {bool favorite = false}) async {
@@ -1135,6 +1158,7 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
     }
     tracks = library.ordered(tracks);
     final list = ListView.builder(
+      scrollCacheExtent: const ScrollCacheExtent.pixels(480),
       itemExtent: header == null ? 72 : null,
       itemCount: tracks.length + (header == null ? 0 : 1),
       itemBuilder: (context, index) {
@@ -1241,39 +1265,10 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
               mainAxisSize: MainAxisSize.min,
               children: [
                 trackOrderingControls(),
-                PopupMenuButton<String>(
+                IconButton(
                   tooltip: 'Opciones de la lista',
+                  onPressed: () => openPlaylistMenu(name),
                   icon: const ThemeIcon('more', Icons.more_vert),
-                  onSelected: (value) {
-                    if (value == 'queue-next' || value == 'queue-end') {
-                      enqueueTracks(
-                        library.ordered(tracks),
-                        next: value == 'queue-next',
-                      );
-                    } else if (value == 'cover') {
-                      choosePlaylistCover(context, library, name);
-                    } else {
-                      deletePlaylist(name);
-                    }
-                  },
-                  itemBuilder: (_) => const [
-                    PopupMenuItem(
-                      value: 'queue-next',
-                      child: Text('Reproducir a continuación'),
-                    ),
-                    PopupMenuItem(
-                      value: 'queue-end',
-                      child: Text('Añadir al final de la cola'),
-                    ),
-                    PopupMenuItem(
-                      value: 'cover',
-                      child: Text('Cambiar carátula'),
-                    ),
-                    PopupMenuItem(
-                      value: 'delete',
-                      child: Text('Eliminar lista'),
-                    ),
-                  ],
                 ),
               ],
             ),
@@ -1387,15 +1382,18 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
                   itemBuilder: (_, index) {
                     final name = names[index];
                     final missing = library.missingInPlaylist(name);
-                    return ListTile(
-                      leading: PlaylistCover(library: library, name: name),
-                      title: Text(name),
-                      trailing: playlistDeleteButton(name),
-                      subtitle: Text(
-                        '${library.playlistTracks(name).length} disponibles'
-                        '${missing > 0 ? ' · $missing no disponibles' : ''}',
+                    return TrackContextRegion(
+                      open: (_) => openPlaylistMenu(name),
+                      child: ListTile(
+                        leading: PlaylistCover(library: library, name: name),
+                        title: Text(name),
+
+                        subtitle: Text(
+                          '${library.playlistTracks(name).length} disponibles'
+                          '${missing > 0 ? ' · $missing no disponibles' : ''}',
+                        ),
+                        onTap: () => selectGroup(name),
                       ),
-                      onTap: () => selectGroup(name),
                     );
                   },
                 ),
@@ -1404,47 +1402,92 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
     );
   }
 
-  Widget playlistDeleteButton(String name) => IconButton(
-    tooltip: 'Eliminar lista',
-    onPressed: () => deletePlaylist(name),
-    icon: const ThemeIcon('delete', Icons.delete_outline),
-  );
+  Future<void> openPlaylistMenu(String name) async {
+    final tracks = library.playlistTracks(name);
+    final action = await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        scrollable: true,
+        title: Row(
+          children: [
+            PlaylistCover(library: library, name: name),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(name, maxLines: 2, overflow: TextOverflow.ellipsis),
+            ),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            for (final (id, label) in const [
+              ('queue-end', 'Añadir al final de la cola'),
+              ('queue-next', 'Reproducir a continuación'),
+              ('cover', 'Cambiar carátula'),
+              ('delete', 'Eliminar lista'),
+            ])
+              ListTile(
+                title: Text(label),
+                onTap: id.startsWith('queue') && tracks.isEmpty
+                    ? null
+                    : () => Navigator.pop(context, id),
+              ),
+          ],
+        ),
+      ),
+    );
+    if (!mounted) return;
+    switch (action) {
+      case 'queue-next':
+      case 'queue-end':
+        enqueueTracks(
+          library.ordered(library.playlistTracks(name)),
+          next: action == 'queue-next',
+        );
+      case 'cover':
+        await choosePlaylistCover(context, library, name);
+      case 'delete':
+        await deletePlaylist(name);
+    }
+  }
 
-  Widget playlistCard(String name) => Card(
-    margin: EdgeInsets.zero,
-    clipBehavior: Clip.antiAlias,
-    child: InkWell(
-      onTap: () => selectGroup(name),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Expanded(
-            child: LayoutBuilder(
-              builder: (_, bounds) => Center(
-                child: PlaylistCover(
-                  library: library,
-                  name: name,
-                  size: bounds.maxHeight,
+  Widget playlistCard(String name) => TrackContextRegion(
+    open: (_) => openPlaylistMenu(name),
+    child: Card(
+      margin: EdgeInsets.zero,
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: () => selectGroup(name),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Expanded(
+              child: LayoutBuilder(
+                builder: (_, bounds) => Center(
+                  child: PlaylistCover(
+                    library: library,
+                    name: name,
+                    size: bounds.maxHeight,
+                  ),
                 ),
               ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    name,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      name,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
-                ),
-                playlistDeleteButton(name),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     ),
   );
@@ -1542,59 +1585,6 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
         ),
       );
 
-  Iterable<Widget> equalizerControls() sync* {
-    final frequencies = audio.equalizerFrequencies;
-    final min = audio.minEqualizerGain;
-    final max = audio.maxEqualizerGain;
-    yield ListTile(
-      title: const Text('Preajustes'),
-      subtitle: Wrap(
-        spacing: 8,
-        children: [
-          for (final (name, gains) in <(String, double Function(int))>[
-            ('Plano', (_) => 0),
-            ('Graves', (hz) => hz < 200 ? 4 : 0),
-            ('Voces', (hz) => hz >= 400 && hz <= 3000 ? 3 : 0),
-          ])
-            ActionChip(
-              label: Text(name),
-              onPressed: () => setState(
-                () => unawaited(
-                  audio.setEqualizer(
-                    enabled: true,
-                    gains: frequencies.map(gains).toList(),
-                  ),
-                ),
-              ),
-            ),
-        ],
-      ),
-    );
-    for (final (index, frequency) in frequencies.indexed) {
-      final gains = List.generate(
-        frequencies.length,
-        (i) => audio.equalizerGains.elementAtOrNull(i) ?? 0.0,
-      );
-      final gain = gains[index].clamp(min, max);
-      yield ListTile(
-        title: Text('$frequency Hz'),
-        trailing: Text('${gain.toStringAsFixed(1)} dB'),
-        subtitle: Slider(
-          min: min,
-          max: max,
-          value: gain,
-          onChanged: (value) {
-            setState(() {
-              gains[index] = value;
-              audio.equalizerGains = List.unmodifiable(gains);
-            });
-          },
-          onChangeEnd: (_) => unawaited(audio.setEqualizer(enabled: true)),
-        ),
-      );
-    }
-  }
-
   Widget settingsView() => ListView(
     padding: const EdgeInsets.all(24),
     children: [
@@ -1634,19 +1624,6 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
         ),
       ]),
       settingsSection('Reproducción', Icons.headphones_outlined, [
-        if (audio.supportsEqualizer) ...[
-          SwitchListTile(
-            title: const Text('Ecualizador'),
-            subtitle: audio.equalizerFrequencies.isEmpty
-                ? const Text('Abre una canción para cargar las bandas.')
-                : null,
-            value: audio.equalizerEnabled,
-            onChanged: (value) =>
-                setState(() => unawaited(audio.setEqualizer(enabled: value))),
-          ),
-          if (audio.equalizerEnabled && audio.equalizerFrequencies.isNotEmpty)
-            ...equalizerControls(),
-        ],
         SwitchListTile(
           title: const Text('Reproducción sin pausas'),
           subtitle: const Text('Se aplica en transiciones sin fundido.'),
@@ -1912,8 +1889,10 @@ class PlayerPanel extends StatefulWidget {
     required this.audio,
     required this.library,
     this.expanded = false,
+    this.onOpenAlbum,
     this.artworkFirst = true,
   });
+  final ValueChanged<Track>? onOpenAlbum;
   final bool expanded;
   final bool artworkFirst;
   final MusicHandler audio;
@@ -1932,22 +1911,14 @@ class _PlayerPanelState extends State<PlayerPanel> {
         opaque: true,
         child: Scaffold(
           appBar: AppBar(
-            title: Row(
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: const ThemeBrand(size: 32),
-                ),
-                const SizedBox(width: 12),
-                const Expanded(
-                  child: Text(
-                    'Ahora suena',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ],
+            title: const Text(
+              'Ahora suena',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
+            actions: [
+              PlayerOptions(audio: audio, onOpenAlbum: widget.onOpenAlbum),
+            ],
             leading: IconButton(
               tooltip: 'Cerrar reproductor',
               onPressed: () => Navigator.pop(context),
@@ -1956,7 +1927,7 @@ class _PlayerPanelState extends State<PlayerPanel> {
           ),
           body: SafeArea(
             child: Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               child: Center(
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: 720),
@@ -2302,65 +2273,36 @@ class Artwork extends StatefulWidget {
 
 class _ArtworkState extends State<Artwork> {
   Future<Uint8List?>? image;
-  ScrollPosition? deferredPosition;
-  bool initialized = false;
+  int? loadedStamp;
+  bool get useThumbnail => widget.size <= 180;
+  int stamp(String id) =>
+      widget.modifiedMs ?? widget.library.thumbnailStamp(id);
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (!initialized) {
-      initialized = true;
-      load();
-    }
+  void initState() {
+    super.initState();
+    load();
   }
 
   @override
   void didUpdateWidget(Artwork old) {
     super.didUpdateWidget(old);
     if (old.id != widget.id ||
-        old.modifiedMs != widget.modifiedMs ||
-        old.library != widget.library) {
+        (widget.id != null && loadedStamp != stamp(widget.id!)) ||
+        old.library != widget.library ||
+        (old.size <= 180) != useThumbnail) {
       load();
     }
   }
 
-  void clearDeferredLoad() {
-    deferredPosition?.isScrollingNotifier.removeListener(resumeLoad);
-    deferredPosition = null;
-  }
-
-  void resumeLoad() {
-    if (deferredPosition?.isScrollingNotifier.value == false) {
-      setState(() => load(defer: false));
-    }
-  }
-
-  void load({bool defer = true}) {
-    clearDeferredLoad();
-    image = null;
+  void load() {
     final id = widget.id;
-    if (id == null) return;
-    final modifiedMs = widget.modifiedMs;
-    if (modifiedMs == null) {
-      image = widget.library.artwork(id);
-      return;
-    }
-
-    if (defer && Scrollable.recommendDeferredLoadingForContext(context)) {
-      final position = Scrollable.maybeOf(context)?.position;
-      if (position != null && position.isScrollingNotifier.value) {
-        deferredPosition = position;
-        position.isScrollingNotifier.addListener(resumeLoad);
-        return;
-      }
-    }
-    image = widget.library.thumbnail(id, modifiedMs);
-  }
-
-  @override
-  void dispose() {
-    clearDeferredLoad();
-    super.dispose();
+    loadedStamp = id == null ? null : stamp(id);
+    image = id == null
+        ? null
+        : useThumbnail
+        ? widget.library.thumbnail(id, stamp(id))
+        : widget.library.artwork(id);
   }
 
   @override
@@ -2370,11 +2312,13 @@ class _ArtworkState extends State<Artwork> {
     child: ClipRRect(
       borderRadius: BorderRadius.circular(8),
       child: FutureBuilder(
-        key: ValueKey((widget.id, widget.modifiedMs)),
+        key: ValueKey((widget.id, loadedStamp, useThumbnail)),
         future: image,
-        initialData: widget.modifiedMs == null
-            ? widget.library.cachedArtwork(widget.id)
-            : null,
+        initialData: widget.id == null
+            ? null
+            : useThumbnail
+            ? widget.library.cachedThumbnail(widget.id!, stamp(widget.id!))
+            : widget.library.cachedArtwork(widget.id),
         builder: (context, snapshot) => snapshot.data == null
             ? const ColoredBox(
                 color: Color(0xff272a32),

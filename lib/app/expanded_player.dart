@@ -1,3 +1,5 @@
+import 'player_equalizer.dart';
+
 import 'dart:io';
 
 import 'package:flutter/services.dart';
@@ -35,24 +37,80 @@ class _ExpandedPlayerState extends State<ExpandedPlayer> {
             .receiveBroadcastStream()
       : null;
 
-  Future<void> showAudioOutput() async {
-    var opened = false;
-    try {
-      opened =
-          await const MethodChannel('rp_music/audio_output')
-              .invokeMethod<bool>('show') ??
-          false;
-    } on PlatformException {
-      // The system may decline to show a dialog when the app loses focus.
-    } on MissingPluginException {
-      // This version of Android does not expose the system selector.
-    }
-    if (!opened && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('El selector de Android no está disponible.'),
+  static const _outputChannel = MethodChannel('rp_music/audio_output');
+
+  Future<void> showAudioOutput(String name) async {
+    if (await _openOutputAction('show') || !mounted) return;
+    final routes = await _availableOutputRoutes();
+    if (!mounted) return;
+    final action = await showModalBottomSheet<String>(
+      context: context,
+      showDragHandle: true,
+      builder: (sheet) => SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                title: const Text('Salida de audio'),
+                subtitle: name.isEmpty ? null : Text(name),
+              ),
+              for (final route in routes)
+                ListTile(
+                  leading: const Icon(Icons.speaker_outlined),
+                  title: Text(route.$2),
+                  onTap: () => Navigator.pop(sheet, 'route:${route.$1}'),
+                ),
+              ListTile(
+                leading: const Icon(Icons.volume_up_outlined),
+                title: const Text('Ajustes de sonido'),
+                onTap: () => Navigator.pop(sheet, 'soundSettings'),
+              ),
+              ListTile(
+                leading: const Icon(Icons.bluetooth),
+                title: const Text('Dispositivos Bluetooth'),
+                onTap: () => Navigator.pop(sheet, 'bluetoothSettings'),
+              ),
+            ],
+          ),
         ),
-      );
+      ),
+    );
+    if (action == null) return;
+    final opened = action.startsWith('route:')
+        ? await _openOutputAction('transfer', {'id': action.substring(6)})
+        : await _openOutputAction(action);
+    if (opened || !mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('No se pudo cambiar la salida de audio.')),
+    );
+  }
+
+  Future<List<(String, String)>> _availableOutputRoutes() async {
+    try {
+      final routes = await _outputChannel.invokeListMethod<dynamic>('routes');
+      return [
+        for (final route in routes ?? const [])
+          if (route case {'id': final String id, 'name': final String name})
+            (id, name),
+      ];
+    } on PlatformException {
+      return [];
+    } on MissingPluginException {
+      return [];
+    }
+  }
+
+  Future<bool> _openOutputAction(
+    String action, [
+    Map<String, String>? args,
+  ]) async {
+    try {
+      return await _outputChannel.invokeMethod<bool>(action, args) ?? false;
+    } on PlatformException {
+      return false;
+    } on MissingPluginException {
+      return false;
     }
   }
 
@@ -60,6 +118,7 @@ class _ExpandedPlayerState extends State<ExpandedPlayer> {
   LibraryController get library => widget.library;
   String time(int ms) =>
       '${ms ~/ 60000}:${(ms ~/ 1000 % 60).toString().padLeft(2, '0')}';
+  double _verticalDrag = 0;
   void queue() => showPlaybackQueue(context, audio, library);
   void volume() => showModalBottomSheet<void>(
     context: context,
@@ -191,14 +250,15 @@ class _ExpandedPlayerState extends State<ExpandedPlayer> {
                       stream: outputRoutes,
                       builder: (context, snapshot) {
                         final route = snapshot.data;
-                        if (route is! Map) {
+                        if (!Platform.isAndroid) {
                           return badge(
                             local ? Icons.graphic_eq : Icons.cloud_outlined,
                             source,
                           );
                         }
-                        final name = route['name'] as String? ?? '';
-                        final icon = switch (route['icon']) {
+                        final data = route is Map ? route : const {};
+                        final name = data['name'] as String? ?? '';
+                        final icon = switch (data['icon']) {
                           'phone' => Icons.smartphone,
                           'headphones' => Icons.headphones,
                           'bluetooth' => Icons.bluetooth_audio,
@@ -213,7 +273,7 @@ class _ExpandedPlayerState extends State<ExpandedPlayer> {
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
-                          onPressed: showAudioOutput,
+                          onPressed: () => showAudioOutput(name),
                         );
                       },
                     ),
@@ -318,17 +378,6 @@ class _ExpandedPlayerState extends State<ExpandedPlayer> {
               children: [
                 _PlayerAction(
                   dense: dense,
-                  avatar: ThemeIcon(
-                    'details',
-                    Icons.info_outline,
-                    size: 18,
-                    color: colors.primary,
-                  ),
-                  label: const Text('Detalles'),
-                  onPressed: () => showSongDetails(context, track, item: item),
-                ),
-                _PlayerAction(
-                  dense: dense,
                   avatar: const ThemeIcon(
                     'lyrics',
                     Icons.lyrics_outlined,
@@ -342,7 +391,7 @@ class _ExpandedPlayerState extends State<ExpandedPlayer> {
                             builder: (_) => LyricsView(
                               audio: audio,
                               controller: library.lyrics,
-                              loadCover: library.files.thumbnail,
+                              loadCover: library.thumbnailFor,
                             ),
                           ),
                         ),
@@ -455,7 +504,20 @@ class _ExpandedPlayerState extends State<ExpandedPlayer> {
                       controls,
                     ],
                   );
-            return SizedBox(height: height, child: panel);
+            return GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              onVerticalDragStart: (_) => _verticalDrag = 0,
+              onVerticalDragUpdate: (event) => _verticalDrag += event.delta.dy,
+              onVerticalDragEnd: (event) {
+                final speed = event.primaryVelocity ?? 0;
+                if (_verticalDrag <= -48 || speed < -500) {
+                  queue();
+                } else if (_verticalDrag >= 48 || speed > 500) {
+                  Navigator.maybePop(context);
+                }
+              },
+              child: SizedBox(height: height, child: panel),
+            );
           },
         );
       },
@@ -501,6 +563,132 @@ class _PlayerAction extends StatelessWidget {
   );
 }
 
+class PlayerOptions extends StatelessWidget {
+  const PlayerOptions({super.key, required this.audio, this.onOpenAlbum});
+  final MusicHandler audio;
+  final ValueChanged<Track>? onOpenAlbum;
+
+  @override
+  Widget build(BuildContext context) => IconButton(
+    tooltip: 'Opciones del reproductor',
+    icon: const ThemeIcon('more', Icons.more_vert),
+    onPressed: () async {
+      final item = audio.mediaItem.value;
+      final track = audio.tracks
+          .where((track) => track.id == item?.id)
+          .firstOrNull;
+      final action = await showModalBottomSheet<String>(
+        context: context,
+        showDragHandle: true,
+        builder: (sheet) => SafeArea(
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                for (final (id, label, icon, enabled) in [
+                  (
+                    'album',
+                    'Ir al álbum',
+                    Icons.album_outlined,
+                    track != null && onOpenAlbum != null,
+                  ),
+                  (
+                    'eq',
+                    'Ecualizador',
+                    Icons.equalizer,
+                    audio.supportsEqualizer,
+                  ),
+                  (
+                    'details',
+                    'Detalles de la canción',
+                    Icons.info_outline,
+                    item != null,
+                  ),
+                  (
+                    'sleep',
+                    'Temporizador de apagado',
+                    Icons.timer_outlined,
+                    true,
+                  ),
+                ])
+                  ListTile(
+                    leading: Icon(icon),
+                    title: Text(label),
+                    onTap: enabled ? () => Navigator.pop(sheet, id) : null,
+                  ),
+              ],
+            ),
+          ),
+        ),
+      );
+      if (!context.mounted) return;
+      switch (action) {
+        case 'album':
+          onOpenAlbum!(track!);
+          Navigator.pop(context);
+        case 'eq':
+          showPlayerEqualizer(context, audio);
+        case 'details':
+          await showSongDetails(context, track, item: item);
+        case 'sleep':
+          await showSleepTimer(context, audio);
+      }
+    },
+  );
+}
+
+Future<void> showSleepTimer(BuildContext context, MusicHandler audio) async {
+  const durations = [1, 5, 10, 15, 30, 45, 60, 90, 120];
+  final selection = await showModalBottomSheet<int>(
+    context: context,
+    showDragHandle: true,
+    isScrollControlled: true,
+    builder: (sheet) => SafeArea(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'Temporizador de apagado',
+              style: Theme.of(sheet).textTheme.titleLarge,
+            ),
+            if (audio.sleepTimerRemaining case final time?)
+              Text('Restan ${(time.inSeconds / 60).ceil()} min'),
+            const SizedBox(height: 12),
+            Wrap(
+              spacing: 8,
+              children: [
+                for (final minutes in durations)
+                  ActionChip(
+                    label: Text('$minutes min'),
+                    onPressed: () => Navigator.pop(sheet, minutes),
+                  ),
+                if (audio.sleepTimerRemaining != null)
+                  ActionChip(
+                    label: const Text('Cancelar temporizador'),
+                    onPressed: () => Navigator.pop(sheet, 0),
+                  ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
+  if (selection == null || !context.mounted) return;
+  audio.setSleepTimer(selection == 0 ? null : Duration(minutes: selection));
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text(
+        selection == 0
+            ? 'Temporizador cancelado'
+            : 'La música se pausará en $selection min',
+      ),
+    ),
+  );
+}
+
 Future<void> showSongDetails(
   BuildContext context,
   Track? track, {
@@ -511,54 +699,61 @@ Future<void> showSongDetails(
     context: context,
     showDragHandle: true,
     isScrollControlled: true,
-    builder: (context) => SafeArea(
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              'Detalles de la canción',
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            const SizedBox(height: 16),
-            for (final entry in <String, String>{
-              'Título': item?.title ?? track?.title ?? 'Sin canción',
-              'Artistas': track?.artists.join(', ') ?? item?.artist ?? '—',
-              'Álbum': item?.album ?? track?.album ?? '—',
-              'Fuente':
-                  item?.extras?['sourceName'] as String? ??
-                  track?.sourceName ??
-                  'Audio local',
-              'Formato': track?.format ?? 'Audio',
-              if (duration > 0)
-                'Duración':
-                    '${duration ~/ 60000}:${(duration ~/ 1000 % 60).toString().padLeft(2, '0')}',
-              if (track != null && track.trackNumber > 0)
-                'Pista': '${track.trackNumber}',
-              if (track != null && track.discNumber > 0)
-                'Disco': '${track.discNumber}',
-              if (track != null && track.size > 0)
-                'Tamaño': '${(track.size / 1048576).toStringAsFixed(1)} MB',
-              if (track != null && track.sourceId == null)
-                'Ubicación': track.id,
-            }.entries)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 14),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      entry.key,
-                      style: Theme.of(context).textTheme.labelMedium,
-                    ),
-                    const SizedBox(height: 4),
-                    SelectableText(entry.value),
-                  ],
-                ),
+    builder: (context) => DraggableScrollableSheet(
+      expand: false,
+      initialChildSize: .65,
+      minChildSize: .32,
+      maxChildSize: .9,
+      builder: (context, controller) => SafeArea(
+        child: SingleChildScrollView(
+          controller: controller,
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                'Detalles de la canción',
+                style: Theme.of(context).textTheme.titleLarge,
               ),
-          ],
+              const SizedBox(height: 16),
+              for (final entry in <String, String>{
+                'Título': item?.title ?? track?.title ?? 'Sin canción',
+                'Artistas': track?.artists.join(', ') ?? item?.artist ?? '—',
+                'Álbum': item?.album ?? track?.album ?? '—',
+                'Fuente':
+                    item?.extras?['sourceName'] as String? ??
+                    track?.sourceName ??
+                    'Audio local',
+                'Formato': track?.format ?? 'Audio',
+                if (duration > 0)
+                  'Duración':
+                      '${duration ~/ 60000}:${(duration ~/ 1000 % 60).toString().padLeft(2, '0')}',
+                if (track != null && track.trackNumber > 0)
+                  'Pista': '${track.trackNumber}',
+                if (track != null && track.discNumber > 0)
+                  'Disco': '${track.discNumber}',
+                if (track != null && track.size > 0)
+                  'Tamaño': '${(track.size / 1048576).toStringAsFixed(1)} MB',
+                if (track != null && track.sourceId == null)
+                  'Ubicación': track.id,
+              }.entries)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 14),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        entry.key,
+                        style: Theme.of(context).textTheme.labelMedium,
+                      ),
+                      const SizedBox(height: 4),
+                      SelectableText(entry.value),
+                    ],
+                  ),
+                ),
+            ],
+          ),
         ),
       ),
     ),

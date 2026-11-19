@@ -236,6 +236,7 @@ void main() {
                 disableAnimations: true,
               ),
               child: Scaffold(
+                appBar: AppBar(actions: [PlayerOptions(audio: audio)]),
                 body: SingleChildScrollView(
                   child: Center(
                     child: ConstrainedBox(
@@ -266,7 +267,9 @@ void main() {
             .writeAsBytes(bytes!.buffer.asUint8List());
         image.dispose();
       });
-      await tester.tap(find.text('Detalles'));
+      await tester.tap(find.byTooltip('Opciones del reproductor'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Detalles de la canción'));
       await tester.pumpAndSettle();
       expect(find.text('Detalles de la canción'), findsOneWidget);
       expect(find.text('FLAC'), findsWidgets);

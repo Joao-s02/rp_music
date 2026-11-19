@@ -267,19 +267,7 @@ class _PlaybackQueueState extends State<PlaybackQueue> {
                             case _QueueAction.remove:
                               final undo = audio.removePending(entry);
                               if (undo == null) return;
-                              ScaffoldMessenger.of(context)
-                                ..hideCurrentSnackBar()
-                                ..showSnackBar(
-                                  SnackBar(
-                                    content: const Text(
-                                      'Canción quitada de la cola',
-                                    ),
-                                    action: SnackBarAction(
-                                      label: 'Deshacer',
-                                      onPressed: undo,
-                                    ),
-                                  ),
-                                );
+                              showQueueUndo(context, 'Canción quitada', undo);
                           }
                         }
 
@@ -330,6 +318,34 @@ class _PlaybackQueueState extends State<PlaybackQueue> {
           ],
         );
       },
+    ),
+  );
+}
+
+void showQueueUndo(BuildContext context, String text, VoidCallback undo) {
+  final messenger = ScaffoldMessenger.of(context);
+  messenger.removeCurrentSnackBar();
+  messenger.showSnackBar(
+    SnackBar(
+      behavior: SnackBarBehavior.floating,
+      duration: const Duration(seconds: 4),
+      padding: const EdgeInsets.only(left: 12, right: 4),
+      content: Row(
+        children: [
+          Expanded(child: Text(text, style: const TextStyle(fontSize: 13))),
+          TextButton(
+            style: TextButton.styleFrom(
+              foregroundColor: Theme.of(context).colorScheme.inversePrimary,
+              minimumSize: const Size(0, 36),
+            ),
+            onPressed: () {
+              messenger.hideCurrentSnackBar();
+              undo();
+            },
+            child: const Text('Deshacer'),
+          ),
+        ],
+      ),
     ),
   );
 }

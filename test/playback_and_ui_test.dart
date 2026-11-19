@@ -623,12 +623,16 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.byIcon(Icons.queue_music).last);
     await tester.pumpAndSettle();
-    await tester.tap(find.byTooltip('Eliminar lista'));
+    await tester.longPress(find.text('Viaje'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Eliminar lista'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Cancelar'));
     await tester.pumpAndSettle();
     expect(library.playlists.containsKey('Viaje'), true);
-    await tester.tap(find.byTooltip('Eliminar lista'));
+    await tester.longPress(find.text('Viaje'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Eliminar lista'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Eliminar'));
     await tester.runAsync(() async {

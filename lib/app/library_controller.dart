@@ -1,3 +1,7 @@
+import 'dart:async';
+
+import 'package:crypto/crypto.dart';
+
 import 'dart:io';
 
 import '../artists/artist_portraits.dart';
@@ -52,8 +56,19 @@ class LibraryController extends ChangeNotifier {
   final _artwork = <String, Future<Uint8List?>>{};
   final _artworkValues = <String, Uint8List>{};
 
+  List<Track>? _indexedTracks;
+  Map<String, Track> _tracksById = {};
+
+  Track? trackById(String id) {
+    if (!identical(_indexedTracks, tracks)) {
+      _indexedTracks = tracks;
+      _tracksById = {for (final track in tracks) track.id: track};
+    }
+    return _tracksById[id];
+  }
+
   String _artworkKey(String id) {
-    final track = tracks.where((track) => track.id == id).firstOrNull;
+    final track = trackById(id);
     return '$id:${track?.modifiedMs}:${track?.size}';
   }
 
@@ -91,7 +106,80 @@ class LibraryController extends ChangeNotifier {
 
   final _thumbnails = <(String, int), Future<Uint8List?>>{};
   final _thumbnailSizes = <(String, int), int>{};
+  final _thumbnailValues = <(String, int), Uint8List>{};
   int _thumbnailBytes = 0;
+  int _thumbnailWrites = 0;
+  bool _trimmingThumbnails = false;
+  late final _thumbnailDirectory = Directory(
+    '${store.directory.path}/artwork-thumbnails-v1',
+  );
+
+  int thumbnailStamp(String id) => trackById(id)?.modifiedMs ?? 0;
+
+  Uint8List? cachedThumbnail(String id, int modifiedMs) =>
+      _thumbnailValues[(id, modifiedMs)];
+
+  Future<Uint8List?> thumbnailFor(String id) =>
+      thumbnail(id, thumbnailStamp(id));
+
+  Future<void> warmLibraryThumbnails() async {
+    for (final track in ordered(tracks).take(24)) {
+      await thumbnailFor(track.id);
+    }
+  }
+
+  Future<Uint8List?> _diskThumbnail((String, int) key) async {
+    final id = sha256.convert(
+      utf8.encode(jsonEncode([key.$1, key.$2, trackById(key.$1)?.size])),
+    );
+    final path = File('${_thumbnailDirectory.path}/$id');
+    try {
+      if (await path.exists()) {
+        final bytes = await path.readAsBytes();
+        if (bytes.isNotEmpty) return bytes;
+      }
+    } on FileSystemException {
+      // Embedded artwork remains the fallback.
+    }
+    final bytes = await files.thumbnail(key.$1);
+    if (bytes == null ||
+        bytes.isEmpty ||
+        bytes.length > 256 * 1024 ||
+        key.$2 <= 0 ||
+        root == null ||
+        !await store.directory.exists()) {
+      return bytes;
+    }
+    try {
+      await _thumbnailDirectory.create(recursive: true);
+      await path.writeAsBytes(bytes);
+      if (_thumbnailWrites++ % 64 == 0) unawaited(_trimThumbnails());
+    } on FileSystemException {
+      // Cache writes are optional.
+    }
+    return bytes;
+  }
+
+  Future<void> _trimThumbnails() async {
+    if (_trimmingThumbnails) return;
+    _trimmingThumbnails = true;
+    try {
+      final entries = <(File, FileStat)>[];
+      await for (final entity in _thumbnailDirectory.list()) {
+        if (entity is File) entries.add((entity, await entity.stat()));
+      }
+      entries.sort((a, b) => b.$2.modified.compareTo(a.$2.modified));
+      var bytes = 0;
+      for (final (file, stat) in entries) {
+        bytes += stat.size;
+        if (bytes > 48 * 1024 * 1024) await file.delete();
+      }
+    } on FileSystemException {
+      // A cache entry may have been removed concurrently.
+    } finally {
+      _trimmingThumbnails = false;
+    }
+  }
 
   Future<Uint8List?> thumbnail(String id, int modifiedMs) {
     final key = (id, modifiedMs);
@@ -107,14 +195,16 @@ class LibraryController extends ChangeNotifier {
 
   Future<Uint8List?> _readThumbnail((String, int) key) async {
     try {
-      final bytes = await files.thumbnail(key.$1);
+      final bytes = await _diskThumbnail(key);
+      if (bytes != null) _thumbnailValues[key] = bytes;
       final size = bytes?.length ?? 0;
       _thumbnailSizes[key] = size;
       _thumbnailBytes += size;
-      while (_thumbnailSizes.length > 192 ||
-          _thumbnailBytes > 12 * 1024 * 1024) {
+      while (_thumbnailSizes.length > 512 ||
+          _thumbnailBytes > 20 * 1024 * 1024) {
         final oldest = _thumbnails.keys.firstWhere(_thumbnailSizes.containsKey);
         _thumbnails.remove(oldest);
+        _thumbnailValues.remove(oldest);
         _thumbnailBytes -= _thumbnailSizes.remove(oldest)!;
       }
       return bytes;

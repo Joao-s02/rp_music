@@ -218,7 +218,7 @@ class MainActivity : AudioServiceActivity() {
                                 android.graphics.BitmapFactory.decodeByteArray(original, 0, original.size, options)?.let { bitmap ->
                                     try {
                                         java.io.ByteArrayOutputStream().use { output ->
-                                            if (bitmap.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, output)) output.toByteArray() else null
+                                            if (bitmap.compress(android.graphics.Bitmap.CompressFormat.JPEG, 85, output)) output.toByteArray() else null
                                         }
                                     } finally { bitmap.recycle() }
                                 }

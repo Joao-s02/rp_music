@@ -130,7 +130,6 @@ class PlaylistCover extends StatefulWidget {
 }
 
 class _PlaylistCoverState extends State<PlaylistCover> {
-  final images = <String, Future<Uint8List?>>{};
   Widget placeholder() => ColoredBox(
     color: Theme.of(context).colorScheme.secondaryContainer,
     child: Center(
@@ -171,13 +170,16 @@ class _PlaylistCoverState extends State<PlaylistCover> {
                                   final track =
                                       tracks[(row * 2 + column) %
                                           tracks.length];
-                                  final image = images.putIfAbsent(
+                                  final image = widget.library.thumbnail(
                                     track.id,
-                                    () =>
-                                        widget.library.files.artwork(track.id),
+                                    track.modifiedMs,
                                   );
                                   return FutureBuilder<Uint8List?>(
                                     future: image,
+                                    initialData: widget.library.cachedThumbnail(
+                                      track.id,
+                                      track.modifiedMs,
+                                    ),
                                     builder: (context, snapshot) =>
                                         snapshot.data == null
                                         ? placeholder()
