@@ -9,6 +9,7 @@ import 'package:flutter/services.dart';
 import '../domain/track.dart';
 import 'library_scanner.dart';
 import 'embedded_lyrics.dart';
+import 'replay_gain.dart';
 export 'library_scanner.dart';
 
 const _channel = MethodChannel('rp_music/library');
@@ -30,7 +31,13 @@ void _scanWorker((String, List<Track>, SendPort) request) {
 class MusicFiles {
   /// Reads tags only. Android grants are used to create a bounded private copy;
   /// the original document is never opened for writing.
-  Future<String?> embeddedLyrics(String id) async {
+  Future<String?> embeddedLyrics(String id) =>
+      _withTagFile(id, EmbeddedLyrics.read);
+
+  Future<ReplayGainTags?> replayGain(String id) =>
+      _withTagFile(id, ReplayGainTags.read);
+
+  Future<T?> _withTagFile<T>(String id, T? Function(File) read) async {
     if (id.startsWith('rpmusic-source:')) return null;
     String? temporary;
     try {
@@ -40,7 +47,7 @@ class MusicFiles {
             })
           : id;
       if (path == null) return null;
-      return await Isolate.run(() => EmbeddedLyrics.read(File(path)));
+      return await Isolate.run(() => read(File(path)));
     } finally {
       if (temporary != null) {
         try {

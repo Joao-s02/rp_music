@@ -1,7 +1,7 @@
 name: rp_music
 description: Reproductor local con temas para Android y Windows.
 publish_to: none
-version: 0.4.3+37
+version: 0.4.4+38
 environment:
   sdk: ^3.13.5
 dependencies:
@@ -18,6 +18,8 @@ dependencies:
   just_audio_media_kit: 2.1.0
   media_kit_libs_windows_audio: 1.0.9
 dependency_overrides:
+  just_audio_media_kit:
+    path: third_party/just_audio_media_kit
   audio_service:
     path: third_party/audio_service
 

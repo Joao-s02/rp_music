@@ -9,6 +9,7 @@ import 'package:flutter/foundation.dart' show VoidCallback;
 
 import '../domain/track.dart';
 import '../data/local_store.dart';
+import '../data/replay_gain.dart';
 import 'native_audio_player.dart';
 
 class MusicHandler extends BaseAudioHandler with SeekHandler {
@@ -27,6 +28,74 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
   double get appVolume => _appVolume;
 
   double _appVolume = 1;
+  bool gapless = true;
+  bool equalizerEnabled = false;
+  AndroidEqualizerParameters? equalizerParameters;
+  List<double> equalizerGains = const [];
+
+  bool get supportsEqualizer =>
+      Platform.isWindows || nativeEqualizers[player] != null;
+
+  List<int> get equalizerFrequencies => Platform.isWindows
+      ? desktopEqualizerFrequencies
+      : equalizerParameters?.bands
+                .map((band) => band.centerFrequency.round())
+                .toList() ??
+            const [];
+  double get minEqualizerGain => equalizerParameters?.minDecibels ?? -12;
+  double get maxEqualizerGain => equalizerParameters?.maxDecibels ?? 12;
+
+  Future<void> setEqualizer({
+    required bool enabled,
+    List<double>? gains,
+  }) async {
+    equalizerEnabled = enabled;
+    if (gains != null) equalizerGains = List.unmodifiable(gains);
+    if (Platform.isWindows) {
+      try {
+        await setDesktopEqualizer(equalizerEnabled, equalizerGains);
+      } catch (error) {
+        recordEvent('Ecualizador no disponible: ${error.runtimeType}');
+        errors.add('No se pudo aplicar el ecualizador.');
+      }
+    }
+    await _applyEqualizer(player);
+    if (_incoming case final incoming?) await _applyEqualizer(incoming);
+    await _savePlaybackSettings();
+  }
+
+  Future<void> _applyEqualizer(AudioPlayer target) async {
+    final equalizer = nativeEqualizers[target];
+    if (equalizer == null || target.audioSources.isEmpty) return;
+    try {
+      final params = await equalizer.parameters.timeout(
+        const Duration(seconds: 2),
+      );
+      if (target == player) equalizerParameters = params;
+      if (equalizerEnabled) {
+        for (final band in params.bands) {
+          final gain = equalizerGains.elementAtOrNull(band.index) ?? 0.0;
+          await band.setGain(
+            gain.clamp(params.minDecibels, params.maxDecibels),
+          );
+        }
+      }
+      await equalizer.setEnabled(equalizerEnabled);
+    } catch (error) {
+      recordEvent('Ecualizador no disponible: ${error.runtimeType}');
+    }
+  }
+
+  ReplayGainMode replayGainMode = ReplayGainMode.off;
+  final Future<ReplayGainTags?> Function(String)? replayGainLoader;
+  final _gainCache = <String, Future<ReplayGainTags?>>{};
+  double _currentGain = 1;
+  double _incomingGain = 1;
+  final bool _supportsNativeQueue;
+  bool _nativeQueue = false;
+  int? _preparedEntry;
+  bool _updatingNativeQueue = false;
+  bool _nativeQueueDirty = false;
   int crossfadeSeconds = 0;
   int crossfadeLength = 5;
   Timer? _crossfadeTimer;
@@ -41,8 +110,25 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
       ? null
       : LocalStore(sessionStore!.directory, baseName: 'playback-settings');
 
-  Future<void> loadCrossfadeSettings() async {
+  Future<void> loadPlaybackSettings() async {
     final settings = await _playbackSettings?.load();
+    gapless = settings?['gapless'] != false;
+    equalizerEnabled = settings?['equalizerEnabled'] == true;
+    final savedGains = settings?['equalizerGains'];
+    if (savedGains is List &&
+        savedGains.every((value) => value is num && value.isFinite)) {
+      equalizerGains = savedGains
+          .cast<num>()
+          .map((value) => value.toDouble())
+          .toList();
+    }
+    replayGainMode = ReplayGainMode.values.firstWhere(
+      (mode) => mode.name == settings?['replayGain'],
+      orElse: () => ReplayGainMode.off,
+    );
+    if (Platform.isWindows && equalizerEnabled) {
+      await setDesktopEqualizer(true, equalizerGains);
+    }
     final length = settings?['crossfadeLength'];
     crossfadeLength = length is int ? length.clamp(1, 12) : 5;
     if (!_shuttingDown) _setCrossfade(settings?['crossfadeEnabled'] == true);
@@ -51,17 +137,65 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
   Future<void> setCrossfade({required bool enabled, int? seconds}) async {
     if (seconds != null) crossfadeLength = seconds.clamp(1, 12);
     _setCrossfade(enabled);
+    _refreshNativeQueue();
+    await _savePlaybackSettings();
+  }
+
+  Future<void> setGapless(bool enabled) async {
+    gapless = enabled;
+    _refreshNativeQueue();
+    await _savePlaybackSettings();
+  }
+
+  Future<void> setReplayGain(ReplayGainMode mode) async {
+    replayGainMode = mode;
+    final current = index < 0 ? null : tracks[index];
+    if (current != null) {
+      final gain = await _gainFor(current);
+      if (!_shuttingDown &&
+          mode == replayGainMode &&
+          index >= 0 &&
+          tracks[index] == current) {
+        _currentGain = gain;
+        _updateFadeVolumes();
+      }
+    }
+    await _savePlaybackSettings();
+  }
+
+  Future<double> _gainFor(Track track) async {
+    final load = replayGainLoader;
+    final mode = replayGainMode;
+    if (mode == ReplayGainMode.off || load == null) return 1;
+    if (_gainCache.length >= 128) _gainCache.remove(_gainCache.keys.first);
+    final key = '${track.id}:${track.modifiedMs}:${track.size}';
+    try {
+      final tags = await _gainCache
+          .putIfAbsent(key, () => load(track.id))
+          .timeout(const Duration(seconds: 3));
+      return tags?.multiplier(mode) ?? 1;
+    } catch (_) {
+      _gainCache.remove(key);
+      return 1;
+    }
+  }
+
+  Future<void> _savePlaybackSettings() async {
     try {
       await _playbackSettings?.save({
-        'crossfadeEnabled': enabled,
+        'crossfadeEnabled': crossfadeSeconds > 0,
+        'gapless': gapless,
+        'equalizerEnabled': equalizerEnabled,
+        'equalizerGains': equalizerGains,
+        'replayGain': replayGainMode.name,
         'crossfadeLength': crossfadeLength,
       });
     } catch (error) {
       recordEvent(
-        'Error al guardar el ajuste de fundido: ${error.runtimeType}',
+        'Error al guardar los ajustes de reproducción: ${error.runtimeType}',
       );
       if (!_shuttingDown) {
-        errors.add('No se pudo guardar el ajuste de fundido.');
+        errors.add('No se pudo guardar los ajustes de reproducción.');
       }
     }
   }
@@ -94,11 +228,13 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
     _incomingStarted = false;
     _fadeProgress = 0;
     unawaited(incoming.dispose().catchError((Object _) {}));
-    _setPlayerVolume(player, _appVolume);
+    _setPlayerVolume(player, _appVolume * _currentGain);
   }
 
   void _setPlayerVolume(AudioPlayer target, double value) {
-    unawaited(target.setVolume(value).catchError((Object _) {}));
+    unawaited(
+      target.setVolume(value.clamp(0.0, 1.0)).catchError((Object _) {}),
+    );
   }
 
   bool get _canCrossfade =>
@@ -165,10 +301,10 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
   }
 
   void _updateFadeVolumes() {
-    _setPlayerVolume(player, _appVolume * (1 - _fadeProgress));
+    _setPlayerVolume(player, _appVolume * _currentGain * (1 - _fadeProgress));
     final incoming = _incoming;
     if (incoming != null) {
-      _setPlayerVolume(incoming, _appVolume * _fadeProgress);
+      _setPlayerVolume(incoming, _appVolume * _incomingGain * _fadeProgress);
     }
   }
 
@@ -179,12 +315,17 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
       _incoming = incoming;
       _incomingEntry = entry;
       await incoming.setVolume(0);
+      final gain = await _gainFor(track);
+      if (_incoming != incoming) return;
+      _incomingGain = gain;
       if (!identical(_incoming, incoming)) return;
       final duration = await incoming
-          .setAudioSource(_sourceFor(track))
+          .setAudioSources([_sourceFor(track)])
           .timeout(const Duration(seconds: 10));
       if (!identical(_incoming, incoming)) return;
       if (duration != null && duration > fade * 2) {
+        await _applyEqualizer(incoming);
+        if (_incoming != incoming) return;
         _incomingReady = true;
         return;
       }
@@ -196,7 +337,7 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
     _cancelCrossfade();
   }
 
-  AudioSource _sourceFor(Track track) => AudioSource.uri(
+  IndexedAudioSource _sourceFor(Track track) => AudioSource.uri(
     track.id.startsWith('content://')
         ? Uri.parse(track.id)
         : Uri.file(track.id),
@@ -222,6 +363,10 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
     _failedCrossfadeEntry = null;
     _fadeProgress = 0;
     _player = incoming;
+    _nativeQueue = _supportsNativeQueue;
+    _nativeCursor = 0;
+    _preparedEntry = null;
+    _currentGain = _incomingGain;
     if (_loadedEntry case final entry?) {
       _previousTracks.add(entry);
       if (_previousTracks.length > 300) _previousTracks.removeAt(0);
@@ -233,11 +378,12 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
     final generation = ++_generation;
     mediaItem.add(_mediaItem(track).copyWith(duration: player.duration));
     _observePlayer();
-    _setPlayerVolume(player, _appVolume);
+    _setPlayerVolume(player, _appVolume * _currentGain);
     unawaited(outgoing.dispose().catchError((Object _) {}));
     unawaited(_loadArtwork(track, generation));
     _publish();
     unawaited(saveSession());
+    _refreshNativeQueue();
     return true;
   }
 
@@ -356,6 +502,7 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
       _cancelCrossfade();
     }
     queue.add(tracks.map(_mediaItem).toList());
+    _refreshNativeQueue();
     _publish();
     unawaited(saveSession());
   }
@@ -494,15 +641,24 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
   }
 
   int _queueGeneration = 0;
-  bool repeat = false;
+  bool _repeat = false;
+  bool get repeat => _repeat;
+  set repeat(bool value) {
+    _repeat = value;
+    _refreshNativeQueue();
+  }
+
   MusicHandler({
     AudioPlayer? player,
     this.sessionStore,
     this.artworkLoader,
+    this.replayGainLoader,
     this.onEmptyPlay,
     bool? serializeNativeLoads,
+    bool? supportsNativeQueue,
     AudioPlayer Function()? crossfadePlayerFactory,
-  }) : _serializeNativeLoads = serializeNativeLoads ?? Platform.isAndroid,
+  }) : _supportsNativeQueue = supportsNativeQueue ?? player == null,
+       _serializeNativeLoads = serializeNativeLoads ?? Platform.isAndroid,
        _createCrossfadePlayer =
            crossfadePlayerFactory ?? createNativeAudioPlayer,
        _player = player ?? createNativeAudioPlayer() {
@@ -545,7 +701,117 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
           }
         }),
       );
+    if (_supportsNativeQueue) {
+      _playerSubscriptions.add(
+        player.currentIndexStream.listen(_onNativeIndex),
+      );
+    }
   }
+
+  // Keep only the next source ahead of the native playback cursor, so queue
+  // edits do not have to reload the track that is currently playing.
+  void _refreshNativeQueue() {
+    if (!_nativeQueue || _loading || _shuttingDown) return;
+    if (_updatingNativeQueue) {
+      _nativeQueueDirty = true;
+      return;
+    }
+    final target = gapless && !repeat && index >= 0 && index + 1 < tracks.length
+        ? _entries[index + 1]
+        : null;
+    if (_preparedEntry == target) return;
+    final active = player;
+    final generation = _generation;
+    final cursor = active.currentIndex ?? 0;
+    final next = target == null ? null : tracks[index + 1];
+    _updatingNativeQueue = true;
+    final operation = _operations.then((_) async {
+      if (_generation != generation || !_nativeQueue || _shuttingDown) return;
+      if (active.audioSources.length > cursor + 1) {
+        await active.removeAudioSourceAt(cursor + 1);
+      }
+      _preparedEntry = null;
+      if (next != null && _generation == generation && !_shuttingDown) {
+        _preparedEntry = target;
+        await active.addAudioSource(_sourceFor(next));
+        if (replayGainMode != ReplayGainMode.off) unawaited(_gainFor(next));
+      }
+    });
+    _operations = operation
+        .then<void>(
+          (_) {},
+          onError: (Object error) {
+            _preparedEntry = null;
+            recordEvent(
+              'No se pudo preparar la siguiente pista: ${error.runtimeType}',
+            );
+          },
+        )
+        .whenComplete(() {
+          _updatingNativeQueue = false;
+          if (_nativeQueueDirty) {
+            _nativeQueueDirty = false;
+            _refreshNativeQueue();
+          }
+        });
+  }
+
+  void _onNativeIndex(int? cursor) {
+    final prepared = _preparedEntry;
+    if (_loading ||
+        !_nativeQueue ||
+        _shuttingDown ||
+        cursor == null ||
+        cursor == 0 ||
+        prepared == null ||
+        cursor == _nativeCursor) {
+      return;
+    }
+    _nativeCursor = cursor;
+    _preparedEntry = null;
+    if (!gapless ||
+        repeat ||
+        index + 1 >= _entries.length ||
+        _entries[index + 1] != prepared) {
+      if (index + 1 >= _entries.length && !repeat) {
+        unawaited(select(tracks, index, autoplay: false, preserveQueue: true));
+      } else {
+        unawaited(
+          select(tracks, repeat ? index : index + 1, preserveQueue: true),
+        );
+      }
+      return;
+    }
+    if (_finishCrossfade()) return;
+    if (_loadedEntry case final entry?) {
+      _previousTracks.add(entry);
+      if (_previousTracks.length > 300) _previousTracks.removeAt(0);
+    }
+    index++;
+    _loadedEntry = prepared;
+    _forwardTracks.clear();
+    final track = tracks[index];
+    final generation = ++_generation;
+    mediaItem.add(_mediaItem(track).copyWith(duration: player.duration));
+    _currentGain = 1;
+    _updateFadeVolumes();
+    unawaited(_refreshReplayGain(track, generation));
+    unawaited(_loadArtwork(track, generation));
+    _publish();
+    unawaited(saveSession());
+    _refreshNativeQueue();
+  }
+
+  Future<void> _refreshReplayGain(Track track, int generation) async {
+    final mode = replayGainMode;
+    final gain = await _gainFor(track);
+    if (!_shuttingDown && generation == _generation && mode == replayGainMode) {
+      _currentGain = gain;
+      _updateFadeVolumes();
+    }
+  }
+
+  int _nativeCursor = 0;
 
   void observeSystemErrors(Stream<Object> source) {
     _subscriptions.add(
@@ -700,6 +966,9 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
       'Selección de pista: $selected/${tracks.length}; autoplay=$autoplay',
     );
     final generation = ++_generation;
+    _nativeQueue = false;
+    _nativeCursor = 0;
+    _preparedEntry = null;
     if (!_serializeNativeLoads) _interruptPendingLoad();
     _loading = true;
     _playIntent = autoplay;
@@ -724,10 +993,17 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
         try {
           // Android emits an unscoped error when a native load is aborted.
           // Let the current load settle before starting its replacement.
-          final nativeLoad = player.setAudioSource(
-            _sourceFor(track),
-            initialPosition: initialPosition,
-          );
+          _currentGain = await _gainFor(track);
+          if (generation != _generation) return;
+          _setPlayerVolume(player, _appVolume * _currentGain);
+          final nativeLoad = _supportsNativeQueue
+              ? player.setAudioSources([
+                  _sourceFor(track),
+                ], initialPosition: initialPosition)
+              : player.setAudioSource(
+                  _sourceFor(track),
+                  initialPosition: initialPosition,
+                );
           final loading = _serializeNativeLoads
               ? nativeLoad
               : Future.any<Duration?>([nativeLoad, failure.future]);
@@ -742,6 +1018,7 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
         recordEvent(
           'Carga del motor de audio: ${loadWatch.elapsedMilliseconds} ms',
         );
+        if (generation == _generation) await _applyEqualizer(player);
         if (generation == _generation && !_shuttingDown) {
           if (recordHistory && _loadedEntry != null && _loadedEntry != entry) {
             _previousTracks.add(_loadedEntry!);
@@ -750,6 +1027,8 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
           }
           _loadedEntry = entry;
           _loading = false;
+          _nativeQueue = _supportsNativeQueue;
+          _refreshNativeQueue();
           if (duration != null) {
             mediaItem.add(mediaItem.value!.copyWith(duration: duration));
           }
@@ -824,8 +1103,7 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
       _originalOrder.removeWhere(removed.contains);
       _playNext.removeAll(removed);
       index = _entries.indexOf(currentEntry ?? -1);
-      queue.add(tracks.map(_mediaItem).toList());
-      _publish();
+      _queueChanged();
       await saveSession();
     }
   }
@@ -1006,6 +1284,7 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
   Future<void> stop() async {
     _cancelCrossfade();
     ++_generation;
+    _nativeQueue = false;
     _interruptPendingLoad();
     _playIntent = false;
     _loading = false;
@@ -1086,7 +1365,7 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
     await player.pause();
     await saveSession();
     await player.stop();
-    if (_loading) await _operations;
+    if (_loading || _updatingNativeQueue) await _operations;
     _closed = true;
     for (final subscription in [..._subscriptions, ..._playerSubscriptions]) {
       // Cancellation stops delivery immediately; do not wait on UI stream clocks.

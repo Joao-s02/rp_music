@@ -117,7 +117,9 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Álbumes'));
+      await tester.tap(find.byTooltip('Vista de biblioteca'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Álbumes').last);
       await tester.pumpAndSettle();
       expect(find.byType(GridView), findsOneWidget);
       expect(tester.takeException(), isNull);

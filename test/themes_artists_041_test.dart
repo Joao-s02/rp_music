@@ -428,7 +428,7 @@ void main() {
       expect(tester.getSize(play).height, tester.getSize(shuffle).height);
       expect(find.text('Cambiar carátula'), findsNothing);
       expect(
-        tester.getCenter(find.byTooltip('Filtrar por')).dy,
+        tester.getCenter(find.byTooltip('Ordenar')).dy,
         tester.getCenter(find.byTooltip('Opciones de la lista')).dy,
       );
       await tester.tap(find.byTooltip('Opciones de la lista'));
@@ -857,7 +857,9 @@ void main() {
     final audio = MusicHandler(player: FakePlayer());
     await tester.pumpWidget(MusicApp(library: library, audio: audio));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Artistas'));
+    await tester.tap(find.byTooltip('Vista de biblioteca'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Artistas').last);
     await tester.pumpAndSettle();
     expect(find.byType(ArtistPhoto), findsNothing);
     await tester.tap(find.text('Ajustes'));
@@ -868,7 +870,9 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('Biblioteca').first);
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Artistas'));
+    await tester.tap(find.byTooltip('Vista de biblioteca'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Artistas').last);
     await tester.pumpAndSettle();
     expect(find.byType(ArtistPhoto), findsOneWidget);
     expect(
@@ -881,7 +885,9 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('Biblioteca').first);
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Artistas'));
+    await tester.tap(find.byTooltip('Vista de biblioteca'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Artistas').last);
     await tester.pumpAndSettle();
     expect(find.byType(ArtistPhoto), findsNothing);
     expect(library.artistPhotosEnabled, isFalse);

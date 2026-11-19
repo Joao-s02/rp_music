@@ -84,7 +84,7 @@ void main() {
       await tester.binding.handlePopRoute();
       await tester.pumpAndSettle();
       expect(find.text('LISTA LOCAL'), findsNothing);
-      expect(find.text('Crear lista'), findsOneWidget);
+      expect(find.byTooltip('Nueva lista'), findsOneWidget);
       await tester.tap(find.text('Noches favoritas').first);
       await tester.pumpAndSettle();
       tester.platformDispatcher.textScaleFactorTestValue = 1.6;

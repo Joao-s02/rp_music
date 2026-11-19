@@ -145,7 +145,9 @@ void main() {
       final audio = MusicHandler(player: FakePlayer());
       await tester.pumpWidget(MusicApp(library: library, audio: audio));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Artistas'));
+      await tester.tap(find.byTooltip('Vista de biblioteca'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Artistas').last);
       await tester.pumpAndSettle();
       expect(find.text('Uno'), findsOneWidget);
       expect(find.text('Dos'), findsOneWidget);
@@ -177,7 +179,9 @@ void main() {
         final audio = MusicHandler(player: FakePlayer());
         await tester.pumpWidget(MusicApp(library: library, audio: audio));
         await tester.pumpAndSettle();
-        await tester.tap(find.text('Álbumes'));
+        await tester.tap(find.byTooltip('Vista de biblioteca'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Álbumes').last);
         await tester.pumpAndSettle();
         await tester.ensureVisible(find.text('Uno, Dos').first);
         await tester.tap(find.text('Uno, Dos').first);

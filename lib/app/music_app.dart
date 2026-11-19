@@ -1,3 +1,4 @@
+import '../data/replay_gain.dart';
 import 'playback_queue.dart';
 import '../artists/artist_portraits.dart';
 import 'pulse_surface.dart';
@@ -231,6 +232,9 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
                   children: [
                     ClipRect(
                       child: AnimatedAlign(
+                        key: page == 2
+                            ? const ValueKey('playlist-tools')
+                            : null,
                         alignment: Alignment.topCenter,
                         heightFactor: !desktop && page == 2 && hideNavigation
                             ? 0
@@ -253,22 +257,21 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(
-                                      page == 0
-                                          ? (view == 1 && group != null
-                                                ? 'Detalle de álbum'
-                                                : 'RP Music')
-                                          : labels[page],
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: desktop
-                                          ? Theme.of(context)
-                                                .textTheme
-                                                .headlineMedium
-                                          : Theme.of(context)
-                                                .textTheme
-                                                .titleLarge,
-                                    ),
+                                    if (page == 0 &&
+                                        group == null &&
+                                        library.root != null)
+                                      libraryViewSelector()
+                                    else
+                                      Text(
+                                        page == 0 && view == 1 && group != null
+                                            ? 'Detalle de álbum'
+                                            : page == 0
+                                            ? 'RP Music'
+                                            : labels[page],
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: headerTextStyle,
+                                      ),
                                     if (page == 0)
                                       Text(
                                         'Biblioteca · ${library.tracks.length} pistas${library.scanning ? ' · Metadatos ${library.scanProcessed}/${library.scanTotal}' : ''}',
@@ -279,7 +282,7 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
                                   ],
                                 ),
                               ),
-                              if (page == 0)
+                              if (page <= 1)
                                 IconButton(
                                   tooltip: searchExpanded
                                       ? 'Cerrar búsqueda'
@@ -309,6 +312,20 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
                                     }
                                   },
                                 ),
+                              if ((page == 0 &&
+                                      library.root != null &&
+                                      (view == 0 ||
+                                          (view != 1 && group != null))) ||
+                                  page == 1)
+                                trackOrderingControls(),
+                              if (page == 2 && group == null) ...[
+                                playlistOrderingControls(),
+                                IconButton(
+                                  tooltip: 'Nueva lista',
+                                  onPressed: createPlaylist,
+                                  icon: const ThemeIcon('add', Icons.add),
+                                ),
+                              ],
                               if (page == 0)
                                 IconButton(
                                   onPressed:
@@ -346,7 +363,7 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
                           ? Duration.zero
                           : const Duration(milliseconds: 220),
                       curve: Curves.easeInOut,
-                      child: page == 0 && searchExpanded
+                      child: page <= 1 && searchExpanded
                           ? Padding(
                               key: const ValueKey('library-search'),
                               padding: const EdgeInsets.fromLTRB(20, 4, 20, 12),
@@ -366,7 +383,9 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
                                       if (mounted) {
                                         setState(() {
                                           query = value.toLowerCase().trim();
-                                          if (view != 1) group = null;
+                                          if (page == 0 && view != 1) {
+                                            group = null;
+                                          }
                                         });
                                       }
                                     },
@@ -405,7 +424,11 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
                           0 => libraryView(),
                           1 => trackList(
                             library.tracks
-                                .where((t) => library.favorites.contains(t.id))
+                                .where(
+                                  (t) =>
+                                      library.favorites.contains(t.id) &&
+                                      matchesSearch(t),
+                                )
                                 .toList(),
                             empty: 'Tus canciones favoritas aparecerán aquí.',
                           ),
@@ -518,37 +541,75 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
     ),
   );
 
+  static const libraryViews = ['Canciones', 'Álbumes', 'Artistas', 'Carpetas'];
+
+  TextStyle? get headerTextStyle => MediaQuery.sizeOf(context).width >= 850
+      ? Theme.of(context).textTheme.headlineMedium
+      : Theme.of(context).textTheme.titleLarge;
+
+  Widget libraryViewSelector() => PopupMenuButton<int>(
+    tooltip: 'Vista de biblioteca',
+    onSelected: (value) => setState(() {
+      hideNavigation = false;
+      view = value;
+      group = null;
+    }),
+    itemBuilder: (_) => [
+      for (final (index, name) in libraryViews.indexed)
+        CheckedPopupMenuItem(
+          value: index,
+          checked: index == view,
+          child: Text(name),
+        ),
+    ],
+    child: ConstrainedBox(
+      constraints: const BoxConstraints(minHeight: 48),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Flexible(
+            child: Text(
+              libraryViews[view],
+              style: headerTextStyle,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          const Icon(Icons.arrow_drop_down),
+        ],
+      ),
+    ),
+  );
+
   Widget orderingControls<T>({
-    required T selected,
-    required List<PopupMenuEntry<T>> options,
+    required List<CheckedPopupMenuItem<T>> options,
     required ValueChanged<T> onSelected,
     required bool ascending,
     required VoidCallback toggleDirection,
-  }) => Row(
-    mainAxisSize: MainAxisSize.min,
-    children: [
-      PopupMenuButton<T>(
-        tooltip: 'Filtrar por',
-        icon: const ThemeIcon('filter', Icons.filter_list),
-        initialValue: selected,
-        itemBuilder: (_) => options,
-        onSelected: onSelected,
-      ),
-      IconButton(
-        tooltip: ascending
-            ? 'Ascendente · cambiar a descendente'
-            : 'Descendente · cambiar a ascendente',
-        onPressed: toggleDirection,
-        icon: ThemeIcon(
-          ascending ? 'sortAscending' : 'sortDescending',
-          ascending ? Icons.arrow_upward : Icons.arrow_downward,
+  }) => PopupMenuButton<VoidCallback>(
+    tooltip: 'Ordenar',
+    icon: const ThemeIcon('filter', Icons.filter_list),
+    onSelected: (action) => action(),
+    itemBuilder: (_) => [
+      for (final option in options)
+        CheckedPopupMenuItem(
+          value: () => onSelected(option.value as T),
+          checked: option.checked,
+          child: option.child,
         ),
-      ),
+      const PopupMenuDivider(),
+      for (final direction in [true, false])
+        CheckedPopupMenuItem(
+          value: () {
+            if (direction != ascending) toggleDirection();
+          },
+          checked: direction == ascending,
+          child: Text(direction ? 'Ascendente' : 'Descendente'),
+        ),
     ],
   );
 
   Widget trackOrderingControls() => orderingControls(
-    selected: library.sort,
     options: [
       for (final value in TrackSort.values)
         CheckedPopupMenuItem(
@@ -562,13 +623,10 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
     toggleDirection: library.toggleSortDirection,
   );
 
-  Widget sortControls() => Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 16),
-    child: Align(
-      alignment: Alignment.centerRight,
-      child: trackOrderingControls(),
-    ),
-  );
+  bool matchesSearch(Track track) =>
+      '${track.title} ${track.artist} ${track.album} ${track.folder}'
+          .toLowerCase()
+          .contains(query);
 
   Widget libraryView() {
     if (library.loading) {
@@ -580,13 +638,7 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
         busy: library.choosing,
       );
     }
-    final filtered = library.tracks
-        .where(
-          (t) => '${t.title} ${t.artist} ${t.album} ${t.folder}'
-              .toLowerCase()
-              .contains(query),
-        )
-        .toList();
+    final filtered = library.tracks.where(matchesSearch).toList();
     if (view == 1 && group != null) {
       return AlbumDetailView(
         key: ValueKey(group),
@@ -602,42 +654,7 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
         ),
       );
     }
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: SizedBox(
-            width: double.infinity,
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                spacing: 8,
-                children: [
-                  for (final (i, label) in [
-                    'Canciones',
-                    'Álbumes',
-                    'Artistas',
-                    'Carpetas',
-                  ].indexed)
-                    ChoiceChip(
-                      label: Text(label),
-                      selected: view == i,
-                      onSelected: (_) => setState(() {
-                        hideNavigation = false;
-                        view = i;
-                        group = null;
-                      }),
-                    ),
-                ],
-              ),
-            ),
-          ),
-        ),
-        Expanded(
-          child: view == 0 ? trackList(filtered) : groupedTracks(filtered),
-        ),
-      ],
-    );
+    return view == 0 ? trackList(filtered) : groupedTracks(filtered);
   }
 
   Future<void> addAlbumToPlaylist(List<Track> album) async {
@@ -1103,7 +1120,6 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
     List<Track> tracks, {
     String? playlist,
     Widget? header,
-    bool showSort = true,
     String empty =
         'No hay canciones. Actualiza la carpeta o cambia tu búsqueda.',
   }) {
@@ -1184,13 +1200,27 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
         );
       },
     );
-    return Column(
-      children: [
-        if (showSort) sortControls(),
-        Expanded(child: list),
-      ],
-    );
+    return list;
   }
+
+  Widget playlistOrderingControls() => orderingControls(
+    options: [
+      CheckedPopupMenuItem(
+        value: false,
+        checked: !sortPlaylistsByCount,
+        child: const Text('Nombre'),
+      ),
+      CheckedPopupMenuItem(
+        value: true,
+        checked: sortPlaylistsByCount,
+        child: const Text('Cantidad de canciones'),
+      ),
+    ],
+    onSelected: (value) => setState(() => sortPlaylistsByCount = value),
+    ascending: playlistsAscending,
+    toggleDirection: () =>
+        setState(() => playlistsAscending = !playlistsAscending),
+  );
 
   Widget playlistView() {
     if (group != null && library.playlists.containsKey(group)) {
@@ -1266,7 +1296,6 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
             child: trackList(
               tracks,
               playlist: name,
-              showSort: false,
               header: CollectionHeader(
                 title: name,
                 label: library.automaticPlaylist(name)
@@ -1336,55 +1365,6 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
       });
     return Column(
       children: [
-        ClipRect(
-          child: AnimatedAlign(
-            key: const ValueKey('playlist-tools'),
-            alignment: Alignment.topCenter,
-            heightFactor:
-                hideNavigation && MediaQuery.sizeOf(context).width < 850
-                ? 0
-                : 1,
-            duration: MediaQuery.disableAnimationsOf(context)
-                ? Duration.zero
-                : const Duration(milliseconds: 180),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Wrap(
-                alignment: WrapAlignment.spaceBetween,
-                crossAxisAlignment: WrapCrossAlignment.center,
-                runSpacing: 4,
-                children: [
-                  FilledButton.tonalIcon(
-                    onPressed: createPlaylist,
-                    icon: const ThemeIcon('add', Icons.add),
-                    label: const Text('Crear lista'),
-                  ),
-                  orderingControls(
-                    selected: sortPlaylistsByCount,
-                    options: [
-                      CheckedPopupMenuItem(
-                        value: false,
-                        checked: !sortPlaylistsByCount,
-                        child: const Text('Nombre'),
-                      ),
-                      CheckedPopupMenuItem(
-                        value: true,
-                        checked: sortPlaylistsByCount,
-                        child: const Text('Cantidad de canciones'),
-                      ),
-                    ],
-                    onSelected: (value) =>
-                        setState(() => sortPlaylistsByCount = value),
-                    ascending: playlistsAscending,
-                    toggleDirection: () => setState(
-                      () => playlistsAscending = !playlistsAscending,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
         Expanded(
           child: names.isEmpty
               ? empty(
@@ -1562,6 +1542,59 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
         ),
       );
 
+  Iterable<Widget> equalizerControls() sync* {
+    final frequencies = audio.equalizerFrequencies;
+    final min = audio.minEqualizerGain;
+    final max = audio.maxEqualizerGain;
+    yield ListTile(
+      title: const Text('Preajustes'),
+      subtitle: Wrap(
+        spacing: 8,
+        children: [
+          for (final (name, gains) in <(String, double Function(int))>[
+            ('Plano', (_) => 0),
+            ('Graves', (hz) => hz < 200 ? 4 : 0),
+            ('Voces', (hz) => hz >= 400 && hz <= 3000 ? 3 : 0),
+          ])
+            ActionChip(
+              label: Text(name),
+              onPressed: () => setState(
+                () => unawaited(
+                  audio.setEqualizer(
+                    enabled: true,
+                    gains: frequencies.map(gains).toList(),
+                  ),
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+    for (final (index, frequency) in frequencies.indexed) {
+      final gains = List.generate(
+        frequencies.length,
+        (i) => audio.equalizerGains.elementAtOrNull(i) ?? 0.0,
+      );
+      final gain = gains[index].clamp(min, max);
+      yield ListTile(
+        title: Text('$frequency Hz'),
+        trailing: Text('${gain.toStringAsFixed(1)} dB'),
+        subtitle: Slider(
+          min: min,
+          max: max,
+          value: gain,
+          onChanged: (value) {
+            setState(() {
+              gains[index] = value;
+              audio.equalizerGains = List.unmodifiable(gains);
+            });
+          },
+          onChangeEnd: (_) => unawaited(audio.setEqualizer(enabled: true)),
+        ),
+      );
+    }
+  }
+
   Widget settingsView() => ListView(
     padding: const EdgeInsets.all(24),
     children: [
@@ -1601,6 +1634,52 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
         ),
       ]),
       settingsSection('Reproducción', Icons.headphones_outlined, [
+        if (audio.supportsEqualizer) ...[
+          SwitchListTile(
+            title: const Text('Ecualizador'),
+            subtitle: audio.equalizerFrequencies.isEmpty
+                ? const Text('Abre una canción para cargar las bandas.')
+                : null,
+            value: audio.equalizerEnabled,
+            onChanged: (value) =>
+                setState(() => unawaited(audio.setEqualizer(enabled: value))),
+          ),
+          if (audio.equalizerEnabled && audio.equalizerFrequencies.isNotEmpty)
+            ...equalizerControls(),
+        ],
+        SwitchListTile(
+          title: const Text('Reproducción sin pausas'),
+          subtitle: const Text('Se aplica en transiciones sin fundido.'),
+          value: audio.gapless,
+          onChanged: (value) =>
+              setState(() => unawaited(audio.setGapless(value))),
+        ),
+        ListTile(
+          title: const Text('Normalización de volumen'),
+          subtitle: const Text('ReplayGain'),
+          trailing: DropdownButton<ReplayGainMode>(
+            value: audio.replayGainMode,
+            items: const [
+              DropdownMenuItem(
+                value: ReplayGainMode.off,
+                child: Text('Desactivada'),
+              ),
+              DropdownMenuItem(
+                value: ReplayGainMode.track,
+                child: Text('Por canción'),
+              ),
+              DropdownMenuItem(
+                value: ReplayGainMode.album,
+                child: Text('Por álbum'),
+              ),
+            ],
+            onChanged: (value) {
+              if (value != null) {
+                setState(() => unawaited(audio.setReplayGain(value)));
+              }
+            },
+          ),
+        ),
         SwitchListTile(
           title: const Text('Fundido entre canciones'),
           subtitle: const Text(

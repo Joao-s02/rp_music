@@ -85,7 +85,9 @@ void main() {
       final audio = MusicHandler(player: FakePlayer());
       await tester.pumpWidget(MusicApp(library: library, audio: audio));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Álbumes').first);
+      await tester.tap(find.byTooltip('Vista de biblioteca'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Álbumes').last);
       await tester.pumpAndSettle();
       await tester.ensureVisible(find.text('Álbum local').first);
       await tester.tap(find.text('Álbum local').first);

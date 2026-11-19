@@ -384,7 +384,7 @@ void main() {
     await tester.pump();
     await tester.tap(find.text('Segunda'));
     await tester.pump();
-    await tester.tap(find.text('Crear lista'));
+    await tester.tap(find.byTooltip('Nueva lista'));
     await tester.pumpAndSettle();
     await tester.enterText(find.byType(TextField), 'Tercera');
     await tester.tap(find.widgetWithText(FilledButton, 'Crear'));
@@ -509,11 +509,11 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.text('Listas'));
       await tester.pumpAndSettle();
-      await tester.tap(find.byTooltip('Filtrar por'));
+      await tester.tap(find.byTooltip('Ordenar'));
       await tester.pumpAndSettle();
       await tester.tap(
         find.widgetWithText(
-          CheckedPopupMenuItem<bool>,
+          CheckedPopupMenuItem<VoidCallback>,
           'Cantidad de canciones',
         ),
       );

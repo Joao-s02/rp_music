@@ -30,6 +30,7 @@ Future<void> main() async {
     handler = Platform.isAndroid
         ? await AudioService.init(
             builder: () => MusicHandler(
+              replayGainLoader: controller.files.replayGain,
               artworkLoader: controller.files.notificationArtwork,
               onEmptyPlay: () async {
                 await playbackReady.future;
@@ -49,6 +50,7 @@ Future<void> main() async {
             config: playbackServiceConfig,
           )
         : MusicHandler(
+            replayGainLoader: controller.files.replayGain,
             sessionStore: LocalStore(
               Directory('${directory.path}/v2'),
               baseName: 'session',
@@ -58,7 +60,7 @@ Future<void> main() async {
       handler.observeSystemErrors(AudioService.asyncError);
     }
     await handler.configureSession();
-    await handler.loadCrossfadeSettings();
+    await handler.loadPlaybackSettings();
     final notifications = Platform.isAndroid ? AndroidNotifications() : null;
     final updates = UpdateController(
       LocalStore(Directory('${directory.path}/v2'), baseName: 'updates'),

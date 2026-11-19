@@ -76,7 +76,9 @@ void main() {
       await capture(tester, key, 'album-${width.toInt()}');
       expect(find.byType(PulseSurface), findsOneWidget);
       expect(tester.takeException(), isNull);
-      await tester.tap(find.text('Álbumes'));
+      await tester.tap(find.byTooltip('Vista de biblioteca'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Álbumes').last);
       expect(back, isTrue);
       await tester.pumpWidget(const SizedBox());
       await tester.runAsync(audio.close);
