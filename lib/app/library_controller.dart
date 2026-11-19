@@ -570,6 +570,23 @@ class LibraryController extends ChangeNotifier {
     await persist();
   }
 
+  VoidCallback? detachPlaylistTrack(String name, String id) {
+    final list = playlists[name];
+    final index = list?.indexOf(id) ?? -1;
+    if (list == null || index < 0 || automaticPlaylist(name)) return null;
+    unawaited(removeFromPlaylist(name, id));
+    return () {
+      if (!identical(playlists[name], list) ||
+          automaticPlaylist(name) ||
+          list.contains(id)) {
+        return;
+      }
+      list.insert(index.clamp(0, list.length), id);
+      notifyListeners();
+      unawaited(persist());
+    };
+  }
+
   Future<void> removeMissingFromPlaylist(String name) async {
     final available = tracks.map((t) => t.id).toSet();
     playlists[name]?.removeWhere((id) => !available.contains(id));

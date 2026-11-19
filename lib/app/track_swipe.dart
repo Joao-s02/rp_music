@@ -4,19 +4,39 @@ import '../playback/music_handler.dart';
 
 /// Only the artwork/mini-player owns this gesture; sliders keep their drag.
 class TrackSwipe extends StatefulWidget {
-  const TrackSwipe({super.key, required this.audio, required this.child});
+  const TrackSwipe({
+    super.key,
+    required this.audio,
+    required this.child,
+    this.onSwipeUp,
+  });
   final MusicHandler audio;
   final Widget child;
+  final VoidCallback? onSwipeUp;
   @override
   State<TrackSwipe> createState() => _TrackSwipeState();
 }
 
 class _TrackSwipeState extends State<TrackSwipe> {
   double distance = 0;
+  double verticalDistance = 0;
   bool changing = false;
   @override
   Widget build(BuildContext context) => GestureDetector(
     behavior: HitTestBehavior.translucent,
+    onVerticalDragStart: widget.onSwipeUp == null
+        ? null
+        : (_) => verticalDistance = 0,
+    onVerticalDragUpdate: widget.onSwipeUp == null
+        ? null
+        : (event) => verticalDistance += event.delta.dy,
+    onVerticalDragEnd: widget.onSwipeUp == null
+        ? null
+        : (event) {
+            if (verticalDistance < -48 || (event.primaryVelocity ?? 0) < -550) {
+              widget.onSwipeUp!();
+            }
+          },
     onHorizontalDragStart: (_) => distance = 0,
     onHorizontalDragUpdate: (event) => distance += event.delta.dx,
     onHorizontalDragEnd: (event) async {

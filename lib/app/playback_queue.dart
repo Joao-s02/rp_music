@@ -44,7 +44,11 @@ Future<void> showPlaybackQueue(
         height: MediaQuery.sizeOf(context).height * .72,
         child: ScaffoldMessenger(
           child: Scaffold(
-            body: PlaybackQueue(audio: audio, library: library),
+            body: PlaybackQueue(
+              audio: audio,
+              library: library,
+              onPullDown: () => Navigator.pop(context),
+            ),
           ),
         ),
       ),
@@ -98,10 +102,12 @@ class PlaybackQueue extends StatefulWidget {
     required this.audio,
     this.library,
     this.onClose,
+    this.onPullDown,
   });
   final MusicHandler audio;
   final LibraryController? library;
   final VoidCallback? onClose;
+  final VoidCallback? onPullDown;
 
   @override
   State<PlaybackQueue> createState() => _PlaybackQueueState();
@@ -112,6 +118,36 @@ class _PlaybackQueueState extends State<PlaybackQueue> {
   LibraryController? get library => widget.library;
   VoidCallback? get onClose => widget.onClose;
   List<int>? dragOrder;
+  double _topOverscroll = 0;
+  bool _dismissing = false;
+
+  bool _onScroll(ScrollNotification notification) {
+    if (notification.depth != 0 || widget.onPullDown == null) return false;
+    if (notification is ScrollStartNotification ||
+        notification is ScrollEndNotification ||
+        notification.metrics.pixels > notification.metrics.minScrollExtent) {
+      _topOverscroll = 0;
+    }
+    if (!_dismissing &&
+        dragOrder == null &&
+        notification is OverscrollNotification &&
+        notification.dragDetails != null &&
+        notification.overscroll < 0 &&
+        notification.metrics.pixels <= notification.metrics.minScrollExtent) {
+      _topOverscroll -= notification.overscroll;
+      if (_topOverscroll >= 54) {
+        _dismissing = true;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) widget.onPullDown?.call();
+        });
+      }
+    }
+    return false;
+  }
+
+  ScrollPhysics? get _queuePhysics => widget.onPullDown == null
+      ? null
+      : const AlwaysScrollableScrollPhysics(parent: ClampingScrollPhysics());
 
   @override
   Widget build(BuildContext context) => StreamBuilder(
@@ -203,117 +239,125 @@ class _PlaybackQueueState extends State<PlaybackQueue> {
               child: Text('A continuación'),
             ),
             Expanded(
-              child: entries.isEmpty
-                  ? ListView(
-                      children: [
-                        const ListTile(
-                          title: Text('No hay canciones pendientes'),
-                        ),
-                        if (history.isNotEmpty) historySection,
-                      ],
-                    )
-                  : ReorderableListView.builder(
-                      key: const ValueKey('playback-queue'),
-                      buildDefaultDragHandles: false,
-                      footer: history.isEmpty ? null : historySection,
-                      itemCount: entries.length,
-                      onReorderStart: (_) => dragOrder = entries,
-                      onReorderItem: (from, to) {
-                        final order = dragOrder ?? entries;
-                        dragOrder = null;
-                        if (from < order.length && to < order.length) {
-                          audio.movePendingRelative(
-                            order[from],
-                            order[to],
-                            after: from < to,
-                          );
-                        }
-                      },
-                      itemBuilder: (context, i) {
-                        final entry = entries[i];
-                        final track = audio.tracks[start + i];
-                        final options = [
-                          const PopupMenuItem(
-                            value: _QueueAction.next,
-                            child: Text('Mover a continuación'),
+              child: NotificationListener<ScrollNotification>(
+                onNotification: _onScroll,
+                child: entries.isEmpty
+                    ? ListView(
+                        physics: _queuePhysics,
+                        children: [
+                          const ListTile(
+                            title: Text('No hay canciones pendientes'),
                           ),
-                          PopupMenuItem(
-                            value: _QueueAction.up,
-                            enabled: i > 0,
-                            child: const Text('Subir'),
-                          ),
-                          PopupMenuItem(
-                            value: _QueueAction.down,
-                            enabled: i + 1 < entries.length,
-                            child: const Text('Bajar'),
-                          ),
-                          const PopupMenuItem(
-                            value: _QueueAction.remove,
-                            child: Text('Quitar de la cola'),
-                          ),
-                        ];
-                        void choose(_QueueAction action) {
-                          switch (action) {
-                            case _QueueAction.next:
-                              audio.movePendingNext(entry);
-                            case _QueueAction.up:
-                              audio.movePendingRelative(entry, entries[i - 1]);
-                            case _QueueAction.down:
-                              audio.movePendingRelative(
-                                entry,
-                                entries[i + 1],
-                                after: true,
-                              );
-                            case _QueueAction.remove:
-                              final undo = audio.removePending(entry);
-                              if (undo == null) return;
-                              showQueueUndo(context, 'Canción quitada', undo);
-                          }
-                        }
-
-                        return TrackContextRegion(
-                          key: ValueKey('queue-entry-$entry'),
-                          open: (position) async {
-                            final action = await showTrackContextMenu(
-                              context,
-                              position,
-                              options,
+                          if (history.isNotEmpty) historySection,
+                        ],
+                      )
+                    : ReorderableListView.builder(
+                        key: const ValueKey('playback-queue'),
+                        physics: _queuePhysics,
+                        buildDefaultDragHandles: false,
+                        footer: history.isEmpty ? null : historySection,
+                        itemCount: entries.length,
+                        onReorderStart: (_) => dragOrder = entries,
+                        onReorderItem: (from, to) {
+                          final order = dragOrder ?? entries;
+                          dragOrder = null;
+                          if (from < order.length && to < order.length) {
+                            audio.movePendingRelative(
+                              order[from],
+                              order[to],
+                              after: from < to,
                             );
-                            if (context.mounted && action != null) {
-                              choose(action);
+                          }
+                        },
+                        itemBuilder: (context, i) {
+                          final entry = entries[i];
+                          final track = audio.tracks[start + i];
+                          final options = [
+                            const PopupMenuItem(
+                              value: _QueueAction.next,
+                              child: Text('Mover a continuación'),
+                            ),
+                            PopupMenuItem(
+                              value: _QueueAction.up,
+                              enabled: i > 0,
+                              child: const Text('Subir'),
+                            ),
+                            PopupMenuItem(
+                              value: _QueueAction.down,
+                              enabled: i + 1 < entries.length,
+                              child: const Text('Bajar'),
+                            ),
+                            const PopupMenuItem(
+                              value: _QueueAction.remove,
+                              child: Text('Quitar de la cola'),
+                            ),
+                          ];
+                          void choose(_QueueAction action) {
+                            switch (action) {
+                              case _QueueAction.next:
+                                audio.movePendingNext(entry);
+                              case _QueueAction.up:
+                                audio.movePendingRelative(
+                                  entry,
+                                  entries[i - 1],
+                                );
+                              case _QueueAction.down:
+                                audio.movePendingRelative(
+                                  entry,
+                                  entries[i + 1],
+                                  after: true,
+                                );
+                              case _QueueAction.remove:
+                                final undo = audio.removePending(entry);
+                                if (undo == null) return;
+                                showQueueUndo(context, 'Canción quitada', undo);
                             }
-                          },
-                          child: ListTile(
-                            key: ValueKey('queue-track-${start + i}'),
-                            leading: library == null
-                                ? null
-                                : Artwork(id: track.id, library: library!),
-                            title: Text(
-                              track.title,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            subtitle: Text(
-                              track.artist,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            onTap: () => audio.playQueueEntry(entry),
-                            trailing: ReorderableDragStartListener(
-                              index: i,
-                              child: const Tooltip(
-                                message: 'Arrastra para reordenar',
-                                child: SizedBox(
-                                  width: 44,
-                                  height: 48,
-                                  child: Icon(Icons.drag_handle),
+                          }
+
+                          return TrackContextRegion(
+                            key: ValueKey('queue-entry-$entry'),
+                            open: (position) async {
+                              final action = await showTrackContextMenu(
+                                context,
+                                position,
+                                options,
+                              );
+                              if (context.mounted && action != null) {
+                                choose(action);
+                              }
+                            },
+                            child: ListTile(
+                              key: ValueKey('queue-track-${start + i}'),
+                              leading: library == null
+                                  ? null
+                                  : Artwork(id: track.id, library: library!),
+                              title: Text(
+                                track.title,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              subtitle: Text(
+                                track.artist,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              onTap: () => audio.playQueueEntry(entry),
+                              trailing: ReorderableDragStartListener(
+                                index: i,
+                                child: const Tooltip(
+                                  message: 'Arrastra para reordenar',
+                                  child: SizedBox(
+                                    width: 44,
+                                    height: 48,
+                                    child: Icon(Icons.drag_handle),
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        );
-                      },
-                    ),
+                          );
+                        },
+                      ),
+              ),
             ),
           ],
         );

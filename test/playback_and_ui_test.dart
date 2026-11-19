@@ -513,7 +513,7 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(
         find.widgetWithText(
-          CheckedPopupMenuItem<VoidCallback>,
+          PopupMenuItem<VoidCallback>,
           'Cantidad de canciones',
         ),
       );

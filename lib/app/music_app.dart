@@ -95,6 +95,23 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
   final searchFocus = FocusNode();
   String? group;
   Timer? debounce;
+  Timer? _navigationTimer;
+  Timer? _libraryCountTimer;
+  bool _showLibraryCount = false;
+  bool _wasScanning = false;
+
+  void _watchLibraryScan() {
+    if (_wasScanning == library.scanning) return;
+    _wasScanning = library.scanning;
+    _libraryCountTimer?.cancel();
+    setState(() => _showLibraryCount = true);
+    if (!library.scanning) {
+      _libraryCountTimer = Timer(const Duration(seconds: 3), () {
+        if (mounted) setState(() => _showLibraryCount = false);
+      });
+    }
+  }
+
   StreamSubscription<String>? errors;
   StreamSubscription? _coverWarmup;
 
@@ -138,6 +155,8 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    _wasScanning = _showLibraryCount = library.scanning;
+    library.addListener(_watchLibraryScan);
     _coverWarmup = audio.mediaItem.listen((_) => unawaited(warmCover()));
     errors = audio.errors.stream.listen((text) {
       if (mounted) {
@@ -150,6 +169,9 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    library.removeListener(_watchLibraryScan);
+    _navigationTimer?.cancel();
+    _libraryCountTimer?.cancel();
     _coverWarmup?.cancel();
     errors?.cancel();
     debounce?.cancel();
@@ -168,6 +190,7 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
   }
 
   void navigate(int value) => setState(() {
+    _navigationTimer?.cancel();
     searchFocus.unfocus();
     hideNavigation = false;
     page = value;
@@ -175,6 +198,7 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
   });
 
   void openPlayingAlbum(Track track) {
+    _navigationTimer?.cancel();
     debounce?.cancel();
     search.clear();
     searchFocus.unfocus();
@@ -189,6 +213,7 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
   }
 
   void selectGroup(String? value) => setState(() {
+    _navigationTimer?.cancel();
     group = value;
     hideNavigation = false;
   });
@@ -200,7 +225,16 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
       final hide =
           event.direction == ScrollDirection.reverse &&
           event.metrics.maxScrollExtent > event.metrics.minScrollExtent;
+      _navigationTimer?.cancel();
       if (hide != hideNavigation) setState(() => hideNavigation = hide);
+      if (!hide &&
+          event.metrics.maxScrollExtent > event.metrics.minScrollExtent) {
+        _navigationTimer = Timer(const Duration(seconds: 5), () {
+          if (mounted && page < 3 && !searchFocus.hasFocus) {
+            setState(() => hideNavigation = true);
+          }
+        });
+      }
     }
     return false;
   }
@@ -265,115 +299,129 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
                             desktop ? 16 : 4,
                             4,
                           ),
-                          child: Row(
-                            children: [
-                              if (page == 0 && desktop) ...[
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(10),
-                                  child: const ThemeBrand(),
+                          child: ConstrainedBox(
+                            constraints: const BoxConstraints(minHeight: 48),
+                            child: Row(
+                              children: [
+                                if (page == 0) ...[
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(
+                                      desktop ? 10 : 6,
+                                    ),
+                                    child: ThemeBrand(size: desktop ? 36 : 24),
+                                  ),
+                                  SizedBox(width: desktop ? 10 : 6),
+                                ],
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      if (page == 0 &&
+                                          group == null &&
+                                          library.root != null)
+                                        libraryViewSelector()
+                                      else
+                                        Text(
+                                          page == 0 &&
+                                                  view == 1 &&
+                                                  group != null
+                                              ? 'Detalle de álbum'
+                                              : page == 0
+                                              ? 'RP Music'
+                                              : labels[page],
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: headerTextStyle,
+                                        ),
+                                      if (page == 0 && _showLibraryCount)
+                                        Text(
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          'Biblioteca · ${library.tracks.length} pistas${library.scanning ? ' · Metadatos ${library.scanProcessed}/${library.scanTotal}' : ''}',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodySmall,
+                                        ),
+                                    ],
+                                  ),
                                 ),
-                                const SizedBox(width: 10),
-                              ],
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    if (page == 0 &&
-                                        group == null &&
-                                        library.root != null)
-                                      libraryViewSelector()
-                                    else
-                                      Text(
-                                        page == 0 && view == 1 && group != null
-                                            ? 'Detalle de álbum'
-                                            : page == 0
-                                            ? 'RP Music'
-                                            : labels[page],
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: headerTextStyle,
-                                      ),
-                                    if (page == 0)
-                                      Text(
-                                        'Biblioteca · ${library.tracks.length} pistas${library.scanning ? ' · Metadatos ${library.scanProcessed}/${library.scanTotal}' : ''}',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodySmall,
-                                      ),
-                                  ],
-                                ),
-                              ),
-                              if (page <= 1)
-                                IconButton(
-                                  tooltip: searchExpanded
-                                      ? 'Cerrar búsqueda'
-                                      : 'Buscar',
-                                  icon: searchExpanded
-                                      ? const Icon(Icons.close)
-                                      : const ThemeIcon('search', Icons.search),
-                                  onPressed: () {
-                                    setState(() {
-                                      hideNavigation = false;
-                                      searchExpanded = !searchExpanded;
-                                      if (!searchExpanded) {
-                                        debounce?.cancel();
-                                        search.clear();
-                                        query = '';
+                                if (page <= 1)
+                                  IconButton(
+                                    tooltip: searchExpanded
+                                        ? 'Cerrar búsqueda'
+                                        : 'Buscar',
+                                    icon: searchExpanded
+                                        ? const Icon(Icons.close)
+                                        : const ThemeIcon(
+                                            'search',
+                                            Icons.search,
+                                          ),
+                                    onPressed: () {
+                                      setState(() {
+                                        _navigationTimer?.cancel();
+                                        hideNavigation = false;
+                                        searchExpanded = !searchExpanded;
+                                        if (!searchExpanded) {
+                                          debounce?.cancel();
+                                          search.clear();
+                                          query = '';
+                                        }
+                                      });
+                                      if (searchExpanded) {
+                                        WidgetsBinding.instance
+                                            .addPostFrameCallback((_) {
+                                              if (mounted) {
+                                                searchFocus.requestFocus();
+                                              }
+                                            });
+                                      } else {
+                                        searchFocus.unfocus();
                                       }
-                                    });
-                                    if (searchExpanded) {
-                                      WidgetsBinding.instance
-                                          .addPostFrameCallback((_) {
-                                            if (mounted) {
-                                              searchFocus.requestFocus();
-                                            }
-                                          });
-                                    } else {
-                                      searchFocus.unfocus();
-                                    }
-                                  },
-                                ),
-                              if ((page == 0 &&
-                                      library.root != null &&
-                                      (view == 0 ||
-                                          (view != 1 && group != null))) ||
-                                  page == 1)
-                                trackOrderingControls(),
-                              if (page == 2 && group == null) ...[
-                                playlistOrderingControls(),
-                                IconButton(
-                                  tooltip: 'Nueva lista',
-                                  onPressed: createPlaylist,
-                                  icon: const ThemeIcon('add', Icons.add),
-                                ),
+                                    },
+                                  ),
+                                if ((page == 0 &&
+                                        library.root != null &&
+                                        (view == 0 ||
+                                            (view != 1 && group != null))) ||
+                                    page == 1)
+                                  trackOrderingControls(),
+                                if (page == 2 && group == null) ...[
+                                  playlistOrderingControls(),
+                                  IconButton(
+                                    tooltip: 'Nueva lista',
+                                    onPressed: createPlaylist,
+                                    icon: const ThemeIcon('add', Icons.add),
+                                  ),
+                                ],
+                                if (page == 0)
+                                  IconButton(
+                                    onPressed:
+                                        library.scanning || library.root == null
+                                        ? null
+                                        : () => library.refresh(),
+                                    tooltip: 'Actualizar biblioteca',
+                                    icon: const ThemeIcon(
+                                      'refresh',
+                                      Icons.refresh,
+                                    ),
+                                  ),
+                                if (page == 0 && desktop)
+                                  FilledButton.tonalIcon(
+                                    onPressed:
+                                        library.scanning || library.choosing
+                                        ? null
+                                        : library.chooseRoot,
+                                    icon: const ThemeIcon(
+                                      'folder',
+                                      Icons.folder_open,
+                                    ),
+                                    label: Text(
+                                      desktop ? 'Elegir carpeta' : 'Carpeta',
+                                    ),
+                                  ),
                               ],
-                              if (page == 0)
-                                IconButton(
-                                  onPressed:
-                                      library.scanning || library.root == null
-                                      ? null
-                                      : () => library.refresh(),
-                                  tooltip: 'Actualizar biblioteca',
-                                  icon: const ThemeIcon(
-                                    'refresh',
-                                    Icons.refresh,
-                                  ),
-                                ),
-                              if (page == 0 && desktop)
-                                FilledButton.tonalIcon(
-                                  onPressed:
-                                      library.scanning || library.choosing
-                                      ? null
-                                      : library.chooseRoot,
-                                  icon: const ThemeIcon(
-                                    'folder',
-                                    Icons.folder_open,
-                                  ),
-                                  label: Text(
-                                    desktop ? 'Elegir carpeta' : 'Carpeta',
-                                  ),
-                                ),
-                            ],
+                            ),
                           ),
                         ),
                       ),
@@ -572,19 +620,29 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
       ? Theme.of(context).textTheme.headlineMedium
       : Theme.of(context).textTheme.titleLarge;
 
+  static const viewIcons = [
+    Icons.music_note_rounded,
+    Icons.album_outlined,
+    Icons.person_outline_rounded,
+    Icons.folder_outlined,
+  ];
+
   Widget libraryViewSelector() => PopupMenuButton<int>(
     tooltip: 'Vista de biblioteca',
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+    color: Theme.of(context).colorScheme.surfaceContainerHigh,
     onSelected: (value) => setState(() {
+      _navigationTimer?.cancel();
       hideNavigation = false;
       view = value;
       group = null;
     }),
     itemBuilder: (_) => [
       for (final (index, name) in libraryViews.indexed)
-        CheckedPopupMenuItem(
+        PopupMenuItem(
           value: index,
-          checked: index == view,
-          child: Text(name),
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          child: _menuOption(name, viewIcons[index], selected: index == view),
         ),
     ],
     child: ConstrainedBox(
@@ -600,50 +658,99 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
               overflow: TextOverflow.ellipsis,
             ),
           ),
-          const Icon(Icons.arrow_drop_down),
+          const Icon(Icons.keyboard_arrow_down_rounded, size: 18),
         ],
       ),
     ),
   );
 
+  Widget _menuOption(String label, IconData icon, {bool selected = false}) {
+    final colors = Theme.of(context).colorScheme;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: ShapeDecoration(
+        color: selected ? colors.primaryContainer : colors.surfaceContainer,
+        shape: const StadiumBorder(),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            icon,
+            size: 19,
+            color: selected ? colors.onPrimaryContainer : colors.primary,
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              label,
+              style: TextStyle(
+                color: selected ? colors.onPrimaryContainer : colors.onSurface,
+              ),
+            ),
+          ),
+          if (selected)
+            Icon(
+              Icons.check_rounded,
+              size: 18,
+              color: colors.onPrimaryContainer,
+            ),
+        ],
+      ),
+    );
+  }
+
   Widget orderingControls<T>({
-    required List<CheckedPopupMenuItem<T>> options,
+    required List<(T, String, IconData)> options,
+    required T selected,
     required ValueChanged<T> onSelected,
     required bool ascending,
     required VoidCallback toggleDirection,
   }) => PopupMenuButton<VoidCallback>(
     tooltip: 'Ordenar',
     icon: const ThemeIcon('filter', Icons.filter_list),
+    color: Theme.of(context).colorScheme.surfaceContainerHigh,
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
     constraints: const BoxConstraints(
-      minWidth: 160,
-      maxWidth: 220,
-      maxHeight: 272,
+      minWidth: 196,
+      maxWidth: 228,
+      maxHeight: 322,
     ),
     onSelected: (action) => action(),
     itemBuilder: (_) => [
-      for (final option in options)
-        CheckedPopupMenuItem(
-          value: () => onSelected(option.value as T),
-          checked: option.checked,
-          height: 40,
-          child: option.child,
-        ),
-      const PopupMenuDivider(),
       PopupMenuItem(
         value: toggleDirection,
-        height: 40,
-        child: Text(ascending ? 'Descendente' : 'Ascendente'),
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        child: _menuOption(
+          ascending ? 'Descendente' : 'Ascendente',
+          ascending ? Icons.arrow_downward_rounded : Icons.arrow_upward_rounded,
+        ),
       ),
+      const PopupMenuDivider(),
+      for (final (value, label, icon) in options)
+        PopupMenuItem(
+          value: () => onSelected(value),
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          child: _menuOption(label, icon, selected: value == selected),
+        ),
     ],
   );
 
   Widget trackOrderingControls() => orderingControls(
+    selected: library.sort,
     options: [
       for (final value in TrackSort.values)
-        CheckedPopupMenuItem(
-          value: value,
-          checked: value == library.sort,
-          child: Text(value.label),
+        (
+          value,
+          value.label,
+          switch (value) {
+            TrackSort.title => Icons.sort_by_alpha,
+            TrackSort.artist => Icons.person_outline,
+            TrackSort.album => Icons.album_outlined,
+            TrackSort.duration => Icons.timer_outlined,
+            TrackSort.modified => Icons.calendar_today_outlined,
+            TrackSort.size => Icons.data_usage_outlined,
+            TrackSort.filename => Icons.insert_drive_file_outlined,
+          },
         ),
     ],
     onSelected: library.setSort,
@@ -776,7 +883,11 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
     );
   }
 
-  Future<void> openTrackMenu(Track track, {bool favorite = false}) async {
+  Future<void> openTrackMenu(
+    Track track, {
+    bool favorite = false,
+    String? playlist,
+  }) async {
     final action = await showDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
@@ -802,7 +913,7 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            for (final option in trackOptions(track, favorite))
+            for (final option in trackOptions(track, favorite, playlist))
               ListTile(
                 enabled: option.enabled,
                 title: option.child,
@@ -814,7 +925,13 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
         ),
       ),
     );
-    if (mounted && action != null) runTrackAction(track, action);
+    if (!mounted || action == null) return;
+    if (action == 'remove-from-playlist' && playlist != null) {
+      final undo = library.detachPlaylistTrack(playlist, track.id);
+      if (undo != null) showQueueUndo(context, 'Quitada de la lista', undo);
+    } else {
+      runTrackAction(track, action);
+    }
   }
 
   void runTrackAction(Track track, String value) {
@@ -834,7 +951,16 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
     }
   }
 
-  List<PopupMenuItem<String>> trackOptions(Track track, bool favorite) => [
+  List<PopupMenuItem<String>> trackOptions(
+    Track track,
+    bool favorite,
+    String? playlist,
+  ) => [
+    if (playlist != null && !library.automaticPlaylist(playlist))
+      const PopupMenuItem(
+        value: 'remove-from-playlist',
+        child: Text('Quitar de esta lista'),
+      ),
     const PopupMenuItem(
       value: 'queue-next',
       child: Text('Reproducir a continuación'),
@@ -1200,16 +1326,6 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
                     selected: library.favorites.contains(track.id),
                   ),
                 ),
-                if (playlist != null && !library.automaticPlaylist(playlist))
-                  IconButton(
-                    tooltip: 'Quitar de la lista',
-                    icon: const ThemeIcon(
-                      'playlistRemove',
-                      Icons.playlist_remove,
-                    ),
-                    onPressed: () =>
-                        library.removeFromPlaylist(playlist, track.id),
-                  ),
               ],
             ),
           ),
@@ -1218,7 +1334,7 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
           color: Colors.transparent,
           clipBehavior: Clip.hardEdge,
           child: TrackContextRegion(
-            open: (_) => openTrackMenu(track),
+            open: (_) => openTrackMenu(track, playlist: playlist),
             child: tile,
           ),
         );
@@ -1228,17 +1344,10 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
   }
 
   Widget playlistOrderingControls() => orderingControls(
-    options: [
-      CheckedPopupMenuItem(
-        value: false,
-        checked: !sortPlaylistsByCount,
-        child: const Text('Nombre'),
-      ),
-      CheckedPopupMenuItem(
-        value: true,
-        checked: sortPlaylistsByCount,
-        child: const Text('Cantidad de canciones'),
-      ),
+    selected: sortPlaylistsByCount,
+    options: const [
+      (false, 'Nombre', Icons.sort_by_alpha),
+      (true, 'Cantidad de canciones', Icons.queue_music),
     ],
     onSelected: (value) => setState(() => sortPlaylistsByCount = value),
     ascending: playlistsAscending,
@@ -1265,10 +1374,21 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
               mainAxisSize: MainAxisSize.min,
               children: [
                 trackOrderingControls(),
-                IconButton(
+                PopupMenuButton<String>(
                   tooltip: 'Opciones de la lista',
-                  onPressed: () => openPlaylistMenu(name),
                   icon: const ThemeIcon('more', Icons.more_vert),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  onSelected: (action) => runPlaylistAction(name, action),
+                  itemBuilder: (_) => [
+                    for (final (id, label) in playlistActions)
+                      PopupMenuItem(
+                        value: id,
+                        enabled: !id.startsWith('queue') || tracks.isNotEmpty,
+                        child: Text(label),
+                      ),
+                  ],
                 ),
               ],
             ),
@@ -1402,6 +1522,13 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
     );
   }
 
+  static const playlistActions = [
+    ('queue-end', 'Añadir al final de la cola'),
+    ('queue-next', 'Reproducir a continuación'),
+    ('cover', 'Cambiar carátula'),
+    ('delete', 'Eliminar lista'),
+  ];
+
   Future<void> openPlaylistMenu(String name) async {
     final tracks = library.playlistTracks(name);
     final action = await showDialog<String>(
@@ -1420,12 +1547,7 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            for (final (id, label) in const [
-              ('queue-end', 'Añadir al final de la cola'),
-              ('queue-next', 'Reproducir a continuación'),
-              ('cover', 'Cambiar carátula'),
-              ('delete', 'Eliminar lista'),
-            ])
+            for (final (id, label) in playlistActions)
               ListTile(
                 title: Text(label),
                 onTap: id.startsWith('queue') && tracks.isEmpty
@@ -1436,7 +1558,10 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
         ),
       ),
     );
-    if (!mounted) return;
+    if (mounted && action != null) await runPlaylistAction(name, action);
+  }
+
+  Future<void> runPlaylistAction(String name, String action) async {
     switch (action) {
       case 'queue-next':
       case 'queue-end':
@@ -1962,6 +2087,7 @@ class _PlayerPanelState extends State<PlayerPanel> {
       if (!desktop && !widget.expanded) {
         return TrackSwipe(
           audio: audio,
+          onSwipeUp: openPlayer,
           child: Material(
             color: Theme.of(context).colorScheme.surfaceContainerHigh,
             borderRadius: BorderRadius.circular(20),

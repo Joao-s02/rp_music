@@ -5,6 +5,7 @@ import android.content.Intent
 import android.media.AudioDeviceCallback
 import android.media.AudioDeviceInfo
 import android.media.AudioManager
+import android.media.AudioAttributes
 import android.media.MediaRoute2Info
 import android.media.MediaRouter
 import android.media.MediaRouter2
@@ -56,15 +57,40 @@ private abstract class AudioRouteEvents : EventChannel.StreamHandler {
 private class ModernAudioRoute(context: Context) : AudioRouteEvents() {
     private val router = MediaRouter2.getInstance(context.applicationContext)
     private val executor = context.mainExecutor
+    private val audioManager = context.getSystemService(AudioManager::class.java)
     private val callback = object : MediaRouter2.ControllerCallback() {
         override fun onControllerUpdated(controller: MediaRouter2.RoutingController) = publish()
+    }
+
+    private val mainHandler = Handler(Looper.getMainLooper())
+    private val delayedRefresh = Runnable { publish() }
+    private val devices = object : AudioDeviceCallback() {
+        override fun onAudioDevicesAdded(devices: Array<out AudioDeviceInfo>) = refreshRoute()
+        override fun onAudioDevicesRemoved(devices: Array<out AudioDeviceInfo>) = refreshRoute()
+    }
+    private val legacyRouter = context.getSystemService(MediaRouter::class.java)
+    private val legacyCallback = object : MediaRouter.SimpleCallback() {
+        override fun onRouteSelected(router: MediaRouter, type: Int, info: MediaRouter.RouteInfo) = refreshRoute()
+        override fun onRouteChanged(router: MediaRouter, info: MediaRouter.RouteInfo) = refreshRoute()
+    }
+
+    private fun refreshRoute() {
+        if (sink == null) return
+        publish()
+        // Some vendor implementations update the active route after the device event.
+        mainHandler.removeCallbacks(delayedRefresh)
+        mainHandler.postDelayed(delayedRefresh, 350L)
     }
 
     @android.annotation.TargetApi(34)
     fun showSwitcher(): Boolean = router.showSystemOutputSwitcher()
 
     private fun transferableRoutes(): List<MediaRoute2Info> =
-        router.systemController.transferableRoutes.filter { it.isSystemRoute }
+        if (Build.VERSION.SDK_INT >= 35) {
+            router.systemController.transferableRoutes.filter { it.isSystemRoute }
+        } else {
+            emptyList()
+        }
 
     fun availableRoutes() = transferableRoutes().map { route ->
         mapOf("id" to route.id, "name" to route.name.toString())
@@ -79,17 +105,69 @@ private class ModernAudioRoute(context: Context) : AudioRouteEvents() {
     override fun onListen(arguments: Any?, sink: EventChannel.EventSink) {
         this.sink = sink
         router.registerControllerCallback(executor, callback)
+        audioManager?.registerAudioDeviceCallback(devices, mainHandler)
+        legacyRouter?.addCallback(MediaRouter.ROUTE_TYPE_LIVE_AUDIO, legacyCallback)
         publish()
     }
 
     override fun onCancel(arguments: Any?) {
-        router.unregisterControllerCallback(callback)
         sink = null
+        mainHandler.removeCallbacks(delayedRefresh)
+        legacyRouter?.removeCallback(legacyCallback)
+        audioManager?.unregisterAudioDeviceCallback(devices)
+        router.unregisterControllerCallback(callback)
     }
 
     private fun publish() {
+        if (sink == null) return
         val route = router.systemController.selectedRoutes.firstOrNull()
-        val icon = when (route?.type) {
+        if (Build.VERSION.SDK_INT >= 33) {
+            activeMusicDevice()?.let { device ->
+                when (device.type) {
+                    AudioDeviceInfo.TYPE_BUILTIN_SPEAKER -> emit("Altavoces del teléfono", "phone")
+                    AudioDeviceInfo.TYPE_WIRED_HEADSET, AudioDeviceInfo.TYPE_WIRED_HEADPHONES ->
+                        emit("Auriculares con cable", "headphones")
+                    AudioDeviceInfo.TYPE_USB_HEADSET, AudioDeviceInfo.TYPE_USB_DEVICE ->
+                        emit(device.productName.toString(), "headphones")
+                    AudioDeviceInfo.TYPE_BLUETOOTH_A2DP, AudioDeviceInfo.TYPE_BLE_HEADSET,
+                    AudioDeviceInfo.TYPE_BLE_SPEAKER, AudioDeviceInfo.TYPE_HEARING_AID ->
+                        emit(device.productName.toString(), "bluetooth")
+                    else -> emit(route?.name?.toString().orEmpty(), "speaker")
+                }
+                return
+            }
+        }
+        if (Build.VERSION.SDK_INT >= 34) {
+            emit(route?.name?.toString().orEmpty(), modernRouteIcon(route))
+        } else {
+            publishLegacyRoute(route)
+        }
+    }
+
+    @android.annotation.TargetApi(33)
+    private fun activeMusicDevice(): AudioDeviceInfo? = runCatching {
+        val attributes = AudioAttributes.Builder()
+            .setUsage(AudioAttributes.USAGE_MEDIA)
+            .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+            .build()
+        audioManager?.getAudioDevicesForAttributes(attributes)?.firstOrNull()
+    }.getOrNull()
+
+    @Suppress("DEPRECATION")
+    private fun publishLegacyRoute(route: MediaRoute2Info?) {
+        val legacy = legacyRouter?.getSelectedRoute(MediaRouter.ROUTE_TYPE_LIVE_AUDIO)
+        when {
+            legacy?.deviceType == MediaRouter.RouteInfo.DEVICE_TYPE_BLUETOOTH ||
+                audioManager?.isBluetoothA2dpOn == true ->
+                emit(if (legacy?.deviceType == MediaRouter.RouteInfo.DEVICE_TYPE_BLUETOOTH) legacy.name.toString() else "Bluetooth", "bluetooth")
+            audioManager?.isWiredHeadsetOn == true -> emit("Auriculares con cable", "headphones")
+            else -> emit(route?.name?.toString().orEmpty(), "speaker")
+        }
+    }
+
+    @android.annotation.TargetApi(34)
+    private fun modernRouteIcon(route: MediaRoute2Info?): String =
+        when (route?.type) {
             MediaRoute2Info.TYPE_BUILTIN_SPEAKER -> "phone"
             MediaRoute2Info.TYPE_WIRED_HEADSET, MediaRoute2Info.TYPE_WIRED_HEADPHONES,
             MediaRoute2Info.TYPE_USB_HEADSET -> "headphones"
@@ -98,8 +176,6 @@ private class ModernAudioRoute(context: Context) : AudioRouteEvents() {
             MediaRoute2Info.TYPE_REMOTE_TV, MediaRoute2Info.TYPE_HDMI -> "tv"
             else -> "speaker"
         }
-        emit(route?.name?.toString().orEmpty(), icon)
-    }
 }
 
 @Suppress("DEPRECATION")
