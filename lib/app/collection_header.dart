@@ -1,6 +1,4 @@
-import 'pulse_surface.dart';
-
-import 'dart:math';
+import 'dart:ui' show ImageFilter;
 
 import 'package:flutter/material.dart';
 
@@ -12,79 +10,132 @@ class CollectionHeader extends StatelessWidget {
     required this.artwork,
     required this.description,
     required this.actions,
-    this.equalActions = false,
+    this.subtitle,
+    this.background,
   });
-  final String title, label, description;
+
+  final String title;
+  final String label;
+  final String description;
+  final String? subtitle;
   final Widget Function(double) artwork;
   final List<Widget> actions;
-  final bool equalActions;
+  final Widget? background;
+
   @override
-  Widget build(BuildContext context) => PulseSurface(
-    inset: const EdgeInsets.all(12),
-    child: Container(
-      margin: const EdgeInsets.all(12),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
+      child: ClipRRect(
         borderRadius: BorderRadius.circular(24),
-        gradient: LinearGradient(
-          colors: [
-            Theme.of(context).colorScheme.surfaceContainerHigh,
-            Theme.of(context).colorScheme.surfaceContainer,
-          ],
+        child: ColoredBox(
+          color: colors.surfaceContainerHigh,
+          child: Stack(
+            children: [
+              if (background case final image?)
+                Positioned.fill(
+                  child: ExcludeSemantics(
+                    child: RepaintBoundary(
+                      child: ImageFiltered(
+                        imageFilter: ImageFilter.blur(
+                          sigmaX: 18,
+                          sigmaY: 18,
+                          tileMode: TileMode.clamp,
+                        ),
+                        child: image,
+                      ),
+                    ),
+                  ),
+                ),
+              Positioned.fill(
+                child: ColoredBox(color: colors.surface.withValues(alpha: .84)),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    final wide = constraints.maxWidth >= 600;
+                    final size = wide ? 184.0 : 120.0;
+                    final alignment = wide
+                        ? CrossAxisAlignment.start
+                        : CrossAxisAlignment.center;
+                    final textAlign = wide ? TextAlign.start : TextAlign.center;
+                    final cover = SizedBox.square(
+                      dimension: size.clamp(0.0, constraints.maxWidth),
+                      child: artwork(size),
+                    );
+                    final info = Column(
+                      crossAxisAlignment: alignment,
+                      children: [
+                        Text(
+                          title,
+                          textAlign: textAlign,
+                          style: theme.textTheme.headlineSmall?.copyWith(
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                        if (subtitle case final value?)
+                          Text(
+                            value,
+                            textAlign: textAlign,
+                            style: theme.textTheme.titleSmall,
+                          ),
+                        const SizedBox(height: 4),
+                        Wrap(
+                          alignment: wide
+                              ? WrapAlignment.start
+                              : WrapAlignment.center,
+                          spacing: 8,
+                          runSpacing: 2,
+                          children: [
+                            for (final value in [label, description])
+                              Text(
+                                value,
+                                textAlign: textAlign,
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: colors.onSurfaceVariant,
+                                ),
+                              ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        Wrap(
+                          alignment: wide
+                              ? WrapAlignment.start
+                              : WrapAlignment.center,
+                          spacing: 8,
+                          runSpacing: 6,
+                          children: actions,
+                        ),
+                      ],
+                    );
+                    return wide
+                        ? Row(
+                            children: [
+                              cover,
+                              const SizedBox(width: 24),
+                              Expanded(child: info),
+                            ],
+                          )
+                        : SizedBox(
+                            width: double.infinity,
+                            child: Column(
+                              children: [
+                                cover,
+                                const SizedBox(height: 10),
+                                info,
+                              ],
+                            ),
+                          );
+                  },
+                ),
+              ),
+            ],
+          ),
         ),
       ),
-      child: Column(
-        children: [
-          LayoutBuilder(
-            builder: (context, box) {
-              final compact = MediaQuery.sizeOf(context).width < 420;
-              final size = min(compact ? 150.0 : 280.0, box.maxWidth);
-              return SizedBox(width: size, height: size, child: artwork(size));
-            },
-          ),
-          const SizedBox(height: 20),
-          Text(
-            label,
-            style: TextStyle(
-              color: Theme.of(context).colorScheme.primary,
-              letterSpacing: 2,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            title,
-            textAlign: TextAlign.center,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.headlineMedium
-                ?.copyWith(fontWeight: FontWeight.w800),
-          ),
-          const SizedBox(height: 8),
-          Text(description, textAlign: TextAlign.center),
-          const SizedBox(height: 18),
-          if (equalActions &&
-              MediaQuery.sizeOf(context).width >= 340 &&
-              MediaQuery.textScalerOf(context).scale(14) <= 17)
-            IntrinsicHeight(
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  for (var i = 0; i < actions.length; i++) ...[
-                    if (i > 0) const SizedBox(width: 8),
-                    Expanded(child: actions[i]),
-                  ],
-                ],
-              ),
-            )
-          else
-            Wrap(
-              alignment: WrapAlignment.center,
-              spacing: 8,
-              runSpacing: 8,
-              children: actions,
-            ),
-        ],
-      ),
-    ),
-  );
+    );
+  }
 }

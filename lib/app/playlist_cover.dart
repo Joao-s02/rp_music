@@ -121,10 +121,12 @@ class PlaylistCover extends StatefulWidget {
     required this.library,
     required this.name,
     this.size = 48,
+    this.showPlaceholder = true,
   });
   final LibraryController library;
   final String name;
   final double size;
+  final bool showPlaceholder;
   @override
   State<PlaylistCover> createState() => _PlaylistCoverState();
 }
@@ -153,7 +155,9 @@ class _PlaylistCoverState extends State<PlaylistCover> {
             ? Image.file(
                 File(path),
                 fit: BoxFit.cover,
-                errorBuilder: (_, _, _) => placeholder(),
+                errorBuilder: (_, _, _) => widget.showPlaceholder
+                    ? placeholder()
+                    : const SizedBox.shrink(),
               )
             : tracks.isEmpty
             ? placeholder()

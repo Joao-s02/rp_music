@@ -11,3 +11,7 @@ Mantener enlaces relativos de Obsidian `[[Nombre de nota]]`, evitar duplicar dec
 El usuario autorizó sustituir el código alfa por un proyecto nuevo, pero pidió crear primero esta bóveda. No borrar la bóveda, este archivo ni el historial Git durante la reconstrucción. No publicar, enviar cambios a GitHub ni crear repositorios sin autorización correspondiente.
 
 Comunicar en español y explicar decisiones de forma accesible: el usuario está aprendiendo Flutter y Dart.
+
+## Nombres de ramas Git
+
+Regla obligatoria: nunca crear ni renombrar una rama de RP Music para que empiece con `codex/`. Usar nombres descriptivos del trabajo, por ejemplo `feat/cola-editable`, `fix/restaurar-reproduccion` o `release/0.4.3`. Esta regla no implica renombrar ramas existentes.

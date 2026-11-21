@@ -117,6 +117,26 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
+      final options = find.byTooltip('Opciones de biblioteca');
+      final selector = find.byTooltip('Vista de biblioteca');
+      expect(
+        tester.getCenter(options).dy,
+        closeTo(tester.getCenter(selector).dy, 1),
+      );
+      expect(
+        tester.widget<Text>(find.text('Canciones')).overflow,
+        isNot(TextOverflow.ellipsis),
+      );
+      await tester.tap(options);
+      await tester.pumpAndSettle();
+      expect(find.text('Actualizar'), findsOneWidget);
+      await tester.tap(find.text('Filtrado'));
+      await tester.pumpAndSettle();
+      expect(find.text('Actualizar'), findsNothing);
+      await tester.tap(find.text('Duración'));
+      await tester.pumpAndSettle();
+      expect(library.sort.name, 'duration');
+      expect(find.text('Duración'), findsNothing);
       await tester.tap(find.byTooltip('Vista de biblioteca'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('Álbumes').last);

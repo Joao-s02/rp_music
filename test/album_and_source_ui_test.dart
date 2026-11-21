@@ -79,7 +79,7 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      expect(find.text('● ÁLBUM LOCAL'), findsOneWidget);
+      expect(find.text('ÁLBUM LOCAL'), findsOneWidget);
       expect(find.text('24b Hi-Res'), findsNothing);
       await tester.ensureVisible(find.text('Reproducir'));
       await tester.tap(find.text('Reproducir'));

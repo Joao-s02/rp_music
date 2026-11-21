@@ -7,6 +7,7 @@ import 'expanded_player.dart';
 import 'album_detail_view.dart';
 import 'track_swipe.dart';
 import 'collection_header.dart';
+import 'option_menu.dart';
 
 import 'dart:async';
 import 'dart:math';
@@ -380,12 +381,7 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
                                       }
                                     },
                                   ),
-                                if ((page == 0 &&
-                                        library.root != null &&
-                                        (view == 0 ||
-                                            (view != 1 && group != null))) ||
-                                    page == 1)
-                                  trackOrderingControls(),
+                                if (page == 1) trackOrderingControls(),
                                 if (page == 2 && group == null) ...[
                                   playlistOrderingControls(),
                                   IconButton(
@@ -394,18 +390,7 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
                                     icon: const ThemeIcon('add', Icons.add),
                                   ),
                                 ],
-                                if (page == 0)
-                                  IconButton(
-                                    onPressed:
-                                        library.scanning || library.root == null
-                                        ? null
-                                        : () => library.refresh(),
-                                    tooltip: 'Actualizar biblioteca',
-                                    icon: const ThemeIcon(
-                                      'refresh',
-                                      Icons.refresh,
-                                    ),
-                                  ),
+                                if (page == 0) libraryOptions(),
                                 if (page == 0 && desktop)
                                   FilledButton.tonalIcon(
                                     onPressed:
@@ -426,44 +411,7 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
                         ),
                       ),
                     ),
-                    AnimatedSize(
-                      alignment: Alignment.topCenter,
-                      duration: MediaQuery.disableAnimationsOf(context)
-                          ? Duration.zero
-                          : const Duration(milliseconds: 220),
-                      curve: Curves.easeInOut,
-                      child: page <= 1 && searchExpanded
-                          ? Padding(
-                              key: const ValueKey('library-search'),
-                              padding: const EdgeInsets.fromLTRB(20, 4, 20, 12),
-                              child: TextField(
-                                key: const ValueKey('library-search-field'),
-                                controller: search,
-                                focusNode: searchFocus,
-                                decoration: const InputDecoration(
-                                  prefixIcon: ThemeIcon('search', Icons.search),
-                                  hintText: 'Buscar en tu música',
-                                ),
-                                onChanged: (value) {
-                                  debounce?.cancel();
-                                  debounce = Timer(
-                                    const Duration(milliseconds: 180),
-                                    () {
-                                      if (mounted) {
-                                        setState(() {
-                                          query = value.toLowerCase().trim();
-                                          if (page == 0 && view != 1) {
-                                            group = null;
-                                          }
-                                        });
-                                      }
-                                    },
-                                  );
-                                },
-                              ),
-                            )
-                          : const SizedBox.shrink(),
-                    ),
+                    librarySearchBar(),
                     if (widget.updates != null)
                       UpdateNotice(
                         updates: widget.updates!,
@@ -627,8 +575,47 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
     Icons.folder_outlined,
   ];
 
+  Widget librarySearchBar() {
+    final field = page <= 1 && searchExpanded
+        ? Padding(
+            key: const ValueKey('library-search'),
+            padding: const EdgeInsets.fromLTRB(20, 4, 20, 12),
+            child: TextField(
+              key: const ValueKey('library-search-field'),
+              controller: search,
+              focusNode: searchFocus,
+              decoration: const InputDecoration(
+                prefixIcon: ThemeIcon('search', Icons.search),
+                hintText: 'Buscar en tu música',
+              ),
+              onChanged: (value) {
+                debounce?.cancel();
+                debounce = Timer(const Duration(milliseconds: 180), () {
+                  if (mounted) {
+                    setState(() {
+                      query = value.toLowerCase().trim();
+                      if (page == 0 && view != 1) {
+                        group = null;
+                      }
+                    });
+                  }
+                });
+              },
+            ),
+          )
+        : const SizedBox.shrink();
+    if (MediaQuery.disableAnimationsOf(context)) return field;
+    return AnimatedSize(
+      alignment: Alignment.topCenter,
+      duration: const Duration(milliseconds: 220),
+      curve: Curves.easeInOut,
+      child: field,
+    );
+  }
+
   Widget libraryViewSelector() => PopupMenuButton<int>(
     tooltip: 'Vista de biblioteca',
+    borderRadius: BorderRadius.circular(24),
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
     color: Theme.of(context).colorScheme.surfaceContainerHigh,
     onSelected: (value) => setState(() {
@@ -642,62 +629,108 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
         PopupMenuItem(
           value: index,
           padding: const EdgeInsets.symmetric(horizontal: 8),
-          child: _menuOption(name, viewIcons[index], selected: index == view),
+          child: OptionMenuRow(name, viewIcons[index], selected: index == view),
         ),
     ],
-    child: ConstrainedBox(
-      constraints: const BoxConstraints(minHeight: 48),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Flexible(
-            child: Text(
-              libraryViews[view],
-              style: headerTextStyle,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
+    child: Container(
+      height: 48,
+      alignment: Alignment.centerLeft,
+      child: Ink(
+        decoration: ShapeDecoration(
+          color: Theme.of(context).colorScheme.primaryContainer,
+          shape: const StadiumBorder(),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                viewIcons[view],
+                size: 18,
+                color: Theme.of(context).colorScheme.onPrimaryContainer,
+              ),
+              const SizedBox(width: 6),
+              Flexible(
+                child: FittedBox(
+                  alignment: Alignment.centerLeft,
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    libraryViews[view],
+                    maxLines: 1,
+                    style: headerTextStyle?.copyWith(
+                      color: Theme.of(context).colorScheme.onPrimaryContainer,
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
-          const Icon(Icons.keyboard_arrow_down_rounded, size: 18),
-        ],
+        ),
       ),
     ),
   );
 
-  Widget _menuOption(String label, IconData icon, {bool selected = false}) {
-    final colors = Theme.of(context).colorScheme;
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: ShapeDecoration(
-        color: selected ? colors.primaryContainer : colors.surfaceContainer,
-        shape: const StadiumBorder(),
-      ),
-      child: Row(
-        children: [
-          Icon(
-            icon,
-            size: 19,
-            color: selected ? colors.onPrimaryContainer : colors.primary,
+  Widget libraryOptions() => Builder(
+    builder: (anchorContext) => PopupMenuButton<bool>(
+      tooltip: 'Opciones de biblioteca',
+      popUpAnimationStyle: const AnimationStyle(reverseDuration: Duration.zero),
+      icon: const ThemeIcon('more', Icons.more_vert),
+      shape: optionMenuShape,
+      color: Theme.of(context).colorScheme.surfaceContainerHigh,
+      onSelected: (filter) async {
+        if (!filter) {
+          await library.refresh();
+          return;
+        }
+        if (!anchorContext.mounted) return;
+        final anchor = anchorContext.findRenderObject()! as RenderBox;
+        final overlay =
+            Navigator.of(anchorContext).overlay!.context.findRenderObject()!
+                as RenderBox;
+        final selection = await showMenu<VoidCallback>(
+          context: anchorContext,
+          position: RelativeRect.fromSize(
+            anchor.localToGlobal(Offset.zero, ancestor: overlay) & anchor.size,
+            overlay.size,
           ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(
-              label,
-              style: TextStyle(
-                color: selected ? colors.onPrimaryContainer : colors.onSurface,
-              ),
-            ),
+          shape: optionMenuShape,
+          color: Theme.of(context).colorScheme.surfaceContainerHigh,
+          constraints: orderingMenuConstraints,
+          items: orderingItems(
+            options: trackSortOptions,
+            selected: library.sort,
+            onSelected: library.setSort,
+            ascending: library.ascending,
+            toggleDirection: library.toggleSortDirection,
           ),
-          if (selected)
-            Icon(
-              Icons.check_rounded,
-              size: 18,
-              color: colors.onPrimaryContainer,
-            ),
-        ],
-      ),
-    );
-  }
+        );
+        if (mounted) selection?.call();
+      },
+      itemBuilder: (_) => [
+        optionMenuItem(
+          true,
+          'Filtrado',
+          Icons.filter_list,
+          enabled:
+              library.root != null &&
+              (view == 0 || (view != 1 && group != null)),
+        ),
+        optionMenuItem(
+          false,
+          'Actualizar',
+          Icons.refresh,
+          enabled: library.root != null && !library.scanning,
+        ),
+      ],
+    ),
+  );
+
+  static const orderingMenuConstraints = BoxConstraints(
+    minWidth: 196,
+    maxWidth: 228,
+    maxHeight: 322,
+  );
 
   Widget orderingControls<T>({
     required List<(T, String, IconData)> options,
@@ -710,49 +743,61 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
     icon: const ThemeIcon('filter', Icons.filter_list),
     color: Theme.of(context).colorScheme.surfaceContainerHigh,
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-    constraints: const BoxConstraints(
-      minWidth: 196,
-      maxWidth: 228,
-      maxHeight: 322,
-    ),
+    constraints: orderingMenuConstraints,
     onSelected: (action) => action(),
-    itemBuilder: (_) => [
-      PopupMenuItem(
-        value: toggleDirection,
-        padding: const EdgeInsets.symmetric(horizontal: 8),
-        child: _menuOption(
-          ascending ? 'Descendente' : 'Ascendente',
-          ascending ? Icons.arrow_downward_rounded : Icons.arrow_upward_rounded,
-        ),
-      ),
-      const PopupMenuDivider(),
-      for (final (value, label, icon) in options)
-        PopupMenuItem(
-          value: () => onSelected(value),
-          padding: const EdgeInsets.symmetric(horizontal: 8),
-          child: _menuOption(label, icon, selected: value == selected),
-        ),
-    ],
+    itemBuilder: (_) => orderingItems(
+      options: options,
+      selected: selected,
+      onSelected: onSelected,
+      ascending: ascending,
+      toggleDirection: toggleDirection,
+    ),
   );
+
+  List<PopupMenuEntry<VoidCallback>> orderingItems<T>({
+    required List<(T, String, IconData)> options,
+    required T selected,
+    required ValueChanged<T> onSelected,
+    required bool ascending,
+    required VoidCallback toggleDirection,
+  }) => [
+    PopupMenuItem(
+      value: toggleDirection,
+      padding: const EdgeInsets.symmetric(horizontal: 8),
+      child: OptionMenuRow(
+        ascending ? 'Descendente' : 'Ascendente',
+        ascending ? Icons.arrow_downward_rounded : Icons.arrow_upward_rounded,
+      ),
+    ),
+    const PopupMenuDivider(),
+    for (final (value, label, icon) in options)
+      PopupMenuItem(
+        value: () => onSelected(value),
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        child: OptionMenuRow(label, icon, selected: value == selected),
+      ),
+  ];
+
+  List<(TrackSort, String, IconData)> get trackSortOptions => [
+    for (final value in TrackSort.values)
+      (
+        value,
+        value.label,
+        switch (value) {
+          TrackSort.title => Icons.sort_by_alpha,
+          TrackSort.artist => Icons.person_outline,
+          TrackSort.album => Icons.album_outlined,
+          TrackSort.duration => Icons.timer_outlined,
+          TrackSort.modified => Icons.calendar_today_outlined,
+          TrackSort.size => Icons.data_usage_outlined,
+          TrackSort.filename => Icons.insert_drive_file_outlined,
+        },
+      ),
+  ];
 
   Widget trackOrderingControls() => orderingControls(
     selected: library.sort,
-    options: [
-      for (final value in TrackSort.values)
-        (
-          value,
-          value.label,
-          switch (value) {
-            TrackSort.title => Icons.sort_by_alpha,
-            TrackSort.artist => Icons.person_outline,
-            TrackSort.album => Icons.album_outlined,
-            TrackSort.duration => Icons.timer_outlined,
-            TrackSort.modified => Icons.calendar_today_outlined,
-            TrackSort.size => Icons.data_usage_outlined,
-            TrackSort.filename => Icons.insert_drive_file_outlined,
-          },
-        ),
-    ],
+    options: trackSortOptions,
     onSelected: library.setSort,
     ascending: library.ascending,
     toggleDirection: library.toggleSortDirection,
@@ -1377,17 +1422,17 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
                 PopupMenuButton<String>(
                   tooltip: 'Opciones de la lista',
                   icon: const ThemeIcon('more', Icons.more_vert),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
+                  shape: optionMenuShape,
+                  color: Theme.of(context).colorScheme.surfaceContainerHigh,
                   onSelected: (action) => runPlaylistAction(name, action),
                   itemBuilder: (_) => [
                     for (final (id, label) in playlistActions)
-                      PopupMenuItem(
-                        value: id,
-                        enabled: !id.startsWith('queue') || tracks.isNotEmpty,
-                        child: Text(label),
-                      ),
+                      optionMenuItem(id, label, switch (id) {
+                        'queue-end' => Icons.queue_music,
+                        'queue-next' => Icons.playlist_play,
+                        'cover' => Icons.photo_outlined,
+                        _ => Icons.delete_outline,
+                      }, enabled: !id.startsWith('queue') || tracks.isNotEmpty),
                   ],
                 ),
               ],
@@ -1420,12 +1465,19 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
                     '${tracks.length} canciones · $minutes min${missing > 0 ? ' · $missing no disponibles' : ''}',
                 artwork: (size) =>
                     PlaylistCover(library: library, name: name, size: size),
-                equalActions: true,
+                background: library.playlistMeta[name]?['cover'] is String
+                    ? PlaylistCover(
+                        library: library,
+                        name: name,
+                        size: 160,
+                        showPlaceholder: false,
+                      )
+                    : null,
                 actions: [
                   FilledButton.icon(
                     style: FilledButton.styleFrom(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
+                        horizontal: 8,
                         vertical: 12,
                       ),
                     ),
@@ -1441,7 +1493,7 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
                   FilledButton.tonalIcon(
                     style: FilledButton.styleFrom(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
+                        horizontal: 8,
                         vertical: 12,
                       ),
                     ),
@@ -2388,10 +2440,12 @@ class Artwork extends StatefulWidget {
     required this.library,
     this.size = 44,
     this.modifiedMs,
+    this.showPlaceholder = true,
   });
   final String? id;
   final int? modifiedMs;
   final double size;
+  final bool showPlaceholder;
   final LibraryController library;
   @override
   State<Artwork> createState() => _ArtworkState();
@@ -2431,6 +2485,13 @@ class _ArtworkState extends State<Artwork> {
         : widget.library.artwork(id);
   }
 
+  Widget placeholder() => widget.showPlaceholder
+      ? const ColoredBox(
+          color: Color(0xff272a32),
+          child: ThemeIcon('album', Icons.album_outlined),
+        )
+      : const SizedBox.shrink();
+
   @override
   Widget build(BuildContext context) => SizedBox(
     width: widget.size,
@@ -2446,16 +2507,12 @@ class _ArtworkState extends State<Artwork> {
             ? widget.library.cachedThumbnail(widget.id!, stamp(widget.id!))
             : widget.library.cachedArtwork(widget.id),
         builder: (context, snapshot) => snapshot.data == null
-            ? const ColoredBox(
-                color: Color(0xff272a32),
-                child: ThemeIcon('album', Icons.album_outlined),
-              )
+            ? placeholder()
             : Image.memory(
                 snapshot.data!,
                 fit: BoxFit.cover,
                 cacheWidth: widget.size > 100 ? 600 : 128,
-                errorBuilder: (_, error, stack) =>
-                    const ThemeIcon('album', Icons.album_outlined),
+                errorBuilder: (_, error, stack) => placeholder(),
               ),
       ),
     ),

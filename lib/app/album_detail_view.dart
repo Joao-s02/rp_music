@@ -1,7 +1,8 @@
 import 'playback_queue.dart';
 import '../themes/theme_library.dart';
 import 'album_sleeve.dart';
-import 'pulse_surface.dart';
+import 'collection_header.dart';
+import 'option_menu.dart';
 import 'now_playing_bars.dart';
 
 import 'dart:math';
@@ -113,164 +114,111 @@ class _AlbumDetailViewState extends State<AlbumDetailView> {
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: TextButton.icon(
-                    onPressed: widget.onBack,
-                    icon: const ThemeIcon('back', Icons.arrow_back),
-                    label: const Text('Álbumes'),
-                  ),
+                child: Row(
+                  children: [
+                    TextButton.icon(
+                      onPressed: widget.onBack,
+                      icon: const ThemeIcon('back', Icons.arrow_back),
+                      label: const Text('Álbumes'),
+                    ),
+                    const Spacer(),
+                    IconButton(
+                      onPressed: widget.onSave,
+                      tooltip: 'Añadir álbum a una lista',
+                      icon: const ThemeIcon('playlistAdd', Icons.playlist_add),
+                    ),
+                    if (widget.onEnqueue != null)
+                      PopupMenuButton<bool>(
+                        tooltip: 'Opciones de cola del álbum',
+                        onSelected: (next) => widget.onEnqueue!(tracks, next),
+                        icon: const ThemeIcon('more', Icons.more_vert),
+                        shape: optionMenuShape,
+                        color: theme.colorScheme.surfaceContainerHigh,
+                        itemBuilder: (_) => [
+                          optionMenuItem(
+                            true,
+                            'Reproducir a continuación',
+                            Icons.playlist_play,
+                          ),
+                          optionMenuItem(
+                            false,
+                            'Añadir al final de la cola',
+                            Icons.queue_music,
+                          ),
+                        ],
+                      ),
+                  ],
                 ),
               ),
             ),
             SliverToBoxAdapter(
-              child: PulseSurface(
-                inset: const EdgeInsets.symmetric(horizontal: 20),
-                child: Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 20),
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(24),
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        theme.colorScheme.surfaceContainerHigh,
-                        theme.colorScheme.surfaceContainer,
+              child: CollectionHeader(
+                title: title,
+                label: 'ÁLBUM LOCAL',
+                subtitle: artists.length == 1
+                    ? artists.first
+                    : 'Varios artistas',
+                description:
+                    '${tracks.length} canciones${total > 0 ? ' · ${time(total)}${tracks.any((t) => t.durationMs == 0) ? ' conocidos' : ''}' : ''}${formats.length > 1 ? ' · ${formats.join(' / ')}' : ''}',
+                background: Artwork(
+                  id: tracks.first.id,
+                  library: widget.library,
+                  size: 160,
+                  showPlaceholder: false,
+                ),
+                artwork: (size) => StreamBuilder(
+                  stream: widget.audio.playbackState,
+                  initialData: widget.audio.playbackState.value,
+                  builder: (context, playback) => AlbumSleeve(
+                    playing:
+                        playback.data?.playing == true &&
+                        tracks.any((t) => t.id == current.data?.id),
+                    child: Stack(
+                      children: [
+                        Positioned.fill(
+                          child: Artwork(
+                            id: tracks.first.id,
+                            library: widget.library,
+                            size: size,
+                          ),
+                        ),
+                        if (formats.length == 1)
+                          Positioned(
+                            top: 10,
+                            right: 10,
+                            child: chip(formats.first),
+                          ),
                       ],
                     ),
                   ),
-                  child: Column(
-                    children: [
-                      LayoutBuilder(
-                        builder: (context, box) {
-                          final size = min(280.0, box.maxWidth);
-                          return Center(
-                            child: SizedBox(
-                              width: size,
-                              height: size,
-                              child: StreamBuilder(
-                                stream: widget.audio.playbackState,
-                                initialData: widget.audio.playbackState.value,
-                                builder: (context, playback) => AlbumSleeve(
-                                  playing:
-                                      playback.data?.playing == true &&
-                                      tracks.any(
-                                        (t) => t.id == current.data?.id,
-                                      ),
-                                  child: Stack(
-                                    children: [
-                                      Positioned.fill(
-                                        child: Artwork(
-                                          id: tracks.first.id,
-                                          library: widget.library,
-                                          size: size,
-                                        ),
-                                      ),
-                                      if (formats.length == 1)
-                                        Positioned(
-                                          top: 10,
-                                          right: 10,
-                                          child: chip(formats.first),
-                                        ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                      const SizedBox(height: 22),
-                      Text(
-                        '● ÁLBUM LOCAL',
-                        style: theme.textTheme.labelLarge?.copyWith(
-                          color: accent,
-                          letterSpacing: 2,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        title,
-                        textAlign: TextAlign.center,
-                        maxLines: 3,
-                        overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.headlineMedium?.copyWith(
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                      Text(
-                        artists.length == 1 ? artists.first : 'Varios artistas',
-                        textAlign: TextAlign.center,
-                        style: theme.textTheme.titleMedium,
-                      ),
-                      const SizedBox(height: 14),
-                      Wrap(
-                        alignment: WrapAlignment.center,
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: [
-                          chip(
-                            '${tracks.length} canciones${total > 0 ? ' · ${time(total)}${tracks.any((t) => t.durationMs == 0) ? ' conocidos' : ''}' : ''}',
-                          ),
-                          if (formats.length > 1) chip(formats.join(' / ')),
-                        ],
-                      ),
-                      const SizedBox(height: 20),
-                      Wrap(
-                        alignment: WrapAlignment.center,
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: [
-                          FilledButton.icon(
-                            onPressed: () {
-                              widget.audio.shuffle = false;
-                              widget.audio.select(tracks, 0);
-                            },
-                            icon: const ThemeIcon('play', Icons.play_arrow),
-                            label: const Text('Reproducir'),
-                          ),
-                          FilledButton.tonalIcon(
-                            onPressed: () {
-                              widget.audio.shuffle = true;
-                              widget.audio.select(
-                                tracks,
-                                Random().nextInt(tracks.length),
-                              );
-                            },
-                            icon: const Icon(Icons.shuffle),
-                            label: const Text('Aleatorio'),
-                          ),
-                          if (widget.onEnqueue != null)
-                            PopupMenuButton<bool>(
-                              tooltip: 'Opciones de cola del álbum',
-                              onSelected: (next) =>
-                                  widget.onEnqueue!(tracks, next),
-                              itemBuilder: (_) => const [
-                                PopupMenuItem(
-                                  value: true,
-                                  child: Text('Reproducir a continuación'),
-                                ),
-                                PopupMenuItem(
-                                  value: false,
-                                  child: Text('Añadir al final de la cola'),
-                                ),
-                              ],
-                            ),
-                          IconButton.filledTonal(
-                            onPressed: widget.onSave,
-                            tooltip: 'Añadir álbum a una lista',
-                            icon: const ThemeIcon(
-                              'playlistAdd',
-                              Icons.playlist_add,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
                 ),
+                actions: [
+                  FilledButton.icon(
+                    style: FilledButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                    ),
+                    onPressed: () {
+                      widget.audio.shuffle = false;
+                      widget.audio.select(tracks, 0);
+                    },
+                    icon: const ThemeIcon('play', Icons.play_arrow),
+                    label: const Text('Reproducir'),
+                  ),
+                  FilledButton.tonalIcon(
+                    style: FilledButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                    ),
+                    onPressed: () {
+                      widget.audio.shuffle = true;
+                      widget.audio.select(
+                        tracks,
+                        Random().nextInt(tracks.length),
+                      );
+                    },
+                    icon: const Icon(Icons.shuffle),
+                    label: const Text('Aleatorio'),
+                  ),
+                ],
               ),
             ),
             SliverToBoxAdapter(
@@ -371,103 +319,123 @@ class _AlbumDetailViewState extends State<AlbumDetailView> {
                       ),
                     ),
                   ),
-                  child: InkWell(
-                    borderRadius: BorderRadius.circular(16),
-                    onTap: () => widget.audio.select(shown, index),
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(10, 12, 4, 12),
-                      child: Row(
-                        children: [
-                          SizedBox(
-                            width: 26,
-                            child: selected
-                                ? StreamBuilder(
-                                    stream: widget.audio.playerStateStream,
-                                    initialData:
-                                        widget.audio.player.playerState,
-                                    builder: (context, state) => NowPlayingBars(
-                                      playing:
-                                          state.data?.playing ??
-                                          widget.audio.player.playing,
-                                      size: 22,
+                  child: Material(
+                    type: MaterialType.transparency,
+                    child: InkWell(
+                      focusColor: theme.colorScheme.primary.withValues(
+                        alpha: .2,
+                      ),
+                      borderRadius: BorderRadius.circular(16),
+                      onTap: () => widget.audio.select(shown, index),
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(10, 12, 12, 12),
+                        child: Row(
+                          children: [
+                            SizedBox(
+                              width: 26,
+                              child: selected
+                                  ? StreamBuilder(
+                                      stream: widget.audio.playerStateStream,
+                                      initialData:
+                                          widget.audio.player.playerState,
+                                      builder: (context, state) =>
+                                          NowPlayingBars(
+                                            playing:
+                                                state.data?.playing ??
+                                                widget.audio.player.playing,
+                                            size: 22,
+                                          ),
+                                    )
+                                  : Text(
+                                      (index + 1).toString().padLeft(2, '0'),
+                                      style: theme.textTheme.bodySmall,
                                     ),
-                                  )
-                                : Text(
-                                    (index + 1).toString().padLeft(2, '0'),
-                                    style: theme.textTheme.bodySmall,
-                                  ),
-                          ),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  track.title,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: theme.textTheme.titleMedium?.copyWith(
-                                    color: selected ? accent : null,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      child: Text(
-                                        track.artist,
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: theme.textTheme.bodySmall,
-                                      ),
-                                    ),
-                                    if (codec.isNotEmpty)
-                                      Container(
-                                        margin: const EdgeInsets.only(left: 4),
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 5,
-                                          vertical: 1,
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    track.title,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: theme.textTheme.titleMedium
+                                        ?.copyWith(
+                                          color: selected ? accent : null,
+                                          fontWeight: FontWeight.w700,
                                         ),
-                                        decoration: BoxDecoration(
-                                          color: accent.withValues(alpha: 0.12),
-                                          borderRadius: BorderRadius.circular(
-                                            4,
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: Text(
+                                          track.artist,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: theme.textTheme.bodySmall,
+                                        ),
+                                      ),
+                                      if (codec.isNotEmpty)
+                                        Container(
+                                          margin: const EdgeInsets.only(
+                                            left: 4,
+                                          ),
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 5,
+                                            vertical: 1,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: accent.withValues(
+                                              alpha: 0.12,
+                                            ),
+                                            borderRadius: BorderRadius.circular(
+                                              4,
+                                            ),
+                                          ),
+                                          child: Text(
+                                            codec,
+                                            style: theme.textTheme.labelSmall,
                                           ),
                                         ),
-                                        child: Text(
-                                          codec,
-                                          style: theme.textTheme.labelSmall,
-                                        ),
-                                      ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(width: 6),
-                          Text(
-                            track.durationMs > 0 ? time(track.durationMs) : '—',
-                            style: theme.textTheme.bodySmall,
-                          ),
-                          if (track.sourceId == null && (selected || favorite))
-                            IconButton(
-                              tooltip: 'Favorito',
-                              visualDensity: VisualDensity.compact,
-                              onPressed: () {
-                                widget.library.toggleFavorite(track.id);
-                                setState(() {});
-                              },
-                              icon: Icon(
-                                favorite
-                                    ? Icons.favorite
-                                    : Icons.favorite_border,
-                                color: accent,
-                                size: 21,
+                                    ],
+                                  ),
+                                ],
                               ),
                             ),
-                          if (widget.menu case final menu?) menu(track),
-                        ],
+                            if (track.sourceId == null &&
+                                (selected || favorite))
+                              IconButton(
+                                tooltip: 'Favorito',
+                                visualDensity: VisualDensity.compact,
+                                onPressed: () {
+                                  widget.library.toggleFavorite(track.id);
+                                  setState(() {});
+                                },
+                                icon: Icon(
+                                  favorite
+                                      ? Icons.favorite
+                                      : Icons.favorite_border,
+                                  color: accent,
+                                  size: 21,
+                                ),
+                              ),
+                            if (widget.menu case final menu?) menu(track),
+                            const SizedBox(width: 8),
+                            Text(
+                              track.durationMs > 0
+                                  ? time(track.durationMs)
+                                  : '-',
+                              textAlign: TextAlign.end,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                fontFeatures: const [
+                                  FontFeature.tabularFigures(),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
