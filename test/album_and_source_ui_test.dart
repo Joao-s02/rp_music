@@ -86,7 +86,10 @@ void main() {
       await tester.pump(const Duration(milliseconds: 400));
       expect(audio.tracks.length, 2);
       expect(audio.shuffle, isFalse);
-      await tester.tap(find.byTooltip('Añadir álbum a una lista'));
+      await tester.tap(find.byTooltip('Opciones del álbum'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Añadir álbum a una lista'));
+      await tester.pumpAndSettle();
       expect(saved, isTrue);
       await tester.ensureVisible(find.byKey(const ValueKey('album-queue')));
       await tester.tap(find.byKey(const ValueKey('album-queue')));

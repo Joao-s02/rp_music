@@ -186,8 +186,10 @@ void main() {
         await tester.ensureVisible(find.text('Uno, Dos').first);
         await tester.tap(find.text('Uno, Dos').first);
         await tester.pumpAndSettle();
-        await tester.ensureVisible(find.byTooltip('Añadir álbum a una lista'));
-        await tester.tap(find.byTooltip('Añadir álbum a una lista'));
+        await tester.tap(find.byTooltip('Opciones del álbum'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Añadir álbum a una lista'));
+        await tester.pumpAndSettle();
         await tester.pumpAndSettle();
         if (existing) {
           expect(find.text('Crear nueva lista'), findsOneWidget);

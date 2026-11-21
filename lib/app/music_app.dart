@@ -2,12 +2,12 @@ import '../data/replay_gain.dart';
 import 'playback_queue.dart';
 import '../artists/artist_portraits.dart';
 import 'pulse_surface.dart';
-import 'scrolling_title.dart';
 import 'expanded_player.dart';
 import 'album_detail_view.dart';
 import 'track_swipe.dart';
 import 'collection_header.dart';
 import 'option_menu.dart';
+import 'player_keyboard.dart';
 
 import 'dart:async';
 import 'dart:math';
@@ -22,7 +22,6 @@ import 'playlist_cover.dart';
 import '../platform/home_widget.dart';
 import '../playback/music_handler.dart';
 import 'library_controller.dart';
-import 'volume_control.dart';
 import 'music_theme.dart';
 import '../themes/theme_library.dart';
 import 'empty_library.dart';
@@ -213,6 +212,41 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
     });
   }
 
+  bool get showingAlbum => page == 0 && view == 1 && group != null;
+
+  void toggleSearch() {
+    setState(() {
+      _navigationTimer?.cancel();
+      hideNavigation = false;
+      searchExpanded = !searchExpanded;
+      if (!searchExpanded) {
+        debounce?.cancel();
+        search.clear();
+        query = '';
+      }
+    });
+    if (searchExpanded) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted && searchExpanded && !showingAlbum) {
+          searchFocus.requestFocus();
+        }
+      });
+    } else {
+      searchFocus.unfocus();
+    }
+  }
+
+  bool dismissHome() {
+    if (group != null) {
+      selectGroup(null);
+    } else if (searchExpanded && page <= 1) {
+      toggleSearch();
+    } else {
+      return false;
+    }
+    return true;
+  }
+
   void selectGroup(String? value) => setState(() {
     _navigationTimer?.cancel();
     group = value;
@@ -279,139 +313,118 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
               Expanded(
                 child: Column(
                   children: [
-                    ClipRect(
-                      child: AnimatedAlign(
-                        key: page == 2
-                            ? const ValueKey('playlist-tools')
-                            : null,
-                        alignment: Alignment.topCenter,
-                        heightFactor:
-                            page == 2 &&
-                                (group != null || (!desktop && hideNavigation))
-                            ? 0
-                            : 1,
-                        duration: MediaQuery.disableAnimationsOf(context)
-                            ? Duration.zero
-                            : const Duration(milliseconds: 180),
-                        child: Padding(
-                          padding: EdgeInsets.fromLTRB(
-                            desktop ? 24 : 12,
-                            desktop ? 20 : 4,
-                            desktop ? 16 : 4,
-                            4,
-                          ),
-                          child: ConstrainedBox(
-                            constraints: const BoxConstraints(minHeight: 48),
-                            child: Row(
-                              children: [
-                                if (page == 0) ...[
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(
-                                      desktop ? 10 : 6,
+                    if (!showingAlbum)
+                      ClipRect(
+                        child: AnimatedAlign(
+                          key: page == 2
+                              ? const ValueKey('playlist-tools')
+                              : null,
+                          alignment: Alignment.topCenter,
+                          heightFactor:
+                              page == 2 &&
+                                  (group != null ||
+                                      (!desktop && hideNavigation))
+                              ? 0
+                              : 1,
+                          duration: MediaQuery.disableAnimationsOf(context)
+                              ? Duration.zero
+                              : const Duration(milliseconds: 180),
+                          child: Padding(
+                            padding: EdgeInsets.fromLTRB(
+                              desktop ? 24 : 12,
+                              desktop ? 20 : 4,
+                              desktop ? 16 : 4,
+                              4,
+                            ),
+                            child: ConstrainedBox(
+                              constraints: const BoxConstraints(minHeight: 48),
+                              child: Row(
+                                children: [
+                                  if (page == 0) ...[
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(
+                                        desktop ? 10 : 6,
+                                      ),
+                                      child: ThemeBrand(
+                                        size: desktop ? 36 : 24,
+                                      ),
                                     ),
-                                    child: ThemeBrand(size: desktop ? 36 : 24),
-                                  ),
-                                  SizedBox(width: desktop ? 10 : 6),
-                                ],
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      if (page == 0 &&
-                                          group == null &&
-                                          library.root != null)
-                                        libraryViewSelector()
-                                      else
-                                        Text(
-                                          page == 0 &&
-                                                  view == 1 &&
-                                                  group != null
-                                              ? 'Detalle de álbum'
-                                              : page == 0
-                                              ? 'RP Music'
-                                              : labels[page],
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: headerTextStyle,
-                                        ),
-                                      if (page == 0 && _showLibraryCount)
-                                        Text(
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                          'Biblioteca · ${library.tracks.length} pistas${library.scanning ? ' · Metadatos ${library.scanProcessed}/${library.scanTotal}' : ''}',
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodySmall,
-                                        ),
-                                    ],
-                                  ),
-                                ),
-                                if (page <= 1)
-                                  IconButton(
-                                    tooltip: searchExpanded
-                                        ? 'Cerrar búsqueda'
-                                        : 'Buscar',
-                                    icon: searchExpanded
-                                        ? const Icon(Icons.close)
-                                        : const ThemeIcon(
-                                            'search',
-                                            Icons.search,
+                                    SizedBox(width: desktop ? 10 : 6),
+                                  ],
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        if (page == 0 &&
+                                            group == null &&
+                                            library.root != null)
+                                          libraryViewSelector()
+                                        else
+                                          Text(
+                                            page == 0
+                                                ? 'RP Music'
+                                                : labels[page],
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: headerTextStyle,
                                           ),
-                                    onPressed: () {
-                                      setState(() {
-                                        _navigationTimer?.cancel();
-                                        hideNavigation = false;
-                                        searchExpanded = !searchExpanded;
-                                        if (!searchExpanded) {
-                                          debounce?.cancel();
-                                          search.clear();
-                                          query = '';
-                                        }
-                                      });
-                                      if (searchExpanded) {
-                                        WidgetsBinding.instance
-                                            .addPostFrameCallback((_) {
-                                              if (mounted) {
-                                                searchFocus.requestFocus();
-                                              }
-                                            });
-                                      } else {
-                                        searchFocus.unfocus();
-                                      }
-                                    },
+                                        if (page == 0 && _showLibraryCount)
+                                          Text(
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            'Biblioteca · ${library.tracks.length} pistas${library.scanning ? ' · Metadatos ${library.scanProcessed}/${library.scanTotal}' : ''}',
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodySmall,
+                                          ),
+                                      ],
+                                    ),
                                   ),
-                                if (page == 1) trackOrderingControls(),
-                                if (page == 2 && group == null) ...[
-                                  playlistOrderingControls(),
-                                  IconButton(
-                                    tooltip: 'Nueva lista',
-                                    onPressed: createPlaylist,
-                                    icon: const ThemeIcon('add', Icons.add),
-                                  ),
+                                  if (page <= 1)
+                                    IconButton(
+                                      tooltip: searchExpanded
+                                          ? 'Cerrar búsqueda'
+                                          : 'Buscar',
+                                      icon: searchExpanded
+                                          ? const Icon(Icons.close)
+                                          : const ThemeIcon(
+                                              'search',
+                                              Icons.search,
+                                            ),
+                                      onPressed: toggleSearch,
+                                    ),
+                                  if (page == 1) trackOrderingControls(),
+                                  if (page == 2 && group == null) ...[
+                                    playlistOrderingControls(),
+                                    IconButton(
+                                      tooltip: 'Nueva lista',
+                                      onPressed: createPlaylist,
+                                      icon: const ThemeIcon('add', Icons.add),
+                                    ),
+                                  ],
+                                  if (page == 0) libraryOptions(),
+                                  if (page == 0 && desktop)
+                                    FilledButton.tonalIcon(
+                                      onPressed:
+                                          library.scanning || library.choosing
+                                          ? null
+                                          : library.chooseRoot,
+                                      icon: const ThemeIcon(
+                                        'folder',
+                                        Icons.folder_open,
+                                      ),
+                                      label: Text(
+                                        desktop ? 'Elegir carpeta' : 'Carpeta',
+                                      ),
+                                    ),
                                 ],
-                                if (page == 0) libraryOptions(),
-                                if (page == 0 && desktop)
-                                  FilledButton.tonalIcon(
-                                    onPressed:
-                                        library.scanning || library.choosing
-                                        ? null
-                                        : library.chooseRoot,
-                                    icon: const ThemeIcon(
-                                      'folder',
-                                      Icons.folder_open,
-                                    ),
-                                    label: Text(
-                                      desktop ? 'Elegir carpeta' : 'Carpeta',
-                                    ),
-                                  ),
-                              ],
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                    librarySearchBar(),
+                    if (!showingAlbum) librarySearchBar(),
                     if (widget.updates != null)
                       UpdateNotice(
                         updates: widget.updates!,
@@ -514,7 +527,20 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
           if (didPop) return;
           if (group != null) selectGroup(null);
         },
-        child: SafeArea(top: false, bottom: !desktop, child: scaffold),
+        child: PlayerKeyboard(
+          audio: audio,
+          onEscape: dismissHome,
+          onSearch: page <= 1 && !showingAlbum
+              ? () {
+                  if (searchExpanded) {
+                    searchFocus.requestFocus();
+                  } else {
+                    toggleSearch();
+                  }
+                }
+              : null,
+          child: SafeArea(top: false, bottom: !desktop, child: scaffold),
+        ),
       );
     },
   );
@@ -818,22 +844,21 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
         busy: library.choosing,
       );
     }
-    final filtered = library.tracks.where(matchesSearch).toList();
     if (view == 1 && group != null) {
       return AlbumDetailView(
         key: ValueKey(group),
         tracks: library.tracks.where((t) => groupKey(t) == group).toList(),
-        query: query,
         audio: audio,
         library: library,
         onBack: () => selectGroup(null),
         onTrackContext: (track, _) => openTrackMenu(track, favorite: true),
         onEnqueue: (tracks, next) => enqueueTracks(tracks, next: next),
         onSave: () => addAlbumToPlaylist(
-          filtered.where((t) => groupKey(t) == group).toList(),
+          library.tracks.where((t) => groupKey(t) == group).toList(),
         ),
       );
     }
+    final filtered = library.tracks.where(matchesSearch).toList();
     return view == 0 ? trackList(filtered) : groupedTracks(filtered);
   }
 
@@ -1186,6 +1211,7 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
           final tileWidth =
               (constraints.maxWidth - 40 - (columns - 1) * 12) / columns;
           return GridView.builder(
+            key: PageStorageKey('library-grid-$view'),
             padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: columns,
@@ -2084,34 +2110,45 @@ class _PlayerPanelState extends State<PlayerPanel> {
   void openPlayer() => Navigator.of(context).push<void>(
     MaterialPageRoute(
       fullscreenDialog: true,
-      builder: (context) => ThemeBackdrop(
-        opaque: true,
-        child: Scaffold(
-          appBar: AppBar(
-            title: const Text(
-              'Ahora suena',
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
+      builder: (context) => PlayerKeyboard(
+        audio: audio,
+        expanded: true,
+        onEscape: () {
+          Navigator.of(context).maybePop();
+          return true;
+        },
+        child: ThemeBackdrop(
+          opaque: true,
+          child: Scaffold(
+            appBar: AppBar(
+              title: const Text(
+                'Ahora suena',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              actions: [
+                PlayerOptions(audio: audio, onOpenAlbum: widget.onOpenAlbum),
+              ],
+              leading: IconButton(
+                tooltip: 'Cerrar reproductor',
+                onPressed: () => Navigator.pop(context),
+                icon: const ThemeIcon('back', Icons.arrow_back),
+              ),
             ),
-            actions: [
-              PlayerOptions(audio: audio, onOpenAlbum: widget.onOpenAlbum),
-            ],
-            leading: IconButton(
-              tooltip: 'Cerrar reproductor',
-              onPressed: () => Navigator.pop(context),
-              icon: const ThemeIcon('back', Icons.arrow_back),
-            ),
-          ),
-          body: SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              child: Center(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 720),
-                  child: PlayerPanel(
-                    audio: audio,
-                    library: library,
-                    expanded: true,
+            body: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
+                child: Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 720),
+                    child: PlayerPanel(
+                      audio: audio,
+                      library: library,
+                      expanded: true,
+                    ),
                   ),
                 ),
               ),
@@ -2135,42 +2172,43 @@ class _PlayerPanelState extends State<PlayerPanel> {
           artworkFirst: widget.artworkFirst,
         );
       }
-      final desktop = MediaQuery.sizeOf(context).width >= 850;
-      if (!desktop && !widget.expanded) {
-        return TrackSwipe(
-          audio: audio,
-          onSwipeUp: openPlayer,
-          child: Material(
-            color: Theme.of(context).colorScheme.surfaceContainerHigh,
-            borderRadius: BorderRadius.circular(20),
-            clipBehavior: Clip.antiAlias,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                StreamBuilder(
-                  stream: audio.positionStream,
-                  builder: (context, position) => StreamBuilder(
-                    stream: audio.durationStream,
-                    initialData: audio.player.duration,
-                    builder: (context, duration) {
-                      final total = duration.data?.inMilliseconds ?? 0;
-                      return LinearProgressIndicator(
-                        minHeight: 3,
-                        value: total > 0
-                            ? ((position.data?.inMilliseconds ?? 0) / total)
-                                  .clamp(0.0, 1.0)
-                            : 0,
-                      );
-                    },
+      return TrackSwipe(
+        audio: audio,
+        onSwipeUp: openPlayer,
+        child: Material(
+          color: Theme.of(context).colorScheme.surfaceContainerHigh,
+          borderRadius: BorderRadius.circular(20),
+          clipBehavior: Clip.antiAlias,
+          child: Tooltip(
+            message: 'Abrir reproductor',
+            child: InkWell(
+              onTap: openPlayer,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  StreamBuilder(
+                    stream: audio.positionStream,
+                    initialData: audio.player.position,
+                    builder: (context, position) => StreamBuilder(
+                      stream: audio.durationStream,
+                      initialData: audio.player.duration,
+                      builder: (context, duration) {
+                        final total = duration.data?.inMilliseconds ?? 0;
+                        return LinearProgressIndicator(
+                          minHeight: 3,
+                          value: total > 0
+                              ? ((position.data?.inMilliseconds ?? 0) / total)
+                                    .clamp(0.0, 1.0)
+                              : 0,
+                        );
+                      },
+                    ),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(10),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: InkWell(
-                          onTap: openPlayer,
+                  Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: Row(
+                      children: [
+                        Expanded(
                           child: Row(
                             children: [
                               Artwork(id: track?.id, library: library),
@@ -2201,231 +2239,39 @@ class _PlayerPanelState extends State<PlayerPanel> {
                             ],
                           ),
                         ),
-                      ),
-                      IconButton(
-                        tooltip: 'Favorito',
-                        onPressed: track == null
-                            ? null
-                            : () => library.toggleFavorite(track.id),
-                        icon: ThemeFavoriteIcon(
-                          selected: library.favorites.contains(track?.id),
-                        ),
-                      ),
-                      StreamBuilder(
-                        stream: audio.playerStateStream,
-                        initialData: audio.player.playerState,
-                        builder: (context, state) => IconButton.filled(
-                          tooltip: audio.player.playing
-                              ? 'Pausar'
-                              : 'Reproducir',
-                          onPressed: () => audio.player.playing
-                              ? audio.pause()
-                              : audio.play(),
-                          icon: ThemeIcon(
-                            audio.player.playing ? 'pause' : 'play',
-                            audio.player.playing
-                                ? Icons.pause
-                                : Icons.play_arrow,
+                        IconButton(
+                          tooltip: 'Favorito',
+                          onPressed: track == null
+                              ? null
+                              : () => library.toggleFavorite(track.id),
+                          icon: ThemeFavoriteIcon(
+                            selected: library.favorites.contains(track?.id),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      }
-      return Material(
-        borderRadius: BorderRadius.circular(24),
-        clipBehavior: Clip.antiAlias,
-        color: Theme.of(context).colorScheme.surfaceContainer,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (widget.expanded) ...[
-                if (widget.artworkFirst)
-                  AspectRatio(
-                    aspectRatio: 1,
-                    child: Artwork(
-                      id: track?.id,
-                      library: library,
-                      size: double.infinity,
-                    ),
-                  ),
-                const SizedBox(height: 24),
-                ScrollingTitle(
-                  text: track?.title ?? 'Elige una canción',
-                  style: Theme.of(context).textTheme.headlineMedium,
-                ),
-                Text(
-                  '${track?.artist ?? ''} · ${track?.album ?? ''}',
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 24),
-              ],
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  if (!widget.expanded)
-                    Artwork(id: track?.id, library: library),
-                  if (!widget.expanded) const SizedBox(width: 12),
-                  if (!widget.expanded)
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            track?.title ?? 'Elige una canción',
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          Text(
-                            track?.artist ?? 'Tu música permanece contigo',
-                            style: Theme.of(context).textTheme.bodySmall,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ],
-                      ),
-                    ),
-                  if (!widget.expanded)
-                    IconButton(
-                      tooltip: 'Abrir reproductor',
-                      onPressed: openPlayer,
-                      icon: const Icon(Icons.open_in_full),
-                    ),
-                  IconButton(
-                    tooltip: 'Anterior',
-                    onPressed: track == null ? null : audio.skipToPrevious,
-                    icon: const ThemeIcon('previous', Icons.skip_previous),
-                  ),
-                  StreamBuilder(
-                    stream: audio.playerStateStream,
-                    initialData: audio.player.playerState,
-                    builder: (context, snapshot) {
-                      final playing = snapshot.data?.playing ?? false;
-                      return IconButton.filled(
-                        style: widget.expanded
-                            ? IconButton.styleFrom(
-                                minimumSize: const Size(72, 72),
-                                iconSize: 36,
-                              )
-                            : null,
-                        tooltip: playing ? 'Pausar' : 'Reproducir',
-                        onPressed: () => playing ? audio.pause() : audio.play(),
-                        icon: ThemeIcon(
-                          playing ? 'pause' : 'play',
-                          playing ? Icons.pause : Icons.play_arrow,
-                        ),
-                      );
-                    },
-                  ),
-                  IconButton(
-                    tooltip: 'Siguiente',
-                    onPressed: track == null ? null : audio.skipToNext,
-                    icon: const ThemeIcon('next', Icons.skip_next),
-                  ),
-                  if (widget.expanded)
-                    IconButton(
-                      tooltip: 'Detener',
-                      onPressed: audio.stop,
-                      icon: const Icon(Icons.stop_circle_outlined),
-                    ),
-                  IconButton(
-                    tooltip: 'Ver cola',
-                    onPressed: () => showPlaybackQueue(context, audio, library),
-                    icon: const ThemeIcon('queue', Icons.queue_music),
-                  ),
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Expanded(
-                    child: VolumeControl(audio: audio, library: library),
-                  ),
-                  IconButton(
-                    tooltip: 'Aleatorio',
-                    isSelected: audio.shuffle,
-                    onPressed: () =>
-                        setState(() => audio.shuffle = !audio.shuffle),
-                    icon: const ThemeIcon('shuffle', Icons.shuffle),
-                  ),
-                  IconButton(
-                    tooltip: 'Repetir canción',
-                    isSelected: audio.repeat,
-                    onPressed: () =>
-                        setState(() => audio.repeat = !audio.repeat),
-                    icon: const ThemeIcon('repeat', Icons.repeat_one),
-                  ),
-                ],
-              ),
-              StreamBuilder(
-                stream: audio.positionStream,
-                builder: (context, position) => StreamBuilder(
-                  stream: audio.durationStream,
-                  initialData: audio.player.duration,
-                  builder: (context, duration) {
-                    final total = duration.data?.inMilliseconds ?? 0;
-                    final current = (position.data?.inMilliseconds ?? 0).clamp(
-                      0,
-                      total,
-                    );
-                    String time(int ms) =>
-                        '${ms ~/ 60000}:${(ms ~/ 1000 % 60).toString().padLeft(2, '0')}';
-                    final slider = Slider(
-                      value: current.toDouble(),
-                      max: total > 0 ? total.toDouble() : 1,
-                      onChanged: total <= 0
-                          ? null
-                          : (value) => audio.seek(
-                              Duration(milliseconds: value.round()),
-                            ),
-                    );
-                    return Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        SizedBox(height: 28, child: slider),
-                        if (widget.expanded)
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 20),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(time(current)),
-                                Flexible(
-                                  child: Text(
-                                    track?.extras?['sourceName'] as String? ??
-                                        'Audio local',
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                                Text(time(total)),
-                              ],
+                        StreamBuilder(
+                          stream: audio.playerStateStream,
+                          initialData: audio.player.playerState,
+                          builder: (context, state) => IconButton.filled(
+                            tooltip: audio.player.playing
+                                ? 'Pausar'
+                                : 'Reproducir',
+                            onPressed: () => audio.player.playing
+                                ? audio.pause()
+                                : audio.play(),
+                            icon: ThemeIcon(
+                              audio.player.playing ? 'pause' : 'play',
+                              audio.player.playing
+                                  ? Icons.pause
+                                  : Icons.play_arrow,
                             ),
                           ),
+                        ),
                       ],
-                    );
-                  },
-                ),
-              ),
-              if (widget.expanded && !widget.artworkFirst) ...[
-                const SizedBox(height: 20),
-                AspectRatio(
-                  aspectRatio: 1,
-                  child: Artwork(
-                    id: track?.id,
-                    library: library,
-                    size: double.infinity,
+                    ),
                   ),
-                ),
-              ],
-            ],
+                ],
+              ),
+            ),
           ),
         ),
       );

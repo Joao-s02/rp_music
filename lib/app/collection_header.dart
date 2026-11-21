@@ -12,6 +12,7 @@ class CollectionHeader extends StatelessWidget {
     required this.actions,
     this.subtitle,
     this.background,
+    this.compactArtworkSize = 120,
   });
 
   final String title;
@@ -21,6 +22,7 @@ class CollectionHeader extends StatelessWidget {
   final Widget Function(double) artwork;
   final List<Widget> actions;
   final Widget? background;
+  final double compactArtworkSize;
 
   @override
   Widget build(BuildContext context) {
@@ -40,8 +42,8 @@ class CollectionHeader extends StatelessWidget {
                     child: RepaintBoundary(
                       child: ImageFiltered(
                         imageFilter: ImageFilter.blur(
-                          sigmaX: 18,
-                          sigmaY: 18,
+                          sigmaX: 9,
+                          sigmaY: 9,
                           tileMode: TileMode.clamp,
                         ),
                         child: image,
@@ -50,20 +52,34 @@ class CollectionHeader extends StatelessWidget {
                   ),
                 ),
               Positioned.fill(
-                child: ColoredBox(color: colors.surface.withValues(alpha: .84)),
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        colors.surface.withValues(alpha: .48),
+                        colors.surface.withValues(alpha: .78),
+                      ],
+                    ),
+                  ),
+                ),
               ),
               Padding(
                 padding: const EdgeInsets.all(16),
                 child: LayoutBuilder(
                   builder: (context, constraints) {
                     final wide = constraints.maxWidth >= 600;
-                    final size = wide ? 184.0 : 120.0;
+                    final size = (wide ? 184.0 : compactArtworkSize).clamp(
+                      0.0,
+                      constraints.maxWidth,
+                    );
                     final alignment = wide
                         ? CrossAxisAlignment.start
                         : CrossAxisAlignment.center;
                     final textAlign = wide ? TextAlign.start : TextAlign.center;
                     final cover = SizedBox.square(
-                      dimension: size.clamp(0.0, constraints.maxWidth),
+                      dimension: size,
                       child: artwork(size),
                     );
                     final info = Column(

@@ -4,6 +4,12 @@ Reproductor local para Android y Windows. Abre tu biblioteca y escucha música s
 
 [Descargas para Android universal, ARM64 y Windows](https://github.com/Joao-s02/rp_music/releases/latest) · [Documentación](docs/README.md)
 
+## RP Music 0.4.8
+
+Portadas de álbum más grandes en Android, un solo menú por álbum y minirreproductor renovado con atajos de teclado en Windows.
+
+[Cambios](docs/CAMBIOS-0.4.8.md) · [Uso](docs/USO-0.4.8.md) · [Pruebas](docs/PRUEBAS-0.4.8.md)
+
 ## RP Music 0.4.7
 
 Selector compacto de Biblioteca, menús unificados y cabeceras adaptables para listas y álbumes.
