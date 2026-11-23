@@ -1,7 +1,7 @@
 name: rp_music
 description: Reproductor local con temas para Android y Windows.
 publish_to: none
-version: 0.4.8+42
+version: 0.4.9+43
 environment:
   sdk: ^3.13.5
 dependencies:
@@ -18,6 +18,8 @@ dependencies:
   just_audio_media_kit: 2.1.0
   media_kit_libs_windows_audio: 1.0.9
 dependency_overrides:
+  media_kit_libs_windows_audio:
+    path: third_party/media_kit_libs_windows_audio
   just_audio_media_kit:
     path: third_party/just_audio_media_kit
   audio_service:
@@ -32,6 +34,12 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
+    - LICENSE
+    - BRANDING.md
+    - THIRD_PARTY_NOTICES.md
+    - assets/licenses/
+    - assets/fonts/Inter-OFL.txt
+    - assets/fonts/PlusJakartaSans-OFL.txt
     - assets/themes/minimalista.rptheme
     - assets/branding/rp-music-variant-a.png
   fonts:

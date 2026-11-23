@@ -15,3 +15,9 @@ Comunicar en español y explicar decisiones de forma accesible: el usuario está
 ## Nombres de ramas Git
 
 Regla obligatoria: nunca crear ni renombrar una rama de RP Music para que empiece con `codex/`. Usar nombres descriptivos del trabajo, por ejemplo `feat/cola-editable`, `fix/restaurar-reproduccion` o `release/0.4.3`. Esta regla no implica renombrar ramas existentes.
+
+## Cumplimiento de licencias en futuras versiones
+
+Toda versión futura de RP Music debe cumplir las condiciones de la licencia vigente del proyecto y de cada dependencia o recurso que se distribuya. La licencia actual del código propio es GPL-3.0-or-later.
+
+Antes de publicar, verificar las licencias y atribuciones en los paquetes finales de cada plataforma, revisar las dependencias que hayan cambiado y comprobar que la descarga ofrece el código fuente correspondiente a esos binarios cuando la licencia lo exija. Si falta una obligación aplicable por cumplir o verificar, resolverla antes de publicar. Consultar [los avisos de terceros](THIRD_PARTY_NOTICES.md) y la [guía de distribución del código fuente](docs/DISTRIBUCION-FUENTE.md).

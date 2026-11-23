@@ -90,3 +90,8 @@ Tras pruebas de integración recompilar siempre la entrada normal antes de entre
 Desde el candidato0.3.14, una release Android exige credenciales de producción; no usa debug como fallback. Usar tools/build-android-signed.ps1 y verificar el APK final con linaje; [configuración y custodia](ANDROID-SIGNING.md). La transición inicial desde0.3.13 se abre desde Archivos/Descargas.
 
 Desde el candidato0.3.15, release utiliza por defecto actualizaciones desde web/Archivos y retira REQUEST_INSTALL_PACKAGES mediante el manifiesto de release. La herramienta de firma adopta el mismo valor predeterminado. `-NoDirectInstaller:$false` reproduce exclusivamente el control de diagnóstico; no distribuirlo. Comparación de Play Protect y límites: [prueba local](PROBAR-PLAY-PROTECT-0.3.15.md).
+## Motor de audio de Windows x64
+
+La copia local de `media_kit_libs_windows_audio` descarga el paquete Immuch360 fijado y verifica por SHA-256 el 7z y la DLL. Para una compilación sin red, descarga el archivo `mpv-dev-x86_64-20261110-git-0b7ed67.7z` desde la versión enlazada en el [aviso de audio Windows](../third_party/windows_audio/NOTICE.md) y define `RP_MUSIC_LIBMPV_ARCHIVE` con su ruta absoluta antes de ejecutar `flutter build windows --release`.
+
+La compilación instala las licencias y el informe upstream en `licenses/libmpv` junto al ejecutable. Conserva esa carpeta al preparar el ZIP.

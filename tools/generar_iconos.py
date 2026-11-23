@@ -1,15 +1,24 @@
 """Deriva iconos de plataforma de la variante A aprobada. Requiere Pillow.
 
 Ejecutar desde cualquier carpeta: python tools/generar_iconos.py
+Para sustituir la marca, pasar la ruta de un PNG cuadrado como argumento.
 No regenera ni redibuja el diseño original.
 """
+import argparse
 from pathlib import Path
 from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[1]
-SOURCE = ROOT / 'assets/branding/rp-music-variant-a.png'
-source = Image.open(SOURCE).convert('RGB')
-assert source.width == source.height
+MASTER = ROOT / 'assets/branding/rp-music-variant-a.png'
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument('source', nargs='?', type=Path, default=MASTER)
+options = parser.parse_args()
+with Image.open(options.source) as original:
+    source = original.convert('RGB')
+if source.width != source.height:
+    parser.error('La imagen debe ser cuadrada.')
+if options.source.resolve() != MASTER:
+    source.save(MASTER)
 resample = Image.Resampling.LANCZOS
 
 def save_icon(relative, size, safe=False):

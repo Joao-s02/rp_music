@@ -4,6 +4,12 @@ Reproductor local para Android y Windows. Abre tu biblioteca y escucha música s
 
 [Descargas para Android universal, ARM64 y Windows](https://github.com/Joao-s02/rp_music/releases/latest) · [Documentación](docs/README.md)
 
+## RP Music 0.4.9
+
+Primera candidata de publicación con el código propio bajo GPL-3.0-or-later. Windows x64 integra libmpv de Immuch360 con sus avisos y su código fuente correspondiente. Android incluye el inventario y los avisos de sus dependencias.
+
+[Cambios](docs/CAMBIOS-0.4.9.md) · [Pruebas](docs/PRUEBAS-0.4.9.md)
+
 ## RP Music 0.4.8
 
 Portadas de álbum más grandes en Android, un solo menú por álbum y minirreproductor renovado con atajos de teclado en Windows.
@@ -79,7 +85,13 @@ flutter run -d ID_DEL_DISPOSITIVO
 
 [Compilación](docs/COMPILACION.md). No ejecutar tests/builds Flutter concurrentes ni distribuir sondas de integración. Herramientas verificadas durante este desarrollo: Flutter 3.47.6/Dart 3.13.5; comprobar entorno antes de compilar.
 
-Consulta [AGENTS.md](AGENTS.md) y el [índice de documentación](docs/README.md). La licencia del proyecto está pendiente de elección.
+Consulta [AGENTS.md](AGENTS.md) y el [índice de documentación](docs/README.md).
+
+## Licencia
+
+El código propio de RP Music se ofrece bajo la [Licencia Pública General de GNU](LICENSE), versión 3 o, a tu elección, cualquier versión posterior (`GPL-3.0-or-later`).
+
+Las dependencias y los recursos de terceros conservan sus respectivas licencias. Consulta los [avisos de terceros](THIRD_PARTY_NOTICES.md), la [política de marca](BRANDING.md) y la [guía para distribuir el código fuente](docs/DISTRIBUCION-FUENTE.md).
 
 ## Tráiler
 
