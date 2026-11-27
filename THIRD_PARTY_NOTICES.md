@@ -14,7 +14,7 @@
 - **Android** incluye Flutter, Dart JNI y Media3. El [inventario y los avisos de Android](android/app/src/main/assets/licenses/ANDROID-THIRD-PARTY-NOTICES.md) se incluyen en los APK dentro de `assets/licenses/`.
 - **Windows** incluye Flutter, Dart JNI, Media Kit y libmpv. Consulta el [aviso de audio Windows](third_party/windows_audio/NOTICE.md) y los textos en ese directorio. La fuente correspondiente de la DLL incluida en 0.4.8 sigue pendiente.
 - **Motor Flutter**. El SDK auditado corresponde a Flutter 3.47.6 y Dart 3.13.5. Los paquetes compilados contienen el archivo generado `NOTICES.Z` con textos de Flutter y de dependencias. Este inventario complementa ese archivo.
-- **Copias modificadas**. Consulta el [parche de audio_service](third_party/audio_service/RP-MUSIC-PATCH.md) y el [parche de just_audio_media_kit](third_party/just_audio_media_kit/RP-MUSIC-PATCH.md). Sus textos de licencia se conservan junto al código y en los avisos generados.
+- **Copias modificadas**. Consulta los parches de [audio_service](third_party/audio_service/RP-MUSIC-PATCH.md), [just_audio](third_party/just_audio/RP-MUSIC-PATCH.md) y [just_audio_media_kit](third_party/just_audio_media_kit/RP-MUSIC-PATCH.md). Sus textos de licencia se conservan junto al código y en los avisos generados.
 
 ## Dependencias bloqueadas de Flutter y Dart
 
@@ -67,7 +67,7 @@ Inventario de `pubspec.lock` para 0.4.8. Incluye dependencias de desarrollo y de
 | [jni_flutter](https://pub.dev/packages/jni_flutter/versions/1.0.4+1/license) | 1.0.4+1 | Transitiva | BSD |
 | [jni_util](https://pub.dev/packages/jni_util/versions/1.0.0/license) | 1.0.0 | Transitiva | BSD |
 | [js](https://pub.dev/packages/js/versions/0.7.2/license) | 0.7.2 | Transitiva | BSD |
-| [just_audio](https://pub.dev/packages/just_audio/versions/0.10.6/license) | 0.10.6 | Directa | Apache-2.0 |
+| [just_audio](third_party/just_audio/LICENSE) | 0.10.6 | Directa, [copia modificada](third_party/just_audio/RP-MUSIC-PATCH.md) | MIT; ExoPlayer Apache-2.0 |
 | [just_audio_media_kit](third_party/just_audio_media_kit/LICENSE) | 2.1.0 | Directa | Unlicense |
 | [just_audio_platform_interface](https://pub.dev/packages/just_audio_platform_interface/versions/4.6.0/license) | 4.6.0 | Transitiva | MIT |
 | [just_audio_web](https://pub.dev/packages/just_audio_web/versions/0.4.16/license) | 0.4.16 | Transitiva | MIT |

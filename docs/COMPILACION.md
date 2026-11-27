@@ -95,3 +95,7 @@ Desde el candidato0.3.15, release utiliza por defecto actualizaciones desde web/
 La copia local de `media_kit_libs_windows_audio` descarga el paquete Immuch360 fijado y verifica por SHA-256 el 7z y la DLL. Para una compilación sin red, descarga el archivo `mpv-dev-x86_64-20261110-git-0b7ed67.7z` desde la versión enlazada en el [aviso de audio Windows](../third_party/windows_audio/NOTICE.md) y define `RP_MUSIC_LIBMPV_ARCHIVE` con su ruta absoluta antes de ejecutar `flutter build windows --release`.
 
 La compilación instala las licencias y el informe upstream en `licenses/libmpv` junto al ejecutable. Conserva esa carpeta al preparar el ZIP.
+
+Para habilitar preamplificación, balance y limitador en Windows, reconstruye la receta de libmpv con [estos filtros adicionales](../third_party/windows_audio/libmpv-enable-dynamics.patch) aplicados a `builds/windows/ffmpeg.cmake` del código fuente entregado con libmpv. Comprueba la cadena con un archivo estéreo y conserva el código fuente modificado, los scripts, las licencias y el informe de compilación correspondientes.
+
+Define `RP_MUSIC_LIBMPV_DSP_DIR` con la ruta absoluta de la carpeta que contiene `libmpv-2.dll`, `BUILDINFO.txt` y `licenses/`. Define `RP_MUSIC_LIBMPV_DSP_SHA256` con el hash verificado de esa DLL y reconfigura la compilación Windows. El paquete fijado de 0.5.0 admite las bandas gráficas y los filtros paramétricos. Los otros tres controles aparecen solo en la compilación con la DLL extendida.

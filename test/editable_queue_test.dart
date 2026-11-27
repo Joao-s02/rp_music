@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:audio_service/audio_service.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -21,6 +22,48 @@ List<String> pending(MusicHandler audio) =>
     audio.tracks.skip(audio.index + 1).map((track) => track.title).toList();
 
 void main() {
+  testWidgets('reinicia una cola terminada conservando sus ediciones', (
+    tester,
+  ) async {
+    final player = FakePlayer(liveStates: true);
+    final audio = MusicHandler(player: player);
+    await audio.select(tracks.take(4).toList(), 0);
+    audio.movePending(audio.queueEntryAt(3), 1);
+    audio.removePending(audio.queueEntryAt(2));
+    final entries = List.generate(audio.tracks.length, audio.queueEntryAt);
+    await audio.skipToNext();
+    await audio.skipToNext();
+    player.complete();
+    await tester.pump();
+    expect(audio.queueEnded, isTrue);
+    expect(player.playing, isFalse);
+
+    await audio.play();
+    expect(audio.queueEnded, isFalse);
+    expect(audio.index, 0);
+    expect(audio.tracks.map((t) => t.title), ['A', 'D', 'C']);
+    expect(List.generate(audio.tracks.length, audio.queueEntryAt), entries);
+    await audio.close();
+  });
+
+  testWidgets('repetir todo en aleatorio evita repetir la última canción', (
+    tester,
+  ) async {
+    final player = FakePlayer(liveStates: true);
+    final audio = MusicHandler(player: player)..shuffle = true;
+    await audio.select(tracks.take(3).toList(), 0);
+    await audio.setRepeatMode(AudioServiceRepeatMode.all);
+    await audio.skipToQueueItem(2);
+    final last = audio.tracks[audio.index].id;
+    player.complete();
+    await tester.pump();
+    expect(audio.queueEnded, isFalse);
+    expect(audio.index, 0);
+    expect(audio.tracks.first.id, isNot(last));
+    expect(audio.tracks.map((t) => t.title), unorderedEquals(['A', 'B', 'C']));
+    await audio.close();
+  });
+
   testWidgets(
     'el fundido usa el siguiente efectivo y lo promueve sin recargar',
     (tester) async {

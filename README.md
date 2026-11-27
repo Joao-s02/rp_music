@@ -4,6 +4,12 @@ Reproductor local para Android y Windows. Abre tu biblioteca y escucha música s
 
 [Descargas para Android universal, ARM64 y Windows](https://github.com/Joao-s02/rp_music/releases/latest) · [Documentación](docs/README.md)
 
+## RP Music 0.5.1 en desarrollo
+
+Al terminar, la cola conserva sus ediciones y ofrece reiniciarla. Repetir todo empieza otra vuelta automáticamente.
+
+El ecualizador incorpora diez bandas, una curva arrastrable, filtros paramétricos y perfiles JSON. Android añade preamplificación, balance estéreo y limitador. Estos tres controles en Windows requieren una compilación de libmpv con los filtros FFmpeg correspondientes.
+
 ## RP Music 0.5.0 Beta
 
 El ecualizador del reproductor incorpora un modo Básico con preajustes y un modo Avanzado para editar las bandas y ver la curva de ganancias.

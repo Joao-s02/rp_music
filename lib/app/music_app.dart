@@ -2251,18 +2251,24 @@ class _PlayerPanelState extends State<PlayerPanel> {
                           stream: audio.playerStateStream,
                           initialData: audio.player.playerState,
                           builder: (context, state) => IconButton.filled(
-                            tooltip: audio.player.playing
+                            tooltip: audio.queueEnded
+                                ? 'Reiniciar cola'
+                                : audio.player.playing
                                 ? 'Pausar'
                                 : 'Reproducir',
-                            onPressed: () => audio.player.playing
+                            onPressed: () => audio.queueEnded
+                                ? audio.restartQueue()
+                                : audio.player.playing
                                 ? audio.pause()
                                 : audio.play(),
-                            icon: ThemeIcon(
-                              audio.player.playing ? 'pause' : 'play',
-                              audio.player.playing
-                                  ? Icons.pause
-                                  : Icons.play_arrow,
-                            ),
+                            icon: audio.queueEnded
+                                ? const Icon(Icons.replay_rounded)
+                                : ThemeIcon(
+                                    audio.player.playing ? 'pause' : 'play',
+                                    audio.player.playing
+                                        ? Icons.pause
+                                        : Icons.play_arrow,
+                                  ),
                           ),
                         ),
                       ],

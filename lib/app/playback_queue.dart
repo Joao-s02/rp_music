@@ -58,6 +58,8 @@ Future<void> showPlaybackQueue(
 
 enum _QueueAction { next, up, down, remove }
 
+enum _QueueMenuAction { shuffle, clear }
+
 Future<T?> showTrackContextMenu<T>(
   BuildContext context,
   Offset position,
@@ -189,13 +191,21 @@ class _PlaybackQueueState extends State<PlaybackQueue> {
               trailing: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  PopupMenuButton<bool>(
+                  PopupMenuButton<_QueueMenuAction>(
                     tooltip: 'Opciones de la cola',
                     enabled: entries.isNotEmpty,
-                    onSelected: (_) => audio.clearPending(),
-                    itemBuilder: (_) => const [
+                    onSelected: (action) => switch (action) {
+                      _QueueMenuAction.shuffle => audio.shufflePending(),
+                      _QueueMenuAction.clear => audio.clearPending(),
+                    },
+                    itemBuilder: (_) => [
                       PopupMenuItem(
-                        value: true,
+                        value: _QueueMenuAction.shuffle,
+                        enabled: entries.length > 1,
+                        child: const Text('Mezclar cola'),
+                      ),
+                      const PopupMenuItem(
+                        value: _QueueMenuAction.clear,
                         child: Text('Vaciar pendientes'),
                       ),
                     ],

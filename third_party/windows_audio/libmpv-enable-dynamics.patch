@@ -1,0 +1,10 @@
+--- a/builds/windows/ffmpeg.cmake
++++ b/builds/windows/ffmpeg.cmake
+@@ -289,4 +289,7 @@
+         --enable-filter=overlay
+         --enable-filter=equalizer
++        --enable-filter=volume
++        --enable-filter=stereotools
++        --enable-filter=alimiter
+         --enable-filter=hstack
+         --enable-filter=vstack

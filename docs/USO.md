@@ -1,5 +1,15 @@
 # Guía de uso
 
+## RP Music 0.5.1 Beta
+
+En Android, descarga el APK universal o ARM64 si tu teléfono admite esa arquitectura. Instala sobre tu versión actual para conservar la biblioteca y los ajustes. En Windows, extrae el ZIP completo y abre `rp_music.exe`.
+
+- Abre **Reproductor → ⋮ → Ecualizador** para ajustar bandas, filtros y perfiles.
+- Abre **Cola → ⋮ → Mezclar cola** para barajar las canciones pendientes.
+- Pulsa **Reiniciar cola** al terminar la última pista o activa **Repetir todo** para empezar otra vuelta automáticamente.
+
+Consulta [los cambios](CAMBIOS-0.5.1.md) y [las pruebas](PRUEBAS-0.5.1.md) de esta versión.
+
 [Instalar y usar RP Music 0.4.0](USO-0.4.0.md).
 
 ## RP Music 0.4.0

@@ -313,35 +313,52 @@ class _ExpandedPlayerState extends State<ExpandedPlayer> {
                           iconSize: 32,
                         ),
                       ),
-                      Container(
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: colors.primary.withValues(alpha: .14),
-                              blurRadius: 28,
-                              spreadRadius: 3,
+                      if (audio.queueEnded)
+                        Flexible(
+                          flex: 2,
+                          child: FilledButton(
+                            style: FilledButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 4,
+                              ),
                             ),
-                          ],
-                        ),
-                        child: IconButton.filled(
-                          tooltip: playing ? 'Pausar' : 'Reproducir',
-                          style: IconButton.styleFrom(
-                            fixedSize: Size.square(dense ? 56 : 64),
-                            padding: EdgeInsets.zero,
-                            alignment: Alignment.center,
-                            iconSize: dense ? 32 : 36,
+                            onPressed: audio.restartQueue,
+                            child: const Text(
+                              'Reiniciar cola',
+                              textAlign: TextAlign.center,
+                            ),
                           ),
-                          onPressed: () =>
-                              playing ? audio.pause() : audio.play(),
-                          icon: ThemeIcon(
-                            playing ? 'pause' : 'play',
-                            playing
-                                ? Icons.pause_rounded
-                                : Icons.play_arrow_rounded,
+                        )
+                      else
+                        Container(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: colors.primary.withValues(alpha: .14),
+                                blurRadius: 28,
+                                spreadRadius: 3,
+                              ),
+                            ],
+                          ),
+                          child: IconButton.filled(
+                            tooltip: playing ? 'Pausar' : 'Reproducir',
+                            style: IconButton.styleFrom(
+                              fixedSize: Size.square(dense ? 56 : 64),
+                              padding: EdgeInsets.zero,
+                              alignment: Alignment.center,
+                              iconSize: dense ? 32 : 36,
+                            ),
+                            onPressed: () =>
+                                playing ? audio.pause() : audio.play(),
+                            icon: ThemeIcon(
+                              playing ? 'pause' : 'play',
+                              playing
+                                  ? Icons.pause_rounded
+                                  : Icons.play_arrow_rounded,
+                            ),
                           ),
                         ),
-                      ),
                       Expanded(
                         child: IconButton(
                           tooltip: 'Siguiente',
@@ -355,17 +372,32 @@ class _ExpandedPlayerState extends State<ExpandedPlayer> {
                       ),
                       Expanded(
                         child: IconButton(
-                          tooltip: 'Repetir canción',
-                          isSelected: audio.repeat,
-                          onPressed: () {
-                            setState(() => audio.repeat = !audio.repeat);
-                            audio.saveSession();
+                          tooltip: switch (audio.repeatMode) {
+                            AudioServiceRepeatMode.none =>
+                              'Repetición desactivada',
+                            AudioServiceRepeatMode.one => 'Repetir canción',
+                            _ => 'Repetir todo',
                           },
-                          icon: const ThemeIcon(
+                          isSelected:
+                              audio.repeatMode != AudioServiceRepeatMode.none,
+                          onPressed: () => setState(() {
+                            audio.setRepeatMode(switch (audio.repeatMode) {
+                              AudioServiceRepeatMode.none =>
+                                AudioServiceRepeatMode.all,
+                              AudioServiceRepeatMode.all =>
+                                AudioServiceRepeatMode.one,
+                              _ => AudioServiceRepeatMode.none,
+                            });
+                          }),
+                          icon: ThemeIcon(
                             'repeat',
-                            Icons.repeat_one_rounded,
+                            audio.repeat
+                                ? Icons.repeat_one_rounded
+                                : Icons.repeat_rounded,
                           ),
-                          color: audio.repeat ? colors.primary : null,
+                          color: audio.repeatMode == AudioServiceRepeatMode.none
+                              ? null
+                              : colors.primary,
                         ),
                       ),
                     ],

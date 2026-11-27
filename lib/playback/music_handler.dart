@@ -5,13 +5,13 @@ import 'dart:math';
 import 'package:audio_service/audio_service.dart';
 import 'package:audio_session/audio_session.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:flutter/foundation.dart'
-    show Listenable, ValueNotifier, VoidCallback;
+import 'package:flutter/foundation.dart' show VoidCallback;
 
 import '../domain/track.dart';
 import '../data/local_store.dart';
 import '../data/replay_gain.dart';
 import 'native_audio_player.dart';
+import 'equalizer_settings.dart';
 
 class MusicHandler extends BaseAudioHandler with SeekHandler {
   AudioPlayer _player;
@@ -31,65 +31,115 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
   double _appVolume = 1;
   bool gapless = true;
   bool equalizerEnabled = false;
-  final _equalizerParameters = ValueNotifier<AndroidEqualizerParameters?>(null);
-  Listenable get equalizerBandChanges => _equalizerParameters;
-  AndroidEqualizerParameters? get equalizerParameters =>
-      _equalizerParameters.value;
   List<double> equalizerGains = const [];
+  EqualizerEffects equalizerEffects = const EqualizerEffects();
+  List<EqualizerProfile> equalizerProfiles = const [];
+  List<double> _legacyAndroidGains = const [];
+  Future<void> _equalizerUpdate = Future.value();
+  bool _desktopDynamics = false;
 
-  bool get supportsEqualizer =>
-      Platform.isWindows || nativeEqualizers[player] != null;
-
-  List<int> get equalizerFrequencies => Platform.isWindows
-      ? desktopEqualizerFrequencies
-      : equalizerParameters?.bands
-                .map((band) => band.centerFrequency.round())
-                .toList() ??
-            const [];
-  double get minEqualizerGain => equalizerParameters?.minDecibels ?? -12;
-  double get maxEqualizerGain => equalizerParameters?.maxDecibels ?? 12;
+  bool get supportsEqualizer => Platform.isWindows || Platform.isAndroid;
+  bool get supportsEqualizerDynamics => Platform.isAndroid || _desktopDynamics;
+  List<int> get equalizerFrequencies =>
+      supportsEqualizer ? graphicEqualizerFrequencies : const [];
+  double get minEqualizerGain => -12;
+  double get maxEqualizerGain => 12;
 
   Future<void> setEqualizer({
     required bool enabled,
     List<double>? gains,
+    EqualizerEffects? effects,
   }) async {
     equalizerEnabled = enabled;
-    if (gains != null) equalizerGains = List.unmodifiable(gains);
-    if (Platform.isWindows) {
+    if (gains != null) {
+      _legacyAndroidGains = const [];
+      equalizerGains = List.unmodifiable(gains);
+    }
+    if (effects != null) equalizerEffects = effects;
+    await _refreshEqualizer();
+    await _savePlaybackSettings();
+  }
+
+  Future<void> _refreshEqualizer() {
+    if (!supportsEqualizer) return Future.value();
+    final enabled = equalizerEnabled;
+    final gains = equalizerGains;
+    final effects = equalizerEffects;
+    return _equalizerUpdate = _equalizerUpdate.then((_) async {
+      if (_shuttingDown) return;
       try {
-        await setDesktopEqualizer(equalizerEnabled, equalizerGains);
+        await configureNativeEqualizer(
+          enabled: enabled,
+          frequencies: equalizerFrequencies,
+          gains: gains,
+          effects: effects,
+          dynamicsControls: supportsEqualizerDynamics,
+        );
       } catch (error) {
         recordEvent('Ecualizador no disponible: ${error.runtimeType}');
         errors.add('No se pudo aplicar el ecualizador.');
       }
+    });
+  }
+
+  Future<void> _migrateAndroidEqualizer(AudioPlayer target) async {
+    final legacy = _legacyAndroidGains;
+    final session = target.androidAudioSessionId;
+    if (legacy.isEmpty || session == null || session <= 0) return;
+    try {
+      final bands = await legacyAndroidEqualizerFrequencies(session);
+      if (!identical(legacy, _legacyAndroidGains) || _shuttingDown) return;
+      if (bands.length != legacy.length) return;
+      await setEqualizer(
+        enabled: equalizerEnabled,
+        gains: EqualizerProfile.fromJson({
+          'version': 1,
+          'name': 'Android',
+          'frequencies': bands,
+          'gains': legacy,
+          'effects': const EqualizerEffects().toJson(),
+        }).gainsFor(equalizerFrequencies),
+      );
+    } catch (error) {
+      recordEvent('Migración del ecualizador pendiente: ${error.runtimeType}');
     }
-    await _applyEqualizer(player);
-    if (_incoming case final incoming?) await _applyEqualizer(incoming);
+  }
+
+  EqualizerProfile currentEqualizerProfile(String name) =>
+      EqualizerProfile.fromJson({
+        'version': 1,
+        'name': name,
+        'frequencies': equalizerFrequencies,
+        'gains': List.generate(
+          equalizerFrequencies.length,
+          (i) => equalizerGains.elementAtOrNull(i)?.clamp(-12, 12) ?? 0,
+        ),
+        'effects': equalizerEffects.toJson(),
+      });
+
+  Future<void> saveEqualizerProfile(EqualizerProfile profile) async {
+    final profiles = equalizerProfiles.where(
+      (item) => item.name != profile.name,
+    );
+    if (profiles.length >= 40) {
+      throw const FormatException('Elimina un perfil antes de guardar otro.');
+    }
+    equalizerProfiles = List.unmodifiable([...profiles, profile]);
     await _savePlaybackSettings();
   }
 
-  Future<void> _applyEqualizer(AudioPlayer target) async {
-    final equalizer = nativeEqualizers[target];
-    if (equalizer == null || target.audioSources.isEmpty) return;
-    try {
-      final params = await equalizer.parameters.timeout(
-        const Duration(seconds: 2),
-      );
-      if (_shuttingDown) return;
-      if (target == player) _equalizerParameters.value = params;
-      if (equalizerEnabled) {
-        for (final band in params.bands) {
-          final gain = equalizerGains.elementAtOrNull(band.index) ?? 0.0;
-          await band.setGain(
-            gain.clamp(params.minDecibels, params.maxDecibels),
-          );
-        }
-      }
-      await equalizer.setEnabled(equalizerEnabled);
-    } catch (error) {
-      recordEvent('Ecualizador no disponible: ${error.runtimeType}');
-    }
+  Future<void> removeEqualizerProfile(EqualizerProfile profile) async {
+    equalizerProfiles = List.unmodifiable(
+      equalizerProfiles.where((item) => item.name != profile.name),
+    );
+    await _savePlaybackSettings();
   }
+
+  Future<void> applyEqualizerProfile(EqualizerProfile profile) => setEqualizer(
+    enabled: true,
+    gains: profile.gainsFor(equalizerFrequencies),
+    effects: profile.effects,
+  );
 
   ReplayGainMode replayGainMode = ReplayGainMode.off;
   final Future<ReplayGainTags?> Function(String)? replayGainLoader;
@@ -116,6 +166,9 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
       : LocalStore(sessionStore!.directory, baseName: 'playback-settings');
 
   Future<void> loadPlaybackSettings() async {
+    if (Platform.isWindows) {
+      _desktopDynamics = await supportsNativeDynamicsControls();
+    }
     final settings = await _playbackSettings?.load();
     gapless = settings?['gapless'] != false;
     equalizerEnabled = settings?['equalizerEnabled'] == true;
@@ -131,9 +184,54 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
       (mode) => mode.name == settings?['replayGain'],
       orElse: () => ReplayGainMode.off,
     );
-    if (Platform.isWindows && equalizerEnabled) {
-      await setDesktopEqualizer(true, equalizerGains);
+    try {
+      final effects = settings?['equalizerEffects'];
+      if (effects != null) {
+        equalizerEffects = EqualizerEffects.fromJson(effects);
+      }
+    } on FormatException {
+      equalizerEffects = const EqualizerEffects();
     }
+    final profiles = settings?['equalizerProfiles'];
+    if (profiles is List) {
+      final valid = <String, EqualizerProfile>{};
+      for (final item in profiles.take(40)) {
+        try {
+          final profile = EqualizerProfile.fromJson(item);
+          valid[profile.name] = profile;
+        } on FormatException {
+          continue;
+        }
+      }
+      equalizerProfiles = List.unmodifiable(valid.values);
+    }
+    final pendingMigration = settings?['legacyAndroidEqualizerGains'];
+    if (Platform.isAndroid &&
+        pendingMigration is List &&
+        pendingMigration.every((value) => value is num && value.isFinite)) {
+      _legacyAndroidGains = pendingMigration
+          .cast<num>()
+          .map((value) => value.toDouble())
+          .toList();
+    }
+    if (settings?['equalizerLayout'] != 1 && equalizerGains.isNotEmpty) {
+      if (Platform.isWindows) {
+        final legacyProfile = EqualizerProfile(
+          name: 'Windows',
+          frequencies: legacyDesktopFrequencies,
+          gains: List.generate(
+            legacyDesktopFrequencies.length,
+            (i) => equalizerGains.elementAtOrNull(i) ?? 0,
+          ),
+          effects: equalizerEffects,
+        );
+        equalizerGains = legacyProfile.gainsFor(equalizerFrequencies);
+      } else if (Platform.isAndroid) {
+        _legacyAndroidGains = equalizerGains;
+        equalizerGains = const [];
+      }
+    }
+    if (equalizerEnabled) await _refreshEqualizer();
     final length = settings?['crossfadeLength'];
     crossfadeLength = length is int ? length.clamp(1, 12) : 5;
     if (!_shuttingDown) _setCrossfade(settings?['crossfadeEnabled'] == true);
@@ -192,6 +290,12 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
         'gapless': gapless,
         'equalizerEnabled': equalizerEnabled,
         'equalizerGains': equalizerGains,
+        'equalizerLayout': 1,
+        'equalizerEffects': equalizerEffects.toJson(),
+        'equalizerProfiles': equalizerProfiles
+            .map((item) => item.toJson())
+            .toList(),
+        'legacyAndroidEqualizerGains': _legacyAndroidGains,
         'replayGain': replayGainMode.name,
         'crossfadeLength': crossfadeLength,
       });
@@ -329,7 +433,6 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
           .timeout(const Duration(seconds: 10));
       if (!identical(_incoming, incoming)) return;
       if (duration != null && duration > fade * 2) {
-        await _applyEqualizer(incoming);
         if (_incoming != incoming) return;
         _incomingReady = true;
         return;
@@ -450,6 +553,15 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
   }
 
   bool _playIntent = false;
+  bool _queueEnded = false;
+  bool get queueEnded => _queueEnded;
+
+  void _setQueueEnded(bool value) {
+    if (_queueEnded == value) return;
+    _queueEnded = value;
+    _states.add(player.playerState);
+  }
+
   List<Track> tracks = [];
   int index = -1;
   final List<int> _previousTracks = [], _forwardTracks = [];
@@ -627,6 +739,25 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
     };
   }
 
+  void shufflePending() {
+    final start = index + 1;
+    if (_shuttingDown || tracks.length - start < 2) return;
+    final pending = {
+      for (var i = start; i < tracks.length; i++) _entries[i]: tracks[i],
+    };
+    final order = pending.keys.toList()..shuffle();
+    if (order.indexed.every((item) => item.$2 == _entries[start + item.$1])) {
+      order.add(order.removeAt(0));
+    }
+    _originalOrder
+      ..removeWhere(pending.containsKey)
+      ..addAll(order);
+    _playNext.removeAll(order);
+    _forwardTracks.clear();
+    _replacePending(order, pending);
+    _queueChanged();
+  }
+
   void clearPending() {
     _queueGeneration++;
     _discardPending(_entries.skip(index + 1).toSet());
@@ -646,11 +777,27 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
   }
 
   int _queueGeneration = 0;
-  bool _repeat = false;
-  bool get repeat => _repeat;
+  AudioServiceRepeatMode _repeatMode = AudioServiceRepeatMode.none;
+  AudioServiceRepeatMode get repeatMode => _repeatMode;
+  bool get repeat => _repeatMode == AudioServiceRepeatMode.one;
   set repeat(bool value) {
-    _repeat = value;
+    _setRepeatMode(
+      value ? AudioServiceRepeatMode.one : AudioServiceRepeatMode.none,
+    );
+  }
+
+  void _setRepeatMode(AudioServiceRepeatMode mode) {
+    _repeatMode = mode == AudioServiceRepeatMode.group
+        ? AudioServiceRepeatMode.all
+        : mode;
     _refreshNativeQueue();
+    _publish();
+  }
+
+  @override
+  Future<void> setRepeatMode(AudioServiceRepeatMode repeatMode) async {
+    _setRepeatMode(repeatMode);
+    await saveSession();
   }
 
   MusicHandler({
@@ -902,6 +1049,7 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
           MediaAction.skipToPrevious,
         },
         queueIndex: index >= 0 ? index : null,
+        repeatMode: repeatMode,
         androidCompactActionIndices: const [0, 1, 2],
         processingState: _loading
             ? AudioProcessingState.loading
@@ -931,6 +1079,7 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
   }) {
     if (_shuttingDown) return Future.value();
     if (selected < 0 || selected >= source.length) return Future.value();
+    _setQueueEnded(false);
     _cancelCrossfade();
     _failedCrossfadeEntry = null;
     final sameQueue =
@@ -1023,7 +1172,7 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
         recordEvent(
           'Carga del motor de audio: ${loadWatch.elapsedMilliseconds} ms',
         );
-        if (generation == _generation) await _applyEqualizer(player);
+        if (generation == _generation) await _migrateAndroidEqualizer(player);
         if (generation == _generation && !_shuttingDown) {
           if (recordHistory && _loadedEntry != null && _loadedEntry != entry) {
             _previousTracks.add(_loadedEntry!);
@@ -1114,6 +1263,7 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
   }
 
   Future<void> _advance() async {
+    if (_shuttingDown || !_playIntent || index < 0 || _queueEnded) return;
     if (repeat && index >= 0) {
       await seek(Duration.zero);
       unawaited(play());
@@ -1121,15 +1271,38 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
     }
     if (index + 1 < tracks.length) {
       await skipToNext();
+    } else if (repeatMode == AudioServiceRepeatMode.all) {
+      await restartQueue();
     } else {
+      _setQueueEnded(true);
       await pause();
-      await seek(Duration.zero);
     }
+  }
+
+  Future<void> restartQueue() {
+    if (_shuttingDown || tracks.isEmpty) return Future.value();
+    if (shuffle && tracks.length > 1) {
+      final lastId = index >= 0 ? tracks[index].id : null;
+      final order = List<int>.generate(tracks.length, (i) => i)..shuffle();
+      final alternative = order.indexWhere((i) => tracks[i].id != lastId);
+      if (alternative > 0) order.insert(0, order.removeAt(alternative));
+      tracks = List.unmodifiable(order.map((i) => tracks[i]));
+      _entries = order.map((i) => _entries[i]).toList();
+    }
+    _playNext.clear();
+    _previousTracks.clear();
+    _forwardTracks.clear();
+    _loadedEntry = null;
+    return select(tracks, 0, preserveQueue: true, recordHistory: false);
   }
 
   @override
   Future<void> play() async {
     if (_shuttingDown) return;
+    if (queueEnded) {
+      await restartQueue();
+      return;
+    }
     if (index < 0) {
       if (tracks.isNotEmpty) {
         await select(tracks, 0, preserveQueue: true);
@@ -1163,6 +1336,7 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
 
   @override
   Future<void> seek(Duration position) async {
+    _setQueueEnded(false);
     _cancelCrossfade();
     await player.seek(position);
     if (sessionStore != null) {
@@ -1189,6 +1363,8 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
       'positionMs': (position ?? player.position).inMilliseconds,
       'shuffle': shuffle,
       'repeat': repeat,
+      'repeatMode': repeatMode.name,
+      'queueEnded': queueEnded,
       'previous': List<int>.of(_previousTracks),
       'forward': List<int>.of(_forwardTracks),
     };
@@ -1226,7 +1402,14 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
           : restored.indexWhere((t) => t.id == saved['current']);
       if (restored.isEmpty) return;
       _shuffle = saved['shuffle'] as bool? ?? false;
-      repeat = saved['repeat'] as bool? ?? false;
+      _setRepeatMode(
+        AudioServiceRepeatMode.values.firstWhere(
+          (mode) => mode.name == saved['repeatMode'],
+          orElse: () => saved['repeat'] == true
+              ? AudioServiceRepeatMode.one
+              : AudioServiceRepeatMode.none,
+        ),
+      );
       tracks = List.unmodifiable(restored);
       _entries = availableEntries.keys.toList();
       _nextEntry = _entries.reduce(max) + 1;
@@ -1254,6 +1437,7 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
       if (position < 0) position = 0;
       final duration = restored[selected].durationMs;
       if (duration > 0 && position >= duration) position = 0;
+      final restoreGeneration = _generation + 1;
       await select(
         tracks,
         selected,
@@ -1262,6 +1446,8 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
         initialPosition: Duration(milliseconds: position),
         recordHistory: false,
       );
+      if (_generation != restoreGeneration || _shuttingDown) return;
+      _setQueueEnded(saved['queueEnded'] == true);
       for (final pair in [
         (saved['previous'], _previousTracks),
         (saved['forward'], _forwardTracks),
@@ -1287,6 +1473,7 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
 
   @override
   Future<void> stop() async {
+    _setQueueEnded(false);
     _cancelCrossfade();
     ++_generation;
     _nativeQueue = false;
@@ -1314,7 +1501,10 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
       await select(tracks, target, recordHistory: false);
       return;
     }
-    if (index + 1 >= tracks.length) return;
+    if (index + 1 >= tracks.length) {
+      if (repeatMode == AudioServiceRepeatMode.all) await restartQueue();
+      return;
+    }
     await select(tracks, index + 1, preserveQueue: true, continueOnError: true);
   }
 
@@ -1401,7 +1591,6 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
     unawaited(_durations.close());
     unawaited(_states.close());
     unawaited(_volumes.close());
-    _equalizerParameters.dispose();
     // Error observers must not hold the native player/window open on exit.
     unawaited(errors.close());
   }

@@ -23,31 +23,46 @@ set(LIBMPV_DLL_SHA256 "3f026a3263ecb31fd6b0297a865cd68cb65420bd40e338bb487df0e35
 set(LIBMPV_ARCHIVE "${CMAKE_BINARY_DIR}/${LIBMPV}")
 set(LIBMPV_SRC "${CMAKE_BINARY_DIR}/${LIBMPV_RELEASE}")
 
-if(DEFINED ENV{RP_MUSIC_LIBMPV_ARCHIVE})
-  set(LIBMPV_ARCHIVE "$ENV{RP_MUSIC_LIBMPV_ARCHIVE}")
-elseif(NOT EXISTS "${LIBMPV_ARCHIVE}")
-  file(DOWNLOAD
-    "https://github.com/immuch360/libmpv-builds/releases/download/${LIBMPV_RELEASE}/${LIBMPV}"
-    "${LIBMPV_ARCHIVE}.download"
-    EXPECTED_HASH "SHA256=${LIBMPV_SHA256}" TLS_VERIFY ON)
-  file(RENAME "${LIBMPV_ARCHIVE}.download" "${LIBMPV_ARCHIVE}")
-endif()
-file(SHA256 "${LIBMPV_ARCHIVE}" archive_hash)
-if(NOT archive_hash STREQUAL LIBMPV_SHA256)
-  message(FATAL_ERROR "Unexpected libmpv archive SHA-256: ${LIBMPV_ARCHIVE}")
-endif()
+if(DEFINED ENV{RP_MUSIC_LIBMPV_DSP_DIR})
+  set(LIBMPV_SRC "$ENV{RP_MUSIC_LIBMPV_DSP_DIR}")
+  if(NOT EXISTS "${LIBMPV_SRC}/libmpv-2.dll"
+      OR NOT EXISTS "${LIBMPV_SRC}/BUILDINFO.txt"
+      OR NOT IS_DIRECTORY "${LIBMPV_SRC}/licenses")
+    message(FATAL_ERROR "The libmpv DSP bundle needs its DLL, BUILDINFO.txt and licenses.")
+  endif()
+  file(SHA256 "${LIBMPV_SRC}/libmpv-2.dll" dsp_hash)
+  string(TOLOWER "$ENV{RP_MUSIC_LIBMPV_DSP_SHA256}" dsp_expected_hash)
+  if(dsp_hash STREQUAL LIBMPV_DLL_SHA256 OR NOT dsp_hash STREQUAL dsp_expected_hash)
+    message(FATAL_ERROR "Use a verified libmpv DSP build and specify its DLL SHA-256.")
+  endif()
+  set(RP_MUSIC_HAS_DYNAMICS_FILTERS ON)
+else()
+  if(DEFINED ENV{RP_MUSIC_LIBMPV_ARCHIVE})
+    set(LIBMPV_ARCHIVE "$ENV{RP_MUSIC_LIBMPV_ARCHIVE}")
+  elseif(NOT EXISTS "${LIBMPV_ARCHIVE}")
+    file(DOWNLOAD
+      "https://github.com/immuch360/libmpv-builds/releases/download/${LIBMPV_RELEASE}/${LIBMPV}"
+      "${LIBMPV_ARCHIVE}.download"
+      EXPECTED_HASH "SHA256=${LIBMPV_SHA256}" TLS_VERIFY ON)
+    file(RENAME "${LIBMPV_ARCHIVE}.download" "${LIBMPV_ARCHIVE}")
+  endif()
+  file(SHA256 "${LIBMPV_ARCHIVE}" archive_hash)
+  if(NOT archive_hash STREQUAL LIBMPV_SHA256)
+    message(FATAL_ERROR "Unexpected libmpv archive SHA-256: ${LIBMPV_ARCHIVE}")
+  endif()
 
-file(MAKE_DIRECTORY "${LIBMPV_SRC}")
-execute_process(
-  COMMAND "${CMAKE_COMMAND}" -E tar xf "${LIBMPV_ARCHIVE}"
-  WORKING_DIRECTORY "${LIBMPV_SRC}"
-  RESULT_VARIABLE result)
-if(NOT result STREQUAL "0")
-  message(FATAL_ERROR "Could not extract ${LIBMPV_ARCHIVE}: ${result}")
-endif()
-file(SHA256 "${LIBMPV_SRC}/libmpv-2.dll" dll_hash)
-if(NOT dll_hash STREQUAL LIBMPV_DLL_SHA256)
-  message(FATAL_ERROR "Unexpected SHA-256 for the extracted libmpv DLL.")
+  file(MAKE_DIRECTORY "${LIBMPV_SRC}")
+  execute_process(
+    COMMAND "${CMAKE_COMMAND}" -E tar xf "${LIBMPV_ARCHIVE}"
+    WORKING_DIRECTORY "${LIBMPV_SRC}"
+    RESULT_VARIABLE result)
+  if(NOT result STREQUAL "0")
+    message(FATAL_ERROR "Could not extract ${LIBMPV_ARCHIVE}: ${result}")
+  endif()
+  file(SHA256 "${LIBMPV_SRC}/libmpv-2.dll" dll_hash)
+  if(NOT dll_hash STREQUAL LIBMPV_DLL_SHA256)
+    message(FATAL_ERROR "Unexpected SHA-256 for the extracted libmpv DLL.")
+  endif()
 endif()
 
 set(RP_MUSIC_LIBMPV_DIR "${LIBMPV_SRC}" PARENT_SCOPE)
@@ -73,6 +88,9 @@ target_compile_definitions(
   PRIVATE
   FLUTTER_PLUGIN_IMPL
 )
+if(RP_MUSIC_HAS_DYNAMICS_FILTERS)
+  target_compile_definitions(${PLUGIN_NAME} PRIVATE RP_MUSIC_HAS_DYNAMICS_FILTERS)
+endif()
 
 target_include_directories(
   ${PLUGIN_NAME} INTERFACE
