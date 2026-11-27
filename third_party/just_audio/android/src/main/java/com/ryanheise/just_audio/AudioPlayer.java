@@ -9,12 +9,9 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import androidx.media3.common.C;
-import androidx.media3.common.audio.AudioProcessor;
 import androidx.media3.exoplayer.DefaultLivePlaybackSpeedControl;
 import androidx.media3.exoplayer.DefaultLoadControl;
 import androidx.media3.exoplayer.DefaultRenderersFactory;
-import androidx.media3.exoplayer.audio.AudioSink;
-import androidx.media3.exoplayer.audio.DefaultAudioSink;
 import androidx.media3.exoplayer.ExoPlaybackException;
 import androidx.media3.exoplayer.LivePlaybackSpeedControl;
 import androidx.media3.exoplayer.LoadControl;
@@ -227,7 +224,14 @@ public class AudioPlayer implements MethodCallHandler, Player.Listener, Metadata
         if (this.audioSessionId != null) {
             for (Object rawAudioEffect : rawAudioEffects) {
                 Map<?, ?> json = (Map<?, ?>)rawAudioEffect;
-                AudioEffect audioEffect = decodeAudioEffect(rawAudioEffect, this.audioSessionId);
+                AudioEffect audioEffect;
+                try {
+                    audioEffect = decodeAudioEffect(rawAudioEffect, this.audioSessionId);
+                } catch (RuntimeException e) {
+                    if (!"AndroidEqualizer".equals(json.get("type"))) throw e;
+                    Log.w(TAG, "AndroidEqualizer unavailable for this audio session", e);
+                    continue;
+                }
                 if ((Boolean)json.get("enabled")) {
                     audioEffect.setEnabled(true);
                 }
@@ -403,6 +407,7 @@ public class AudioPlayer implements MethodCallHandler, Player.Listener, Metadata
     public void onPlayerError(PlaybackException error) {
         if (error instanceof ExoPlaybackException) {
             final ExoPlaybackException exoError = (ExoPlaybackException)error;
+            String diagnostic = exoError.getMessage();
             switch (exoError.type) {
             case ExoPlaybackException.TYPE_SOURCE:
                 Log.e(TAG, "TYPE_SOURCE: " + exoError.getSourceException().getMessage());
@@ -413,14 +418,18 @@ public class AudioPlayer implements MethodCallHandler, Player.Listener, Metadata
                 break;
 
             case ExoPlaybackException.TYPE_UNEXPECTED:
-                Log.e(TAG, "TYPE_UNEXPECTED: " + exoError.getUnexpectedException().getMessage());
+                RuntimeException cause = exoError.getUnexpectedException();
+                Log.e(TAG, "TYPE_UNEXPECTED", cause);
+                StackTraceElement[] frames = cause.getStackTrace();
+                diagnostic += " [" + cause.getClass().getSimpleName()
+                        + (frames.length == 0 ? "" : " @ " + frames[0]) + "]";
                 break;
 
             default:
                 Log.e(TAG, "default ExoPlaybackException: " + exoError.getUnexpectedException().getMessage());
             }
             // TODO: send both errorCode and type
-            sendError(exoError.type, exoError.getMessage(), mapOf("index", currentIndex));
+            sendError(exoError.type, diagnostic, mapOf("index", currentIndex));
         } else {
             Log.e(TAG, "default PlaybackException: " + error.getMessage());
             sendError(error.errorCode, error.getMessage(), mapOf("index", currentIndex));
@@ -780,17 +789,7 @@ public class AudioPlayer implements MethodCallHandler, Player.Listener, Metadata
     private void ensurePlayerInitialized() {
         if (player == null) {
             RenderersFactory renderersFactory = (eventHandler, videoListener, audioListener, textOutput, metadataOutput) -> {
-                Renderer[] defaultRenderers = new DefaultRenderersFactory(context) {
-                    @Override
-                    protected AudioSink buildAudioSink(
-                            Context sinkContext, boolean floatOutput, boolean trackPlaybackParams) {
-                        // Keep decoded PCM in the processor chain, including for high-resolution input.
-                        return new DefaultAudioSink.Builder()
-                                .setEnableAudioTrackPlaybackParams(trackPlaybackParams)
-                                .setAudioProcessors(new AudioProcessor[] {new RpEqualizerProcessor()})
-                                .build();
-                    }
-                }
+                Renderer[] defaultRenderers = new DefaultRenderersFactory(context)
                     .createRenderers(eventHandler, videoListener, audioListener, textOutput, metadataOutput);
                 Renderer[] allRenderers = Arrays.copyOf(defaultRenderers, defaultRenderers.length + 1);
                 allRenderers[defaultRenderers.length] = new ObserverRenderer();

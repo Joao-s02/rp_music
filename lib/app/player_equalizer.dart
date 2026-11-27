@@ -331,6 +331,15 @@ class _EqualizerSheetState extends State<_EqualizerSheet> {
   }
 
   List<Widget> _effectControls(bool editable) {
+    if (!audio.supportsParametricEqualizer) {
+      return const [
+        Divider(),
+        Text(
+          'La curva se adapta a las bandas del ecualizador de Android. '
+          'Los filtros paramétricos y los efectos adicionales no están disponibles.',
+        ),
+      ];
+    }
     final effects = audio.equalizerEffects;
     final dynamics = audio.supportsEqualizerDynamics;
     return [

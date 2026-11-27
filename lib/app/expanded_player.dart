@@ -609,6 +609,12 @@ class PlayerOptions extends StatelessWidget {
       final track = audio.tracks
           .where((track) => track.id == item?.id)
           .firstOrNull;
+      final shareId =
+          track != null &&
+              track.sourceId == null &&
+              Uri.tryParse(track.id)?.scheme == 'content'
+          ? track.id
+          : null;
       final action = await showModalBottomSheet<String>(
         context: context,
         showDragHandle: true,
@@ -636,6 +642,13 @@ class PlayerOptions extends StatelessWidget {
                     Icons.info_outline,
                     item != null,
                   ),
+                  if (Platform.isAndroid)
+                    (
+                      'share',
+                      'Compartir canción',
+                      Icons.share_outlined,
+                      shareId != null,
+                    ),
                   (
                     'sleep',
                     'Temporizador de apagado',
@@ -662,6 +675,22 @@ class PlayerOptions extends StatelessWidget {
           showPlayerEqualizer(context, audio);
         case 'details':
           await showSongDetails(context, track, item: item);
+        case 'share':
+          if (shareId == null) return;
+          try {
+            await const MethodChannel('rp_music/system')
+                .invokeMethod<void>('shareTrack', {'id': shareId});
+          } on PlatformException catch (error) {
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    error.message ?? 'No se pudo compartir la canción.',
+                  ),
+                ),
+              );
+            }
+          }
         case 'sleep':
           await showSleepTimer(context, audio);
       }

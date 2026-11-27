@@ -1739,7 +1739,12 @@ class AudioPlayer {
           }
         }
         for (var audioEffect in _audioPipeline._audioEffects) {
-          await audioEffect._activate(platform);
+          try {
+            await audioEffect._activate(platform);
+          } on PlatformException {
+            if (audioEffect is! AndroidEqualizer) rethrow;
+            // Audio remains available when the device has no equalizer.
+          }
           if (checkInterruption()) return inactiveResult(platform);
         }
         if (playing) {

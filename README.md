@@ -4,6 +4,10 @@ Reproductor local para Android y Windows. Abre tu biblioteca y escucha música s
 
 [Descargas para Android universal, ARM64 y Windows](https://github.com/Joao-s02/rp_music/releases/latest) · [Documentación](docs/README.md)
 
+## RP Music 0.5.2 Beta
+
+En Android puedes compartir el archivo de una canción local desde **Reproductor → ⋮ → Compartir canción**.
+
 ## RP Music 0.5.1 en desarrollo
 
 Al terminar, la cola conserva sus ediciones y ofrece reiniciarla. Repetir todo empieza otra vuelta automáticamente.

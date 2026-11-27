@@ -7,6 +7,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.provider.Settings
 import android.content.Intent
+import android.content.ClipData
 import android.media.MediaMetadataRetriever
 import android.net.Uri
 import com.ryanheise.audioservice.AudioServiceActivity
@@ -32,6 +33,38 @@ class MainActivity : AudioServiceActivity() {
         MethodChannel(engine.dartExecutor.binaryMessenger, "rp_music/updates").setMethodCallHandler(updates::handle)
         MethodChannel(engine.dartExecutor.binaryMessenger, "rp_music/system").setMethodCallHandler { call, result ->
             when (call.method) {
+                "shareTrack" -> {
+                    val uri = Uri.parse(call.argument<String>("id").orEmpty())
+                    if (uri.scheme != "content" || uri.authority.isNullOrEmpty()) {
+                        result.error("invalid_track", "No se encontró un archivo de audio local.", null)
+                    } else {
+                        worker.execute {
+                            try {
+                                checkNotNull(contentResolver.openAssetFileDescriptor(uri, "r")).close()
+                                val mime = contentResolver.getType(uri)
+                                    ?.takeIf { it.startsWith("audio/") } ?: "audio/*"
+                                runOnUiThread {
+                                    try {
+                                        val send = Intent(Intent.ACTION_SEND).apply {
+                                            type = mime
+                                            putExtra(Intent.EXTRA_STREAM, uri)
+                                            clipData = ClipData.newRawUri("Canción", uri)
+                                            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                        }
+                                        startActivity(Intent.createChooser(send, "Compartir canción"))
+                                        result.success(null)
+                                    } catch (e: Exception) {
+                                        result.error("share_unavailable", "No se pudo abrir el selector para compartir.", null)
+                                    }
+                                }
+                            } catch (e: Exception) {
+                                runOnUiThread {
+                                    result.error("track_unreadable", "No se pudo leer el archivo de la canción.", null)
+                                }
+                            }
+                        }
+                    }
+                }
                 "connectWidget" -> {
                     val manager = android.appwidget.AppWidgetManager.getInstance(this)
                     if (manager.getAppWidgetIds(android.content.ComponentName(this, MusicWidget::class.java)).isNotEmpty()) MusicWidget.observe(applicationContext)

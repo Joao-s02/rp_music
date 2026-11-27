@@ -1,5 +1,9 @@
 # Guía de uso
 
+## Compartir una canción en Android
+
+Abre la canción en el reproductor, pulsa **⋮ → Compartir canción** y elige una aplicación en el selector de Android. RP Music entrega el archivo original de la canción local a la aplicación elegida.
+
 ## RP Music 0.5.1 Beta
 
 En Android, descarga el APK universal o ARM64 si tu teléfono admite esa arquitectura. Instala sobre tu versión actual para conservar la biblioteca y los ajustes. En Windows, extrae el ZIP completo y abre `rp_music.exe`.

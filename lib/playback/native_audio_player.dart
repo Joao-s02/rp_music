@@ -7,6 +7,7 @@ import 'package:just_audio_media_kit/just_audio_media_kit.dart';
 import 'equalizer_settings.dart';
 
 bool _desktopInitialized = false;
+final nativeEqualizers = Expando<AndroidEqualizer>();
 const _equalizerChannel = MethodChannel('rp_music/equalizer');
 
 Future<bool> supportsNativeDynamicsControls() async {
@@ -39,7 +40,13 @@ AudioPlayer createNativeAudioPlayer() {
     ];
     _desktopInitialized = true;
   }
-  return AudioPlayer();
+  if (!Platform.isAndroid) return AudioPlayer();
+  final equalizer = AndroidEqualizer();
+  final player = AudioPlayer(
+    audioPipeline: AudioPipeline(androidAudioEffects: [equalizer]),
+  );
+  nativeEqualizers[player] = equalizer;
+  return player;
 }
 
 Future<List<int>> legacyAndroidEqualizerFrequencies(int sessionId) async =>

@@ -38,8 +38,10 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
   Future<void> _equalizerUpdate = Future.value();
   bool _desktopDynamics = false;
 
-  bool get supportsEqualizer => Platform.isWindows || Platform.isAndroid;
-  bool get supportsEqualizerDynamics => Platform.isAndroid || _desktopDynamics;
+  bool get supportsEqualizer =>
+      Platform.isWindows || nativeEqualizers[player] != null;
+  bool get supportsParametricEqualizer => Platform.isWindows;
+  bool get supportsEqualizerDynamics => _desktopDynamics;
   List<int> get equalizerFrequencies =>
       supportsEqualizer ? graphicEqualizerFrequencies : const [];
   double get minEqualizerGain => -12;
@@ -68,6 +70,13 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
     return _equalizerUpdate = _equalizerUpdate.then((_) async {
       if (_shuttingDown) return;
       try {
+        if (Platform.isAndroid) {
+          await _applyAndroidEqualizer(player, enabled, gains);
+          if (_incoming case final incoming?) {
+            await _applyAndroidEqualizer(incoming, enabled, gains);
+          }
+          return;
+        }
         await configureNativeEqualizer(
           enabled: enabled,
           frequencies: equalizerFrequencies,
@@ -82,7 +91,44 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
     });
   }
 
+  Future<void> _applyAndroidEqualizer(
+    AudioPlayer target,
+    bool enabled,
+    List<double> gains,
+  ) async {
+    final equalizer = nativeEqualizers[target];
+    if (equalizer == null || target.audioSources.isEmpty) return;
+    try {
+      if (enabled) {
+        final params = await equalizer.parameters.timeout(
+          const Duration(seconds: 1),
+        );
+        final profile = EqualizerProfile(
+          name: 'Android',
+          frequencies: graphicEqualizerFrequencies,
+          gains: List.generate(
+            graphicEqualizerFrequencies.length,
+            (i) => gains.elementAtOrNull(i) ?? 0,
+          ),
+          effects: const EqualizerEffects(),
+        );
+        final mapped = profile.gainsFor(
+          params.bands.map((band) => band.centerFrequency.round()).toList(),
+        );
+        for (final (i, band) in params.bands.indexed) {
+          await band.setGain(
+            mapped[i].clamp(params.minDecibels, params.maxDecibels),
+          );
+        }
+      }
+      await equalizer.setEnabled(enabled);
+    } catch (error) {
+      recordEvent('Ecualizador Android no disponible: ${error.runtimeType}');
+    }
+  }
+
   Future<void> _migrateAndroidEqualizer(AudioPlayer target) async {
+    if (!supportsEqualizer) return;
     final legacy = _legacyAndroidGains;
     final session = target.androidAudioSessionId;
     if (legacy.isEmpty || session == null || session <= 0) return;
@@ -433,6 +479,11 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
           .timeout(const Duration(seconds: 10));
       if (!identical(_incoming, incoming)) return;
       if (duration != null && duration > fade * 2) {
+        await _applyAndroidEqualizer(
+          incoming,
+          equalizerEnabled,
+          equalizerGains,
+        );
         if (_incoming != incoming) return;
         _incomingReady = true;
         return;
@@ -1172,7 +1223,12 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
         recordEvent(
           'Carga del motor de audio: ${loadWatch.elapsedMilliseconds} ms',
         );
-        if (generation == _generation) await _migrateAndroidEqualizer(player);
+        if (generation == _generation && Platform.isAndroid) {
+          await _migrateAndroidEqualizer(player);
+          if (generation == _generation) {
+            await _refreshEqualizer();
+          }
+        }
         if (generation == _generation && !_shuttingDown) {
           if (recordHistory && _loadedEntry != null && _loadedEntry != entry) {
             _previousTracks.add(_loadedEntry!);
