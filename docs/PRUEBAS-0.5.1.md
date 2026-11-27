@@ -6,6 +6,8 @@ El análisis estático de los cambios pasó. Una sonda PCM verificó las operaci
 
 Windows x64 se compiló como 0.5.1+45 y se abrió desde el ZIP extraído. Se comprobaron el CRC del ZIP, sus dependencias principales y el hash de libmpv.
 
+Los dos APK se verificaron como 0.5.1+45. El universal contiene arm64-v8a, armeabi-v7a y x86_64. El específico contiene arm64-v8a. Ambos conservan el certificado de la 0.5.0 y pasaron las comprobaciones de firmas v2/v3 y avisos incluidos.
+
 ## Pruebas en Android y Windows
 
 1. Actualiza una instalación anterior y abre tu biblioteca. Comprueba que conserva listas, favoritos, temas y ajustes.
