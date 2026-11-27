@@ -5,7 +5,8 @@ import 'dart:math';
 import 'package:audio_service/audio_service.dart';
 import 'package:audio_session/audio_session.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:flutter/foundation.dart' show VoidCallback;
+import 'package:flutter/foundation.dart'
+    show Listenable, ValueNotifier, VoidCallback;
 
 import '../domain/track.dart';
 import '../data/local_store.dart';
@@ -30,7 +31,10 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
   double _appVolume = 1;
   bool gapless = true;
   bool equalizerEnabled = false;
-  AndroidEqualizerParameters? equalizerParameters;
+  final _equalizerParameters = ValueNotifier<AndroidEqualizerParameters?>(null);
+  Listenable get equalizerBandChanges => _equalizerParameters;
+  AndroidEqualizerParameters? get equalizerParameters =>
+      _equalizerParameters.value;
   List<double> equalizerGains = const [];
 
   bool get supportsEqualizer =>
@@ -71,7 +75,8 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
       final params = await equalizer.parameters.timeout(
         const Duration(seconds: 2),
       );
-      if (target == player) equalizerParameters = params;
+      if (_shuttingDown) return;
+      if (target == player) _equalizerParameters.value = params;
       if (equalizerEnabled) {
         for (final band in params.bands) {
           final gain = equalizerGains.elementAtOrNull(band.index) ?? 0.0;
@@ -1396,6 +1401,7 @@ class MusicHandler extends BaseAudioHandler with SeekHandler {
     unawaited(_durations.close());
     unawaited(_states.close());
     unawaited(_volumes.close());
+    _equalizerParameters.dispose();
     // Error observers must not hold the native player/window open on exit.
     unawaited(errors.close());
   }

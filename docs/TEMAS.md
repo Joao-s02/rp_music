@@ -49,7 +49,7 @@ Las imágenes del tema seleccionado se preparan antes de aplicarlo. RP Music man
 
 ## Probar y compartir
 
-1. Abre **Temas → Importar tema** y selecciona el archivo. Se aplica al importarlo.
+1. Abre **Ajustes → Apariencia → Temas → Descargados → Importar tema** y selecciona el archivo. Se aplica al importarlo.
 2. Recorre Biblioteca, Favoritos, Listas, Temas, Ajustes y el reproductor. Comprueba el modo claro y oscuro y que los iconos se distingan cuando cambia su estado. Prueba en Android y Windows si los tienes disponibles.
 3. Prepara una captura de la biblioteca y otra del reproductor con el tema aplicado. Incluye la autoría y el permiso de redistribución de cada recurso que uses.
 4. Propone tu paquete y las capturas mediante una solicitud de cambios en [rp-music-themes](https://github.com/Joao-s02/rp-music-themes). La revisión comprueba legibilidad, compatibilidad y permisos de los recursos antes de incorporar el tema.

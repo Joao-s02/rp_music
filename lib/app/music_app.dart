@@ -130,25 +130,12 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
   final search = TextEditingController();
   LibraryController get library => widget.library;
   MusicHandler get audio => widget.audio;
-  static const labels = [
-    'Biblioteca',
-    'Favoritos',
-    'Listas',
-    'Temas',
-    'Ajustes',
-  ];
-  static const iconSlots = [
-    'library',
-    'favorites',
-    'playlists',
-    'themes',
-    'settings',
-  ];
+  static const labels = ['Biblioteca', 'Favoritos', 'Listas', 'Ajustes'];
+  static const iconSlots = ['library', 'favorites', 'playlists', 'settings'];
   static const icons = [
     Icons.library_music_outlined,
     Icons.favorite_outline,
     Icons.queue_music,
-    Icons.palette_outlined,
     Icons.settings_outlined,
   ];
   @override
@@ -463,7 +450,6 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
                             empty: 'Tus canciones favoritas aparecerán aquí.',
                           ),
                           2 => playlistView(),
-                          3 => ThemeLibraryView(themes: library.themes),
                           _ => settingsView(),
                         },
                       ),
@@ -1796,6 +1782,19 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
       const Text('Tu biblioteca, tu sonido, tu espacio.'),
       const SizedBox(height: 24),
       settingsSection('Apariencia', Icons.palette_outlined, [
+        ListTile(
+          leading: const ThemeIcon('themes', Icons.palette_outlined),
+          title: const Text('Temas'),
+          trailing: const Icon(Icons.chevron_right),
+          onTap: () => Navigator.of(context).push<void>(
+            MaterialPageRoute(
+              builder: (_) => Scaffold(
+                appBar: AppBar(title: const Text('Temas')),
+                body: SafeArea(child: ThemeLibraryView(themes: library.themes)),
+              ),
+            ),
+          ),
+        ),
         SwitchListTile(
           key: const ValueKey('artist-photo-consent'),
           title: const Text('Fotos de artistas'),
@@ -2044,7 +2043,7 @@ class _MusicHomeState extends State<MusicHome> with WidgetsBindingObserver {
         ),
       const ListTile(
         title: Text('RP Music · $appVersion'),
-        subtitle: Text('Base en reconstrucción · Android y Windows'),
+        subtitle: Text('Beta'),
       ),
     ],
   );

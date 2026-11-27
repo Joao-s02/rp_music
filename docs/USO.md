@@ -6,7 +6,7 @@
 
 Escucha la biblioteca local desde Biblioteca, Favoritos y Listas. Letras lee las incrustadas y permite importar LRC/TXT. Las letras de la antigua búsqueda en línea identificadas por su marca de origen se eliminan del almacenamiento privado al arrancar esta versión.
 
-En **Temas**, importa un archivo `.rptheme` o instala Minimalista desde el catálogo de prueba. El tema se aplica a toda la app. Pulsa **RP Music** para volver al aspecto predeterminado o usa la papelera para quitar un tema instalado. [Crear un tema](TEMAS.md).
+En **Ajustes → Apariencia → Temas**, importa un archivo `.rptheme` o instala Minimalista desde el catálogo de prueba. El tema se aplica a toda la app. Pulsa **RP Music** para volver al aspecto predeterminado o usa la papelera para quitar un tema instalado. [Crear un tema](TEMAS.md).
 
 La versión tiene pruebas automatizadas y compilaciones verificadas. La actualización real y las pruebas de escucha en dispositivos siguen pendientes.
 

@@ -4,6 +4,14 @@ Reproductor local para Android y Windows. Abre tu biblioteca y escucha música s
 
 [Descargas para Android universal, ARM64 y Windows](https://github.com/Joao-s02/rp_music/releases/latest) · [Documentación](docs/README.md)
 
+## RP Music 0.5.0 Beta
+
+El ecualizador del reproductor incorpora un modo Básico con preajustes y un modo Avanzado para editar las bandas y ver la curva de ganancias.
+
+Temas se abre desde Ajustes → Apariencia en Android y Windows.
+
+[Uso](docs/USO-0.5.0.md) · [Cambios](docs/CAMBIOS-0.5.0.md) · [Pruebas](docs/PRUEBAS-0.5.0.md)
+
 ## RP Music 0.4.9
 
 Primera candidata de publicación con el código propio bajo GPL-3.0-or-later. Windows x64 integra libmpv de Immuch360 con sus avisos y su código fuente correspondiente. Android incluye el inventario y los avisos de sus dependencias.
